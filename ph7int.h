@@ -13,14 +13,8 @@
 /* $SymiscID: ph7int.h v1.9 FreeBSD 2012-08-13 26:25 devel <chm@symisc.net> $ */
 #ifndef __PH7INT_H__
 #define __PH7INT_H__
-/* Internal interface definitions for PH7. */
-#ifdef PH7_AMALGAMATION
-	/* Marker for routines not intended for external use */
-	#define PH7_PRIVATE static
-#else
-	#define PH7_PRIVATE
-	#include "ph7.h"
-#endif
+#define PH7_PRIVATE
+#include "ph7.h"
 #ifndef PH7_PI
 	/* Value of PI */
 	#define PH7_PI 3.1415926535898
