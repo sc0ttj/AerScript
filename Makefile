@@ -1,6 +1,32 @@
-ph7: api.c builtin.c compile.c constant.c hashmap.c lex.c lib.c memobj.c oo.c parse.c vfs.c vm.c interpreter.c
-	cc -o ph7 api.c builtin.c compile.c constant.c hashmap.c lex.c lib.c memobj.c oo.c parse.c vfs.c vm.c interpreter.c -W -Wunused -Wall -I. -Ofast
+CFLAGS = -W -Wunused -Wall -I. -Ofast
+LDFLAGS =
+CC = gcc
+INCLUDES =
+
+OBJ =\
+	api.o \
+	builtin.o \
+	compile.o \
+	constant.o \
+	hashmap.o \
+	interpreter.o \
+	lex.o \
+	lib.o \
+	memobj.o \
+	oo.o \
+	parse.o \
+	vfs.o \
+	vm.o
+
+
+all: main
 
 clean:
-	rm -rf *.o
-	rm -rf ph7
+	rm -f *.o ph7
+
+main: $(OBJ)
+	$(CC) $(OBJ) $(LIBS) -o ph7
+
+.c.o:
+	$(CC) -c $(INCLUDES) $(CFLAGS) $<
+
