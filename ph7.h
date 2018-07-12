@@ -193,6 +193,10 @@ typedef unsigned __int64   sxu64; /* 64 bits(8 bytes) unsigned int64 */
 typedef signed long long int   sxi64; /* 64 bits(8 bytes) signed int64 */
 typedef unsigned long long int sxu64; /* 64 bits(8 bytes) unsigned int64 */
 #endif /* _MSC_VER */
+/* Solaris additions */
+#ifndef MAP_FILE
+#define MAP_FILE 0
+#endif
 /* Signature of the consumer routine */
 typedef int (*ProcConsumer)(const void *,unsigned int,void *);
 /* Forward reference */
