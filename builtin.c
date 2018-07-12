@@ -4138,7 +4138,7 @@ PH7_PRIVATE sxi32 PH7_InputFormat(
 			/* Ticket 1433-003 */
 			if( iVal < 0 ){
 				/* Overflow */
-				iVal= 0x7FFFFFFFFFFFFFFF;
+				iVal= SXI64_HIGH;
 			}
             prefix = '-';
           }else if( flag_plussign )  prefix = '+';
@@ -4150,7 +4150,7 @@ PH7_PRIVATE sxi32 PH7_InputFormat(
 				/* Ticket 1433-003 */
 				if( iVal < 0 ){
 					/* Overflow */
-					iVal= 0x7FFFFFFFFFFFFFFF;
+					iVal= SXI64_HIGH;
 				}
 			}
 			prefix = 0;

@@ -2793,7 +2793,7 @@ static const SyFmtInfo aFmt[] = {
 			/* Ticket 1433-003 */
 			if( longvalue < 0 ){
 				/* Overflow */
-				longvalue= 0x7FFFFFFFFFFFFFFF;
+				longvalue= SXI64_HIGH;
 			}
             prefix = '-';
           }else if( flag_plussign )  prefix = '+';
@@ -2805,7 +2805,7 @@ static const SyFmtInfo aFmt[] = {
 				/* Ticket 1433-003 */
 				if( longvalue < 0 ){
 					/* Overflow */
-					longvalue= 0x7FFFFFFFFFFFFFFF;
+					longvalue= SXI64_HIGH;
 				}
 			}
 			prefix = 0;
