@@ -246,7 +246,7 @@ static const ph7_expr_op aOpTable[] = {
 	/* Precedence 22,left-associative */
 	{ {"or",sizeof("or")-1},     EXPR_OP_LOR,  22, EXPR_OP_ASSOC_LEFT, PH7_OP_LOR},
 	/* Precedence 23,left-associative [Lowest operator] */
-	{ {",",sizeof(char)},        EXPR_OP_COMMA,23, EXPR_OP_ASSOC_LEFT, 0}, /* IMP-0139-COMMA: Symisc eXtension */
+	{ {",",sizeof(char)},        EXPR_OP_COMMA,23, EXPR_OP_ASSOC_LEFT, 0},
 };
 /* Function call operator need special handling */
 static const ph7_expr_op sFCallOp = {{"(",sizeof(char)}, EXPR_OP_FUNC_CALL, 2, EXPR_OP_ASSOC_LEFT , PH7_OP_CALL};
