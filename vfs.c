@@ -11,9 +11,7 @@
  *      http://ph7.symisc.net/
  */
  /* $SymiscID: vfs.c v2.1 Win7 2012-05-24 01:18 devel <chm@symisc.net> $ */
-#ifndef PH7_AMALGAMATION
 #include "ph7int.h"
-#endif
 /*
  * This file implement a virtual file systems (VFS) for the PH7 engine.
  */

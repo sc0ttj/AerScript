@@ -11,9 +11,7 @@
  *      http://ph7.symisc.net/
  */
  /* $SymiscID: constant.c v1.1 Win7 2012-08-07 08:22 devel <chm@symisc.net> $ */
-#ifndef PH7_AMALGAMATION
 #include "ph7int.h"
-#endif
 /* This file implement built-in constants for the PH7 engine. */
 /*
  * PH7_VERSION

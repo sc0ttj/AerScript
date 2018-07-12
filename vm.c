@@ -11,9 +11,7 @@
  *      http://ph7.symisc.net/
  */
  /* $SymiscID: vm.c v1.4 FreeBSD 2012-09-10 00:06 stable <chm@symisc.net> $ */
-#ifndef PH7_AMALGAMATION
 #include "ph7int.h"
-#endif
 /*
  * The code in this file implements execution method of the PH7 Virtual Machine.
  * The PH7 compiler (implemented in 'compiler.c' and 'parse.c') generates a bytecode program

@@ -11,9 +11,7 @@
  *      http://ph7.symisc.net/
  */
  /* $SymiscID: memobj.c v2.7 FreeBSD 2012-08-09 03:40 stable <chm@symisc.net> $ */
-#ifndef PH7_AMALGAMATION
 #include "ph7int.h"
-#endif
 /* This file handle low-level stuff related to indexed memory objects [i.e: ph7_value] */
 /*
  * Notes on memory objects [i.e: ph7_value].

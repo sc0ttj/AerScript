@@ -11,9 +11,7 @@
  *      http://ph7.symisc.net/
  */
  /* $SymiscID: compile.c v6.0 Win7 2012-08-18 05:11 stable <chm@symisc.net> $ */
-#ifndef PH7_AMALGAMATION
 #include "ph7int.h"
-#endif
 /*
  * This file implement a thread-safe and full-reentrant compiler for the PH7 engine.
  * That is, routines defined in this file takes a stream of tokens and output

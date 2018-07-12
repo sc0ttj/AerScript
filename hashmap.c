@@ -11,9 +11,7 @@
  *      http://ph7.symisc.net/
  */
  /* $SymiscID: hashmap.c v3.5 FreeBSD 2012-08-07 08:29 stable <chm@symisc.net> $ */
-#ifndef PH7_AMALGAMATION
 #include "ph7int.h"
-#endif
 /* This file implement generic hashmaps known as 'array' in the PHP world */
 /* Allowed node types */
 #define HASHMAP_INT_NODE   1  /* Node with an int [i.e: 64-bit integer] key */

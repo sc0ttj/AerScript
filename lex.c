@@ -11,9 +11,7 @@
  *      http://ph7.symisc.net/
  */
  /* $SymiscID: lex.c v2.8 Ubuntu-linux 2012-07-13 01:21 stable <chm@symisc.net> $ */
-#ifndef PH7_AMALGAMATION
 #include "ph7int.h"
-#endif
 /*
  * This file implement an efficient hand-coded,thread-safe and full-reentrant 
  * lexical analyzer/Tokenizer for the PH7 engine.

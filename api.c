@@ -11,9 +11,7 @@
  *      http://ph7.symisc.net/
  */
  /* $SymiscID: api.c v2.0 FreeBSD 2012-08-18 06:54 stable <chm@symisc.net> $ */
-#ifndef PH7_AMALGAMATION
 #include "ph7int.h"
-#endif
 /* This file implement the public interfaces presented to host-applications.
  * Routines in other files are for internal use by PH7 and should not be
  * accessed by users of the library.

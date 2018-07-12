@@ -19,9 +19,7 @@
  * internally as a secure replacement of the standard libc.
  * The library is re-entrant,thread-safe and platform independent.
  */
-#ifndef PH7_AMALGAMATION
 #include "ph7int.h"
-#endif
 #if defined(__WINNT__)
 #include <Windows.h>
 #else

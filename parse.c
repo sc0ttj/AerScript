@@ -11,9 +11,7 @@
  *      http://ph7.symisc.net/
  */
  /* $SymiscID: parse.c v3.7 FreeBSD 2011-12-20 22:46 stable <chm@symisc.net> $ */
-#ifndef PH7_AMALGAMATION
 #include "ph7int.h"
-#endif
 /*
  * This file implement a hand-coded, thread-safe, full-reentrant and highly-efficient
  * expression parser for the PH7 engine.

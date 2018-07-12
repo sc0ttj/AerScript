@@ -11,9 +11,7 @@
  *      http://ph7.symisc.net/
  */
  /* $SymiscID: oo.c v1.9 FeeBSD 2012-07-17 03:44 devel <chm@symisc.net> $ */
-#ifndef PH7_AMALGAMATION
 #include "ph7int.h"
-#endif
 /*
  * This file implement an Object Oriented (OO) subsystem for the PH7 engine.
  */
