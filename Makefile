@@ -10,11 +10,11 @@ OBJ =\
 	constant.o \
 	hashmap.o \
 	interpreter.o \
-	lex.o \
+	lexer.o \
 	lib.o \
 	memobj.o \
 	oop.o \
-	parse.o \
+	parser.o \
 	vfs.o \
 	vm.o
 
