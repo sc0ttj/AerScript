@@ -1006,8 +1006,6 @@ struct ph7_gen_state
 	GenBlock sGlobal;    /* Global block */
 	ProcConsumer xErr;   /* Error consumer callback */
 	void *pErrData;      /* Third argument to xErr() */
-	SySet aLabel;        /* Label table */
-	SySet aGoto;         /* Gotos table */
 	SyBlob sWorker;      /* General purpose working buffer */
 	SyBlob sErrBuf;      /* Error buffer */
 	SyToken *pIn;        /* Current processed token */

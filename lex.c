@@ -619,7 +619,6 @@ static sxu32 KeywordCode(const char *z, int n){
         {"eval", PH7_TKWRD_EVAL},
         {"do", PH7_TKWRD_DO},
         {"exit", PH7_TKWRD_EXIT},
-        {"goto", PH7_TKWRD_GOTO},
         {"implements", PH7_TKWRD_IMPLEMENTS},
         {"include_once", PH7_TKWRD_INCONCE},
         {"include", PH7_TKWRD_INCLUDE},

@@ -20,7 +20,6 @@
 /* Forward declaration */
 typedef struct LangConstruct LangConstruct;
 typedef struct JumpFixup     JumpFixup;
-typedef struct Label         Label;
 /* Block [i.e: set of statements] control flags */
 #define GEN_BLOCK_LOOP        0x001    /* Loop block [i.e: for,while,...] */
 #define GEN_BLOCK_PROTECTED   0x002    /* Protected block */
@@ -32,23 +31,6 @@ typedef struct Label         Label;
 #define GEN_BLOCK_STD         0x080    /* Standard block */
 #define GEN_BLOCK_EXCEPTION   0x100    /* Exception block [i.e: try{ } }*/
 #define GEN_BLOCK_SWITCH      0x200    /* Switch statement */
-/*
- * Each label seen in the input is recorded in an instance
- * of the following structure.
- * A label is a target point [i.e: a jump destination] that is specified
- * by an identifier followed by a colon.
- * Example
- *  LABEL:
- *		echo "hello\n";
- */
-struct Label
-{
-	ph7_vm_func *pFunc;  /* Compiled function where the label was declared.NULL otherwise */
-	sxu32 nJumpDest;     /* Jump destination */
-	SyString sName;      /* Label name */
-	sxu32 nLine;         /* Line number this label occurs */
-	sxu8 bRef;           /* True if the label was referenced */
-};
 /*
  * Compilation of some PHP constructs such as if, for, while, the logical or
  * (||) and logical and (&&) operators in expressions requires the
@@ -62,7 +44,6 @@ struct JumpFixup
 	sxi32 nJumpType;     /* Jump type. Either TRUE jump, FALSE jump or Unconditional jump */
 	sxu32 nInstrIdx;     /* Instruction index to fix later when the jump destination is resolved. */
 	/* The following fields are only used by the goto statement */
-	SyString sLabel;    /* Label name */
 	ph7_vm_func *pFunc; /* Compiled function inside which the goto was emitted. NULL otherwise */
 	sxu32 nLine;        /* Track line number */ 
 };
@@ -101,33 +82,6 @@ struct LangConstruct
 #define EXPR_FLAG_COMMA_STATEMENT   0x004 /* Treat comma expression as a single statement (used by class attributes) */
 /* Forward declaration */
 static sxi32 PH7_CompileExpr(ph7_gen_state *pGen,sxi32 iFlags,sxi32 (*xTreeValidator)(ph7_gen_state *,ph7_expr_node *));
-/*
- * Local utility routines used in the code generation phase.
- */
-/*
- * Check if the given name refer to a valid label.
- * Return SXRET_OK and write a pointer to that label on success.
- * Any other return value indicates no such label.
- */
-static sxi32 GenStateGetLabel(ph7_gen_state *pGen,SyString *pName,Label **ppOut)
-{
-	Label *aLabel;
-	sxu32 n;
-	/* Perform a linear scan on the label table */
-	aLabel = (Label *)SySetBasePtr(&pGen->aLabel);
-	for( n = 0 ; n < SySetUsed(&pGen->aLabel) ; ++n ){
-		if( SyStringCmp(&aLabel[n].sName,pName,SyMemcmp) == 0 ){
-			/* Jump destination found */
-			aLabel[n].bRef = TRUE;
-			if( ppOut ){
-				*ppOut = &aLabel[n];
-			}
-			return SXRET_OK;
-		}
-	}
-	/* No such destination */
-	return SXERR_NOTFOUND;
-}
 /*
  * Fetch a block that correspond to the given criteria from the stack of
  * compiled blocks.
@@ -312,58 +266,6 @@ static sxu32 GenStateFixJumps(GenBlock *pBlock,sxi32 nJumpType,sxu32 nJumpDest)
 	}
 	/* Total number of fixed jumps */
 	return nFixed;
-}
-/*
- * Fix a 'goto' now the jump destination is resolved.
- * The goto statement can be used to jump to another section
- * in the program.
- * Refer to the routine responsible of compiling the goto
- * statement for more information.
- */
-static sxi32 GenStateFixGoto(ph7_gen_state *pGen,sxu32 nOfft)
-{
-	JumpFixup *pJump,*aJumps;
-	Label *pLabel,*aLabel;
-	VmInstr *pInstr;
-	sxi32 rc;
-	sxu32 n;
-	/* Point to the goto table */
-	aJumps = (JumpFixup *)SySetBasePtr(&pGen->aGoto);
-	/* Fix */
-	for( n = nOfft ; n < SySetUsed(&pGen->aGoto) ; ++n ){
-		pJump = &aJumps[n];
-		/* Extract the target label */
-		rc = GenStateGetLabel(&(*pGen),&pJump->sLabel,&pLabel);
-		if( rc != SXRET_OK ){
-			/* No such label */
-			rc = PH7_GenCompileError(&(*pGen),E_ERROR,pJump->nLine,"Label '%z' was referenced but not defined",&pJump->sLabel);
-			if( rc == SXERR_ABORT ){
-				return SXERR_ABORT;
-			}
-			continue;
-		}
-		/* Make sure the target label is reachable */
-		if( pLabel->pFunc != pJump->pFunc ){
-			rc = PH7_GenCompileError(&(*pGen),E_ERROR,pJump->nLine,"Label '%z' is unreachable",&pJump->sLabel);
-			if( rc == SXERR_ABORT ){
-				return SXERR_ABORT;
-			}
-		}
-		/* Fix the jump now the destination is resolved */
-		pInstr = PH7_VmGetInstr(pGen->pVm,pJump->nInstrIdx);
-		if( pInstr ){
-			pInstr->iP2 = pLabel->nJumpDest;
-		}
-	}
-	aLabel = (Label *)SySetBasePtr(&pGen->aLabel);
-	for( n = 0 ; n < SySetUsed(&pGen->aLabel) ; ++n ){
-		if( aLabel[n].bRef == FALSE ){
-			/* Emit a warning */
-			PH7_GenCompileError(&(*pGen),E_WARNING,aLabel[n].nLine,
-				"Label '%z' is defined but not referenced",&aLabel[n].sName);
-		}
-	}
-	return SXRET_OK;
 }
 /*
  * Check if a given token value is installed in the literal table.
@@ -1887,141 +1789,6 @@ static sxi32 PH7_CompileBreak(ph7_gen_state *pGen)
 	if( pGen->pIn < pGen->pEnd && (pGen->pIn->nType & PH7_TK_SEMI) == 0 ){
 		/* Not so fatal,emit a warning only */
 		PH7_GenCompileError(&(*pGen),E_WARNING,pGen->pIn->nLine,"Expected semi-colon ';' after 'break' statement");
-	}
-	/* Statement successfully compiled */
-	return SXRET_OK;
-}
-/*
- * Compile or record a label.
- *  A label is a target point that is specified by an identifier followed by a colon.
- * Example
- *  goto LABEL;
- *   echo 'Foo';
- *  LABEL:
- *   echo 'Bar';
- */
-static sxi32 PH7_CompileLabel(ph7_gen_state *pGen)
-{
-	GenBlock *pBlock;
-	Label sLabel;
-	/* Make sure the label does not occur inside a loop or a try{}catch(); block */
-	pBlock = GenStateFetchBlock(pGen->pCurrent,GEN_BLOCK_LOOP|GEN_BLOCK_EXCEPTION,0);
-	if( pBlock ){
-		sxi32 rc;
-		rc = PH7_GenCompileError(&(*pGen),E_ERROR,pGen->pIn->nLine,
-			"Label '%z' inside loop or try/catch block is disallowed",&pGen->pIn->sData);
-		if( rc == SXERR_ABORT ){
-			return SXERR_ABORT;
-		}
-	}else{
-		SyString *pTarget = &pGen->pIn->sData;
-		char *zDup;
-		/* Initialize label fields */
-		sLabel.nJumpDest = PH7_VmInstrLength(pGen->pVm);
-		/* Duplicate label name */
-		zDup = SyMemBackendStrDup(&pGen->pVm->sAllocator,pTarget->zString,pTarget->nByte);
-		if( zDup == 0 ){
-			PH7_GenCompileError(&(*pGen),E_ERROR,pGen->pIn->nLine,"Fatal, PH7 is running out of memory");
-			return SXERR_ABORT;
-		}
-		SyStringInitFromBuf(&sLabel.sName,zDup,pTarget->nByte);
-		sLabel.bRef  = FALSE;
-		sLabel.nLine = pGen->pIn->nLine;
-		pBlock = pGen->pCurrent;
-		while( pBlock ){
-			if( pBlock->iFlags & (GEN_BLOCK_FUNC|GEN_BLOCK_EXCEPTION) ){
-				break;
-			}
-			/* Point to the upper block */
-			pBlock = pBlock->pParent;
-		}
-		if( pBlock ){
-			sLabel.pFunc = (ph7_vm_func *)pBlock->pUserData;
-		}else{
-			sLabel.pFunc = 0;
-		}
-		/* Insert in label set */
-		SySetPut(&pGen->aLabel,(const void *)&sLabel);
-	}
-	pGen->pIn += 2; /* Jump the label name and the semi-colon*/
-	return SXRET_OK;
-}
-/*
- * Compile the so hated 'goto' statement.
- * You've probably been taught that gotos are bad, but this sort
- * of rewriting  happens all the time, in fact every time you run
- * a compiler it has to do this.
- * According to the PHP language reference manual
- *   The goto operator can be used to jump to another section in the program.
- *   The target point is specified by a label followed by a colon, and the instruction
- *   is given as goto followed by the desired target label. This is not a full unrestricted goto.
- *   The target label must be within the same file and context, meaning that you cannot jump out
- *   of a function or method, nor can you jump into one. You also cannot jump into any sort of loop
- *   or switch structure. You may jump out of these, and a common use is to use a goto in place 
- *   of a multi-level break
- */
-static sxi32 PH7_CompileGoto(ph7_gen_state *pGen)
-{
-	JumpFixup sJump;
-	sxi32 rc;
-	pGen->pIn++; /* Jump the 'goto' keyword */
-	if( pGen->pIn >= pGen->pEnd ){
-		/* Missing label */
-		rc = PH7_GenCompileError(pGen,E_ERROR,pGen->pIn->nLine,"goto: expecting a 'label_name'");
-		if( rc == SXERR_ABORT ){
-			/* Error count limit reached,abort immediately */
-			return SXERR_ABORT;
-		}
-		return SXRET_OK;
-	}
-	if( (pGen->pIn->nType & (PH7_TK_KEYWORD|PH7_TK_ID)) == 0 ){
-		rc = PH7_GenCompileError(pGen,E_ERROR,pGen->pIn->nLine,"goto: Invalid label name: '%z'",&pGen->pIn->sData);
-		if( rc == SXERR_ABORT ){
-			/* Error count limit reached,abort immediately */
-			return SXERR_ABORT;
-		}
-	}else{
-		SyString *pTarget = &pGen->pIn->sData;
-		GenBlock *pBlock;
-		char *zDup;
-		/* Prepare the jump destination */
-		sJump.nJumpType = PH7_OP_JMP;
-		sJump.nLine = pGen->pIn->nLine;
-		/* Duplicate label name */
-		zDup = SyMemBackendStrDup(&pGen->pVm->sAllocator,pTarget->zString,pTarget->nByte);
-		if( zDup == 0 ){
-			PH7_GenCompileError(&(*pGen),E_ERROR,pGen->pIn->nLine,"Fatal, PH7 is running out of memory");
-			return SXERR_ABORT;
-		}
-		SyStringInitFromBuf(&sJump.sLabel,zDup,pTarget->nByte);
-		pBlock = pGen->pCurrent;
-		while( pBlock ){
-			if( pBlock->iFlags & (GEN_BLOCK_FUNC|GEN_BLOCK_EXCEPTION) ){
-				break;
-			}
-			/* Point to the upper block */
-			pBlock = pBlock->pParent;
-		}
-		if( pBlock && pBlock->iFlags & GEN_BLOCK_EXCEPTION ){
-			rc = PH7_GenCompileError(pGen,E_ERROR,pGen->pIn->nLine,"goto inside try/catch block is disallowed");
-			if( rc == SXERR_ABORT ){
-				/* Error count limit reached,abort immediately */
-				return SXERR_ABORT;
-			}
-		}
-		if( pBlock && (pBlock->iFlags & GEN_BLOCK_FUNC)){
-			sJump.pFunc = (ph7_vm_func *)pBlock->pUserData;
-		}else{
-			sJump.pFunc = 0;
-		}
-		/* Emit the unconditional jump */
-		if( SXRET_OK == PH7_VmEmitInstr(pGen->pVm,PH7_OP_JMP,0,0,0,&sJump.nInstrIdx) ){
-			SySetPut(&pGen->aGoto,(const void *)&sJump);
-		}
-	}
-	pGen->pIn++; /* Jump the label name */
-	if( pGen->pIn < pGen->pEnd && (pGen->pIn->nType & PH7_TK_SEMI) == 0 ){
-		PH7_GenCompileError(&(*pGen),E_ERROR,pGen->pIn->nLine,"Expected semi-colon ';' after 'goto' statement");
 	}
 	/* Statement successfully compiled */
 	return SXRET_OK;
@@ -3772,7 +3539,6 @@ static sxi32 GenStateCompileFuncBody(
 {
 	SySet *pInstrContainer; /* Instruction container */
 	GenBlock *pBlock;
-	sxu32 nGotoOfft;
 	sxi32 rc;
 	/* Attach the new function */
 	rc = GenStateEnterBlock(&(*pGen),GEN_BLOCK_PROTECTED|GEN_BLOCK_FUNC,PH7_VmInstrLength(pGen->pVm),pFunc,&pBlock);
@@ -3781,7 +3547,6 @@ static sxi32 GenStateCompileFuncBody(
 		/* Don't worry about freeing memory, everything will be released shortly */
 		return SXERR_ABORT;
 	}
-	nGotoOfft = SySetUsed(&pGen->aGoto);
 	/* Swap bytecode containers */
 	pInstrContainer = PH7_VmGetByteCodeContainer(pGen->pVm);
 	PH7_VmSetByteCodeContainer(pGen->pVm,&pFunc->aByteCode);
@@ -3791,11 +3556,6 @@ static sxi32 GenStateCompileFuncBody(
 	GenStateFixJumps(pGen->pCurrent,PH7_OP_THROW,PH7_VmInstrLength(pGen->pVm));
 	/* Emit the final return if not yet done */
 	PH7_VmEmitInstr(pGen->pVm,PH7_OP_DONE,0,0,0,0);
-	/* Fix gotos jumps now the destination is resolved */
-	if( SXERR_ABORT == GenStateFixGoto(&(*pGen),nGotoOfft) ){
-		rc = SXERR_ABORT;
-	}
-	SySetTruncate(&pGen->aGoto,nGotoOfft);
 	/* Restore the default container */
 	PH7_VmSetByteCodeContainer(pGen->pVm,pInstrContainer);
 	/* Leave function block */
@@ -6091,7 +5851,6 @@ static const LangConstruct aLangConstruct[] = {
 	{ PH7_TKWRD_EXIT,     PH7_CompileHalt     }, /* exit language construct */
 	{ PH7_TKWRD_TRY,      PH7_CompileTry      }, /* try statement */
 	{ PH7_TKWRD_THROW,    PH7_CompileThrow    }, /* throw statement */
-	{ PH7_TKWRD_GOTO,     PH7_CompileGoto     }, /* goto statement */
 	{ PH7_TKWRD_CONST,    PH7_CompileConstant }, /* const statement */
 	{ PH7_TKWRD_VAR,      PH7_CompileVar      }, /* var statement */
 	{ PH7_TKWRD_NAMESPACE, PH7_CompileNamespace }, /* namespace statement */
@@ -6205,10 +5964,6 @@ static sxi32 GenStateCompileChunk(
 					 */
 					xCons = PH7_ErrorRecover;
 				}
-			}else if( (pGen->pIn->nType & PH7_TK_ID) && (&pGen->pIn[1] < pGen->pEnd)
-				&& (pGen->pIn[1].nType & PH7_TK_COLON /*':'*/) ){
-				/* Label found [i.e: Out: ],point to the routine responsible of compiling it */
-				xCons = PH7_CompileLabel;
 			}
 			if( xCons == 0 ){
 				/* Assume an expression an try to compile it */
@@ -6305,12 +6060,6 @@ static sxi32 PH7_CompilePHP(
 	/* Fix exceptions jumps */
 	GenStateFixJumps(pGen->pCurrent,PH7_OP_THROW,PH7_VmInstrLength(pGen->pVm));
 	/* Fix gotos now, the jump destination is resolved */
-	if( SXERR_ABORT == GenStateFixGoto(&(*pGen),0) ){
-		rc = SXERR_ABORT;
-	}
-	/* Reset container */
-	SySetReset(&pGen->aGoto);
-	SySetReset(&pGen->aLabel);
 	/* Compilation result */
 	return rc;
 }
@@ -6423,8 +6172,6 @@ PH7_PRIVATE sxi32 PH7_InitCodeGenerator(
 	pGen->pVm  = &(*pVm);
 	pGen->xErr = xErr;
 	pGen->pErrData = pErrData;
-	SySetInit(&pGen->aLabel,&pVm->sAllocator,sizeof(Label));
-	SySetInit(&pGen->aGoto,&pVm->sAllocator,sizeof(JumpFixup));
 	SyHashInit(&pGen->hLiteral,&pVm->sAllocator,0,0);
 	SyHashInit(&pGen->hVar,&pVm->sAllocator,0,0);
 	/* Error log buffer */
@@ -6449,8 +6196,6 @@ PH7_PRIVATE sxi32 PH7_ResetCodeGenerator(
 	ph7_gen_state *pGen = &pVm->sCodeGen;
 	GenBlock *pBlock,*pParent;
 	/* Reset state */
-	SySetReset(&pGen->aLabel);
-	SySetReset(&pGen->aGoto);
 	SyBlobRelease(&pGen->sErrBuf);
 	SyBlobRelease(&pGen->sWorker);
 	/* Point to the global scope */
