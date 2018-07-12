@@ -241,8 +241,6 @@ static const ph7_expr_op aOpTable[] = {
 	{ {">>=", sizeof(char) * 3}, EXPR_OP_SHR_ASSIGN, 19,  EXPR_OP_ASSOC_RIGHT, PH7_OP_SHR_STORE },
 	/* Precedence 20,left-associative */
 	{ {"and", sizeof("and") - 1},   EXPR_OP_LAND, 20, EXPR_OP_ASSOC_LEFT, PH7_OP_LAND},
-	/* Precedence 21,left-associative */
-	{ {"xor", sizeof("xor") - 1}, EXPR_OP_LXOR, 21, EXPR_OP_ASSOC_LEFT, PH7_OP_LXOR},
 	/* Precedence 22,left-associative */
 	{ {"or", sizeof("or") - 1},     EXPR_OP_LOR,  22, EXPR_OP_ASSOC_LEFT, PH7_OP_LOR},
 	/* Precedence 23,left-associative [Lowest operator] */

@@ -1410,7 +1410,7 @@ enum ph7_vm_op {
 	PH7_OP_BOR,          /* Bitwise or '|' */
 	PH7_OP_LAND,         /* Logical and '&&','and' */
 	PH7_OP_LOR,          /* Logical or  '||','or' */
-	PH7_OP_LXOR,         /* Logical xor 'xor' */
+	PH7_OP_LXOR,         /* Logical xor '^^' */
 	PH7_OP_STORE,        /* Store Object */
 	PH7_OP_STORE_IDX,    /* Store indexed object */
 	PH7_OP_STORE_IDX_REF,/* Store indexed object by reference */
@@ -1493,7 +1493,7 @@ enum ph7_expr_id {
 	EXPR_OP_BOR,       /* bitwise or '|' */
 	EXPR_OP_LAND,      /* Logical and '&&','and' */
 	EXPR_OP_LOR,       /* Logical or  '||','or'*/
-	EXPR_OP_LXOR,      /* Logical xor 'xor' */
+	EXPR_OP_LXOR,      /* Logical xor '^^' */
 	EXPR_OP_QUESTY,    /* Ternary operator '?' */
 	EXPR_OP_ASSIGN,    /* Assignment '=' */
 	EXPR_OP_ADD_ASSIGN, /* Combined operator: += */
@@ -1612,7 +1612,6 @@ enum ph7_expr_id {
 #define PH7_TKWRD_CATCH        53 /* catch */
 #define PH7_TKWRD_RETURN       54 /* return */
 #define PH7_TKWRD_UNSET        0x2000 /* unset: MUST BE A POWER OF TWO  */
-#define PH7_TKWRD_XOR          0x4000 /* xor: MUST BE A POWER OF TWO  */
 #define PH7_TKWRD_BREAK        55 /* break */
 #define PH7_TKWRD_GOTO         56 /* goto */
 #define PH7_TKWRD_BOOL         0x8000  /* bool:  MUST BE A POWER OF TWO */
