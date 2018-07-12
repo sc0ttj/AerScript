@@ -13,7 +13,7 @@ OBJ =\
 	lex.o \
 	lib.o \
 	memobj.o \
-	oo.o \
+	oop.o \
 	parse.o \
 	vfs.o \
 	vm.o
