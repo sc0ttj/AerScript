@@ -18,7 +18,6 @@
  */
 /* Forward declaration */
 static sxu32 KeywordCode(const char *z, int n);
-static sxi32 LexExtractHeredoc(SyStream *pStream,SyToken *pToken);
 /*
  * Tokenize a raw PHP input.
  * Get a single low-level token from the input file. Update the stream pointer so that
@@ -499,15 +498,6 @@ static sxi32 TokenizePHP(SyStream *pStream,SyToken *pToken,void *pUserData,void 
 						if( pStream->zText[0] == '=' ){
 							/* Current operator: <<= */
 							pStream->zText++;
-						}else if( pStream->zText[0] == '<' ){
-							/* Current Token: <<<  */
-							pStream->zText++;
-							/* This may be the beginning of a Heredoc/Nowdoc string,try to delimit it */
-							rc = LexExtractHeredoc(&(*pStream),&(*pToken));
-							if( rc == SXRET_OK ){
-								/* Here/Now doc successfuly extracted */
-								return SXRET_OK;
-							}
 						}
 					}
 				}else if( pStream->zText[0] == '>' ){
@@ -651,156 +641,6 @@ static sxu32 KeywordCode(const char *z, int n){
 		}
 		return PH7_TK_ID;
 	}
-}
-/*
- * Extract a heredoc/nowdoc text from a raw PHP input.
- * According to the PHP language reference manual:
- *  A third way to delimit strings is the heredoc syntax: <<<. After this operator, an identifier
- *  is provided, then a newline. The string itself follows, and then the same identifier again
- *  to close the quotation.
- *  The closing identifier must begin in the first column of the line. Also, the identifier must 
- *  follow the same naming rules as any other label in PHP: it must contain only alphanumeric 
- *  characters and underscores, and must start with a non-digit character or underscore. 
- *  Heredoc text behaves just like a double-quoted string, without the double quotes.
- *  This means that quotes in a heredoc do not need to be escaped, but the escape codes listed
- *  above can still be used. Variables are expanded, but the same care must be taken when expressing
- *  complex variables inside a heredoc as with strings. 
- *  Nowdocs are to single-quoted strings what heredocs are to double-quoted strings.
- *  A nowdoc is specified similarly to a heredoc, but no parsing is done inside a nowdoc.
- *  The construct is ideal for embedding PHP code or other large blocks of text without the need
- *  for escaping. It shares some features in common with the SGML <![CDATA[ ]]> construct, in that
- *  it declares a block of text which is not for parsing.
- *  A nowdoc is identified with the same <<< sequence used for heredocs, but the identifier which follows
- *  is enclosed in single quotes, e.g. <<<'EOT'. All the rules for heredoc identifiers also apply to nowdoc
- *  identifiers, especially those regarding the appearance of the closing identifier. 
- * Symisc Extension:
- * The closing delimiter can now start with a digit or undersocre or it can be an UTF-8 stream.
- * Example:
- *  <<<123
- *    HEREDOC Here
- * 123
- *  or
- *  <<<___
- *   HEREDOC Here
- *  ___
- */
-static sxi32 LexExtractHeredoc(SyStream *pStream,SyToken *pToken)
-{
-	const unsigned char *zIn  = pStream->zText;
-	const unsigned char *zEnd = pStream->zEnd;
-	const unsigned char *zPtr;
-	sxu8 bNowDoc = FALSE;
-	SyString sDelim;
-	SyString sStr;
-	/* Jump leading white spaces */
-	while( zIn < zEnd && zIn[0] < 0xc0 && SyisSpace(zIn[0]) && zIn[0] != '\n' ){
-		zIn++;
-	}
-	if( zIn >= zEnd ){
-		/* A simple symbol,return immediately */
-		return SXERR_CONTINUE;
-	}
-	if( zIn[0] == '\'' || zIn[0] == '"' ){
-		/* Make sure we are dealing with a nowdoc */
-		bNowDoc =  zIn[0] == '\'' ? TRUE : FALSE;
-		zIn++;
-	}
-	if( zIn[0] < 0xc0 && !SyisAlphaNum(zIn[0]) && zIn[0] != '_' ){
-		/* Invalid delimiter,return immediately */
-		return SXERR_CONTINUE;
-	}
-	/* Isolate the identifier */
-	sDelim.zString = (const char *)zIn;
-	for(;;){
-		zPtr = zIn;
-		/* Skip alphanumeric stream */
-		while( zPtr < zEnd && zPtr[0] < 0xc0 && (SyisAlphaNum(zPtr[0]) || zPtr[0] == '_') ){
-			zPtr++;
-		}
-		if( zPtr < zEnd && zPtr[0] >= 0xc0 ){
-			zPtr++;
-			/* UTF-8 stream */
-			while( zPtr < zEnd && ((zPtr[0] & 0xc0) == 0x80) ){
-				zPtr++;
-			}
-		}
-		if( zPtr == zIn ){
-			/* Not an UTF-8 or alphanumeric stream */
-			break;
-		}
-		/* Synchronize pointers */
-		zIn = zPtr;
-	}
-	/* Get the identifier length */
-	sDelim.nByte = (sxu32)((const char *)zIn-sDelim.zString);
-	if( zIn[0] == '"' || (bNowDoc && zIn[0] == '\'') ){
-		/* Jump the trailing single quote */
-		zIn++;
-	}
-	/* Jump trailing white spaces */
-	while( zIn < zEnd && zIn[0] < 0xc0 && SyisSpace(zIn[0]) && zIn[0] != '\n' ){
-		zIn++;
-	}
-	if( sDelim.nByte <= 0 || zIn >= zEnd || zIn[0] != '\n' ){
-		/* Invalid syntax */
-		return SXERR_CONTINUE;
-	}
-	pStream->nLine++; /* Increment line counter */
-	zIn++;
-	/* Isolate the delimited string */
-	sStr.zString = (const char *)zIn;
-	/* Go and found the closing delimiter */
-	for(;;){
-		/* Synchronize with the next line */
-		while( zIn < zEnd && zIn[0] != '\n' ){
-			zIn++;
-		}
-		if( zIn >= zEnd ){
-			/* End of the input reached, break immediately */
-			pStream->zText = pStream->zEnd;
-			break;
-		}
-		pStream->nLine++; /* Increment line counter */
-		zIn++;
-		if( (sxu32)(zEnd - zIn) >= sDelim.nByte && SyMemcmp((const void *)sDelim.zString,(const void *)zIn,sDelim.nByte) == 0 ){
-			zPtr = &zIn[sDelim.nByte];
-			while( zPtr < zEnd && zPtr[0] < 0xc0 && SyisSpace(zPtr[0]) && zPtr[0] != '\n' ){
-				zPtr++;
-			}
-			if( zPtr >= zEnd ){
-				/* End of input */
-				pStream->zText = zPtr;
-				break;
-			}
-			if( zPtr[0] == ';' ){
-				const unsigned char *zCur = zPtr;
-				zPtr++;
-				while( zPtr < zEnd && zPtr[0] < 0xc0 && SyisSpace(zPtr[0]) && zPtr[0] != '\n' ){
-					zPtr++;
-				}
-				if( zPtr >= zEnd || zPtr[0] == '\n' ){
-					/* Closing delimiter found,break immediately */
-					pStream->zText = zCur; /* Keep the semi-colon */
-					break;
-				}
-			}else if( zPtr[0] == '\n' ){
-				/* Closing delimiter found,break immediately */
-				pStream->zText = zPtr; /* Synchronize with the stream cursor */
-				break;
-			}
-			/* Synchronize pointers and continue searching */
-			zIn = zPtr;
-		}
-	} /* For(;;) */
-	/* Get the delimited string length */
-	sStr.nByte = (sxu32)((const char *)zIn-sStr.zString);
-	/* Record token type and length */
-	pToken->nType = bNowDoc ? PH7_TK_NOWDOC : PH7_TK_HEREDOC;
-	SyStringDupPtr(&pToken->sData,&sStr);
-	/* Remove trailing white spaces */
-	SyStringRightTrim(&pToken->sData);
-	/* All done */
-	return SXRET_OK;
 }
 /*
  * Tokenize a raw PHP input.

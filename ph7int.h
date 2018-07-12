@@ -1590,8 +1590,6 @@ enum ph7_expr_id {
 #define PH7_TK_CSB       0x0001000 /* Closing square bracket ']' */
 #define PH7_TK_DSTR      0x0002000 /* Double quoted string "$str" */
 #define PH7_TK_SSTR      0x0004000 /* Single quoted string 'str' */
-#define PH7_TK_HEREDOC   0x0008000 /* Heredoc <<< */
-#define PH7_TK_NOWDOC    0x0010000 /* Nowdoc <<< */
 #define PH7_TK_COMMA     0x0020000 /* Comma ',' */
 #define PH7_TK_SEMI      0x0040000 /* Semi-colon ";" */
 #define PH7_TK_BSTR      0x0080000 /* Backtick quoted string [i.e: Shell command `date`] */

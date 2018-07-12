@@ -651,7 +651,7 @@ Synchronize:
  * When errors,PH7 take care of generating the appropriate error message.
  * An expression node can be a variable [i.e: $var],an operator [i.e: ++] 
  * an annonymous function [i.e: function(){ return "Hello"; }, a double/single
- * quoted string, a heredoc/nowdoc,a literal [i.e: PHP_EOL],a namespace path
+ * quoted string, a literal [i.e: PHP_EOL],a namespace path
  * [i.e: namespaces\path\to..],a array/list [i.e: array(4,5,6)] and so on.
  */
 static sxi32 ExprExtractNode(ph7_gen_state *pGen,ph7_expr_node **ppNode)

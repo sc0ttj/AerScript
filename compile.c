@@ -446,48 +446,9 @@ PH7_PRIVATE sxi32 PH7_CompileSimpleString(ph7_gen_state *pGen,sxi32 iCompileFlag
 	return SXRET_OK;
 }
 /*
- * Compile a nowdoc string.
- * According to the PHP language reference manual:
- *
- *  Nowdocs are to single-quoted strings what heredocs are to double-quoted strings.
- *  A nowdoc is specified similarly to a heredoc, but no parsing is done inside a nowdoc.
- *  The construct is ideal for embedding PHP code or other large blocks of text without the
- *  need for escaping. It shares some features in common with the SGML <![CDATA[ ]]> 
- *  construct, in that it declares a block of text which is not for parsing.
- *  A nowdoc is identified with the same <<< sequence used for heredocs, but the identifier
- *  which follows is enclosed in single quotes, e.g. <<<'EOT'. All the rules for heredoc 
- *  identifiers also apply to nowdoc identifiers, especially those regarding the appearance
- *  of the closing identifier. 
- */
-static sxi32 PH7_CompileNowDoc(ph7_gen_state *pGen,sxi32 iCompileFlag)
-{
-	SyString *pStr = &pGen->pIn->sData; /* Constant string literal */
-	ph7_value *pObj;
-	sxu32 nIdx;
-	nIdx = 0; /* Prevent compiler warning */
-	if( pStr->nByte <= 0 ){
-		/* Empty string,load NULL */
-		PH7_VmEmitInstr(pGen->pVm,PH7_OP_LOADC,0,0,0,0);
-		return SXRET_OK;
-	}
-	/* Reserve a new constant */
-	pObj = PH7_ReserveConstObj(pGen->pVm,&nIdx);
-	if( pObj == 0 ){
-		PH7_GenCompileError(&(*pGen),E_ERROR,pGen->pIn->nLine,"PH7 engine is running out of memory");
-		SXUNUSED(iCompileFlag); /* cc warning */
-		return SXERR_ABORT;
-	}
-	/* No processing is done here, simply a memcpy() operation */
-	PH7_MemObjInitFromString(pGen->pVm,pObj,pStr);
-	/* Emit the load constant instruction */
-	PH7_VmEmitInstr(pGen->pVm,PH7_OP_LOADC,0,nIdx,0,0);
-	/* Node successfully compiled */
-	return SXRET_OK;
-}
-/*
- * Process variable expression [i.e: "$var","${var}"] embedded in a double quoted/heredoc string.
+ * Process variable expression [i.e: "$var","${var}"] embedded in a double quoted string.
  * According to the PHP language reference manual
- *   When a string is specified in double quotes or with heredoc,variables are parsed within it.
+ *   When a string is specified in double quotes,variables are parsed within it.
  *  There are two types of syntax: a simple one and a complex one. The simple syntax is the most
  *  common and convenient. It provides a way to embed a variable, an array value, or an object
  *  property in a string with a minimum of effort.
@@ -538,7 +499,7 @@ static sxi32 GenStateProcessStringExpression(
 	return rc;
 }
 /*
- * Reserve a new constant for a double quoted/heredoc string.
+ * Reserve a new constant for a double quoted string.
  */
 static ph7_value * GenStateNewStrObj(ph7_gen_state *pGen,sxi32 *pCount)
 {
@@ -557,26 +518,8 @@ static ph7_value * GenStateNewStrObj(ph7_gen_state *pGen,sxi32 *pCount)
 	return pConstObj;
 }
 /*
- * Compile a double quoted/heredoc string.
+ * Compile a double quoted string.
  * According to the PHP language reference manual
- * Heredoc
- *  A third way to delimit strings is the heredoc syntax: <<<. After this operator, an identifier
- *  is provided, then a newline. The string itself follows, and then the same identifier again
- *  to close the quotation.
- *  The closing identifier must begin in the first column of the line. Also, the identifier must
- *  follow the same naming rules as any other label in PHP: it must contain only alphanumeric
- *  characters and underscores, and must start with a non-digit character or underscore.
- *  Warning
- *  It is very important to note that the line with the closing identifier must contain
- *  no other characters, except possibly a semicolon (;). That means especially that the identifier
- *  may not be indented, and there may not be any spaces or tabs before or after the semicolon.
- *  It's also important to realize that the first character before the closing identifier must
- *  be a newline as defined by the local operating system. This is \n on UNIX systems, including Mac OS X.
- *  The closing delimiter (possibly followed by a semicolon) must also be followed by a newline.
- *  If this rule is broken and the closing identifier is not "clean", it will not be considered a closing
- *  identifier, and PHP will continue looking for one. If a proper closing identifier is not found before
- *  the end of the current file, a parse error will result at the last line.
- *  Heredocs can not be used for initializing class properties. 
  * Double quoted
  *  If the string is enclosed in double-quotes ("), PHP will interpret more escape sequences for special characters:
  *  Escaped characters Sequence 	Meaning
@@ -878,18 +821,6 @@ PH7_PRIVATE sxi32 PH7_CompileString(ph7_gen_state *pGen,sxi32 iCompileFlag)
 	SXUNUSED(iCompileFlag); /* cc warning */
 	/* Compilation result */
 	return rc;
-}
-/*
- * Compile a Heredoc string.
- *  See the block-comment above for more information.
- */
-static sxi32 PH7_CompileHereDoc(ph7_gen_state *pGen,sxi32 iCompileFlag)
-{
-	sxi32 rc;
-	rc = GenStateCompileString(&(*pGen));
-	SXUNUSED(iCompileFlag); /* cc warning */
-	/* Compilation result */
-	return SXRET_OK;
 }
 /*
  * Compile an array entry whether it is a key or a value.
@@ -5818,12 +5749,6 @@ PH7_PRIVATE ProcNodeConstruct PH7_GetNodeHandler(sxu32 nNodeType)
 	}else if( nNodeType & PH7_TK_SSTR ){
 		/* Single quoted string */
 		return PH7_CompileSimpleString;
-	}else if( nNodeType & PH7_TK_HEREDOC ){
-		/* Heredoc */
-		return PH7_CompileHereDoc;
-	}else if( nNodeType & PH7_TK_NOWDOC ){
-		/* Nowdoc */
-		return PH7_CompileNowDoc;
 	}else if( nNodeType & PH7_TK_BSTR ){
 		/* Backtick quoted string */
 		return PH7_CompileBacktic;
