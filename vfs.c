@@ -4378,7 +4378,7 @@ static int PH7_builtin_fputcsv(ph7_context *pCtx,int nArg,ph7_value **apArg)
 	const ph7_io_stream *pStream;
 	struct csv_data sCsv;
 	io_private *pDev;
-	char *zEol;
+	const char *zEol;
 	int eolen;
 	if( nArg < 2 || !ph7_value_is_resource(apArg[0]) || !ph7_value_is_array(apArg[1]) ){
 		/* Missing/Invalid arguments,return FALSE */

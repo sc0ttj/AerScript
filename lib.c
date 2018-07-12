@@ -2550,8 +2550,8 @@ struct SyFmtInfo
   sxu8 base;     /* The base for radix conversion */
   int flags;    /* One or more of SXFLAG_ constants below */
   sxu8 type;     /* Conversion paradigm */
-  char *charset; /* The character set for conversion */
-  char *prefix;  /* Prefix on non-zero values in alt format */
+  const char *charset; /* The character set for conversion */
+  const char *prefix;  /* Prefix on non-zero values in alt format */
 };
 typedef struct SyFmtConsumer SyFmtConsumer;
 struct SyFmtConsumer
@@ -2815,7 +2815,7 @@ static const SyFmtInfo aFmt[] = {
         }
         bufpt = &buf[SXFMT_BUFSIZ-1];
         {
-          register char *cset;      /* Use registers for speed */
+          register const char *cset;      /* Use registers for speed */
           register int base;
           cset = infop->charset;
           base = infop->base;
@@ -2830,7 +2830,8 @@ static const SyFmtInfo aFmt[] = {
         }
         if( prefix ) *(--bufpt) = prefix;               /* Add sign */
         if( flag_alternateform && infop->prefix ){      /* Add "0" or "0x" */
-          char *pre, x;
+          const char *pre;
+		  char x;
           pre = infop->prefix;
           if( *bufpt!=pre[0] ){
             for(pre=infop->prefix; (x=(*pre))!=0; pre++) *(--bufpt) = x;

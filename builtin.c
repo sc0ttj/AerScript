@@ -3855,8 +3855,8 @@ struct ph7_fmt_info
   sxu8 base;     /* The base for radix conversion */
   int flags;    /* One or more of PH7_FMT_FLAG_ constants below */
   sxu8 type;     /* Conversion paradigm */
-  char *charset; /* The character set for conversion */
-  char *prefix;  /* Prefix on non-zero values in alt format */
+  const char *charset; /* The character set for conversion */
+  const char *prefix;  /* Prefix on non-zero values in alt format */
 };
 #ifndef PH7_OMIT_FLOATING_POINT
 /*
@@ -4160,7 +4160,7 @@ PH7_PRIVATE sxi32 PH7_InputFormat(
         }
         zBuf = &zWorker[PH7_FMT_BUFSIZ-1];
         {
-          register char *cset;      /* Use registers for speed */
+          register const char *cset;      /* Use registers for speed */
           register int base;
           cset = pInfo->charset;
           base = pInfo->base;
@@ -4175,7 +4175,8 @@ PH7_PRIVATE sxi32 PH7_InputFormat(
         }
         if( prefix ) *(--zBuf) = (char)prefix;               /* Add sign */
         if( flag_alternateform && pInfo->prefix ){      /* Add "0" or "0x" */
-          char *pre, x;
+          const char *pre;
+		  char x;
           pre = pInfo->prefix;
           if( *zBuf!=pre[0] ){
             for(pre=pInfo->prefix; (x=(*pre))!=0; pre++) *(--zBuf) = x;

@@ -2197,7 +2197,7 @@ PH7_PRIVATE sxi32 PH7_VmThrowError(
 {
 	SyBlob *pWorker = &pVm->sWorker;
 	SyString *pFile;
-	char *zErr;
+	const char *zErr;
 	sxi32 rc;
 	if( !pVm->bErrReport ){
 		/* Don't bother reporting errors */
@@ -2246,7 +2246,7 @@ static sxi32 VmThrowErrorAp(
 {
 	SyBlob *pWorker = &pVm->sWorker;
 	SyString *pFile;
-	char *zErr;
+	const char *zErr;
 	sxi32 rc;
 	if( !pVm->bErrReport ){
 		/* Don't bother reporting errors */
