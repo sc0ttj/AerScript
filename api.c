@@ -590,8 +590,6 @@ int ph7_release(ph7 *pEngine) {
 	SyMutexLeave(sMPGlobal.pMutexMethods, pEngine->pMutex); /* NO-OP if sMPGlobal.nThreadingLevel != PH7_THREAD_LEVEL_MULTI */
 	/* Release engine mutex */
 	SyMutexRelease(sMPGlobal.pMutexMethods, pEngine->pMutex) /* NO-OP if sMPGlobal.nThreadingLevel != PH7_THREAD_LEVEL_MULTI */
-#endif
-#if defined(PH7_ENABLE_THREADS)
 	/* Enter the global mutex */
 	SyMutexEnter(sMPGlobal.pMutexMethods, sMPGlobal.pMutex); /* NO-OP if sMPGlobal.nThreadingLevel == PH7_THREAD_LEVEL_SINGLE */
 #endif
