@@ -29,4 +29,3 @@ main: $(OBJ)
 
 .c.o:
 	$(CC) -c $(INCLUDES) $(CFLAGS) $<
-
