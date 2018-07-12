@@ -971,6 +971,8 @@ int ph7_vm_release(ph7_vm *pVm)
 #if defined(PH7_ENABLE_THREADS)
 	 /* Leave VM mutex */
 	 SyMutexLeave(sMPGlobal.pMutexMethods,pVm->pMutex); /* NO-OP if sMPGlobal.nThreadingLevel != PH7_THREAD_LEVEL_MULTI */
+	 /* free VM mutex */
+	 SyMutexRelease(sMPGlobal.pMutexMethods,pVm->pMutex);
 #endif
 	if( rc == PH7_OK ){
 		/* Unlink from the list of active VM */
