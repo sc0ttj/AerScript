@@ -219,9 +219,9 @@ static const ph7_expr_op aOpTable[] = {
 	/* Precedence 15,left-associative */
 	{ {"&&",sizeof(char)*2}, EXPR_OP_LAND,15, EXPR_OP_ASSOC_LEFT, PH7_OP_LAND},
 	/* Precedence 16,left-associative */
-	{ {"||",sizeof(char)*2}, EXPR_OP_LOR, 16, EXPR_OP_ASSOC_LEFT, PH7_OP_LOR},
+	{ {"^^",sizeof(char)*2}, EXPR_OP_LXOR, 16, EXPR_OP_ASSOC_LEFT, PH7_OP_LXOR},
 	/* Precedence 17,left-associative */
-	{ {"^^",sizeof(char)*2}, EXPR_OP_LXOR, 17, EXPR_OP_ASSOC_LEFT, PH7_OP_LXOR},
+	{ {"||",sizeof(char)*2}, EXPR_OP_LOR, 17, EXPR_OP_ASSOC_LEFT, PH7_OP_LOR},
 	                      /* Ternary operator */
 	/* Precedence 18,left-associative */
     { {"?",sizeof(char)}, EXPR_OP_QUESTY, 18, EXPR_OP_ASSOC_LEFT, 0},
