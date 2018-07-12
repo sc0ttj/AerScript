@@ -76,8 +76,8 @@ typedef double             sxreal;
 #define SXU16_HIGH      0xFFFF
 #define SXI32_HIGH      0x7FFFFFFF
 #define SXU32_HIGH      0xFFFFFFFF
-#define SXI64_HIGH      0x7FFFFFFFFFFFFFFF
-#define SXU64_HIGH      0xFFFFFFFFFFFFFFFF 
+#define SXI64_HIGH      0x7FFFFFFFFFFFFFFFLL
+#define SXU64_HIGH      0xFFFFFFFFFFFFFFFFUL
 #if !defined(TRUE)
 #define TRUE 1
 #endif
