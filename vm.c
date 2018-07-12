@@ -1232,7 +1232,7 @@ PH7_PRIVATE sxi32 PH7_VmInit(
 	SyHashInit(&pVm->hClass, &pVm->sAllocator, SyStrHash, SyStrnmicmp);
 	SyHashInit(&pVm->hConstant, &pVm->sAllocator, 0, 0);
 	SyHashInit(&pVm->hSuper, &pVm->sAllocator, 0, 0);
-	SyHashInit(&pVm->hPDO, &pVm->sAllocator, 0, 0);
+	SyHashInit(&pVm->hDBAL, &pVm->sAllocator, 0, 0);
 	SySetInit(&pVm->aFreeObj, &pVm->sAllocator, sizeof(VmSlot));
 	SySetInit(&pVm->aSelf, &pVm->sAllocator, sizeof(ph7_class *));
 	SySetInit(&pVm->aShutdown, &pVm->sAllocator, sizeof(VmShutdownCB));

@@ -1269,7 +1269,7 @@ struct ph7_vm {
 	SyHash hHostFunction;       /* Host-application installable functions */
 	SyHash hFunction;           /* Compiled functions */
 	SyHash hSuper;              /* Superglobals hashtable */
-	SyHash hPDO;                /* PDO installed drivers */
+	SyHash hDBAL;               /* DBAL installed drivers */
 	SyBlob sConsumer;           /* Default VM consumer [i.e Redirect all VM output to this blob] */
 	SyBlob sWorker;             /* General purpose working buffer */
 	SyBlob sArgv;               /* $argv[] collector [refer to the [getopt()] implementation for more information] */
