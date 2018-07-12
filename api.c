@@ -62,7 +62,6 @@ static struct Global_Data
 	0
 };
 #define PH7_LIB_MAGIC  0xEA1495BA
-#define PH7_LIB_MISUSE (sMPGlobal.nMagic != PH7_LIB_MAGIC)
 /*
  * Supported threading level.
  * These options have meaning only when the library is compiled with multi-threading
