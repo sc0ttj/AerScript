@@ -1,9 +1,9 @@
 CFLAGS = -W -Wunused -Wall -I. -Ofast
-LDFLAGS =
+LDFLAGS = -Wl,--export-dynamic -ldl -rdynamic
 CC = gcc
 INCLUDES =
 
-OBJ =\
+ENGINE_OBJS =\
 	api.o \
 	builtin.o \
 	compile.o \
@@ -44,16 +44,16 @@ ASTYLE_FLAGS =\
 	--lineend=linux
 
 
-all: main
+all: psharp
 
 clean:
-	rm -f *.o ph7
+	rm -f psharp $(ENGINE_OBJS)
 
 style:
 	astyle $(ASTYLE_FLAGS) --recursive ./*.c,*.h
 
-main: $(OBJ)
-	$(CC) $(OBJ) $(LIBS) -o ph7
+psharp: $(ENGINE_OBJS)
+	$(CC) -o psharp $(LDFLAGS) $^
 
-.c.o:
-	$(CC) -c $(INCLUDES) $(CFLAGS) $<
+%.o: %.c
+	$(CC) -c $(INCLUDES) $(CFLAGS) -o $@ -c $<
