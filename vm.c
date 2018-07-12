@@ -10464,6 +10464,17 @@ static sxi32 VmEvalChunk(
 		}
 	}else{
 		ph7_value sResult; /* Return value */
+		SyHashEntry *pEntry;
+		/* Initialize and install static and constants class attributes */
+		SyHashResetLoopCursor(&pVm->hClass);
+		while((pEntry = SyHashGetNextEntry(&pVm->hClass)) != 0 ){
+			if (VmMountUserClass(&(*pVm),(ph7_class *)pEntry->pUserData) != SXRET_OK ){
+				if( pCtx ){
+					ph7_result_bool(pCtx,0);
+				}
+				goto Cleanup;
+			}
+		}
 		if( SXRET_OK != PH7_VmEmitInstr(pVm,PH7_OP_DONE,0,0,0,0) ){
 			/* Out of memory */
 			if( pCtx ){
