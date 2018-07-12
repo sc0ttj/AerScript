@@ -2974,7 +2974,7 @@ static int PH7_builtin_lcfirst(ph7_context *pCtx,int nArg,ph7_value **apArg)
  */
 static int PH7_builtin_ord(ph7_context *pCtx,int nArg,ph7_value **apArg)
 {
-	const char *zString;
+	const unsigned char *zString;
 	int nLen,c;
 	if( nArg < 1 ){
 		/* Missing arguments,return -1 */
