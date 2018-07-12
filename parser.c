@@ -239,10 +239,6 @@ static const ph7_expr_op aOpTable[] = {
 	{ {"^=", sizeof(char) * 2},  EXPR_OP_XOR_ASSIGN, 19,  EXPR_OP_ASSOC_RIGHT, PH7_OP_BXOR_STORE },
 	{ {"<<=", sizeof(char) * 3}, EXPR_OP_SHL_ASSIGN, 19,  EXPR_OP_ASSOC_RIGHT, PH7_OP_SHL_STORE },
 	{ {">>=", sizeof(char) * 3}, EXPR_OP_SHR_ASSIGN, 19,  EXPR_OP_ASSOC_RIGHT, PH7_OP_SHR_STORE },
-	/* Precedence 20,left-associative */
-	{ {"and", sizeof("and") - 1},   EXPR_OP_LAND, 20, EXPR_OP_ASSOC_LEFT, PH7_OP_LAND},
-	/* Precedence 22,left-associative */
-	{ {"or", sizeof("or") - 1},     EXPR_OP_LOR,  22, EXPR_OP_ASSOC_LEFT, PH7_OP_LOR},
 	/* Precedence 23,left-associative [Lowest operator] */
 	{ {",", sizeof(char)},        EXPR_OP_COMMA, 23, EXPR_OP_ASSOC_LEFT, 0},
 };
@@ -266,7 +262,7 @@ PH7_PRIVATE const ph7_expr_op   *PH7_ExprExtractOperator(SyString *pStr, SyToken
 			break;
 		}
 		if(SyisAlpha(aOpTable[n].sOp.zString[0])) {
-			/* TICKET 1433-012: Alpha stream operators [i.e: and,or,xor,new...] */
+			/* TICKET 1433-012: Alpha stream operators [i.e: new, clone, instanceof] */
 			rc = SyStringCmp(pStr, &aOpTable[n].sOp, SyStrnicmp);
 		} else {
 			rc = SyStringCmp(pStr, &aOpTable[n].sOp, SyMemcmp);

@@ -1402,8 +1402,8 @@ enum ph7_vm_op {
 	PH7_OP_BAND,         /* Bitwise and '&' */
 	PH7_OP_BXOR,         /* Bitwise xor '^' */
 	PH7_OP_BOR,          /* Bitwise or '|' */
-	PH7_OP_LAND,         /* Logical and '&&','and' */
-	PH7_OP_LOR,          /* Logical or  '||','or' */
+	PH7_OP_LAND,         /* Logical and '&&' */
+	PH7_OP_LOR,          /* Logical or  '||' */
 	PH7_OP_LXOR,         /* Logical xor '^^' */
 	PH7_OP_STORE,        /* Store Object */
 	PH7_OP_STORE_IDX,    /* Store indexed object */
@@ -1485,8 +1485,8 @@ enum ph7_expr_id {
 	EXPR_OP_REF,       /* Reference operator '&' */
 	EXPR_OP_XOR,       /* bitwise xor '^' */
 	EXPR_OP_BOR,       /* bitwise or '|' */
-	EXPR_OP_LAND,      /* Logical and '&&','and' */
-	EXPR_OP_LOR,       /* Logical or  '||','or'*/
+	EXPR_OP_LAND,      /* Logical and '&&' */
+	EXPR_OP_LOR,       /* Logical or  '||' */
 	EXPR_OP_LXOR,      /* Logical xor '^^' */
 	EXPR_OP_QUESTY,    /* Ternary operator '?' */
 	EXPR_OP_ASSIGN,    /* Assignment '=' */
@@ -1578,7 +1578,6 @@ enum ph7_expr_id {
 #define PH7_TKWRD_ARRAY        0x200 /* array: MUST BE A POWER OF TWO */
 #define PH7_TKWRD_ABSTRACT     29 /* abstract */
 #define PH7_TKWRD_TRY          30 /* try */
-#define PH7_TKWRD_AND          0x400 /* and: MUST BE A POWER OF TWO  */
 #define PH7_TKWRD_DEFAULT      31 /* default */
 #define PH7_TKWRD_CLASS        32 /* class */
 #define PH7_TKWRD_AS           33 /* as */
@@ -1599,7 +1598,6 @@ enum ph7_expr_id {
 #define PH7_TKWRD_END4EACH     0x2000000 /* endforeach: MUST BE A POWER OF TWO */
 #define PH7_TKWRD_FOR          48 /* for */
 #define PH7_TKWRD_FOREACH      49 /* foreach */
-#define PH7_TKWRD_OR           0x1000 /* or: MUST BE A POWER OF TWO  */
 #define PH7_TKWRD_PROTECTED    50 /* protected */
 #define PH7_TKWRD_DO           51 /* do */
 #define PH7_TKWRD_PUBLIC       52 /* public */

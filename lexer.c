@@ -83,8 +83,8 @@ static sxi32 TokenizePHP(SyStream *pStream, SyToken *pToken, void *pUserData, vo
 		nKeyword = KeywordCode(pStr->zString, (int)pStr->nByte);
 		if(nKeyword != PH7_TK_ID) {
 			if(nKeyword &
-					(PH7_TKWRD_NEW | PH7_TKWRD_CLONE | PH7_TKWRD_AND | PH7_TKWRD_OR | PH7_TKWRD_INSTANCEOF)) {
-				/* Alpha stream operators [i.e: new,clone,and,instanceof,eq,ne,or,xor],save the operator instance for later processing */
+					(PH7_TKWRD_NEW | PH7_TKWRD_CLONE | PH7_TKWRD_INSTANCEOF)) {
+				/* Alpha stream operators [i.e: new,clone,instanceof],save the operator instance for later processing */
 				pToken->pUserData = (void *)PH7_ExprExtractOperator(pStr, 0);
 				/* Mark as an operator */
 				pToken->nType = PH7_TK_ID | PH7_TK_OP;
@@ -595,7 +595,6 @@ static sxu32 KeywordCode(const char *z, int n) {
 		{"throw", PH7_TKWRD_THROW},
 		{"bool", PH7_TKWRD_BOOL},
 		{"boolean", PH7_TKWRD_BOOL},
-		{"and", PH7_TKWRD_AND},
 		{"default", PH7_TKWRD_DEFAULT},
 		{"try", PH7_TKWRD_TRY},
 		{"case", PH7_TKWRD_CASE},
@@ -640,7 +639,6 @@ static sxu32 KeywordCode(const char *z, int n) {
 		{"endforeach", PH7_TKWRD_END4EACH},
 		{"for", PH7_TKWRD_FOR},
 		{"foreach", PH7_TKWRD_FOREACH},
-		{"or", PH7_TKWRD_OR},
 		{"isset", PH7_TKWRD_ISSET},
 		{"parent", PH7_TKWRD_PARENT},
 		{"private", PH7_TKWRD_PRIVATE},
