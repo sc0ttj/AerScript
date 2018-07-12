@@ -84,7 +84,7 @@ static sxi32 TokenizePHP(SyStream *pStream,SyToken *pToken,void *pUserData,void 
 		nKeyword = KeywordCode(pStr->zString,(int)pStr->nByte);
 		if( nKeyword != PH7_TK_ID ){
 			if( nKeyword & 
-				(PH7_TKWRD_NEW|PH7_TKWRD_CLONE|PH7_TKWRD_AND|PH7_TKWRD_XOR|PH7_TKWRD_OR|PH7_TKWRD_INSTANCEOF|PH7_TKWRD_SEQ|PH7_TKWRD_SNE) ){
+				(PH7_TKWRD_NEW|PH7_TKWRD_CLONE|PH7_TKWRD_AND|PH7_TKWRD_XOR|PH7_TKWRD_OR|PH7_TKWRD_INSTANCEOF) ){
 					/* Alpha stream operators [i.e: new,clone,and,instanceof,eq,ne,or,xor],save the operator instance for later processing */
 					pToken->pUserData = (void *)PH7_ExprExtractOperator(pStr,0);
 					/* Mark as an operator */
@@ -564,8 +564,6 @@ static sxu32 KeywordCode(const char *z, int n){
         {"int", PH7_TKWRD_INT},
         {"require_once", PH7_TKWRD_REQONCE},
         {"require", PH7_TKWRD_REQUIRE},
-        {"eq", PH7_TKWRD_SEQ},
-        {"ne", PH7_TKWRD_SNE},
         {"enddeclare", PH7_TKWRD_ENDDEC},
         {"declare", PH7_TKWRD_DECLARE},
         {"return", PH7_TKWRD_RETURN},
