@@ -13599,8 +13599,6 @@ static const ph7_builtin_func aVmFunc[] = {
 	{"json_encode",    vm_builtin_json_encode },
 	{"json_last_error", vm_builtin_json_last_error},
 	{"json_decode",    vm_builtin_json_decode },
-	{"serialize",      vm_builtin_json_encode },
-	{"unserialize",    vm_builtin_json_decode },
 	/* Files/URI inclusion facility */
 	{ "get_include_path",  vm_builtin_get_include_path },
 	{ "get_included_files", vm_builtin_get_included_files},
