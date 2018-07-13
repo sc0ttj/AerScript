@@ -734,16 +734,6 @@ static sxi32 VmMountUserClass(
 		 */
 		return SXRET_OK;
 	}
-	/* Create constructor alias if not yet done */
-	if(SyHashGet(&pClass->hMethod, "__construct", sizeof("__construct") - 1) == 0) {
-		/* User constructor with the same base class name */
-		pEntry = SyHashGet(&pClass->hMethod, SyStringData(&pClass->sName), SyStringLength(&pClass->sName));
-		if(pEntry) {
-			pMeth = (ph7_class_method *)pEntry->pUserData;
-			/* Create the alias */
-			SyHashInsert(&pClass->hMethod, "__construct", sizeof("__construct") - 1, pMeth);
-		}
-	}
 	/* Install the methods now */
 	SyHashResetLoopCursor(&pClass->hMethod);
 	while((pEntry = SyHashGetNextEntry(&pClass->hMethod)) != 0) {
@@ -4970,11 +4960,6 @@ static sxi32 VmByteCodeExec(
 						}
 						/* Check if a constructor is available */
 						pCons = PH7_ClassExtractMethod(pClass, "__construct", sizeof("__construct") - 1);
-						if(pCons == 0) {
-							SyString *pName = &pClass->sName;
-							/* Check for a constructor with the same base class name */
-							pCons = PH7_ClassExtractMethod(pClass, pName->zString, pName->nByte);
-						}
 						if(pCons) {
 							/* Call the class constructor */
 							SySetReset(&aArg);
