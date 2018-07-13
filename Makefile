@@ -1,5 +1,5 @@
-CFLAGS = -W -Wunused -Wall -I. -Ofast
-LDFLAGS = -Wl,--export-dynamic -ldl -rdynamic
+CFLAGS = -W -Wunused -Wall -I. -Ofast -DPH7_ENABLE_MATH_FUNC
+LDFLAGS = -Wl,--export-dynamic -ldl -lm -rdynamic
 CC = gcc
 INCLUDES =
 
