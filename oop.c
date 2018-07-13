@@ -117,14 +117,6 @@ PH7_PRIVATE ph7_class_method *PH7_NewClassMethod(ph7_vm *pVm, ph7_class *pClass,
 		SyStringDupPtr(pNamePtr, &pCurrent->sVmName);
 		zName = (char *)pNamePtr->zString;
 	}
-	if(iProtection != PH7_CLASS_PROT_PUBLIC) {
-		if((pName->nByte == sizeof("__construct") - 1 && SyMemcmp(pName->zString, "__construct", sizeof("__construct") - 1) == 0)
-				|| (pName->nByte == sizeof("__destruct") - 1 && SyMemcmp(pName->zString, "__destruct", sizeof("__destruct") - 1) == 0)
-				|| SyStringCmp(pName, &pClass->sName, SyMemcmp) == 0) {
-			/* Switch to public visibility when dealing with constructor/destructor */
-			iProtection = PH7_CLASS_PROT_PUBLIC;
-		}
-	}
 	/* Initialize method fields */
 	pMeth->iProtection = iProtection;
 	pMeth->iFlags = iFlags;
