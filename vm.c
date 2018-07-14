@@ -97,6 +97,15 @@ struct VmObEntry {
 	SyBlob sOB;          /* Output buffer consumer */
 };
 /*
+ * Each installed class autoload callback (registered using [register_autoload_handler()] )
+ * is stored in an instance of the following structure.
+ */
+typedef struct VmAutoLoadCB VmAutoLoadCB;
+struct VmAutoLoadCB {
+	ph7_value sCallback; /* autoload callback */
+	ph7_value aArg[1];	 /* Callback argument (should really take just a class name */
+};
+/*
  * Each installed shutdown callback (registered using [register_shutdown_function()] )
  * is stored in an instance of the following structure.
  * Refer to the implementation of [register_shutdown_function(()] for more information.
@@ -1225,6 +1234,7 @@ PH7_PRIVATE sxi32 PH7_VmInit(
 	SyHashInit(&pVm->hDBAL, &pVm->sAllocator, 0, 0);
 	SySetInit(&pVm->aFreeObj, &pVm->sAllocator, sizeof(VmSlot));
 	SySetInit(&pVm->aSelf, &pVm->sAllocator, sizeof(ph7_class *));
+	SySetInit(&pVm->aAutoLoad, &pVm->sAllocator, sizeof(VmAutoLoadCB));
 	SySetInit(&pVm->aShutdown, &pVm->sAllocator, sizeof(VmShutdownCB));
 	SySetInit(&pVm->aException, &pVm->sAllocator, sizeof(ph7_exception *));
 	/* Configuration containers */
@@ -6404,6 +6414,39 @@ static int vm_builtin_get_defined_func(ph7_context *pCtx, int nArg, ph7_value **
 	/* Return the multi-dimensional array */
 	ph7_result_value(pCtx, pArray);
 	return SXRET_OK;
+}
+/*
+ * bool register_autoload_handler(callable $callback)
+ *  Register given function as __autoload() implementation.
+ * Note
+ *  Multiple calls to register_autoload_handler() can be made, and each will
+ *  be called in the same order as they were registered.
+ * Parameters
+ *  @callback
+ *   The autoload callback to register.
+ * Return
+ *  Returns TRUE on success or FALSE on failure.
+ */
+static int vm_builtin_register_autoload_handler(ph7_context *pCtx, int nArg, ph7_value **appArg) {
+	VmAutoLoadCB sEntry;
+	int i, j;
+	if(nArg < 1 || (appArg[0]->iFlags & (MEMOBJ_STRING | MEMOBJ_HASHMAP)) == 0) {
+		/* Return FALSE */
+		ph7_result_bool(pCtx, 0);
+		return PH7_OK;
+	}
+	/* Zero the Entry */
+	SyZero(&sEntry, sizeof(VmAutoLoadCB));
+	/* Initialize fields */
+	PH7_MemObjInit(pCtx->pVm, &sEntry.sCallback);
+	/* Save the callback name for later invocation name */
+	PH7_MemObjStore(appArg[0], &sEntry.sCallback);
+	PH7_MemObjInit(pCtx->pVm, &sEntry.aArg[0]);
+	PH7_MemObjStore(appArg[0], &sEntry.aArg[0]);
+	/* Install the callback */
+	SySetPut(&pCtx->pVm->aAutoLoad, (const void *)&sEntry);	
+	ph7_result_bool(pCtx, 1);
+	return PH7_OK;
 }
 /*
  * void register_shutdown_function(callable $callback[,mixed $param,...)
@@ -13453,6 +13496,7 @@ static const ph7_builtin_func aVmFunc[] = {
 	{ "function_exists", vm_builtin_func_exists   },
 	{ "is_callable", vm_builtin_is_callable   },
 	{ "get_defined_functions", vm_builtin_get_defined_func },
+	{ "register_autoload_handler", vm_builtin_register_autoload_handler },
 	{ "register_shutdown_function", vm_builtin_register_shutdown_function },
 	{ "call_user_func",        vm_builtin_call_user_func   },
 	{ "call_user_func_array",  vm_builtin_call_user_func_array    },
@@ -13628,9 +13672,36 @@ PH7_PRIVATE ph7_class *PH7_VmExtractClass(
 	/* Perform a hash lookup */
 	pEntry = SyHashGet(&pVm->hClass, (const void *)zName, nByte);
 	if(pEntry == 0) {
-		/* No such entry,return NULL */
-		iNest = 0; /* cc warning */
-		return 0;
+		ph7_value *apArg[1];
+		ph7_value sResult, sName;
+		VmAutoLoadCB *sEntry;
+		sxu32 n, nEntry;
+		/* Point to the stack of registered callbacks */
+		nEntry = SySetUsed(&pVm->aAutoLoad);
+		for(n = 0; n < nEntry; n++) {
+			sEntry = (VmAutoLoadCB *) SySetAt(&pVm->aAutoLoad, n);
+			if(sEntry) {
+				PH7_MemObjInitFromString(pVm,&sName,0);
+				PH7_MemObjStringAppend(&sName,zName,nByte);
+				apArg[0] = &sName;
+				/* Call autoloader */
+				PH7_MemObjInit(pVm,&sResult);
+				PH7_VmCallUserFunction(pVm,&sEntry->sCallback,1,apArg,&sResult);
+				PH7_MemObjRelease(&sResult);
+				PH7_MemObjRelease(&sName);
+				/* Perform a hash loopkup once again */
+				pEntry = SyHashGet(&pVm->hClass,(const void *)zName,nByte);
+				if(pEntry) {
+					/* Do not call more callbacks if class is already available */
+					break;
+				}
+			}
+		}
+		if(pEntry == 0) {
+			/* No such entry,return NULL */
+			iNest = 0; /* cc warning */
+			return 0;
+		}
 	}
 	pClass = (ph7_class *)pEntry->pUserData;
 	if(!iLoadable) {

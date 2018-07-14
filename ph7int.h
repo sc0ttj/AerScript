@@ -1277,6 +1277,7 @@ struct ph7_vm {
 	SySet aPaths;               /* Set of import paths */
 	SySet aIncluded;            /* Set of included files */
 	SySet aOB;                  /* Stackable output buffers */
+	SySet aAutoLoad;			/* Stack of class autoload callbacks */
 	SySet aShutdown;            /* Stack of shutdown user callbacks */
 	SySet aException;           /* Stack of loaded exception */
 	SySet aIOstream;            /* Installed IO stream container */
