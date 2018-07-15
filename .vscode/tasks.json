@@ -4,7 +4,7 @@
    	"version": "2.0.0",
 	"tasks": [
 		{
-			"label": "Unix Build",
+			"label": "Build P# Interpreter",
 			"type": "shell",
 			"command": "make",
 			"group": {
@@ -16,11 +16,26 @@
 			}
 		},
 		{
-			"label": "Unix Clean",
+			"label": "Clean P# Interpreter",
 			"type": "shell",
 			"command": "make",
 			"args": [
 				"clean"
+			],
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			},
+			"presentation": {
+				"reveal": "silent"
+			}
+		},
+		{
+			"label": "Style  P# Code",
+			"type": "shell",
+			"command": "make",
+			"args": [
+				"style"
 			],
 			"group": {
 				"kind": "build",
