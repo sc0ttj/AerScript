@@ -586,8 +586,6 @@ static sxu32 KeywordCode(const char *z, int n) {
 		{"int", PH7_TKWRD_INT},
 		{"require_once", PH7_TKWRD_REQONCE},
 		{"require", PH7_TKWRD_REQUIRE},
-		{"enddeclare", PH7_TKWRD_ENDDEC},
-		{"declare", PH7_TKWRD_DECLARE},
 		{"return", PH7_TKWRD_RETURN},
 		{"namespace", PH7_TKWRD_NAMESPACE},
 		{"echo", PH7_TKWRD_ECHO},

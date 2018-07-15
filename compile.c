@@ -3064,77 +3064,6 @@ static sxi32 PH7_CompileUse(ph7_gen_state *pGen) {
 	return SXRET_OK;
 }
 /*
- * Compile the stupid 'declare' language construct.
- *
- * According to the PHP language reference manual.
- *  The declare construct is used to set execution directives for a block of code.
- *  The syntax of declare is similar to the syntax of other flow control constructs:
- *  declare (directive)
- *   statement
- * The directive section allows the behavior of the declare block to be set.
- *  Currently only two directives are recognized: the ticks directive and the encoding directive.
- * The statement part of the declare block will be executed - how it is executed and what side
- * effects occur during execution may depend on the directive set in the directive block.
- * The declare construct can also be used in the global scope, affecting all code following
- * it (however if the file with declare was included then it does not affect the parent file).
- * <?php
- * // these are the same:
- * // you can use this:
- * declare(ticks=1) {
- *   // entire script here
- * }
- * // or you can use this:
- * declare(ticks=1);
- * // entire script here
- * ?>
- *
- * Well,actually this language construct is a NO-OP in the current release of the PH7 engine.
- */
-static sxi32 PH7_CompileDeclare(ph7_gen_state *pGen) {
-	sxu32 nLine = pGen->pIn->nLine;
-	SyToken *pEnd = 0; /* cc warning */
-	sxi32 rc;
-	pGen->pIn++; /* Jump the 'declare' keyword */
-	if(pGen->pIn >= pGen->pEnd || (pGen->pIn->nType & PH7_TK_LPAREN) == 0 /*'('*/) {
-		rc = PH7_GenCompileError(pGen, E_ERROR, nLine, "declare: Expecting opening parenthesis '('");
-		if(rc == SXERR_ABORT) {
-			return SXERR_ABORT;
-		}
-		goto Synchro;
-	}
-	pGen->pIn++; /* Jump the left parenthesis */
-	/* Delimit the directive */
-	PH7_DelimitNestedTokens(pGen->pIn, pGen->pEnd, PH7_TK_LPAREN/*'('*/, PH7_TK_RPAREN/*')'*/, &pEnd);
-	if(pEnd >= pGen->pEnd) {
-		rc = PH7_GenCompileError(pGen, E_ERROR, nLine, "declare: Missing closing parenthesis ')'");
-		if(rc == SXERR_ABORT) {
-			return SXERR_ABORT;
-		}
-		return SXRET_OK;
-	}
-	/* Update the cursor */
-	pGen->pIn = &pEnd[1];
-	if(pGen->pIn >= pGen->pEnd || (pGen->pIn->nType & (PH7_TK_SEMI/*';'*/ | PH7_TK_OCB/*'{'*/)) == 0) {
-		rc = PH7_GenCompileError(pGen, E_ERROR, nLine, "declare: Expecting ';' or '{' after directive");
-		if(rc == SXERR_ABORT) {
-			return SXERR_ABORT;
-		}
-	}
-	/* TICKET 1433-81: This construct is disabled in the current release of the PH7 engine. */
-	PH7_GenCompileError(&(*pGen), E_NOTICE, nLine, /* Emit a notice */
-						"the declare construct is a no-op in the current release of the PH7(%s) engine",
-						ph7_lib_version()
-					   );
-	/*All done */
-	return SXRET_OK;
-Synchro:
-	/* Sycnhronize with the first semi-colon ';' or curly braces '{' */
-	while(pGen->pIn < pGen->pEnd && (pGen->pIn->nType & (PH7_TK_SEMI/*';'*/ | PH7_TK_OCB/*'{'*/)) == 0) {
-		pGen->pIn++;
-	}
-	return SXRET_OK;
-}
-/*
  * Process default argument values. That is,a function may define C++-style default value
  * as follows:
  * function makecoffee($type = "cappuccino")
@@ -5699,7 +5628,6 @@ static const LangConstruct aLangConstruct[] = {
 	{ PH7_TKWRD_VAR,      PH7_CompileVar      }, /* var statement */
 	{ PH7_TKWRD_NAMESPACE, PH7_CompileNamespace }, /* namespace statement */
 	{ PH7_TKWRD_USE,      PH7_CompileUse      },  /* use statement */
-	{ PH7_TKWRD_DECLARE,  PH7_CompileDeclare  }   /* declare statement */
 };
 /*
  * Return a pointer to the statement handler routine associated

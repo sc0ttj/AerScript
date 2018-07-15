@@ -1551,8 +1551,6 @@ enum ph7_expr_id {
 #define PH7_TKWRD_SWITCH       3 /* switch */
 #define PH7_TKWRD_PRINT        4 /* print */
 #define PH7_TKWRD_INTERFACE    5 /* interface */
-#define PH7_TKWRD_ENDDEC       6 /* enddeclare */
-#define PH7_TKWRD_DECLARE      7 /* declare */
 /* The number '8' is reserved for PH7_TK_ID */
 #define PH7_TKWRD_REQONCE      9 /* require_once */
 #define PH7_TKWRD_REQUIRE      10 /* require */
