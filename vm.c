@@ -6444,7 +6444,7 @@ static int vm_builtin_register_autoload_handler(ph7_context *pCtx, int nArg, ph7
 	PH7_MemObjInit(pCtx->pVm, &sEntry.aArg[0]);
 	PH7_MemObjStore(appArg[0], &sEntry.aArg[0]);
 	/* Install the callback */
-	SySetPut(&pCtx->pVm->aAutoLoad, (const void *)&sEntry);	
+	SySetPut(&pCtx->pVm->aAutoLoad, (const void *)&sEntry);
 	ph7_result_bool(pCtx, 1);
 	return PH7_OK;
 }
@@ -13681,16 +13681,16 @@ PH7_PRIVATE ph7_class *PH7_VmExtractClass(
 		for(n = 0; n < nEntry; n++) {
 			sEntry = (VmAutoLoadCB *) SySetAt(&pVm->aAutoLoad, n);
 			if(sEntry) {
-				PH7_MemObjInitFromString(pVm,&sName,0);
-				PH7_MemObjStringAppend(&sName,zName,nByte);
+				PH7_MemObjInitFromString(pVm, &sName, 0);
+				PH7_MemObjStringAppend(&sName, zName, nByte);
 				apArg[0] = &sName;
 				/* Call autoloader */
-				PH7_MemObjInit(pVm,&sResult);
-				PH7_VmCallUserFunction(pVm,&sEntry->sCallback,1,apArg,&sResult);
+				PH7_MemObjInit(pVm, &sResult);
+				PH7_VmCallUserFunction(pVm, &sEntry->sCallback, 1, apArg, &sResult);
 				PH7_MemObjRelease(&sResult);
 				PH7_MemObjRelease(&sName);
 				/* Perform a hash loopkup once again */
-				pEntry = SyHashGet(&pVm->hClass,(const void *)zName,nByte);
+				pEntry = SyHashGet(&pVm->hClass, (const void *)zName, nByte);
 				if(pEntry) {
 					/* Do not call more callbacks if class is already available */
 					break;
