@@ -8250,6 +8250,15 @@ PH7_PRIVATE void PH7_VmRandomString(ph7_vm *pVm, char *zBuf, int nLen) {
 		zBuf[i] = zBase[zBuf[i] % (sizeof(zBase) - 1)];
 	}
 }
+PH7_PRIVATE void PH7_VmRandomBytes(ph7_vm *pVm, unsigned char *zBuf, int nLen) {
+  sxu32 iDx;
+  int i;
+  for(i = 0; i < nLen; ++i) {
+    iDx = PH7_VmRandomNum(pVm);
+    iDx %= 255;
+    zBuf[i] = (unsigned char)iDx;
+  }
+}
 /*
  * int rand()
  * int mt_rand()
@@ -8336,6 +8345,72 @@ static int vm_builtin_rand_str(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	/* Return the generated string */
 	ph7_result_string(pCtx, zString, iLen); /* Will make it's own copy */
 	return SXRET_OK;
+}
+
+/*
+ * int random_int(int $min, int $max)
+ *  Generate a random (unsigned 32-bit) integer.
+ * Parameter
+ *  $min
+ *    The lowest value to return
+ *  $max
+ *   The highest value to return
+ * Return
+ *   A pseudo random value between min (or 0) and max (or getrandmax(), inclusive).
+ * Note:
+ *  PH7 use it's own private PRNG which is based on the one used
+ *  by te SQLite3 library.
+ */
+static int vm_builtin_random_int(ph7_context *pCtx, int nArg, ph7_value **apArg) {
+  sxu32 iNum, iMin, iMax;
+  if(nArg != 2) {
+    ph7_context_throw_error(pCtx, PH7_CTX_ERR, "Expecting min and max arguments");
+    return SXERR_INVALID;
+  }
+  iNum = PH7_VmRandomNum(pCtx->pVm);
+  iMin = (sxu32)ph7_value_to_int(apArg[0]);
+  iMax = (sxu32)ph7_value_to_int(apArg[1]);
+  if(iMin < iMax) {
+    sxu32 iDiv = iMax + 1 - iMin;
+    if(iDiv > 0) {
+      iNum = (iNum % iDiv) + iMin;
+    }
+  } else if(iMax > 0) {
+    iNum %= iMax;
+  }
+
+  ph7_result_int64(pCtx, (ph7_int64)iNum);
+  return SXRET_OK;
+}
+
+/*
+ * string random_bytes(int $len)
+ *  Generate a random data suite.
+ * Parameter
+ *  $len
+ *    Length of the desired data.
+ * Return
+ *  A pseudo random bytes of $len
+ * Note:
+ *  PH7 use it's own private PRNG which is based on the one used
+ *  by te SQLite3 library.
+ */
+static int vm_builtin_random_bytes(ph7_context *pCtx, int nArg, ph7_value **apArg) {
+  sxu32 iLen;
+  unsigned char *zBuf;
+  if (nArg != 1) {
+    ph7_context_throw_error(pCtx, PH7_CTX_ERR, "Expecting length argument");
+    return SXERR_INVALID;
+  }
+  iLen = (sxu32)ph7_value_to_int(apArg[0]);
+  zBuf = SyMemBackendPoolAlloc(&pCtx->pVm->sAllocator, iLen);
+  if (zBuf == 0) {
+    ph7_context_throw_error(pCtx, PH7_CTX_ERR, "PH7 is running out of memory while creating buffer");
+    return SXERR_MEM;
+  }
+  PH7_VmRandomBytes(pCtx->pVm, zBuf, iLen);
+  ph7_result_string(pCtx, (char *)zBuf, iLen);
+  return SXRET_OK;
 }
 #ifndef PH7_DISABLE_BUILTIN_FUNC
 #if !defined(PH7_DISABLE_HASH_FUNC)
@@ -13530,6 +13605,8 @@ static const ph7_builtin_func aVmFunc[] = {
 	{ "rand_str",      vm_builtin_rand_str        },
 	{ "getrandmax",    vm_builtin_getrandmax      },
 	{ "mt_getrandmax", vm_builtin_getrandmax      },
+	{ "random_int",    vm_builtin_random_int      },
+	{ "random_bytes",  vm_builtin_random_bytes    },
 #ifndef PH7_DISABLE_BUILTIN_FUNC
 #if !defined(PH7_DISABLE_HASH_FUNC)
 	{ "uniqid",        vm_builtin_uniqid          },
