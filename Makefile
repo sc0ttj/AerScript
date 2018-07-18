@@ -44,10 +44,10 @@ ASTYLE_FLAGS =\
 	--lineend=linux
 
 
-all: psharp
+all: psharp dummy.lib
 
 clean:
-	rm -f psharp $(ENGINE_OBJS)
+	rm -f psharp $(ENGINE_OBJS) *.lib
 
 style:
 	astyle $(ASTYLE_FLAGS) --recursive ./*.c,*.h
@@ -57,3 +57,6 @@ psharp: $(ENGINE_OBJS)
 
 %.o: %.c
 	$(CC) -c $(INCLUDES) $(CFLAGS) -o $@ -c $<
+
+dummy.lib: ext/dummy/dummy.c
+	$(CC) $(CFLAGS) $(LDFLAGS) -shared -fPIC -o dummy.lib ext/dummy/dummy.c

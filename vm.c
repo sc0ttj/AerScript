@@ -97,6 +97,18 @@ struct VmObEntry {
 	SyBlob sOB;          /* Output buffer consumer */
 };
 /*
+ * Information about each module library (loaded using [import()] )
+ * is stored in an instance of the following structure.
+ */
+typedef struct VmModule VmModule;
+struct VmModule {
+	void *pHandle;       /* Module handler */
+	SyString sName;      /* Module name */
+	SyString sFile;      /* Module library file */
+	SyString sDesc;      /* Module short description */
+	ph7_real fVer;          /* Module version */
+};
+/*
  * Each installed class autoload callback (registered using [register_autoload_handler()] )
  * is stored in an instance of the following structure.
  */
@@ -1238,6 +1250,7 @@ PH7_PRIVATE sxi32 PH7_VmInit(
 	SySetInit(&pVm->aShutdown, &pVm->sAllocator, sizeof(VmShutdownCB));
 	SySetInit(&pVm->aException, &pVm->sAllocator, sizeof(ph7_exception *));
 	/* Configuration containers */
+	SySetInit(&pVm->aModules, &pVm->sAllocator, sizeof(VmModule));
 	SySetInit(&pVm->aFiles, &pVm->sAllocator, sizeof(SyString));
 	SySetInit(&pVm->aPaths, &pVm->sAllocator, sizeof(SyString));
 	SySetInit(&pVm->aIncluded, &pVm->sAllocator, sizeof(SyString));
@@ -10714,6 +10727,64 @@ static sxi32 VmExecIncludedFile(
 	return rc;
 }
 /*
+ * bool import(string $library)
+ *  Loads a P# module library at runtime
+ * Parameters
+ *  $library
+ *    This parameter is only the module library name that should be loaded.
+ * Return
+ *  Returns TRUE on success or FALSE on failure
+ */
+static int vm_builtin_import(ph7_context *pCtx, int nArg, ph7_value **apArg) {
+	const char *zStr;
+	VmModule pModule, *pSearch;
+	int nLen;
+	if(nArg != 1 || !ph7_value_is_string(apArg[0])) {
+		/* Missing/Invalid arguments, return FALSE */
+		ph7_result_bool(pCtx, 0);
+		return PH7_OK;
+	}
+	/* Extract the given module name */
+	zStr = ph7_value_to_string(apArg[0], &nLen);
+	if(nLen < 1) {
+		/* Nothing to process, return FALSE */
+		ph7_result_bool(pCtx, 0);
+		return PH7_OK;
+	}
+	while(SySetGetNextEntry(&pCtx->pVm->aModules, (void **)&pSearch) == SXRET_OK) {
+		if(SyMemcmp(pSearch->sName.zString, zStr, 0) == 0) {
+			SySetResetCursor(&pCtx->pVm->aModules);
+			ph7_result_bool(pCtx, 1);
+			return PH7_OK;
+		}
+	}
+	SySetResetCursor(&pCtx->pVm->aModules);
+	/* Zero the module entry */
+	SyZero(&pModule, sizeof(VmModule));
+	SyStringInitFromBuf(&pModule.sName, zStr, nLen);
+	const unsigned char *file;
+	snprintf(file, 255, "./%s.lib", zStr);
+	SyStringInitFromBuf(&pModule.sFile, file, nLen);
+	pModule.pHandle = dlopen(pModule.sFile.zString, RTLD_LAZY);
+	if(!pModule.pHandle) {
+		/* Could not load the module library file */
+		ph7_result_bool(pCtx, 0);
+		return PH7_OK;
+	}
+	void (*init)(ph7_vm *, ph7_real *, SyString *) = dlsym(pModule.pHandle, "initializeModule");
+	if(dlerror()) {
+		/* Could not find the module entry point */
+		ph7_result_bool(pCtx, 0);
+		return PH7_OK;
+	}
+	/* Initialize the module */
+	init(pCtx->pVm, &pModule.fVer, &pModule.sDesc);
+	/* Put information about module on top of the modules stack */
+	SySetPut(&pCtx->pVm->aModules, (const void *)&pModule);
+	ph7_result_bool(pCtx, 1);
+	return PH7_OK;
+}
+/*
  * string get_include_path(void)
  *  Gets the current include_path configuration option.
  * Parameter
@@ -13705,6 +13776,8 @@ static const ph7_builtin_func aVmFunc[] = {
 	{"json_encode",    vm_builtin_json_encode },
 	{"json_last_error", vm_builtin_json_last_error},
 	{"json_decode",    vm_builtin_json_decode },
+	/* Module loading facility */
+	{ "import", vm_builtin_import },
 	/* Files/URI inclusion facility */
 	{ "get_include_path",  vm_builtin_get_include_path },
 	{ "get_included_files", vm_builtin_get_included_files},
