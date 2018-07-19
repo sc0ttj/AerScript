@@ -25,7 +25,7 @@
 	  c == '['  || c == ']' || c == '\\'|| c == ';'||c == '^'  || c == '`' )
 
 /* XML processing control flags */
-#define SXML_ENABLE_NAMESPACE	    0x01 /* Parse XML with namespace support enbaled */
+#define SXML_ENABLE_NAMESPACE	    0x01 /* Parse XML with namespace support enabled */
 #define SXML_ENABLE_QUERY		    0x02 /* Not used */
 #define SXML_OPTION_CASE_FOLDING    0x04 /* Controls whether case-folding is enabled for this XML parser */
 #define SXML_OPTION_SKIP_TAGSTART   0x08 /* Specify how many characters should be skipped in the beginning of a tag name.*/
@@ -103,7 +103,7 @@ typedef sxi32(*ProcXMLEndDocument)(void *);
 typedef struct SyXMLParser SyXMLParser;
 struct SyXMLParser {
 	SyMemBackend *pAllocator; /* Memory backend */
-	void *pUserData;          /* User private data forwarded varbatim by the XML parser
+	void *pUserData;          /* User private data forwarded verbatim by the XML parser
 					           * as the last argument to the users callbacks.
 						       */
 	SyHash hns;               /* Namespace hashtable */

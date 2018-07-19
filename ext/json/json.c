@@ -517,7 +517,7 @@ static sxi32 VmJsonTokenize(SyStream *pStream, SyToken *pToken, void *pUserData,
 		/* Advance the stream cursor */
 		pStream->zText++;
 		*pJsonErr = JSON_ERROR_SYNTAX;
-		/* Abort processing immediatley */
+		/* Abort processing immediately */
 		return SXERR_ABORT;
 	}
 	/* record token length */
@@ -688,7 +688,7 @@ static sxi32 VmJsonDecode(
 			/*The cursor is automatically advanced by the VmJsonDecode() function */
 			if((pDecoder->pIn < pDecoder->pEnd) &&
 					((pDecoder->pIn->nType & (JSON_TK_CSB/*']'*/ | JSON_TK_COMMA/*','*/)) == 0)) {
-				/* Unexpected token,abort immediatley */
+				/* Unexpected token,abort immediately */
 				*pDecoder->pErr = JSON_ERROR_SYNTAX;
 				return SXERR_ABORT;
 			}

@@ -340,7 +340,7 @@ static sxi32 XMLProcessNamesSpace(SyXMLParser *pParse, SyXMLRawStrNS *pTag, SyTo
 		/* Abort processing immediately */
 		return SXERR_ABORT;
 	}
-	*pDup = *pUri; /* Structure assignement */
+	*pDup = *pUri; /* Structure assignment */
 	/* Save the namespace */
 	if(pPrefix->nByte == 0) {
 		pPrefix->zString = "Default";
@@ -534,7 +534,7 @@ static void XMLExtactPI(SyToken *pToken, SyXMLRawStr *pTarget, SyXMLRawStr *pDat
 	pTarget->nLine = pData->nLine = pToken->nLine;
 	/* Nullify the entries first */
 	pTarget->zString = pData->zString = 0;
-	/* Ignore leading and traing white spaces */
+	/* Ignore leading and trailing white spaces */
 	SyStringFullTrim(pIn);
 	/* Delimit the raw PI */
 	zIn  = pIn->zString;
@@ -822,7 +822,7 @@ static sxi32  ProcessXML(SyXMLParser *pParse, SySet *pTagStack, SySet *pWorker) 
 								}
 							}
 						} else {
-							/* Invoke the supllied callback if any */
+							/* Invoke the supplied callback if any */
 							if(pParse->xEndTag) {
 								rc = SXRET_OK;
 								if(pParse->nFlags & SXML_ENABLE_NAMESPACE) {
@@ -916,7 +916,7 @@ static sxi32  ProcessXML(SyXMLParser *pParse, SySet *pTagStack, SySet *pWorker) 
 PH7_PRIVATE sxi32 SyXMLParserInit(SyXMLParser *pParser, SyMemBackend *pAllocator, sxi32 iFlags) {
 	/* Zero the structure first */
 	SyZero(pParser, sizeof(SyXMLParser));
-	/* Initilaize fields */
+	/* Initialize fields */
 	SySetInit(&pParser->sToken, pAllocator, sizeof(SyToken));
 	SyLexInit(&pParser->sLex, &pParser->sToken, XML_Tokenize, pParser);
 	SyHashInit(&pParser->hns, pAllocator, 0, 0);

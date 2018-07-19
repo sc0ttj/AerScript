@@ -301,7 +301,7 @@ static int vm_builtin_xml_parser_create(ph7_context *pCtx, int nArg, ph7_value *
  * Parameter
  *  $encoding
  *   (Only UTF-8 encoding is supported)
- *  $separtor
+ *  $separator
  *   Namespace separator (a single character)
  * Return
  *  Returns a resource handle for the new XML parser.
@@ -853,7 +853,7 @@ static int vm_builtin_xml_get_current_byte_index(ph7_context *pCtx, int nArg, ph
  * bool xml_set_object(resource $parser,object &$object)
  *  Use XML Parser within an object.
  * NOTE
- *  This function is depreceated and is a no-op.
+ *  This function is deprecated and is a no-op.
  * Parameters
  * $parser
  *   A reference to the XML parser.
@@ -1242,7 +1242,7 @@ static sxi32 VmXMLNSEndHandler(SyXMLRawStr *pPrefixStr, void *pUserData) {
 }
 /*
  * Error Message consumer handler.
- * Each time the XML parser encounter a syntaxt error or any other error
+ * Each time the XML parser encounter a syntax error or any other error
  * related to XML processing,the following callback is invoked by the
  * underlying XML parser.
  */
