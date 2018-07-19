@@ -1106,7 +1106,7 @@ static sxi32 VmEvalChunk(ph7_vm *pVm, ph7_context *pCtx, SyString *pChunk, int i
 	"function array_merge_recursive($array1, $array2){"\
 	"if( func_num_args() < 1 ){ return NULL; }"\
 	"$arrays = func_get_args();"\
-	"$narrays = count($arrays);"\
+	"$narrays = sizeof($arrays);"\
 	"$ret = $arrays[0];"\
 	"for ($i = 1; $i < $narrays; $i++) {"\
 	" if( array_same($ret,$arrays[$i]) ){ /* Same instance */continue;}"\

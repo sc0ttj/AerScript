@@ -5482,7 +5482,6 @@ static int ph7_hashmap_walk_recursive(ph7_context *pCtx, int nArg, ph7_value **a
  * Table of hashmap functions.
  */
 static const ph7_builtin_func aHashmapFunc[] = {
-	{"count",             ph7_hashmap_count },
 	{"sizeof",            ph7_hashmap_count },
 	{"array_key_exists",  ph7_hashmap_key_exists },
 	{"array_pop",         ph7_hashmap_pop     },
