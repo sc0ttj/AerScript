@@ -4,7 +4,7 @@
 #include "ph7.h"
 #include "ph7int.h"
 
-#define MODULE_DESC "Dummy module"
+#define MODULE_DESC "Dummy Module"
 #define MODULE_VER 1.0
 
 /* Forward reference & declaration */
