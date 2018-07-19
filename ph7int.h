@@ -15,7 +15,11 @@
 #define __PH7INT_H__
 #define PH7_PRIVATE
 #include "ph7.h"
-#include <dlfcn.h>
+#ifdef __WINNT__
+	#include <windows.h>
+#else
+	#include <dlfcn.h>
+#endif
 #ifndef PH7_PI
 	/* Value of PI */
 	#define PH7_PI 3.1415926535898

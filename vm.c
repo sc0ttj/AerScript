@@ -12,7 +12,6 @@
  */
 /* $SymiscID: vm.c v1.4 FreeBSD 2012-09-10 00:06 stable <chm@symisc.net> $ */
 #include "ph7int.h"
-#include <stdio.h>
 /*
  * The code in this file implements execution method of the PH7 Virtual Machine.
  * The PH7 compiler (implemented in 'compiler.c' and 'parse.c') generates a bytecode program
@@ -103,7 +102,11 @@ struct VmObEntry {
  */
 typedef struct VmModule VmModule;
 struct VmModule {
-	void *pHandle;       /* Module handler */
+#ifdef __WINNT__
+	HINSTANCE pHandle;    /* Module handler under Windows */
+#else
+	void *pHandle;       /* Module handler under Unix-like OS */
+#endif
 	SyString sName;      /* Module name */
 	SyString sFile;      /* Module library file */
 	SyString sDesc;      /* Module short description */
@@ -1470,7 +1473,11 @@ PH7_PRIVATE sxi32 PH7_VmRelease(ph7_vm *pVm) {
 	/* Iterate through modules list */
 	while(SySetGetNextEntry(&pVm->aModules, (void **)&pEntry) == SXRET_OK) {
 		/* Unload the module */
+#ifdef __WINNT__
+		FreeLibrary(pEntry->pHandle);
+#else
 		dlclose(pEntry->pHandle);
+#endif
 	}
 	/* Free up the heap */
 	SySetRelease(&pVm->aModules);
@@ -10776,14 +10783,22 @@ static int vm_builtin_import(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	snprintf(bfile, sizeof(bfile) - 1, "./%s.lib", zStr);
 	file = bfile;
 	SyStringInitFromBuf(&pModule.sFile, file, nLen);
+#ifdef __WINNT__
+	pModule.pHandle = LoadLibrary(file);
+#else
 	pModule.pHandle = dlopen(pModule.sFile.zString, RTLD_LAZY);
+#endif
 	if(!pModule.pHandle) {
 		/* Could not load the module library file */
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
 	}
+#ifdef __WINNT__
+	void (*init)(ph7_vm *, ph7_real *, SyString *) = GetProcAddress(pModule.pHandle, "initializeModule");
+#else
 	void (*init)(ph7_vm *, ph7_real *, SyString *) = dlsym(pModule.pHandle, "initializeModule");
-	if(dlerror()) {
+#endif
+	if(!init) {
 		/* Could not find the module entry point */
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
