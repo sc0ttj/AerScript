@@ -12,6 +12,7 @@
  */
 /* $SymiscID: vm.c v1.4 FreeBSD 2012-09-10 00:06 stable <chm@symisc.net> $ */
 #include "ph7int.h"
+#include <stdio.h>
 /*
  * The code in this file implements execution method of the PH7 Virtual Machine.
  * The PH7 compiler (implemented in 'compiler.c' and 'parse.c') generates a bytecode program
@@ -10770,7 +10771,7 @@ static int vm_builtin_import(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	/* Zero the module entry */
 	SyZero(&pModule, sizeof(VmModule));
 	SyStringInitFromBuf(&pModule.sName, zStr, nLen);
-	const unsigned char *file;
+	unsigned char *file;
 	snprintf(file, 255, "./%s.lib", zStr);
 	SyStringInitFromBuf(&pModule.sFile, file, nLen);
 	pModule.pHandle = dlopen(pModule.sFile.zString, RTLD_LAZY);
