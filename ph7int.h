@@ -1625,17 +1625,6 @@ enum json_err_code {
 	JSON_ERROR_SYNTAX,    /* Syntax error. */
 	JSON_ERROR_UTF8       /* Malformed UTF-8 characters */
 };
-/* The following constants can be combined to form options for json_encode(). */
-#define	JSON_HEX_TAG           0x01  /* All < and > are converted to \u003C and \u003E. */
-#define JSON_HEX_AMP           0x02  /* All &s are converted to \u0026. */
-#define JSON_HEX_APOS          0x04  /* All ' are converted to \u0027. */
-#define JSON_HEX_QUOT          0x08  /* All " are converted to \u0022. */
-#define JSON_FORCE_OBJECT      0x10  /* Outputs an object rather than an array */
-#define JSON_NUMERIC_CHECK     0x20  /* Encodes numeric strings as numbers. */
-#define JSON_BIGINT_AS_STRING  0x40  /* Not used */
-#define JSON_PRETTY_PRINT      0x80  /* Use whitespace in returned data to format it.*/
-#define JSON_UNESCAPED_SLASHES 0x100 /* Don't escape '/' */
-#define JSON_UNESCAPED_UNICODE 0x200 /* Not used */
 /* memobj.c function prototypes */
 PH7_PRIVATE sxi32 PH7_MemObjDump(SyBlob *pOut, ph7_value *pObj, int ShowType, int nTab, int nDepth, int isRef);
 PH7_PRIVATE const char *PH7_MemObjTypeDump(ph7_value *pVal);

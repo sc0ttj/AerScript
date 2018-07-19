@@ -1476,134 +1476,7 @@ static void PH7_XML_SAX_IMP_Const(ph7_value *pVal, void *pUserData) {
 	ph7_value_string(pVal, "Symisc XML engine", (int)sizeof("Symisc XML engine") - 1);
 }
 #endif /* PH7_DISABLE_BUILTIN_FUNC */
-/*
- * JSON_HEX_TAG.
- *   Expand the value of JSON_HEX_TAG defined in ph7Int.h.
- */
-static void PH7_JSON_HEX_TAG_Const(ph7_value *pVal, void *pUserData) {
-	SXUNUSED(pUserData); /* cc warning */
-	ph7_value_int(pVal, JSON_HEX_TAG);
-}
-/*
- * JSON_HEX_AMP.
- *   Expand the value of JSON_HEX_AMP defined in ph7Int.h.
- */
-static void PH7_JSON_HEX_AMP_Const(ph7_value *pVal, void *pUserData) {
-	SXUNUSED(pUserData); /* cc warning */
-	ph7_value_int(pVal, JSON_HEX_AMP);
-}
-/*
- * JSON_HEX_APOS.
- *   Expand the value of JSON_HEX_APOS defined in ph7Int.h.
- */
-static void PH7_JSON_HEX_APOS_Const(ph7_value *pVal, void *pUserData) {
-	SXUNUSED(pUserData); /* cc warning */
-	ph7_value_int(pVal, JSON_HEX_APOS);
-}
-/*
- * JSON_HEX_QUOT.
- *   Expand the value of JSON_HEX_QUOT defined in ph7Int.h.
- */
-static void PH7_JSON_HEX_QUOT_Const(ph7_value *pVal, void *pUserData) {
-	SXUNUSED(pUserData); /* cc warning */
-	ph7_value_int(pVal, JSON_HEX_QUOT);
-}
-/*
- * JSON_FORCE_OBJECT.
- *   Expand the value of JSON_FORCE_OBJECT defined in ph7Int.h.
- */
-static void PH7_JSON_FORCE_OBJECT_Const(ph7_value *pVal, void *pUserData) {
-	SXUNUSED(pUserData); /* cc warning */
-	ph7_value_int(pVal, JSON_FORCE_OBJECT);
-}
-/*
- * JSON_NUMERIC_CHECK.
- *   Expand the value of JSON_NUMERIC_CHECK defined in ph7Int.h.
- */
-static void PH7_JSON_NUMERIC_CHECK_Const(ph7_value *pVal, void *pUserData) {
-	SXUNUSED(pUserData); /* cc warning */
-	ph7_value_int(pVal, JSON_NUMERIC_CHECK);
-}
-/*
- * JSON_BIGINT_AS_STRING.
- *   Expand the value of JSON_BIGINT_AS_STRING defined in ph7Int.h.
- */
-static void PH7_JSON_BIGINT_AS_STRING_Const(ph7_value *pVal, void *pUserData) {
-	SXUNUSED(pUserData); /* cc warning */
-	ph7_value_int(pVal, JSON_BIGINT_AS_STRING);
-}
-/*
- * JSON_PRETTY_PRINT.
- *   Expand the value of JSON_PRETTY_PRINT defined in ph7Int.h.
- */
-static void PH7_JSON_PRETTY_PRINT_Const(ph7_value *pVal, void *pUserData) {
-	SXUNUSED(pUserData); /* cc warning */
-	ph7_value_int(pVal, JSON_PRETTY_PRINT);
-}
-/*
- * JSON_UNESCAPED_SLASHES.
- *   Expand the value of JSON_UNESCAPED_SLASHES defined in ph7Int.h.
- */
-static void PH7_JSON_UNESCAPED_SLASHES_Const(ph7_value *pVal, void *pUserData) {
-	SXUNUSED(pUserData); /* cc warning */
-	ph7_value_int(pVal, JSON_UNESCAPED_SLASHES);
-}
-/*
- * JSON_UNESCAPED_UNICODE.
- *   Expand the value of JSON_UNESCAPED_UNICODE defined in ph7Int.h.
- */
-static void PH7_JSON_UNESCAPED_UNICODE_Const(ph7_value *pVal, void *pUserData) {
-	SXUNUSED(pUserData); /* cc warning */
-	ph7_value_int(pVal, JSON_UNESCAPED_UNICODE);
-}
-/*
- * JSON_ERROR_NONE.
- *   Expand the value of JSON_ERROR_NONE defined in ph7Int.h.
- */
-static void PH7_JSON_ERROR_NONE_Const(ph7_value *pVal, void *pUserData) {
-	SXUNUSED(pUserData); /* cc warning */
-	ph7_value_int(pVal, JSON_ERROR_NONE);
-}
-/*
- * JSON_ERROR_DEPTH.
- *   Expand the value of JSON_ERROR_DEPTH defined in ph7Int.h.
- */
-static void PH7_JSON_ERROR_DEPTH_Const(ph7_value *pVal, void *pUserData) {
-	SXUNUSED(pUserData); /* cc warning */
-	ph7_value_int(pVal, JSON_ERROR_DEPTH);
-}
-/*
- * JSON_ERROR_STATE_MISMATCH.
- *   Expand the value of JSON_ERROR_STATE_MISMATCH defined in ph7Int.h.
- */
-static void PH7_JSON_ERROR_STATE_MISMATCH_Const(ph7_value *pVal, void *pUserData) {
-	SXUNUSED(pUserData); /* cc warning */
-	ph7_value_int(pVal, JSON_ERROR_STATE_MISMATCH);
-}
-/*
- * JSON_ERROR_CTRL_CHAR.
- *   Expand the value of JSON_ERROR_CTRL_CHAR defined in ph7Int.h.
- */
-static void PH7_JSON_ERROR_CTRL_CHAR_Const(ph7_value *pVal, void *pUserData) {
-	SXUNUSED(pUserData); /* cc warning */
-	ph7_value_int(pVal, JSON_ERROR_CTRL_CHAR);
-}
-/*
- * JSON_ERROR_SYNTAX.
- *   Expand the value of JSON_ERROR_SYNTAX defined in ph7Int.h.
- */
-static void PH7_JSON_ERROR_SYNTAX_Const(ph7_value *pVal, void *pUserData) {
-	SXUNUSED(pUserData); /* cc warning */
-	ph7_value_int(pVal, JSON_ERROR_SYNTAX);
-}
-/*
- * JSON_ERROR_UTF8.
- *   Expand the value of JSON_ERROR_UTF8 defined in ph7Int.h.
- */
-static void PH7_JSON_ERROR_UTF8_Const(ph7_value *pVal, void *pUserData) {
-	SXUNUSED(pUserData); /* cc warning */
-	ph7_value_int(pVal, JSON_ERROR_UTF8);
-}
+
 /*
  * static
  *  Expand the name of the current class. 'static' otherwise.
@@ -1846,22 +1719,6 @@ static const ph7_builtin_constant aBuiltIn[] = {
 	{"XML_OPTION_SKIP_WHITE",             PH7_XML_OPTION_SKIP_WHITE_Const},
 	{"XML_SAX_IMPL",           PH7_XML_SAX_IMP_Const},
 #endif /* PH7_DISABLE_BUILTIN_FUNC */
-	{"JSON_HEX_TAG",           PH7_JSON_HEX_TAG_Const},
-	{"JSON_HEX_AMP",           PH7_JSON_HEX_AMP_Const},
-	{"JSON_HEX_APOS",          PH7_JSON_HEX_APOS_Const},
-	{"JSON_HEX_QUOT",          PH7_JSON_HEX_QUOT_Const},
-	{"JSON_FORCE_OBJECT",      PH7_JSON_FORCE_OBJECT_Const},
-	{"JSON_NUMERIC_CHECK",     PH7_JSON_NUMERIC_CHECK_Const},
-	{"JSON_BIGINT_AS_STRING",  PH7_JSON_BIGINT_AS_STRING_Const},
-	{"JSON_PRETTY_PRINT",      PH7_JSON_PRETTY_PRINT_Const},
-	{"JSON_UNESCAPED_SLASHES", PH7_JSON_UNESCAPED_SLASHES_Const},
-	{"JSON_UNESCAPED_UNICODE", PH7_JSON_UNESCAPED_UNICODE_Const},
-	{"JSON_ERROR_NONE",        PH7_JSON_ERROR_NONE_Const},
-	{"JSON_ERROR_DEPTH",       PH7_JSON_ERROR_DEPTH_Const},
-	{"JSON_ERROR_STATE_MISMATCH", PH7_JSON_ERROR_STATE_MISMATCH_Const},
-	{"JSON_ERROR_CTRL_CHAR", PH7_JSON_ERROR_CTRL_CHAR_Const},
-	{"JSON_ERROR_SYNTAX",    PH7_JSON_ERROR_SYNTAX_Const},
-	{"JSON_ERROR_UTF8",      PH7_JSON_ERROR_UTF8_Const},
 	{"static",               PH7_static_Const       },
 	{"self",                 PH7_self_Const         },
 	{"__CLASS__",            PH7_self_Const         },
@@ -1880,3 +1737,4 @@ PH7_PRIVATE void PH7_RegisterBuiltInConstant(ph7_vm *pVm) {
 		ph7_create_constant(&(*pVm), aBuiltIn[n].zName, aBuiltIn[n].xExpand, &(*pVm));
 	}
 }
+-
