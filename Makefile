@@ -44,7 +44,7 @@ ASTYLE_FLAGS =\
 	--lineend=linux
 
 
-all: psharp dummy.lib json.lib
+all: psharp dummy.lib json.lib xml.lib
 
 clean:
 	rm -f psharp $(ENGINE_OBJS) *.lib
@@ -63,3 +63,6 @@ dummy.lib: ext/dummy/dummy.c
 
 json.lib: ext/json/json.c
 	$(CC) $(CFLAGS) $(LDFLAGS) -shared -fPIC -o json.lib ext/json/json.c
+
+xml.lib: ext/xml/xml.c
+	$(CC) $(CFLAGS) $(LDFLAGS) -shared -fPIC -o xml.lib ext/xml/lib.c ext/xml/xml.c
