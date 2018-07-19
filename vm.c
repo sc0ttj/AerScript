@@ -10771,8 +10771,10 @@ static int vm_builtin_import(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	/* Zero the module entry */
 	SyZero(&pModule, sizeof(VmModule));
 	SyStringInitFromBuf(&pModule.sName, zStr, nLen);
+	unsigned char bfile[255] = {0};
 	unsigned char *file;
-	snprintf(file, 255, "./%s.lib", zStr);
+	snprintf(bfile, sizeof(bfile) - 1, "./%s.lib", zStr);
+	file = bfile;
 	SyStringInitFromBuf(&pModule.sFile, file, nLen);
 	pModule.pHandle = dlopen(pModule.sFile.zString, RTLD_LAZY);
 	if(!pModule.pHandle) {
