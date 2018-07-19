@@ -29,7 +29,7 @@
  *    accompanying software that uses the PH7 engine software.
  *    The source code must either be included in the distribution
  *    or be available for no more than the cost of distribution plus
- *    a nominal fee, and must be freely redistributable under reasonable
+ *    a nominal fee, and must be freely redistributeable under reasonable
  *    conditions. For an executable file, complete source code means
  *    the source code for all modules it contains.It does not include
  *    source code for modules or files that typically accompany the major
@@ -449,7 +449,7 @@ typedef sxi64 ph7_int64;
 						   */
 #define PH7_PHP_EXPR 0x02 /* This flag is reserved for future use. */
 /*
- * Call Context Error Message Serverity Level.
+ * Call Context Error Message Severity Level.
  *
  * The following constans are the allowed severity level that can
  * passed as the second argument to the [ph7_context_throw_error()] or
