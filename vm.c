@@ -1465,6 +1465,14 @@ PH7_PRIVATE sxi32 PH7_VmReset(ph7_vm *pVm) {
  * Every virtual machine must be destroyed in order to avoid memory leaks.
  */
 PH7_PRIVATE sxi32 PH7_VmRelease(ph7_vm *pVm) {
+	VmModule *pEntry;
+	/* Iterate through modules list */
+	while(SySetGetNextEntry(&pVm->aModules, (void **)&pEntry) == SXRET_OK) {
+		/* Unload the module */
+		dlclose(pEntry->pHandle);
+	}
+	/* Free up the heap */
+	SySetRelease(&pVm->aModules);
 	/* Set the stale magic number */
 	pVm->nMagic = PH7_VM_STALE;
 	/* Release the private memory subsystem */
