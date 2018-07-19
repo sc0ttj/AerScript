@@ -1,5 +1,5 @@
-#ifndef __DUMMY_H__
-#define __DUMMY_H__
+#ifndef __JSON_H__
+#define __JSON_H__
 
 #include "ph7.h"
 #include "ph7int.h"
@@ -27,7 +27,7 @@
 #define JSON_TK_NUM     0x010 /* Numeric */
 #define JSON_TK_OCB     0x020 /* Open curly braces '{' */
 #define JSON_TK_CCB     0x040 /* Closing curly braces '}' */
-#define JSON_TK_OSB     0x080 /* Open square bracke '[' */
+#define JSON_TK_OSB     0x080 /* Open square bracket '[' */
 #define JSON_TK_CSB     0x100 /* Closing square bracket ']' */
 #define JSON_TK_COLON   0x200 /* Single colon ':' */
 #define JSON_TK_COMMA   0x400 /* Single comma ',' */
