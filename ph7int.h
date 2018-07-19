@@ -831,7 +831,7 @@ typedef sxi32(*ProcNodeConstruct)(ph7_gen_state *, sxi32);
  * by an instance of the following structure.
  * The PH7 parser does not use any external tools and is 100% handcoded.
  * That is, the PH7 parser is thread-safe ,full reentrant, produce consistant
- * compile-time errrors and at least 7 times faster than the standard PHP parser.
+ * compile-time errors and at least 7 times faster than the standard PHP parser.
  */
 struct ph7_expr_op {
 	SyString sOp;   /* String representation of the operator [i.e: "+","*","=="...] */
@@ -856,7 +856,7 @@ struct ph7_expr_node {
 	ph7_expr_node *pCond;    /* Condition: Only used by the ternary operator '?:' */
 };
 /* Node Construct flags */
-#define EXPR_NODE_PRE_INCR 0x01 /* Pre-icrement/decrement [i.e: ++$i,--$j] node */
+#define EXPR_NODE_PRE_INCR 0x01 /* Pre-increment/decrement [i.e: ++$i,--$j] node */
 /*
  * A block of instructions is recorded in an instance of the following structure.
  * This structure is used only during compile-time and have no meaning
@@ -954,7 +954,7 @@ struct ph7_vm_func_static_var {
 	sxu32 nIdx;       /* Object index in the global memory object container */
 };
 /*
- * Each imported variable from the outside closure environnment is recoded
+ * Each imported variable from the outside closure environment is recoded
  * in an instance of the following structure.
  */
 struct ph7_vm_func_closure_env {
@@ -992,7 +992,7 @@ struct ph7_vm_func {
 	SySet aClosureEnv;   /* Closure environment (ph7_vm_func_closure_env instace) */
 	sxi32 iFlags;        /* VM function configuration */
 	SyString sSignature; /* Function signature used to implement function overloading
-						  * (Refer to the official docuemntation for more information
+						  * (Refer to the official documentation for more information
 						  *  on this powerfull feature)
 						  */
 	void *pUserData;     /* Upper layer private data associated with this instance */
@@ -1053,7 +1053,7 @@ struct ph7_class {
  * in an instance of the following structure.
  */
 struct ph7_class_attr {
-	SyString sName;      /* Atrribute name */
+	SyString sName;      /* Attribute name */
 	sxi32 iFlags;        /* Attribute configuration [i.e: static, variable, constant, etc.] */
 	sxi32 iProtection;   /* Protection level [i.e: public, private, protected] */
 	SySet aByteCode;     /* Compiled attribute body */
@@ -1142,7 +1142,7 @@ struct ph7_exception {
 typedef struct ph7_case_expr ph7_case_expr;
 typedef struct ph7_switch ph7_switch;
 /*
- * Each compiled case block in a swicth statement is compiled
+ * Each compiled case block in a switch statement is compiled
  * and stored in an instance of the following structure.
  */
 struct ph7_case_expr {
@@ -1216,7 +1216,7 @@ struct ph7_vm {
 	void *pStderr;             /* STDERR IO stream */
 	int bErrReport;            /* TRUE to report all runtime Error/Warning/Notice */
 	int nRecursionDepth;       /* Current recursion depth */
-	int nMaxDepth;             /* Maximum allowed recusion depth */
+	int nMaxDepth;             /* Maximum allowed recursion depth */
 	int nObDepth;              /* OB depth */
 	int nExceptDepth;          /* Exception depth */
 	int closure_cnt;           /* Loaded closures counter */
@@ -1253,7 +1253,7 @@ enum iErrCode {
 	E_ERROR             = 1,   /* Fatal run-time errors. These indicate errors that can not be recovered
 							    * from, such as a memory allocation problem. Execution of the script is
 							    * halted.
-								* The only fatal error under PH7 is an out-of-memory. All others erros
+								* The only fatal error under PH7 is an out-of-memory. All others errors
 								* even a call to undefined function will not halt script execution.
 							    */
 	E_WARNING           = 2,   /* Run-time warnings (non-fatal errors). Execution of the script is not halted.  */
@@ -1270,7 +1270,7 @@ enum iErrCode {
 	E_STRICT            = 2048, /* Enable to have PHP suggest changes to your code which will ensure the best interoperability
 								 * and forward compatibility of your code.
 								 */
-	E_RECOVERABLE_ERROR = 4096, /* Catchable fatal error. It indicates that a probably dangerous error occured, but did not
+	E_RECOVERABLE_ERROR = 4096, /* Catchable fatal error. It indicates that a probably dangerous error ocurred, but did not
 								 * leave the Engine in an unstable state. If the error is not caught by a user defined handle
 								 * the application aborts as it was an E_ERROR.
 								 */
@@ -1408,7 +1408,7 @@ enum ph7_expr_id {
 	EXPR_OP_NE,        /* Not equal != <> */
 	EXPR_OP_TEQ,       /* Type equal === */
 	EXPR_OP_TNE,       /* Type not equal !== */
-	EXPR_OP_BAND,      /* Biwise and '&' */
+	EXPR_OP_BAND,      /* Bitwise and '&' */
 	EXPR_OP_REF,       /* Reference operator '&' */
 	EXPR_OP_XOR,       /* bitwise xor '^' */
 	EXPR_OP_BOR,       /* bitwise or '|' */
