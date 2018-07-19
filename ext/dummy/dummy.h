@@ -4,6 +4,9 @@
 #include "ph7.h"
 #include "ph7int.h"
 
+#define MODULE_DESC "Dummy module"
+#define MODULE_VER 1.0
+
 /* Forward reference & declaration */
 PH7_PRIVATE sxi32 initializeModule(ph7_vm *pVm, ph7_real *ver, SyString *desc);
 

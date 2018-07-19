@@ -1,8 +1,5 @@
 #include "dummy.h"
 
-#define MODULE_DESC "Dummy module"
-#define MODULE_VER 1.0
-
 int psharp_dummy_function(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	SyString dummy;
 	const char *text = "Hello world from dummy module!";
