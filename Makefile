@@ -60,7 +60,7 @@ endif
 
 BINARY := psharp
 BUILD_DIR := build
-CFLAGS := $(CFLAGS) -DPH7_LIBRARY_SUFFIX=$(LSUFFIX)
+CFLAGS := $(CFLAGS) -DPH7_LIBRARY_SUFFIX=\"$(LSUFFIX)\"
 
 ENGINE_DIRS := engine/lib engine
 ENGINE_SRCS := $(foreach dir,$(ENGINE_DIRS),$(wildcard $(dir)/*.c))

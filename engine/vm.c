@@ -10780,7 +10780,7 @@ static int vm_builtin_import(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	SyStringInitFromBuf(&pModule.sName, zStr, nLen);
 	unsigned char bfile[255] = {0};
 	unsigned char *file;
-	snprintf(bfile, sizeof(bfile) - 1, "./%s.lib", zStr);
+	snprintf(bfile, sizeof(bfile) - 1, "./%s%s", zStr, PH7_LIBRARY_SUFFIX);
 	file = bfile;
 	SyStringInitFromBuf(&pModule.sFile, file, nLen);
 #ifdef __WINNT__
