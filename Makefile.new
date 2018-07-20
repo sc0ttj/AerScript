@@ -4,7 +4,7 @@ CFLAGS = -fPIC -Iinclude -I. -W -Wunused -Wall
 # Additional CFLAGS for debug build
 DFLAGS = -O0 -g
 
-# Addditional CFLAGS for stable build
+# Addditional CFLAGS for release build
 RFLAGS = -O3 -s
 
 # Flags to pass to the linker
@@ -43,6 +43,13 @@ ifeq "$(PLATFORM)" "Linux"
 	ESUFFIX :=
 	LSUFFIX := .so
 endif
+ifeq "$(PLATFORM)" "OpenBSD"
+	CC := clang
+	MD := mkdir -p
+	RM := rm -rfv
+	ESUFFIX :=
+	LSUFFIX := .so
+endif
 ifeq "$(PLATFORM)" "Windows"
 	CC := gcc
 	MD := md
@@ -65,7 +72,7 @@ SAPI := $(subst /,,$(subst sapi/,,$(dir $(wildcard sapi/*/))))
 
 
 .SUFFIXES:
-.PHONY: clean debug release test
+.PHONY: clean debug release style test
 
 debug: export CFLAGS := $(CFLAGS) $(DFLAGS)
 debug: engine sapi module
@@ -102,4 +109,3 @@ $(SAPI):
 
 clean:
 	$(RM) $(BUILD_DIR)
-
