@@ -10,9 +10,6 @@ RFLAGS = -O3 -s
 # Flags to pass to the linker
 LFLAGS = -Wl,--export-dynamic -rdynamic
 
-# Additional libraries necessary for linker
-LIBS = -ldl -lm
-
 ##############################################
 ### Do not modify anything below this line ###
 ##############################################
@@ -26,6 +23,7 @@ ifeq "$(PLATFORM)" "Darwin"
 	CC := clang
 	MD := mkdir -p
 	RM := rm -rfv
+	LIBS := -ldl -lm
 	ESUFFIX :=
 	LSUFFIX := .dylib
 endif
@@ -33,14 +31,15 @@ ifeq "$(PLATFORM)" "FreeBSD"
 	CC := clang
 	MD := mkdir -p
 	RM := rm -rfv
+	LIBS := -lm
 	ESUFFIX :=
 	LSUFFIX := .so
-  LIBS = -lm
 endif
 ifeq "$(PLATFORM)" "Linux"
 	CC := gcc
 	MD := mkdir -p
 	RM := rm -rfv
+	LIBS := -ldl -lm
 	ESUFFIX :=
 	LSUFFIX := .so
 endif
@@ -48,14 +47,15 @@ ifeq "$(PLATFORM)" "OpenBSD"
 	CC := clang
 	MD := mkdir -p
 	RM := rm -rfv
+	LIBS := -lm
 	ESUFFIX :=
 	LSUFFIX := .so
-  LIBS = -lm
 endif
 ifeq "$(PLATFORM)" "Windows"
 	CC := gcc
 	MD := md
 	RM := del /F
+	LIBS := -ldl -lm
 	ESUFFIX := .exe
 	LSUFFIX := .dll
 endif
