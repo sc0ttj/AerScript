@@ -35,6 +35,7 @@ ifeq "$(PLATFORM)" "FreeBSD"
 	RM := rm -rfv
 	ESUFFIX :=
 	LSUFFIX := .so
+  LIBS = -lm
 endif
 ifeq "$(PLATFORM)" "Linux"
 	CC := gcc
@@ -49,6 +50,7 @@ ifeq "$(PLATFORM)" "OpenBSD"
 	RM := rm -rfv
 	ESUFFIX :=
 	LSUFFIX := .so
+  LIBS = -lm
 endif
 ifeq "$(PLATFORM)" "Windows"
 	CC := gcc
