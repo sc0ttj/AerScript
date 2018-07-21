@@ -7490,11 +7490,7 @@ static const ph7_builtin_func aBuiltInFunc[] = {
 	/* Variable handling functions */
 	{ "is_bool", PH7_builtin_is_bool     },
 	{ "is_float", PH7_builtin_is_float    },
-	{ "is_real", PH7_builtin_is_float    },
-	{ "is_double", PH7_builtin_is_float    },
 	{ "is_int", PH7_builtin_is_int      },
-	{ "is_integer", PH7_builtin_is_int      },
-	{ "is_long", PH7_builtin_is_int      },
 	{ "is_string", PH7_builtin_is_string   },
 	{ "is_null", PH7_builtin_is_null     },
 	{ "is_numeric", PH7_builtin_is_numeric  },
@@ -7502,10 +7498,9 @@ static const ph7_builtin_func aBuiltInFunc[] = {
 	{ "is_array", PH7_builtin_is_array    },
 	{ "is_object", PH7_builtin_is_object   },
 	{ "is_resource", PH7_builtin_is_resource },
-	{ "douleval", PH7_builtin_floatval    },
 	{ "floatval", PH7_builtin_floatval    },
 	{ "intval", PH7_builtin_intval      },
-	{ "strval", PH7_builtin_strval      },
+	{ "stringval", PH7_builtin_strval      },
 	{ "empty", PH7_builtin_empty       },
 #ifndef PH7_DISABLE_BUILTIN_FUNC
 	{ "round",    PH7_builtin_round        },
@@ -7516,7 +7511,6 @@ static const ph7_builtin_func aBuiltInFunc[] = {
 	{ "bindec", PH7_builtin_bindec         },
 	{ "octdec", PH7_builtin_octdec         },
 	{ "srand",  PH7_builtin_srand          },
-	{ "mt_srand", PH7_builtin_srand         },
 	{ "base_convert", PH7_builtin_base_convert },
 	/* String handling functions */
 	{ "substr",          PH7_builtin_substr     },
@@ -7545,7 +7539,6 @@ static const ph7_builtin_func aBuiltInFunc[] = {
 	{ "explode", PH7_builtin_explode    },
 	{ "trim", PH7_builtin_trim       },
 	{ "rtrim", PH7_builtin_rtrim      },
-	{ "chop", PH7_builtin_rtrim      },
 	{ "ltrim", PH7_builtin_ltrim      },
 	{ "strtolower",   PH7_builtin_strtolower },
 	{ "mb_strtolower", PH7_builtin_strtolower }, /* Only UTF-8 encoding is supported */
@@ -7608,12 +7601,8 @@ static const ph7_builtin_func aBuiltInFunc[] = {
 	/* URL functions */
 	{ "base64_encode", PH7_builtin_base64_encode },
 	{ "base64_decode", PH7_builtin_base64_decode },
-	{ "convert_uuencode", PH7_builtin_base64_encode },
-	{ "convert_uudecode", PH7_builtin_base64_decode },
 	{ "urlencode",    PH7_builtin_urlencode },
 	{ "urldecode",    PH7_builtin_urldecode },
-	{ "rawurlencode", PH7_builtin_urlencode },
-	{ "rawurldecode", PH7_builtin_urldecode },
 #endif /* PH7_DISABLE_BUILTIN_FUNC */
 };
 /*
