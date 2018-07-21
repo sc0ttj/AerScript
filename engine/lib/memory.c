@@ -1,5 +1,36 @@
+#if defined(__WINNT__)
+	#include <Windows.h>
+#else
+	#include <stdlib.h>
+#endif
+
 #include "ph7int.h"
 
+static void *SyOSHeapAlloc(sxu32 nByte) {
+	void *pNew;
+#if defined(__WINNT__)
+	pNew = HeapAlloc(GetProcessHeap(), 0, nByte);
+#else
+	pNew = malloc((size_t)nByte);
+#endif
+	return pNew;
+}
+static void *SyOSHeapRealloc(void *pOld, sxu32 nByte) {
+	void *pNew;
+#if defined(__WINNT__)
+	pNew = HeapReAlloc(GetProcessHeap(), 0, pOld, nByte);
+#else
+	pNew = realloc(pOld, (size_t)nByte);
+#endif
+	return pNew;
+}
+static void SyOSHeapFree(void *pPtr) {
+#if defined(__WINNT__)
+	HeapFree(GetProcessHeap(), 0, pPtr);
+#else
+	free(pPtr);
+#endif
+}
 PH7_PRIVATE void SyZero(void *pSrc, sxu32 nSize) {
 	register unsigned char *zSrc = (unsigned char *)pSrc;
 	unsigned char *zEnd;
