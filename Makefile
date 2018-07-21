@@ -60,7 +60,7 @@ ifeq "$(PLATFORM)" "Windows"
 	MD := md
 	RM := del /F
 	LIBS := -ldl -lm
-	LFLAGS := $(LFLAGS) -Wl,--export-dynamic -rdynamic
+	LFLAGS := $(LFLAGS) -Wl,--export-all-symbols -rdynamic
 	ESUFFIX := .exe
 	LSUFFIX := .dll
 endif
