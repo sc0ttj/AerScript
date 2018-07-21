@@ -14,7 +14,7 @@ LFLAGS =
 ### Do not modify anything below this line ###
 ##############################################
 ifeq ($(OS),Windows_NT)
-	PLATFORM := "Windows"
+	PLATFORM := Windows
 else
 	PLATFORM := $(shell uname -s)
 endif
