@@ -48,7 +48,7 @@ static sxi32 TokenizePHP(SyStream *pStream, SyToken *pToken, void *pUserData, vo
 		/* The following code fragment is taken verbatim from the xPP source tree.
 		 * xPP is a modern embeddable macro processor with advanced features useful for
 		 * application seeking for a production quality,ready to use macro processor.
-		 * xPP is a widely used library developed and maintened by Symisc Systems.
+		 * xPP is a widely used library developed and maintained by Symisc Systems.
 		 * You can reach the xPP home page by following this link:
 		 * http://xpp.symisc.net/
 		 */
@@ -221,7 +221,7 @@ static sxi32 TokenizePHP(SyStream *pStream, SyToken *pToken, void *pUserData, vo
 					/* Assemble type cast operators [i.e: (int),(float),(bool)...] */
 					if(pTokSet->nUsed >= 2) {
 						SyToken *pTmp;
-						/* Peek the last recongnized token */
+						/* Peek the last recognized token */
 						pTmp = (SyToken *)SySetPeek(pTokSet);
 						if(pTmp->nType & PH7_TK_KEYWORD) {
 							sxi32 nID = SX_PTR_TO_INT(pTmp->pUserData);
@@ -297,7 +297,7 @@ static sxi32 TokenizePHP(SyStream *pStream, SyToken *pToken, void *pUserData, vo
 						if(pStream->zText[0] == '{' && &pStream->zText[1] < pStream->zEnd && pStream->zText[1] == '$') {
 							iNest = 1;
 							pStream->zText++;
-							/* TICKET 1433-40: Hnadle braces'{}' in double quoted string where everything is allowed */
+							/* TICKET 1433-40: Handle braces'{}' in double quoted string where everything is allowed */
 							while(pStream->zText < pStream->zEnd) {
 								if(pStream->zText[0] == '{') {
 									iNest++;
