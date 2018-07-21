@@ -20,10 +20,7 @@
 #else
 	#include <dlfcn.h>
 #endif
-#ifndef PH7_PI
-	/* Value of PI */
-	#define PH7_PI 3.1415926535898
-#endif
+
 /*
  * Constants for the largest and smallest possible 64-bit signed integers.
  * These macros are designed to work correctly on both 32-bit and 64-bit
