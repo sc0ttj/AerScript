@@ -20,6 +20,27 @@ The core syntax of P# language is similar to that of other C-style languages suc
 Full P# Specification can be found on the [Wiki Pages](https://git.codingworkshop.eu.org/PSharp/psharp/wiki/P%23-v1.0-Specification).
 
 
+## P# - Modern PHP
+The name of the language was created analogically to C++ or C#. The ++ oerator in all C-style languages, including PHP means
+an increase. Thus as C# is more than C++, and C++ is more than C, the P# is more than PHP.
+
+Despite, that P# syntax draws among others upon PHP, it is not fully compatible with it. P# is a modern, pure Object-Oriented
+Language. The distinctive features and powerful extensions to the PHP programming language are:
+ * Strict, full OOP,
+ * Method overloading,
+ * Strict, full type hinting,
+ * Introducing comma expressions,
+ * Improved operator precedences,
+ * 64-bit integer arithmetic for all platforms,
+ * Smart exception mechanism,
+ * Native UTF-8 support,
+ * Built-in standard library and extensions support,
+ * Garbage Collected via Advanced Reference Counting,
+ * Correct and consistent implementation of the ternary operator,
+ * Consistent Boolean evaluation,
+ * Introducing the $_HEADER superglobal array which holds all HTTP MIME headers.
+
+
 ## Build Instructions
 P# is a multi-platform software, that can be built on any Operating System. On Unix-like. macOS and Cygwin it is as
 easy as to fetch the source code and issue single command:
@@ -27,8 +48,11 @@ easy as to fetch the source code and issue single command:
     make [debug/release]
 
 Above command will build a P# interpreter with all its SAPI and modules with debug information or basic release optimization,
-depending on the chosen option. On Windows, it is required to install MingW32 or MingW64 to build the P# Interpreter using
-Makefile. However, it is also possible to use other C compiler, especially MSVC.
+depending on the chosen option. All object files produced by compiler and binaries, produced by linker will appear in ./build/
+directory.
+
+On Windows, it is required to install MingW32 or MingW64 to build the P# Interpreter using Makefile. However, it is also possible
+to use other C compiler, especially MSVC.
 
 
 ## Licensing
