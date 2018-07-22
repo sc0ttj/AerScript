@@ -2,13 +2,16 @@
 CFLAGS = -fPIC -Iinclude -I. -W -Wunused -Wall
 
 # Additional CFLAGS for debug build
-DFLAGS = -O0 -g3
+DCFLAGS = -O0 -g3
 
 # Addditional CFLAGS for release build
-RFLAGS = -O3 -s
+RCFLAGS = -O3 -s
 
 # Flags to pass to the linker
-LFLAGS =
+LDFLAGS =
+
+# Destination directory
+DESTDIR ?= $(realpath .)/binary
 
 ##############################################
 ### Do not modify anything below this line ###
@@ -21,53 +24,54 @@ endif
 
 ifeq "$(PLATFORM)" "Darwin"
 	CC := clang
+	CP := cp -av
 	MD := mkdir -p
 	RM := rm -rfv
 	LIBS := -ldl -lm
-	LFLAGS := $(LFLAGS) -Wl,-export_dynamic -rdynamic -undefined dynamic_lookup
-	ESUFFIX :=
-	LSUFFIX := .dylib
+	EXESUFFIX :=
+	LIBSUFFIX := .dylib
 endif
 ifeq "$(PLATFORM)" "FreeBSD"
 	CC := clang
+	CP := cp -av
 	MD := mkdir -p
 	RM := rm -rfv
 	LIBS := -lm
-	LFLAGS := $(LFLAGS) -Wl,--export-dynamic -rdynamic
-	ESUFFIX :=
-	LSUFFIX := .so
+	EXESUFFIX :=
+	LIBSUFFIX := .so
 endif
 ifeq "$(PLATFORM)" "Linux"
 	CC := gcc
+	CP := cp -av
 	MD := mkdir -p
 	RM := rm -rfv
 	LIBS := -ldl -lm
-	LFLAGS := $(LFLAGS) -Wl,--export-dynamic -rdynamic
-	ESUFFIX :=
-	LSUFFIX := .so
+	EXESUFFIX :=
+	LIBSUFFIX := .so
 endif
 ifeq "$(PLATFORM)" "OpenBSD"
 	CC := clang
+	CP := cp -av
 	MD := mkdir -p
 	RM := rm -rfv
 	LIBS := -lm
-	LFLAGS := $(LFLAGS) -Wl,--export-dynamic -rdynamic
-	ESUFFIX :=
-	LSUFFIX := .so
+	EXESUFFIX :=
+	LIBSUFFIX := .so
 endif
 ifeq "$(PLATFORM)" "Windows"
 	CC := gcc
+	CP := copy
 	MD := md
 	RM := del /F
 	LIBS := -ldl -lm
-	LFLAGS := $(LFLAGS) -Wl,--export-all-symbols -rdynamic
-	ESUFFIX := .exe
-	LSUFFIX := .dll
+	EXESUFFIX := .exe
+	LIBSUFFIX := .dll
 endif
 
 BINARY := psharp
 BUILD_DIR := build
-CFLAGS := $(CFLAGS) -DPH7_LIBRARY_SUFFIX=\"$(LSUFFIX)\"
+CFLAGS := $(CFLAGS) -DPH7_LIBRARY_SUFFIX=\"$(LIBSUFFIX)\"
+LIBFLAGS := -Wl,-rpath=$(DESTDIR) -L$(BUILD_DIR) -l$(BINARY)
 
 ENGINE_DIRS := engine/lib engine
 ENGINE_SRCS := $(foreach dir,$(ENGINE_DIRS),$(wildcard $(dir)/*.c))
@@ -79,16 +83,17 @@ SAPI := $(subst /,,$(subst sapi/,,$(dir $(wildcard sapi/*/))))
 
 
 .SUFFIXES:
-.PHONY: clean debug release style test
+.PHONY: clean debug install release style test
 
-debug: export CFLAGS := $(CFLAGS) $(DFLAGS)
-debug: engine sapi module
-release: export CFLAGS := $(CFLAGS) $(RFLAGS)
-release: engine sapi module
+debug: export CFLAGS := $(CFLAGS) $(DCFLAGS)
+debug: engine sapi modules
+release: export CFLAGS := $(CFLAGS) $(RCFLAGS)
+release: engine sapi modules
 
 engine: $(ENGINE_OBJS)
+	$(CC) -o $(BUILD_DIR)/lib$(BINARY)$(LIBSUFFIX) $(LDFLAGS) $(LIBS) -shared $(ENGINE_OBJS)
 
-module: $(MODULE)
+modules: $(MODULE)
 
 sapi: $(SAPI)
 
@@ -101,18 +106,22 @@ $(MODULE):
 	$(eval MODULE_SRCS := $(foreach dir,modules/$(MODULE_DIRS),$(wildcard $(dir)/*.c)))
 	$(eval MODULE_MAKE := $(MODULE_SRCS:.c=.o))
 	$(eval MODULE_OBJS := $(addprefix $(BUILD_DIR)/,$(MODULE_MAKE)))
-	$(eval MODULE_PROG := $(MODULE_DIRS)$(LSUFFIX))
+	$(eval MODULE_PROG := $(MODULE_DIRS)$(LIBSUFFIX))
 	$(MAKE) $(MODULE_OBJS)
-	$(CC) -o $(BUILD_DIR)/$(MODULE_PROG) $(LFLAGS) $(LIBS) -shared $(MODULE_OBJS)
+	$(CC) -o $(BUILD_DIR)/$(MODULE_PROG) $(LDFLAGS) $(LIBFLAGS) -shared $(MODULE_OBJS)
 
 $(SAPI):
 	$(eval SAPI_DIRS := $@)
 	$(eval SAPI_SRCS := $(foreach dir,sapi/$(SAPI_DIRS),$(wildcard $(dir)/*.c)))
 	$(eval SAPI_MAKE := $(SAPI_SRCS:.c=.o))
 	$(eval SAPI_OBJS := $(addprefix $(BUILD_DIR)/,$(SAPI_MAKE)))
-	$(eval SAPI_PROG := $(subst -cli,,$(BINARY)-$(SAPI_DIRS))$(ESUFFIX))
+	$(eval SAPI_PROG := $(subst -cli,,$(BINARY)-$(SAPI_DIRS))$(EXESUFFIX))
 	$(MAKE) $(SAPI_OBJS)
-	$(CC) -o $(BUILD_DIR)/$(SAPI_PROG) $(LFLAGS) $(LIBS) $(ENGINE_OBJS) $(SAPI_OBJS)
+	$(CC) -o $(BUILD_DIR)/$(SAPI_PROG) $(LDFLAGS) $(LIBFLAGS) $(SAPI_OBJS)
 
 clean:
 	$(RM) $(BUILD_DIR)
+
+install:
+	$(MD) $(DESTDIR)
+	$(CP) $(BUILD_DIR)/* $(DESTDIR)/
