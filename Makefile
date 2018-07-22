@@ -24,7 +24,7 @@ endif
 
 ifeq "$(PLATFORM)" "Darwin"
 	CC := clang
-	CP := cp -av
+	CP := cp -v
 	MD := mkdir -p
 	RM := rm -rfv
 	LIBS := -ldl -lm
@@ -33,7 +33,7 @@ ifeq "$(PLATFORM)" "Darwin"
 endif
 ifeq "$(PLATFORM)" "FreeBSD"
 	CC := clang
-	CP := cp -av
+	CP := cp -v
 	MD := mkdir -p
 	RM := rm -rfv
 	LIBS := -lm
@@ -42,7 +42,7 @@ ifeq "$(PLATFORM)" "FreeBSD"
 endif
 ifeq "$(PLATFORM)" "Linux"
 	CC := gcc
-	CP := cp -av
+	CP := cp -v
 	MD := mkdir -p
 	RM := rm -rfv
 	LIBS := -ldl -lm
@@ -51,7 +51,7 @@ ifeq "$(PLATFORM)" "Linux"
 endif
 ifeq "$(PLATFORM)" "OpenBSD"
 	CC := clang
-	CP := cp -av
+	CP := cp -v
 	MD := mkdir -p
 	RM := rm -rfv
 	LIBS := -lm
@@ -124,4 +124,5 @@ clean:
 
 install:
 	$(MD) $(DESTDIR)
-	$(CP) $(BUILD_DIR)/* $(DESTDIR)/
+	$(CP) $(BUILD_DIR)/$(BINARY)* $(DESTDIR)/
+	$(CP) $(BUILD_DIR)/*$(LIBSUFFIX) $(DESTDIR)/
