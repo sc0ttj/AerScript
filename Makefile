@@ -2,7 +2,7 @@
 CFLAGS = -fPIC -Iinclude -I. -W -Wunused -Wall
 
 # Additional CFLAGS for debug build
-DFLAGS = -O0 -g
+DFLAGS = -O0 -g3
 
 # Addditional CFLAGS for release build
 RFLAGS = -O3 -s
