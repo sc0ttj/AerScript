@@ -2245,7 +2245,6 @@ static sxi32 VmThrowErrorAp(
 		SyBlobAppend(pWorker, pFile->zString, pFile->nByte);
 		SyBlobAppend(pWorker, (const void *)" ", sizeof(char));
 	}
-	zErr = "Error: ";
 	switch(iErr) {
 		case PH7_CTX_WARNING:
 			zErr = "Warning: ";
@@ -2255,6 +2254,7 @@ static sxi32 VmThrowErrorAp(
 			break;
 		default:
 			iErr = PH7_CTX_ERR;
+			zErr = "Error: ";
 			break;
 	}
 	SyBlobAppend(pWorker, zErr, SyStrlen(zErr));
@@ -2266,6 +2266,11 @@ static sxi32 VmThrowErrorAp(
 	SyBlobFormatAp(pWorker, zFormat, ap);
 	/* Consume the error message */
 	rc = VmCallErrorHandler(&(*pVm), pWorker);
+	if(iErr == PH7_CTX_ERR) {
+		/* Error ocurred, release at least VM gracefully and exit */
+		PH7_VmRelease(pVm);
+		exit(255);
+	}
 	return rc;
 }
 /*
