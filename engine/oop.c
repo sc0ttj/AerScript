@@ -379,7 +379,7 @@ PH7_PRIVATE sxi32 PH7_ClassImplement(ph7_class *pMain, ph7_class *pInterface) {
 	/* Install in the interface container */
 	SySetPut(&pMain->aInterface, (const void *)&pInterface);
 	/* TICKET 1433-49/1: Symisc eXtension
-	 *  A class may not implemnt all declared interface methods,so there
+	 *  A class may not implement all declared interface methods,so there
 	 *  is no need for a method installer loop here.
 	 */
 	return SXRET_OK;

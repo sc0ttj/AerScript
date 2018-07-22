@@ -844,7 +844,7 @@ static sxi32 GenStateCompileArrayEntry(
  * Return SXRET_OK if the tree is valid. Any other return value indicates
  * an invalid expression tree and this function will generate the appropriate
  * error message.
- * See the routine responible of compiling the array language construct
+ * See the routine responsible of compiling the array language construct
  * for more inforation.
  */
 static sxi32 GenStateArrayNodeValidator(ph7_gen_state *pGen, ph7_expr_node *pRoot) {
@@ -988,7 +988,7 @@ PH7_PRIVATE sxi32 PH7_CompileArray(ph7_gen_state *pGen, sxi32 iCompileFlag) {
  * Return SXRET_OK if the tree is valid. Any other return value indicates
  * an invalid expression tree and this function will generate the appropriate
  * error message.
- * See the routine responible of compiling the list language construct
+ * See the routine responsible of compiling the list language construct
  * for more inforation.
  */
 static sxi32 GenStateListNodeValidator(ph7_gen_state *pGen, ph7_expr_node *pRoot) {
@@ -1060,7 +1060,7 @@ PH7_PRIVATE sxi32 PH7_CompileList(ph7_gen_state *pGen, sxi32 iCompileFlag) {
 /* Forward declaration */
 static sxi32 GenStateCompileFunc(ph7_gen_state *pGen, SyString *pName, sxi32 iFlags, int bHandleClosure, ph7_vm_func **ppFunc);
 /*
- * Compile an annoynmous function or a closure.
+ * Compile an anonymous function or a closure.
  * According to the PHP language reference
  *  Anonymous functions, also known as closures, allow the creation of functions
  *  which have no specified name. They are most useful as the value of callback
@@ -1076,11 +1076,11 @@ static sxi32 GenStateCompileFunc(ph7_gen_state *pGen, SyString *pName, sxi32 iFl
  * $greet('World');
  * $greet('PHP');
  * ?>
- * Note that the implementation of annoynmous function and closure under
+ * Note that the implementation of anonymous function and closure under
  * PH7 is completely different from the one used by the zend engine.
  */
 PH7_PRIVATE sxi32 PH7_CompileAnnonFunc(ph7_gen_state *pGen, sxi32 iCompileFlag) {
-	ph7_vm_func *pAnnonFunc; /* Annonymous function body */
+	ph7_vm_func *pAnnonFunc; /* Anonymous function body */
 	char zName[512];         /* Unique lambda name */
 	static int iCnt = 1;     /* There is no worry about thread-safety here,because only
 							  * one thread is allowed to compile the script.
@@ -3071,7 +3071,7 @@ static sxi32 PH7_CompileUse(ph7_gen_state *pGen) {
  *   return "Making a cup of $type.\n";
  * }
  * Symisc eXtension.
- *  1 -) Default arguments value can be any complex expression [i.e: function call,annynoymous
+ *  1 -) Default arguments value can be any complex expression [i.e: function call,anonymous
  *      functions,array member,..] unlike the zend which would allow only single scalar value.
  *      Example: Work only with PH7,generate error under zend
  *      function test($a = 'Hello'.'World: '.rand_str(3))
@@ -3168,7 +3168,7 @@ static sxi32 GenStateProcessArgValue(ph7_gen_state *pGen, ph7_vm_func_arg *pArg,
  * ?>
  *
  * PH7 have introduced powerful extension including full type hinting,function overloading
- * complex agrument values.Please refer to the official documentation for more information
+ * complex argument values.Please refer to the official documentation for more information
  * on these extension.
  */
 static sxi32 GenStateCollectFuncArgs(ph7_vm_func *pFunc, ph7_gen_state *pGen, SyToken *pEnd) {
@@ -3330,7 +3330,7 @@ static sxi32 GenStateCollectFuncArgs(ph7_vm_func *pFunc, ph7_gen_state *pGen, Sy
 	return SXRET_OK;
 }
 /*
- * Compile function [i.e: standard function, annonymous function or closure ] body.
+ * Compile function [i.e: standard function, anonymous function or closure ] body.
  * Return SXRET_OK on success. Any other return value indicates failure
  * and this routine takes care of generating the appropriate error message.
  */
@@ -3369,7 +3369,7 @@ static sxi32 GenStateCompileFuncBody(
 	return SXRET_OK;
 }
 /*
- * Compile a PHP function whether is a Standard or Annonymous function.
+ * Compile a PHP function whether is a Standard or Anonymous function.
  * According to the PHP language reference manual.
  *  Function names follow the same rules as other labels in PHP. A valid function name
  *  starts with a letter or underscore, followed by any number of letters, numbers, or
@@ -3382,7 +3382,7 @@ static sxi32 GenStateCompileFuncBody(
  *  calls with over 32-64 recursion levels.
  *
  * PH7 have introduced powerful extension including full type hinting, function overloading,
- * complex agrument values and more. Please refer to the official documentation for more information
+ * complex argument values and more. Please refer to the official documentation for more information
  * on these extension.
  */
 static sxi32 GenStateCompileFunc(
@@ -3576,7 +3576,7 @@ static sxi32 PH7_CompileFunction(ph7_gen_state *pGen) {
 		if(rc == SXERR_ABORT) {
 			return SXERR_ABORT;
 		}
-		/* Sychronize with the next semi-colon or braces*/
+		/* Synchronize with the next semi-colon or braces*/
 		while(pGen->pIn < pGen->pEnd && (pGen->pIn->nType & (PH7_TK_SEMI | PH7_TK_OCB)) == 0) {
 			pGen->pIn++;
 		}
@@ -3593,7 +3593,7 @@ static sxi32 PH7_CompileFunction(ph7_gen_state *pGen) {
 			/* Error count limit reached,abort immediately */
 			return SXERR_ABORT;
 		}
-		/* Sychronize with the next semi-colon or '{' */
+		/* Synchronize with the next semi-colon or '{' */
 		while(pGen->pIn < pGen->pEnd && (pGen->pIn->nType & (PH7_TK_SEMI | PH7_TK_OCB)) == 0) {
 			pGen->pIn++;
 		}
@@ -3749,7 +3749,7 @@ Synchronize:
 	return SXERR_CORRUPT;
 }
 /*
- * complie a class attribute or Properties in the PHP jargon.
+ * compile a class attribute or Properties in the PHP jargon.
  * According to the PHP language reference manual
  *  Properties
  *  Class member variables are called "properties". You may also see them referred
@@ -4667,7 +4667,7 @@ static sxi32 PH7_CompileClass(ph7_gen_state *pGen) {
 /*
  * Exception handling.
  *  According to the PHP language reference manual
- *    An exception can be thrown, and caught ("catched") within PHP. Code may be surrounded
+ *    An exception can be thrown, and caught within PHP. Code may be surrounded
  *    in a try block, to facilitate the catching of potential exceptions. Each try must have
  *    at least one corresponding catch block. Multiple catch blocks can be used to catch
  *    different classes of exceptions. Normal execution (when no exception is thrown within

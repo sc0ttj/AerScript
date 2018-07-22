@@ -5468,7 +5468,7 @@ static int PH7_builtin_zip_entry_read(ph7_context *pCtx, int nArg, ph7_value **a
 		zData = (const char *)SyBlobDataAt(&pRaw->raw.sBlob, (pEntry->nOfft + pEntry->nReadCount));
 	} else {
 		const char *zMap = (const char *)pRaw->raw.mmap.pMap;
-		/* Memory mmaped chunk */
+		/* Memory mapped chunk */
 		zData = &zMap[pEntry->nOfft + pEntry->nReadCount];
 	}
 	/* Increment the read counter */

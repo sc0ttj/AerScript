@@ -4030,7 +4030,7 @@ static int PH7_builtin_vsprintf(ph7_context *pCtx, int nArg, ph7_value **apArg) 
 /*
  * Symisc eXtension.
  * string size_format(int64 $size)
- *  Return a smart string represenation of the given size [i.e: 64-bit integer]
+ *  Return a smart string representation of the given size [i.e: 64-bit integer]
  *  Example:
  *    echo size_format(1*1024*1024*1024);// 1GB
  *    echo size_format(512*1024*1024); // 512 MB

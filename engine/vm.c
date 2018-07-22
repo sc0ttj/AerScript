@@ -7495,7 +7495,7 @@ PH7_PRIVATE sxi32 PH7_VmCallUserFunction(
 	/* Push the function name */
 	PH7_MemObjLoad(pFunc, &aStack[i]);
 	aStack[i].nIdx = SXU32_HIGH; /* Mark as constant */
-	/* Emit the CALL istruction */
+	/* Emit the CALL instruction */
 	aInstr[0].iOp = PH7_OP_CALL;
 	aInstr[0].iP1 = nArg; /* Total number of given arguments */
 	aInstr[0].iP2 = 0;
@@ -12663,7 +12663,7 @@ static sxi32 VmHttpProcessRequest(ph7_vm *pVm, const char *zRequest, int nByte) 
 	SyStringInitFromBuf(&sRequest, zRequest, nByte);
 	SySetInit(&sHeader, &pVm->sAllocator, sizeof(SyhttpHeader));
 	SyBlobInit(&sWorker, &pVm->sAllocator);
-	/* Ignore leading and trailing white spaces*/
+	/* Ignore leading and trailing white spaces */
 	SyStringFullTrim(&sRequest);
 	/* Process the first line */
 	rc = VmHttpProcessFirstLine(&sRequest, &iMethod, &sUri, &iVer);
