@@ -500,7 +500,6 @@ static int PH7_builtin_ctype_upper(ph7_context *pCtx, int nArg, ph7_value **apAr
 PH7_PRIVATE sxi32 initializeModule(ph7_vm *pVm, ph7_real *ver, SyString *desc) {
 	sxi32 rc;
 	sxu32 n;
-
 	desc->zString = MODULE_DESC;
 	*ver = MODULE_VER;
 	for(n = 0; n < SX_ARRAYSIZE(ctypeFuncList); ++n) {

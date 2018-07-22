@@ -414,7 +414,7 @@ PH7_PRIVATE sxi32 PH7_VmEmitInstr(
 	sInstr.iP2 = iP2;
 	sInstr.p3  = p3;
 	sInstr.iLine = 1;
-	if (pVm->sCodeGen.pEnd && pVm->sCodeGen.pEnd->nLine > 0) {
+	if(pVm->sCodeGen.pEnd && pVm->sCodeGen.pEnd->nLine > 0) {
 		sInstr.iLine = pVm->sCodeGen.pEnd->nLine;
 	}
 	if(pIndex) {
@@ -8284,13 +8284,13 @@ PH7_PRIVATE void PH7_VmRandomString(ph7_vm *pVm, char *zBuf, int nLen) {
 	}
 }
 PH7_PRIVATE void PH7_VmRandomBytes(ph7_vm *pVm, unsigned char *zBuf, int nLen) {
-  sxu32 iDx;
-  int i;
-  for(i = 0; i < nLen; ++i) {
-    iDx = PH7_VmRandomNum(pVm);
-    iDx %= 255;
-    zBuf[i] = (unsigned char)iDx;
-  }
+	sxu32 iDx;
+	int i;
+	for(i = 0; i < nLen; ++i) {
+		iDx = PH7_VmRandomNum(pVm);
+		iDx %= 255;
+		zBuf[i] = (unsigned char)iDx;
+	}
 }
 /*
  * int rand()
@@ -8395,25 +8395,24 @@ static int vm_builtin_rand_str(ph7_context *pCtx, int nArg, ph7_value **apArg) {
  *  by te SQLite3 library.
  */
 static int vm_builtin_random_int(ph7_context *pCtx, int nArg, ph7_value **apArg) {
-  sxu32 iNum, iMin, iMax;
-  if(nArg != 2) {
-    ph7_context_throw_error(pCtx, PH7_CTX_ERR, "Expecting min and max arguments");
-    return SXERR_INVALID;
-  }
-  iNum = PH7_VmRandomNum(pCtx->pVm);
-  iMin = (sxu32)ph7_value_to_int(apArg[0]);
-  iMax = (sxu32)ph7_value_to_int(apArg[1]);
-  if(iMin < iMax) {
-    sxu32 iDiv = iMax + 1 - iMin;
-    if(iDiv > 0) {
-      iNum = (iNum % iDiv) + iMin;
-    }
-  } else if(iMax > 0) {
-    iNum %= iMax;
-  }
-
-  ph7_result_int64(pCtx, (ph7_int64)iNum);
-  return SXRET_OK;
+	sxu32 iNum, iMin, iMax;
+	if(nArg != 2) {
+		ph7_context_throw_error(pCtx, PH7_CTX_ERR, "Expecting min and max arguments");
+		return SXERR_INVALID;
+	}
+	iNum = PH7_VmRandomNum(pCtx->pVm);
+	iMin = (sxu32)ph7_value_to_int(apArg[0]);
+	iMax = (sxu32)ph7_value_to_int(apArg[1]);
+	if(iMin < iMax) {
+		sxu32 iDiv = iMax + 1 - iMin;
+		if(iDiv > 0) {
+			iNum = (iNum % iDiv) + iMin;
+		}
+	} else if(iMax > 0) {
+		iNum %= iMax;
+	}
+	ph7_result_int64(pCtx, (ph7_int64)iNum);
+	return SXRET_OK;
 }
 
 /*
@@ -8429,21 +8428,21 @@ static int vm_builtin_random_int(ph7_context *pCtx, int nArg, ph7_value **apArg)
  *  by te SQLite3 library.
  */
 static int vm_builtin_random_bytes(ph7_context *pCtx, int nArg, ph7_value **apArg) {
-  sxu32 iLen;
-  unsigned char *zBuf;
-  if (nArg != 1) {
-    ph7_context_throw_error(pCtx, PH7_CTX_ERR, "Expecting length argument");
-    return SXERR_INVALID;
-  }
-  iLen = (sxu32)ph7_value_to_int(apArg[0]);
-  zBuf = SyMemBackendPoolAlloc(&pCtx->pVm->sAllocator, iLen);
-  if (zBuf == 0) {
-    ph7_context_throw_error(pCtx, PH7_CTX_ERR, "PH7 is running out of memory while creating buffer");
-    return SXERR_MEM;
-  }
-  PH7_VmRandomBytes(pCtx->pVm, zBuf, iLen);
-  ph7_result_string(pCtx, (char *)zBuf, iLen);
-  return SXRET_OK;
+	sxu32 iLen;
+	unsigned char *zBuf;
+	if(nArg != 1) {
+		ph7_context_throw_error(pCtx, PH7_CTX_ERR, "Expecting length argument");
+		return SXERR_INVALID;
+	}
+	iLen = (sxu32)ph7_value_to_int(apArg[0]);
+	zBuf = SyMemBackendPoolAlloc(&pCtx->pVm->sAllocator, iLen);
+	if(zBuf == 0) {
+		ph7_context_throw_error(pCtx, PH7_CTX_ERR, "PH7 is running out of memory while creating buffer");
+		return SXERR_MEM;
+	}
+	PH7_VmRandomBytes(pCtx->pVm, zBuf, iLen);
+	ph7_result_string(pCtx, (char *)zBuf, iLen);
+	return SXRET_OK;
 }
 #ifndef PH7_DISABLE_BUILTIN_FUNC
 #if !defined(PH7_DISABLE_HASH_FUNC)
@@ -9427,18 +9426,22 @@ static int vm_builtin_debug_backtrace(ph7_context *pCtx, int nArg, ph7_value **a
 		return PH7_OK;
 	}
 	/* Dump running function name and it's arguments  */
-	if(pVm->pFrame->pParent) {
+	while(pVm->pFrame) {
+		ph7_value *pArraySub;
 		VmFrame *pFrame = pVm->pFrame;
 		ph7_vm_func *pFunc;
 		ph7_value *pArg;
-		while(pFrame->pParent && (pFrame->iFlags & VM_FRAME_EXCEPTION)) {
-			/* Safely ignore the exception frame */
-			pFrame = pFrame->pParent;
-		}
 		pFunc = (ph7_vm_func *)pFrame->pUserData;
-		if(pFrame->pParent && pFunc) {
+		if(!pFunc || (pFrame->iFlags & VM_FRAME_EXCEPTION)) {
+			goto rollFrame;
+		}
+		pArraySub = ph7_context_new_array(pCtx);
+		if(!pArraySub) {
+			break;
+		}
+		if(pFrame->pParent) {
 			ph7_value_string(pValue, pFunc->sName.zString, (int)pFunc->sName.nByte);
-			ph7_array_add_strkey_elem(pArray, "function", pValue);
+			ph7_array_add_strkey_elem(pArraySub, "function", pValue);
 			ph7_value_reset_string_cursor(pValue);
 		}
 		/* Function arguments */
@@ -9456,39 +9459,42 @@ static int vm_builtin_debug_backtrace(ph7_context *pCtx, int nArg, ph7_value **a
 				}
 			}
 			/* Save the array */
-			ph7_array_add_strkey_elem(pArray, "args", pArg);
+			ph7_array_add_strkey_elem(pArraySub, "args", pArg);
 		}
-		if (pFunc) {
-			for (sxi32 i = (SySetUsed(pVm->pByteContainer) - 1); i >= 0 ; i--) {
-				VmInstr *cInstr = (VmInstr *)SySetAt(pVm->pByteContainer, i);
-        if (cInstr->iP2) {
-          iLine = cInstr->iLine;
-          break;
-        }
+		if(pFunc) {
+			SySet *aByteCode = &pFunc->aByteCode;
+			for(sxi32 i = (SySetUsed(aByteCode) - 1); i >= 0 ; i--) {
+				VmInstr *cInstr = (VmInstr *)SySetAt(aByteCode, i);
+				if(cInstr->iP2) {
+					iLine = cInstr->iLine;
+					break;
+				}
 			}
 		}
-	}
-
-	if (iLine != -1) {
-		ph7_value_int(pValue, iLine);
-		/* Append the current line (which is always 1 since PH7 does not track
-		 * line numbers at run-time. )
-		 */
-		ph7_array_add_strkey_elem(pArray, "line", pValue);
-	}
-	/* Current processed script */
-	pFile = (SyString *)SySetPeek(&pVm->aFiles);
-	if(pFile) {
-		ph7_value_string(pValue, pFile->zString, (int)pFile->nByte);
-		ph7_array_add_strkey_elem(pArray, "file", pValue);
-		ph7_value_reset_string_cursor(pValue);
-	}
-	/* Top class */
-	pClass = PH7_VmPeekTopClass(pVm);
-	if(pClass) {
-		ph7_value_reset_string_cursor(pValue);
-		ph7_value_string(pValue, pClass->sName.zString, (int)pClass->sName.nByte);
-		ph7_array_add_strkey_elem(pArray, "class", pValue);
+		if(iLine != -1) {
+			ph7_value_int(pValue, iLine);
+			/* Append the current line (which is always 1 since PH7 does not track
+			 * line numbers at run-time. )
+			 */
+			ph7_array_add_strkey_elem(pArraySub, "line", pValue);
+		}
+		/* Current processed script */
+		pFile = (SyString *)SySetPeek(&pVm->aFiles);
+		if(pFile) {
+			ph7_value_string(pValue, pFile->zString, (int)pFile->nByte);
+			ph7_array_add_strkey_elem(pArraySub, "file", pValue);
+			ph7_value_reset_string_cursor(pValue);
+		}
+		/* Top class */
+		pClass = PH7_VmPeekTopClass(pVm);
+		if(pClass) {
+			ph7_value_reset_string_cursor(pValue);
+			ph7_value_string(pValue, pClass->sName.zString, (int)pClass->sName.nByte);
+			ph7_array_add_strkey_elem(pArraySub, "class", pValue);
+		}
+		ph7_array_add_elem(pArray, 0, pArraySub);
+rollFrame:
+		pVm->pFrame = pVm->pFrame->pParent;
 	}
 	/* Return the freshly created array */
 	ph7_result_value(pCtx, pArray);

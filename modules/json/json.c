@@ -889,7 +889,6 @@ static int vm_builtin_json_decode(ph7_context *pCtx, int nArg, ph7_value **apArg
 PH7_PRIVATE sxi32 initializeModule(ph7_vm *pVm, ph7_real *ver, SyString *desc) {
 	sxi32 rc;
 	sxu32 n;
-
 	desc->zString = MODULE_DESC;
 	*ver = MODULE_VER;
 	for(n = 0; n < SX_ARRAYSIZE(jsonConstList); ++n) {

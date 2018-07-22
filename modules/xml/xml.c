@@ -1464,7 +1464,6 @@ static int vm_builtin_xml_error_string(ph7_context *pCtx, int nArg, ph7_value **
 PH7_PRIVATE sxi32 initializeModule(ph7_vm *pVm, ph7_real *ver, SyString *desc) {
 	sxi32 rc;
 	sxu32 n;
-
 	desc->zString = MODULE_DESC;
 	*ver = MODULE_VER;
 	for(n = 0; n < SX_ARRAYSIZE(xmlConstList); ++n) {

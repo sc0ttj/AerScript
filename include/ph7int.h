@@ -1728,11 +1728,11 @@ PH7_PRIVATE void *PH7_ExportStdout(ph7_vm *pVm);
 PH7_PRIVATE void *PH7_ExportStderr(ph7_vm *pVm);
 /* lib.c function prototypes */
 #ifndef PH7_DISABLE_BUILTIN_FUNC
-PH7_PRIVATE sxi32 SyArchiveInit(SyArchive *pArch, SyMemBackend *pAllocator, ProcHash xHash, ProcRawStrCmp xCmp);
-PH7_PRIVATE sxi32 SyArchiveRelease(SyArchive *pArch);
-PH7_PRIVATE sxi32 SyArchiveResetLoopCursor(SyArchive *pArch);
-PH7_PRIVATE sxi32 SyArchiveGetNextEntry(SyArchive *pArch, SyArchiveEntry **ppEntry);
-PH7_PRIVATE sxi32 SyZipExtractFromBuf(SyArchive *pArch, const char *zBuf, sxu32 nLen);
+	PH7_PRIVATE sxi32 SyArchiveInit(SyArchive *pArch, SyMemBackend *pAllocator, ProcHash xHash, ProcRawStrCmp xCmp);
+	PH7_PRIVATE sxi32 SyArchiveRelease(SyArchive *pArch);
+	PH7_PRIVATE sxi32 SyArchiveResetLoopCursor(SyArchive *pArch);
+	PH7_PRIVATE sxi32 SyArchiveGetNextEntry(SyArchive *pArch, SyArchiveEntry **ppEntry);
+	PH7_PRIVATE sxi32 SyZipExtractFromBuf(SyArchive *pArch, const char *zBuf, sxu32 nLen);
 #endif /* PH7_DISABLE_BUILTIN_FUNC */
 #ifndef PH7_DISABLE_BUILTIN_FUNC
 	PH7_PRIVATE sxi32 SyBinToHexConsumer(const void *pIn, sxu32 nLen, ProcConsumer xConsumer, void *pConsumerData);

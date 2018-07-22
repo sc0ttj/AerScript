@@ -625,13 +625,12 @@ static int PH7_builtin_hypot(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	return PH7_OK;
 }
 
-PH7_PRIVATE sxi32 initializeModule(ph7_vm *pVm, ph7_real *ver, SyString *desc){
+PH7_PRIVATE sxi32 initializeModule(ph7_vm *pVm, ph7_real *ver, SyString *desc) {
 	sxi32 rc;
 	sxu32 n;
-	
 	desc->zString = MODULE_DESC;
 	*ver = MODULE_VER;
-		for(n = 0; n < SX_ARRAYSIZE(mathConstList); ++n) {
+	for(n = 0; n < SX_ARRAYSIZE(mathConstList); ++n) {
 		rc = ph7_create_constant(&(*pVm), mathConstList[n].zName, mathConstList[n].xExpand, &(*pVm));
 		if(rc != SXRET_OK) {
 			return rc;

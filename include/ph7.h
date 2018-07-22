@@ -167,32 +167,32 @@ typedef struct ph7 ph7;
 #if !defined(SYMISC_STANDARD_DEFS)
 #define SYMISC_STANDARD_DEFS
 #if defined (_WIN32) || defined (WIN32) || defined(__MINGW32__) || defined (_MSC_VER) || defined (_WIN32_WCE)
-/* Windows Systems */
-#if !defined(__WINNT__)
-#define __WINNT__
-#endif
+	/* Windows Systems */
+	#if !defined(__WINNT__)
+		#define __WINNT__
+	#endif
 #else
-/*
- * By default we will assume that we are compiling on a UNIX systems.
- * Otherwise the OS_OTHER directive must be defined.
- */
-#if !defined(OS_OTHER)
-#if !defined(__UNIXES__)
-#define __UNIXES__
-#endif /* __UNIXES__ */
-#else
-#endif /* OS_OTHER */
+	/*
+	* By default we will assume that we are compiling on a UNIX systems.
+	* Otherwise the OS_OTHER directive must be defined.
+	*/
+	#if !defined(OS_OTHER)
+		#if !defined(__UNIXES__)
+			#define __UNIXES__
+		#endif /* __UNIXES__ */
+	#else
+	#endif /* OS_OTHER */
 #endif /* __WINNT__/__UNIXES__ */
 #if defined(_MSC_VER) || defined(__BORLANDC__)
-typedef signed __int64     sxi64; /* 64 bits(8 bytes) signed int64 */
-typedef unsigned __int64   sxu64; /* 64 bits(8 bytes) unsigned int64 */
+	typedef signed __int64     sxi64; /* 64 bits(8 bytes) signed int64 */
+	typedef unsigned __int64   sxu64; /* 64 bits(8 bytes) unsigned int64 */
 #else
-typedef signed long long int   sxi64; /* 64 bits(8 bytes) signed int64 */
-typedef unsigned long long int sxu64; /* 64 bits(8 bytes) unsigned int64 */
+	typedef signed long long int   sxi64; /* 64 bits(8 bytes) signed int64 */
+	typedef unsigned long long int sxu64; /* 64 bits(8 bytes) unsigned int64 */
 #endif /* _MSC_VER */
 /* Solaris additions */
 #ifndef MAP_FILE
-#define MAP_FILE 0
+	#define MAP_FILE 0
 #endif
 /* Signature of the consumer routine */
 typedef int (*ProcConsumer)(const void *, unsigned int, void *);
@@ -283,11 +283,11 @@ struct SyMutexMethods {
 	void (*xLeave)(SyMutex *);	     /* [Required:] Leave a locked mutex */
 };
 #if defined (_MSC_VER) || defined (__MINGW32__) ||  defined (__GNUC__) && defined (__declspec)
-#define SX_APIIMPORT	__declspec(dllimport)
-#define SX_APIEXPORT	__declspec(dllexport)
+	#define SX_APIIMPORT	__declspec(dllimport)
+	#define SX_APIEXPORT	__declspec(dllexport)
 #else
-#define	SX_APIIMPORT
-#define	SX_APIEXPORT
+	#define	SX_APIIMPORT
+	#define	SX_APIEXPORT
 #endif
 /* Standard return values from Symisc public interfaces */
 #define SXRET_OK       0      /* Not an error */
@@ -342,9 +342,9 @@ struct SyMutexMethods {
  * support, substitute integer for floating-point.
  */
 #ifdef PH7_OMIT_FLOATING_POINT
-typedef sxi64 ph7_real;
+	typedef sxi64 ph7_real;
 #else
-typedef double ph7_real;
+	typedef double ph7_real;
 #endif
 typedef sxi64 ph7_int64;
 #define PH7_APIEXPORT SX_APIEXPORT
