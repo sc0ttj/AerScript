@@ -73,6 +73,31 @@ ifeq "$(PLATFORM)" "Windows"
 	LIBSUFFIX := .dll
 endif
 
+ASTYLE_FLAGS =\
+	--style=java \
+	--indent=force-tab \
+	--attach-closing-while \
+	--attach-inlines \
+	--attach-classes \
+	--indent-classes \
+	--indent-modifiers \
+	--indent-switches \
+	--indent-cases \
+	--indent-preproc-block \
+	--indent-preproc-define \
+	--indent-col1-comments \
+	--pad-oper \
+	--pad-comma \
+	--unpad-paren \
+	--delete-empty-lines \
+	--align-pointer=name \
+	--align-reference=name \
+	--break-one-line-headers \
+	--add-braces \
+	--verbose \
+	--formatted \
+	--lineend=linux
+
 BINARY := psharp
 BUILD_DIR := build
 CFLAGS := $(CFLAGS) -DPH7_LIBRARY_SUFFIX=\"$(LIBSUFFIX)\"
@@ -131,3 +156,6 @@ install:
 	$(MD) $(DESTDIR)
 	$(CP) $(BUILD_DIR)/$(BINARY)* $(DESTDIR)/
 	$(CP) $(BUILD_DIR)/*$(LIBSUFFIX) $(DESTDIR)/
+
+style:
+	astyle $(ASTYLE_FLAGS) --recursive ./*.c,*.h
