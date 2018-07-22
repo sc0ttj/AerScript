@@ -27,6 +27,7 @@ ifeq "$(PLATFORM)" "Darwin"
 	CP := cp -v
 	MD := mkdir -p
 	RM := rm -rfv
+	LDFLAGS := $(LDFLAGS) -Wl,--export-dynamic -undefined dynamic_lookup
 	LIBS := -ldl -lm
 	EXESUFFIX :=
 	LIBSUFFIX := .dylib
@@ -36,6 +37,7 @@ ifeq "$(PLATFORM)" "FreeBSD"
 	CP := cp -v
 	MD := mkdir -p
 	RM := rm -rfv
+	LDFLAGS := $(LDFLAGS) -Wl,--export-dynamic
 	LIBS := -lm
 	EXESUFFIX :=
 	LIBSUFFIX := .so
@@ -45,6 +47,7 @@ ifeq "$(PLATFORM)" "Linux"
 	CP := cp -v
 	MD := mkdir -p
 	RM := rm -rfv
+	LDFLAGS := $(LDFLAGS) -Wl,--export-dynamic
 	LIBS := -ldl -lm
 	EXESUFFIX :=
 	LIBSUFFIX := .so
@@ -54,6 +57,7 @@ ifeq "$(PLATFORM)" "OpenBSD"
 	CP := cp -v
 	MD := mkdir -p
 	RM := rm -rfv
+	LDFLAGS := $(LDFLAGS) -Wl,--export-dynamic
 	LIBS := -lm
 	EXESUFFIX :=
 	LIBSUFFIX := .so
@@ -63,7 +67,8 @@ ifeq "$(PLATFORM)" "Windows"
 	CP := copy
 	MD := md
 	RM := del /F
-	LIBS := -ldl -lm
+	LDFLAGS := $(LDFLAGS) -Wl,--export-all-symbols
+	LIBS :=
 	EXESUFFIX := .exe
 	LIBSUFFIX := .dll
 endif
