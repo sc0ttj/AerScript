@@ -182,6 +182,10 @@ int main(int argc, char **argv) {
 	if(rc != PH7_OK) {
 		Fatal("Error while installing the VM output consumer callback");
 	}
+	rc = ph7_vm_config(pVm, PH7_VM_CONFIG_ERR_REPORT, 1, 0);
+	if(rc != PH7_OK) {
+		Fatal("Error while configuring the VM error reporting");
+	}
 	/* Register script agruments so we can access them later using the $argv[]
 	 * array from the compiled PHP program.
 	 */
