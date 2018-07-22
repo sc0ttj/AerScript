@@ -27,7 +27,7 @@ ifeq "$(PLATFORM)" "Darwin"
 	CP := cp -v
 	MD := mkdir -p
 	RM := rm -rfv
-	LDFLAGS := $(LDFLAGS) -Wl,-export_dynamic -undefined dynamic_lookup
+	LDFLAGS := $(LDFLAGS) -Wl,-export-dynamic -undefined dynamic_lookup
 	LIBS := -ldl -lm
 	EXESUFFIX :=
 	LIBSUFFIX := .dylib
@@ -101,7 +101,7 @@ ASTYLE_FLAGS =\
 BINARY := psharp
 BUILD_DIR := build
 CFLAGS := $(CFLAGS) -DPH7_LIBRARY_SUFFIX=\"$(LIBSUFFIX)\"
-LIBFLAGS := -Wl,-rpath,$(DESTDIR) -L$(BUILD_DIR) -l$(BINARY)
+LIBFLAGS := -Wl,-rpath=$(DESTDIR) -L$(BUILD_DIR) -l$(BINARY)
 
 ENGINE_DIRS := engine/lib engine
 ENGINE_SRCS := $(foreach dir,$(ENGINE_DIRS),$(wildcard $(dir)/*.c))
