@@ -24,7 +24,7 @@ ifeq "$(PLATFORM)" "Darwin"
 	MD := mkdir -p
 	RM := rm -rfv
 	LIBS := -ldl -lm
-	LFLAGS := $(LFLAGS) -Wl,--export-dynamic -rdynamic
+	LFLAGS := $(LFLAGS) -Wl,-export_dynamic -rdynamic -undefined dynamic_lookup
 	ESUFFIX :=
 	LSUFFIX := .dylib
 endif
