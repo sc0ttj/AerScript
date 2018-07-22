@@ -630,6 +630,9 @@ static int VmOverloadCompare(SyString *pFirst, SyString *pSecond) {
 	}
 	return (int)(zFin - zPtr);
 }
+/* Forward declaration */
+static sxi32 VmLocalExec(ph7_vm *pVm, SySet *pByteCode, ph7_value *pResult);
+static sxi32 VmErrorFormat(ph7_vm *pVm, sxi32 iErr, const char *zFormat, ...);
 /*
  * Select the appropriate VM function for the current call context.
  * This is the implementation of the powerful 'function overloading' feature
@@ -662,8 +665,8 @@ static ph7_vm_func *VmOverload(
 		pLink = pLink->pNextName;
 	}
 	if(i < 1) {
-		/* No candidates,return the head of the list */
-		return pList;
+		/* No candidates, throw an error */
+		VmErrorFormat(&(*pVm), PH7_CTX_ERR, "Invalid number of arguments passed to function/method '%s'", pList->sName);
 	}
 	if(nArg < 1 || i < 2) {
 		/* Return the only candidate */
@@ -715,9 +718,6 @@ static ph7_vm_func *VmOverload(
 	/* Appropriate function for the current call context */
 	return apSet[iTarget];
 }
-/* Forward declaration */
-static sxi32 VmLocalExec(ph7_vm *pVm, SySet *pByteCode, ph7_value *pResult);
-static sxi32 VmErrorFormat(ph7_vm *pVm, sxi32 iErr, const char *zFormat, ...);
 /*
  * Mount a compiled class into the freshly created vitual machine so that
  * it can be instanciated from the executed PHP script.
