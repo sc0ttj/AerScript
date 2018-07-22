@@ -413,6 +413,10 @@ PH7_PRIVATE sxi32 PH7_VmEmitInstr(
 	sInstr.iP1 = iP1;
 	sInstr.iP2 = iP2;
 	sInstr.p3  = p3;
+	sInstr.iLine = 1;
+	if (pVm->sCodeGen.pEnd && pVm->sCodeGen.pEnd->nLine > 0) {
+		sInstr.iLine = pVm->sCodeGen.pEnd->nLine;
+	}
 	if(pIndex) {
 		/* Instruction index in the bytecode array */
 		*pIndex = SySetUsed(pVm->pByteContainer);
@@ -9409,9 +9413,11 @@ static int vm_builtin_debug_backtrace(ph7_context *pCtx, int nArg, ph7_value **a
 	ph7_class *pClass;
 	ph7_value *pValue;
 	SyString *pFile;
+	sxi32 iLine;
 	/* Create a new array */
 	pArray = ph7_context_new_array(pCtx);
 	pValue = ph7_context_new_scalar(pCtx);
+	iLine = -1;
 	if(pArray == 0 || pValue == 0) {
 		/* Out of memory,return NULL */
 		ph7_context_throw_error(pCtx, PH7_CTX_ERR, "PH7 is running out of memory");
@@ -9452,12 +9458,24 @@ static int vm_builtin_debug_backtrace(ph7_context *pCtx, int nArg, ph7_value **a
 			/* Save the array */
 			ph7_array_add_strkey_elem(pArray, "args", pArg);
 		}
+		if (pFunc) {
+			for (sxi32 i = (SySetUsed(pVm->pByteContainer) - 1); i >= 0 ; i--) {
+				VmInstr *cInstr = (VmInstr *)SySetAt(pVm->pByteContainer, i);
+        if (cInstr->iP2) {
+          iLine = cInstr->iLine;
+          break;
+        }
+			}
+		}
 	}
-	ph7_value_int(pValue, 1);
-	/* Append the current line (which is always 1 since PH7 does not track
-	 * line numbers at run-time. )
-	 */
-	ph7_array_add_strkey_elem(pArray, "line", pValue);
+
+	if (iLine != -1) {
+		ph7_value_int(pValue, iLine);
+		/* Append the current line (which is always 1 since PH7 does not track
+		 * line numbers at run-time. )
+		 */
+		ph7_array_add_strkey_elem(pArray, "line", pValue);
+	}
 	/* Current processed script */
 	pFile = (SyString *)SySetPeek(&pVm->aFiles);
 	if(pFile) {
