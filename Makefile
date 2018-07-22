@@ -27,7 +27,7 @@ ifeq "$(PLATFORM)" "Darwin"
 	CP := cp -v
 	MD := mkdir -p
 	RM := rm -rfv
-	LDFLAGS := $(LDFLAGS) -Wl,--export-dynamic -undefined dynamic_lookup
+	LDFLAGS := $(LDFLAGS) -Wl,-export-dynamic -undefined dynamic_lookup
 	LIBS := -ldl -lm
 	EXESUFFIX :=
 	LIBSUFFIX := .dylib
