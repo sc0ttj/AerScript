@@ -1331,7 +1331,7 @@ Err:
  * The output can be extracted later after program execution [ph7_vm_exec()] via
  * the [ph7_vm_config()] interface with a configuration verb set to
  * PH7_VM_CONFIG_EXTRACT_OUTPUT.
- * Refer to the official docurmentation for additional information.
+ * Refer to the official documentation for additional information.
  * Note that for performance reason it's preferable to install a VM output
  * consumer callback via (PH7_VM_CONFIG_OUTPUT) rather than waiting for the VM
  * to finish executing and extracting the output.
@@ -1449,7 +1449,7 @@ PH7_PRIVATE sxi32 PH7_VmMakeReady(
 			return rc;
 		}
 	}
-	/* Random number betwwen 0 and 1023 used to generate unique ID */
+	/* Random number between 0 and 1023 used to generate unique ID */
 	pVm->unique_id = PH7_VmRandomNum(&(*pVm)) & 1023;
 	/* VM is ready for bytecode execution */
 	return SXRET_OK;
@@ -1849,7 +1849,7 @@ PH7_PRIVATE sxi32 PH7_VmConfigure(
 				/* Remove leading and trailing white spaces */
 				SyStringFullTrim(&sPath);
 				if(sPath.nByte > 0) {
-					/* Store the path in the corresponding conatiner */
+					/* Store the path in the corresponding container */
 					rc = SySetPut(&pVm->aPaths, (const void *)&sPath);
 				}
 				break;
@@ -2958,7 +2958,7 @@ static sxi32 VmByteCodeExec(
 			/*
 			 * LOAD_CLOSURE * * P3
 			 *
-			 * Set-up closure environment described by the P3 oeprand and push the closure
+			 * Set-up closure environment described by the P3 operand and push the closure
 			 * name in the stack.
 			 */
 			case PH7_OP_LOAD_CLOSURE: {
@@ -5546,7 +5546,7 @@ static sxi32 VmByteCodeExec(
 						/* Leave the frame */
 						VmLeaveFrame(&(*pVm));
 						if(rc == PH7_ABORT) {
-							/* Abort processing immeditaley */
+							/* Abort processing immediately */
 							goto Abort;
 						} else if(rc == PH7_EXCEPTION) {
 							goto Exception;
@@ -5559,7 +5559,7 @@ static sxi32 VmByteCodeExec(
 						pEntry = SyHashGet(&pVm->hHostFunction, (const void *)sName.zString, sName.nByte);
 						if(pEntry == 0) {
 							/* Call to undefined function */
-							VmErrorFormat(&(*pVm), PH7_CTX_WARNING, "Call to undefined function '%z',NULL will be returned", &sName);
+							VmErrorFormat(&(*pVm), PH7_CTX_ERR, "Call to undefined function '%z'", &sName);
 							/* Pop given arguments */
 							if(pInstr->iP1 > 0) {
 								VmPopOperand(&pTos, pInstr->iP1);
@@ -7405,7 +7405,7 @@ PH7_PRIVATE sxi32 PH7_VmCallClassMethod(
  * Call a user defined or foreign function where the name of the function
  * is stored in the pFunc parameter and the given arguments are stored
  * in the apArg[] array.
- * Return SXRET_OK if the function was successfuly called.Any other
+ * Return SXRET_OK if the function was successfully called.Any other
  * return value indicates failure.
  */
 PH7_PRIVATE sxi32 PH7_VmCallUserFunction(
