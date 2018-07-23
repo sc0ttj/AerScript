@@ -21,7 +21,7 @@ Full P# Specification can be found on the [Wiki Pages](https://git.codingworksho
 
 
 ## P# - Modern PHP
-The name of the language was created analogically to C++ or C#. The ++ oerator in all C-style languages, including PHP means
+The name of the language was created analogically to C++ or C#. The ++ operator in all C-style languages, including PHP means
 an increase. Thus as C# is more than C++, and C++ is more than C, the P# is more than PHP.
 
 Despite, that P# syntax draws among others upon PHP, it is not fully compatible with it. P# is a modern, pure Object-Oriented
