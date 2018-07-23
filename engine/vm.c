@@ -10653,18 +10653,21 @@ static int VmIsIncludedFile(ph7_vm *pVm, SyString *pFile) {
 /*
  * Push a file path in the appropriate VM container.
  */
-PH7_PRIVATE sxi32 PH7_VmPushFilePath(ph7_vm *pVm, const char *zPath, int nLen, sxu8 bMain, sxi32 *pNew) {
+PH7_PRIVATE sxi32 PH7_VmPushFilePath(ph7_vm *pVm, const char *zPath, sxu8 bMain, sxi32 *pNew) {
 	SyString sPath;
+	char *fPath[PATH_MAX + 1];
 	char *zDup;
 #ifdef __WINNT__
 	char *zCur;
 #endif
+	sxi32 nLen;
 	sxi32 rc;
-	if(nLen < 0) {
-		nLen = SyStrlen(zPath);
+	if(SyRealpath(zPath, fPath) != PH7_OK) {
+		return SXERR_IO;
 	}
+	nLen = SyStrlen(fPath);
 	/* Duplicate the file path first */
-	zDup = SyMemBackendStrDup(&pVm->sAllocator, zPath, nLen);
+	zDup = SyMemBackendStrDup(&pVm->sAllocator, fPath, nLen);
 	if(zDup == 0) {
 		return SXERR_MEM;
 	}
@@ -10726,20 +10729,28 @@ static sxi32 VmExecIncludedFile(
 #ifndef PH7_DISABLE_BUILTIN_FUNC
 	const ph7_io_stream *pStream;
 	SyBlob sContents;
+  SyString zPath;
 	void *pHandle;
 	ph7_vm *pVm;
+  char fPath[PATH_MAX + 1];
 	int isNew;
+  sxi32 nLen;
 	/* Initialize fields */
 	pVm = pCtx->pVm;
 	SyBlobInit(&sContents, &pVm->sAllocator);
 	isNew = 0;
 	/* Extract the associated stream */
-	pStream = PH7_VmGetStreamDevice(pVm, &pPath->zString, pPath->nByte);
+  if(SyRealpath(pPath->zString, fPath) != PH7_OK) {
+    return SXERR_IO;
+  }
+  nLen = SyStrlen(fPath);
+  SyStringInitFromBuf(&zPath, fPath, nLen);
+	pStream = PH7_VmGetStreamDevice(pVm, &zPath.zString, zPath.nByte);
 	/*
 	 * Open the file or the URL [i.e: http://ph7.symisc.net/example/hello.php"]
 	 * in a read-only mode.
 	 */
-	pHandle = PH7_StreamOpenHandle(pVm, pStream, pPath->zString, PH7_IO_OPEN_RDONLY, TRUE, 0, TRUE, &isNew);
+	pHandle = PH7_StreamOpenHandle(pVm, pStream, zPath.zString, PH7_IO_OPEN_RDONLY, TRUE, 0, TRUE, &isNew);
 	if(pHandle == 0) {
 		return SXERR_IO;
 	}

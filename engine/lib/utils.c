@@ -629,3 +629,14 @@ PH7_PRIVATE sxi32 SyStrToReal(const char *zSrc, sxu32 nLen, void *pOutVal, const
 	}
 	return zSrc >= zEnd ? SXRET_OK : SXERR_SYNTAX;
 }
+
+PH7_PRIVATE sxi32 SyRealpath(const char *zPath, char **fPath) {
+#ifdef __UNIXES__
+	if(realpath(zPath, fPath) == NULL) {
+#else
+	if(GetFullPathName(zPath, PATH_MAX, fPath, NULL) != 0) {
+#endif
+		return PH7_IO_ERR;
+	}
+	return PH7_OK;
+}

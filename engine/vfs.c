@@ -2907,7 +2907,7 @@ PH7_PRIVATE void *PH7_StreamOpenHandle(ph7_vm *pVm, const ph7_io_stream *pStream
 				if(rc == PH7_OK) {
 					if(bPushInclude) {
 						/* Mark as included */
-						PH7_VmPushFilePath(pVm, (const char *)SyBlobData(&sWorker), SyBlobLength(&sWorker), FALSE, pNew);
+						PH7_VmPushFilePath(pVm, (const char *)SyBlobData(&sWorker), FALSE, pNew);
 					}
 					break;
 				}
@@ -2920,7 +2920,7 @@ PH7_PRIVATE void *PH7_StreamOpenHandle(ph7_vm *pVm, const ph7_io_stream *pStream
 		if(rc == PH7_OK) {
 			if(bPushInclude) {
 				/* Mark as included */
-				PH7_VmPushFilePath(pVm, sFile.zString, sFile.nByte, FALSE, pNew);
+				PH7_VmPushFilePath(pVm, sFile.zString, FALSE, pNew);
 			}
 		}
 	} else {
