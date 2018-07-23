@@ -2920,7 +2920,7 @@ PH7_PRIVATE void *PH7_StreamOpenHandle(ph7_vm *pVm, const ph7_io_stream *pStream
 			}
 		}
 	} else {
-		/* Open the URI direcly */
+		/* Open the URI directly */
 		rc = pStream->xOpen(zFile, iFlags, pResource, &pHandle);
 	}
 	if(rc != PH7_OK) {
