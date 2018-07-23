@@ -42,9 +42,6 @@ typedef struct JumpFixup     JumpFixup;
 struct JumpFixup {
 	sxi32 nJumpType;     /* Jump type. Either TRUE jump, FALSE jump or Unconditional jump */
 	sxu32 nInstrIdx;     /* Instruction index to fix later when the jump destination is resolved. */
-	/* The following fields are only used by the goto statement */
-	ph7_vm_func *pFunc; /* Compiled function inside which the goto was emitted. NULL otherwise */
-	sxu32 nLine;        /* Track line number */
 };
 /*
  * Each language construct is represented by an instance
@@ -5827,7 +5824,6 @@ static sxi32 PH7_CompilePHP(
 	rc = GenStateCompileChunk(pGen, 0);
 	/* Fix exceptions jumps */
 	GenStateFixJumps(pGen->pCurrent, PH7_OP_THROW, PH7_VmInstrLength(pGen->pVm));
-	/* Fix gotos now, the jump destination is resolved */
 	/* Compilation result */
 	return rc;
 }
