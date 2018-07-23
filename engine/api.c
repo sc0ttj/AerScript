@@ -648,7 +648,7 @@ static sxi32 ProcessScript(
 	}
 	if(zFilePath) {
 		/* Push processed file path */
-		PH7_VmPushFilePath(pVm, zFilePath, TRUE, 0);
+		PH7_VmPushFilePath(pVm, zFilePath, -1, TRUE, 0);
 	}
 	/* Reset the error message consumer */
 	SyBlobReset(&pEngine->xConf.sErrConsumer);
