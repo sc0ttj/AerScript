@@ -41,6 +41,13 @@ Language. The distinctive features and powerful extensions to the PHP programmin
  * Introducing the $_HEADER superglobal array which holds all HTTP MIME headers.
 
 
+## 64-Bit Integer Arithmetic For All Platforms
+Unless most scripting and programming languages, P# have standardized the size of an integer and is always stored in 8 bytes
+regardless of the host environment. Because there is no cross-platform way to specify 64-bit integer types P# includes typedefs
+for 64-bit signed integers. Thanks to that, integers can store values between -9223372036854775808 and +9223372036854775807
+inclusive, both on 32-bit and on 64-bit host OS.
+
+
 ## Build Instructions
 P# is a multi-platform software, that can be built on any Operating System. On Unix-like. macOS and Cygwin it is as
 easy as to fetch the source code and issue single command:
