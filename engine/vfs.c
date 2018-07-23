@@ -2890,12 +2890,12 @@ PH7_PRIVATE void *PH7_StreamOpenHandle(ph7_vm *pVm, const ph7_io_stream *pStream
 #else
 			static const int c = '/';
 #endif
-			/* Init the path builder working buffer */
-			SyBlobInit(&sWorker, &pVm->sAllocator);
 			/* Build a path from the set of include path */
 			SySetResetCursor(&pVm->aPaths);
 			rc = SXERR_IO;
 			while(SXRET_OK == SySetGetNextEntry(&pVm->aPaths, (void **)&pPath)) {
+				/* Init the path builder working buffer everytime to avoid trash */
+				SyBlobInit(&sWorker, &pVm->sAllocator);
 				/* Build full path */
 				SyBlobFormat(&sWorker, "%z%c%z", pPath, c, &sFile);
 				/* Append null terminator */
