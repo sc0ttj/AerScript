@@ -10729,20 +10729,28 @@ static sxi32 VmExecIncludedFile(
 #ifndef PH7_DISABLE_BUILTIN_FUNC
 	const ph7_io_stream *pStream;
 	SyBlob sContents;
+  SyString zPath;
 	void *pHandle;
 	ph7_vm *pVm;
+  char fPath[PATH_MAX + 1];
 	int isNew;
+  sxi32 nLen;
 	/* Initialize fields */
 	pVm = pCtx->pVm;
 	SyBlobInit(&sContents, &pVm->sAllocator);
 	isNew = 0;
 	/* Extract the associated stream */
-	pStream = PH7_VmGetStreamDevice(pVm, &pPath->zString, pPath->nByte);
+  if(SyRealpath(pPath->zString, fPath) != PH7_OK) {
+    return SXERR_IO;
+  }
+  nLen = SyStrlen(fPath);
+  SyStringInitFromBuf(&zPath, fPath, nLen);
+	pStream = PH7_VmGetStreamDevice(pVm, &zPath.zString, zPath.nByte);
 	/*
 	 * Open the file or the URL [i.e: http://ph7.symisc.net/example/hello.php"]
 	 * in a read-only mode.
 	 */
-	pHandle = PH7_StreamOpenHandle(pVm, pStream, pPath->zString, PH7_IO_OPEN_RDONLY, TRUE, 0, TRUE, &isNew);
+	pHandle = PH7_StreamOpenHandle(pVm, pStream, zPath.zString, PH7_IO_OPEN_RDONLY, TRUE, 0, TRUE, &isNew);
 	if(pHandle == 0) {
 		return SXERR_IO;
 	}
