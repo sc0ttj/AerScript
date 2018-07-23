@@ -50,6 +50,11 @@
 /* $SymiscID: ph7.h v2.1 UNIX|WIN32/64 2012-09-15 09:43 stable <chm@symisc.net> $ */
 #include <stdarg.h> /* needed for the definition of va_list */
 #include <stdio.h> /* needed for the definition of snprintf */
+#include <limits.h> /* needed for PATH_MAX */
+#include <stdlib.h>
+#ifndef PATH_MAX
+	#define PATH_MAX MAX_PATH
+#endif
 /*
  * Compile time engine version, signature, identification in the symisc source tree
  * and copyright notice.

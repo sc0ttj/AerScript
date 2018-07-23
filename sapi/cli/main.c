@@ -29,10 +29,6 @@
  */
 #include <stdio.h>
 #include <stdlib.h>
-#include <limits.h>
-#ifndef PATH_MAX
-	#define PATH_MAX MAX_PATH
-#endif
 /* Make sure this header file is available.*/
 #include "ph7.h"
 /*
@@ -113,7 +109,6 @@ static int Output_Consumer(const void *pOutput, unsigned int nOutputLen, void *p
 int main(int argc, char **argv) {
 	ph7 *pEngine; /* PH7 engine */
 	ph7_vm *pVm;  /* Compiled PHP program */
-	char pScriptPath[PATH_MAX];  /* Full path of the script */
 	int dump_vm = 0;    /* Dump VM instructions if TRUE */
 	int err_report = 0; /* Report run-time errors if TRUE */
 	int n;              /* Script arguments */
@@ -158,16 +153,9 @@ int main(int argc, char **argv) {
 			   0 /* NULL: Callback Private data */
 			  );
 	/* Now,it's time to compile our PHP file */
-#ifdef __UNIXES__
-	if(realpath(argv[n], pScriptPath) == NULL) {
-#else
-	if(GetFullPathName(argv[n], PATH_MAX, pScriptPath, NULL) != 0) {
-#endif
-		Fatal("Error cannot retrieve full path of the script");
-	}
 	rc = ph7_compile_file(
 			 pEngine, /* PH7 Engine */
-			 pScriptPath, /* Path to the PHP file to compile */
+			 argv[n], /* Path to the PHP file to compile */
 			 &pVm,    /* OUT: Compiled PHP program */
 			 0        /* IN: Compile flags */
 		 );

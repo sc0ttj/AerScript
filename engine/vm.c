@@ -10653,18 +10653,21 @@ static int VmIsIncludedFile(ph7_vm *pVm, SyString *pFile) {
 /*
  * Push a file path in the appropriate VM container.
  */
-PH7_PRIVATE sxi32 PH7_VmPushFilePath(ph7_vm *pVm, const char *zPath, int nLen, sxu8 bMain, sxi32 *pNew) {
+PH7_PRIVATE sxi32 PH7_VmPushFilePath(ph7_vm *pVm, const char *zPath, sxu8 bMain, sxi32 *pNew) {
 	SyString sPath;
+	char *fPath[PATH_MAX + 1];
 	char *zDup;
 #ifdef __WINNT__
 	char *zCur;
 #endif
+	sxi32 nLen;
 	sxi32 rc;
-	if(nLen < 0) {
-		nLen = SyStrlen(zPath);
+	if(SyRealpath(zPath, fPath) != PH7_OK) {
+		return SXERR_IO;
 	}
+	nLen = SyStrlen(fPath);
 	/* Duplicate the file path first */
-	zDup = SyMemBackendStrDup(&pVm->sAllocator, zPath, nLen);
+	zDup = SyMemBackendStrDup(&pVm->sAllocator, fPath, nLen);
 	if(zDup == 0) {
 		return SXERR_MEM;
 	}
