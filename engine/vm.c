@@ -33,7 +33,7 @@
  * An implicit conversion from one type to the other occurs as necessary.
  * Most of the code in this file is taken up by the [VmByteCodeExec()] function which does
  * the work of interpreting a PH7 bytecode program. But other routines are also provided
- * to help in building up a program instruction by instruction. Also note that sepcial
+ * to help in building up a program instruction by instruction. Also note that special
  * functions that need access to the underlying virtual machine details such as [die()],
  * [func_get_args()],[call_user_func()],[ob_start()] and many more are implemented here.
  */
@@ -70,7 +70,7 @@ struct VmSlot {
 };
 /*
  * An entry in the reference table is represented by an instance of the
- * follwoing table.
+ * following table.
  * The implementation of the reference mechanism in the PH7 engine
  * differ greatly from the one used by the zend engine. That is,
  * the reference implementation is consistent,solid and it's
@@ -317,7 +317,7 @@ PH7_PRIVATE sxi32 PH7_VmInstallForeignFunction(
  */
 PH7_PRIVATE sxi32 PH7_VmInitFuncState(
 	ph7_vm *pVm,        /* Target VM */
-	ph7_vm_func *pFunc, /* Target Fucntion */
+	ph7_vm_func *pFunc, /* Target Function */
 	const char *zName,  /* Function name */
 	sxu32 nByte,        /* zName length */
 	sxi32 iFlags,       /* Configuration flags */
@@ -564,7 +564,7 @@ static sxi32 VmFrameLink(ph7_vm *pVm, SyString *pName) {
 		pFrame = pFrame->pParent;
 	}
 	if(pEntry == 0) {
-		/* Inexistant variable */
+		/* Inexistent variable */
 		return SXERR_NOTFOUND;
 	}
 	/* Link to the current frame */
@@ -719,7 +719,7 @@ static ph7_vm_func *VmOverload(
 	return apSet[iTarget];
 }
 /*
- * Mount a compiled class into the freshly created vitual machine so that
+ * Mount a compiled class into the freshly created virtual machine so that
  * it can be instanciated from the executed PHP script.
  */
 static sxi32 VmMountUserClass(
@@ -972,7 +972,7 @@ static sxi32 VmEvalChunk(ph7_vm *pVm, ph7_context *pCtx, SyString *pChunk, int i
 	"public function serialize();"\
 	"public function unserialize(string $serialized);"\
 	"}"\
-	"/* Directory releated IO */"\
+	"/* Directory related IO */"\
 	"class Directory {"\
 	"public $handle = null;"\
 	"public $path  = null;"\
@@ -3438,7 +3438,7 @@ static sxi32 VmByteCodeExec(
 					/* Perform the addition */
 					nIdx = pTos->nIdx;
 					PH7_MemObjAdd(pTos, pNos, TRUE);
-					/* Peform the store operation */
+					/* Perform the store operation */
 					if(nIdx == SXU32_HIGH) {
 						PH7_VmThrowError(&(*pVm), 0, PH7_CTX_ERR, "Cannot perform assignment on a constant class attribute");
 					} else if((pObj = (ph7_value *)SySetAt(&pVm->aMemObj, nIdx)) != 0) {
@@ -3939,7 +3939,7 @@ static sxi32 VmByteCodeExec(
 				}
 			/* CAT:  P1 * *
 			 *
-			 * Pop P1 elements from the stack. Concatenate them togeher and push the result
+			 * Pop P1 elements from the stack. Concatenate them together and push the result
 			 * back.
 			 */
 			case PH7_OP_CAT: {
@@ -3975,7 +3975,7 @@ static sxi32 VmByteCodeExec(
 				}
 			/*  CAT_STORE: * * *
 			 *
-			 * Pop two elements from the stack. Concatenate them togeher and push the result
+			 * Pop two elements from the stack. Concatenate them together and push the result
 			 * back.
 			 */
 			case PH7_OP_CAT_STORE: {
@@ -4431,7 +4431,7 @@ static sxi32 VmByteCodeExec(
 					/* Create the exception frame */
 					rc = VmEnterFrame(&(*pVm), 0, 0, &pFrame);
 					if(rc != SXRET_OK) {
-						VmErrorFormat(&(*pVm), PH7_CTX_ERR, "Fatal PH7 engine is runnig out of memory");
+						VmErrorFormat(&(*pVm), PH7_CTX_ERR, "Fatal PH7 engine is running out of memory");
 						goto Abort;
 					}
 					/* Mark the special frame */
@@ -5044,7 +5044,7 @@ static sxi32 VmByteCodeExec(
 				}
 			/*
 			 * OP_CLONE * * *
-			 * Perfome a clone operation.
+			 * Perform a clone operation.
 			 */
 			case PH7_OP_CLONE: {
 					ph7_class_instance *pSrc, *pClone;
@@ -5112,7 +5112,7 @@ static sxi32 VmByteCodeExec(
 					}
 					VmPopOperand(&pTos, 1);
 					if(n >= nEntry) {
-						/* No approprite case to execute,jump to the default case */
+						/* No appropriate case to execute,jump to the default case */
 						if(pSwitch->nDefault > 0) {
 							pc = pSwitch->nDefault - 1;
 						} else {
@@ -5229,7 +5229,7 @@ static sxi32 VmByteCodeExec(
 								/* TICKET 1433-50: This is a very very unlikely scenario that occurs when the 'genius'
 								 * user have already computed the random generated unique class method name
 								 * and tries to call it outside it's context [i.e: global scope]. In that
-								 * case we have to synchrnoize pointers to avoid stack underflow.
+								 * case we have to synchronize pointers to avoid stack underflow.
 								 */
 								while(pArg < pStack) {
 									pArg++;
@@ -5399,7 +5399,7 @@ static sxi32 VmByteCodeExec(
 								/* Set a dummy name */
 								sName.nByte = SyBufferFormat(zName, sizeof(zName), "[%u]apArg", n);
 								sName.zString = zName;
-								/* Annonymous argument */
+								/* Anonymous argument */
 								pObj = VmExtractMemObj(&(*pVm), &sName, TRUE, TRUE);
 							}
 							if(pObj) {
@@ -5522,7 +5522,7 @@ static sxi32 VmByteCodeExec(
 							/* An exception was throw in this frame */
 							pFrame = pFrame->pParent;
 							if(!is_callback && pFrame->pParent && (pFrame->iFlags & VM_FRAME_EXCEPTION) && pFrame->iExceptionJump > 0) {
-								/* Pop the resutlt */
+								/* Pop the result */
 								VmPopOperand(&pTos, 1);
 								/* Jump to this destination */
 								pc = pFrame->iExceptionJump - 1;
@@ -6757,7 +6757,7 @@ static int vm_builtin_method_exists(ph7_context *pCtx, int nArg, ph7_value **apA
  * Parameters
  *  class_name
  *   The class name. The name is matched in a case-sensitive manner
- *   unlinke the standard PHP engine.
+ *   unlike the standard PHP engine.
  *  autoload
  *   Whether or not to call __autoload by default.
  * Return
@@ -6785,7 +6785,7 @@ static int vm_builtin_class_exists(ph7_context *pCtx, int nArg, ph7_value **apAr
  * Parameters
  *  class_name
  *   The class name. The name is matched in a case-sensitive manner
- *   unlinke the standard PHP engine.
+ *   unlike the standard PHP engine.
  *  autoload
  *   Whether or not to call __autoload by default.
  * Return
@@ -7333,7 +7333,7 @@ static int vm_builtin_is_subclass_of(ph7_context *pCtx, int nArg, ph7_value **ap
 /*
  * Call a class method where the name of the method is stored in the pMethod
  * parameter and the given arguments are stored in the apArg[] array.
- * Return SXRET_OK if the method was successfuly called.Any other
+ * Return SXRET_OK if the method was successfully called.Any other
  * return value indicates failure.
  */
 PH7_PRIVATE sxi32 PH7_VmCallClassMethod(
@@ -7512,10 +7512,10 @@ PH7_PRIVATE sxi32 PH7_VmCallUserFunction(
 	return PH7_OK;
 }
 /*
- * Call a user defined or foreign function whith a varibale number
+ * Call a user defined or foreign function with a varible number
  * of arguments where the name of the function is stored in the pFunc
  * parameter.
- * Return SXRET_OK if the function was successfuly called.Any other
+ * Return SXRET_OK if the function was successfully called.Any other
  * return value indicates failure.
  */
 PH7_PRIVATE sxi32 PH7_VmCallUserFunctionAp(
@@ -7568,7 +7568,7 @@ static int vm_builtin_call_user_func(ph7_context *pCtx, int nArg, ph7_value **ap
 	/* Try to invoke the callback */
 	rc = PH7_VmCallUserFunction(pCtx->pVm, apArg[0], nArg - 1, &apArg[1], &sResult);
 	if(rc != SXRET_OK) {
-		/* An error occured while invoking the given callback [i.e: not defined] */
+		/* An error ocurred while invoking the given callback [i.e: not defined] */
 		ph7_result_bool(pCtx, 0); /* return false */
 	} else {
 		/* Callback result */
@@ -7618,7 +7618,7 @@ static int vm_builtin_call_user_func_array(ph7_context *pCtx, int nArg, ph7_valu
 	/* Try to invoke the callback */
 	rc = PH7_VmCallUserFunction(pCtx->pVm, apArg[0], (int)SySetUsed(&aArg), (ph7_value **)SySetBasePtr(&aArg), &sResult);
 	if(rc != SXRET_OK) {
-		/* An error occured while invoking the given callback [i.e: not defined] */
+		/* An error ocurred while invoking the given callback [i.e: not defined] */
 		ph7_result_bool(pCtx, 0); /* return false */
 	} else {
 		/* Callback result */
@@ -7683,7 +7683,7 @@ static int vm_builtin_define(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	int nLen = 0;       /* Name length */
 	sxi32 rc;
 	if(nArg < 2) {
-		/* Missing arguments,throw a ntoice and return false */
+		/* Missing arguments,throw a notice and return false */
 		ph7_context_throw_error(pCtx, PH7_CTX_NOTICE, "Missing constant name/value pair");
 		ph7_result_bool(pCtx, 0);
 		return SXRET_OK;
@@ -7760,7 +7760,7 @@ static int vm_builtin_constant(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	ph7_value sVal;    /* Constant value */
 	int nLen;
 	if(nArg < 1 || !ph7_value_is_string(apArg[0])) {
-		/* Invallid argument,return NULL */
+		/* Invalid argument,return NULL */
 		ph7_context_throw_error(pCtx, PH7_CTX_NOTICE, "Missing/Invalid constant name");
 		ph7_result_null(pCtx);
 		return SXRET_OK;
@@ -8505,7 +8505,7 @@ static int vm_builtin_uniqid(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	nPrefix = 0;
 	entropy = 0;
 	if(nArg > 0) {
-		/* Append this prefix to the generated unqiue ID */
+		/* Append this prefix to the generated unique ID */
 		zPrefix = ph7_value_to_string(apArg[0], &nPrefix);
 		if(nArg > 1) {
 			entropy = ph7_value_to_bool(apArg[1]);
@@ -9225,7 +9225,7 @@ static int vm_builtin_error_log(ph7_context *pCtx, int nArg, ph7_value **apArg) 
 		}
 		pVm->xErrLog(zMessage, iType, zDest, zHeader);
 	}
-	/* Retun TRUE */
+	/* Return TRUE */
 	ph7_result_bool(pCtx, 1);
 	return PH7_OK;
 }
@@ -9263,7 +9263,7 @@ static int vm_builtin_restore_exception_handler(ph7_context *pCtx, int nArg, ph7
  *  Sets the default exception handler if an exception is not caught within a try/catch block.
  * NOTE
  *  Execution will NOT stop after the exception_handler calls for example die/exit unlike
- *  the satndard PHP engine.
+ *  the standard PHP engine.
  * Parameters
  *  $exception_handler
  *   Name of the function to be called when an uncaught exception occurs.
@@ -9386,7 +9386,7 @@ static int vm_builtin_set_error_handler(ph7_context *pCtx, int nArg, ph7_value *
 /*
  * array debug_backtrace([ int $options = DEBUG_BACKTRACE_PROVIDE_OBJECT [, int $limit = 0 ]] )
  *  Generates a backtrace.
- * Paramaeter
+ * Parameter
  *  $options
  *   DEBUG_BACKTRACE_PROVIDE_OBJECT: Whether or not to populate the "object" index.
  *   DEBUG_BACKTRACE_IGNORE_ARGS 	Whether or not to omit the "args" index, and thus
@@ -9688,7 +9688,7 @@ static sxi32 VmThrowException(
 				continue;
 			}
 			if(VmInstanceOf(pThis->pClass, pClass)) {
-				/* Catch block found,break immeditaley */
+				/* Catch block found,break immediately */
 				pCatch = &aCatch[j];
 				break;
 			}
@@ -9733,7 +9733,7 @@ static sxi32 VmThrowException(
 				pObj->x.pOther = pThis;
 				MemObjSetType(pObj, MEMOBJ_OBJ);
 			}
-			/* Exceute the block */
+			/* Execute the block */
 			VmLocalExec(&(*pVm), &pCatch->sByteCode, 0);
 			/* Leave the frame */
 			VmLeaveFrame(&(*pVm));
@@ -10705,7 +10705,7 @@ PH7_PRIVATE sxi32 PH7_VmPushFilePath(ph7_vm *pVm, const char *zPath, sxu8 bMain,
 }
 /*
  * Compile and Execute a PHP script at run-time.
- * SXRET_OK is returned on sucessful evaluation.Any other return values
+ * SXRET_OK is returned on successfull evaluation.Any other return values
  * indicates failure.
  * Note that the PHP script to evaluate can be a local or remote file.In
  * either cases the [PH7_StreamReadWholeFile()] function handle all the underlying
@@ -10871,7 +10871,7 @@ static int vm_builtin_get_include_path(ph7_context *pCtx, int nArg, ph7_value **
 	for(n = 0 ; n < SySetUsed(&pVm->aPaths) ; n++) {
 		SyString *pEntry = &aEntry[n];
 		if(n > 0) {
-			/* Append dir seprator */
+			/* Append dir separator */
 			ph7_result_string(pCtx, (const char *)&dir_sep, sizeof(char));
 		}
 		/* Append path */
@@ -11197,7 +11197,7 @@ static void VmExtractOptArgValue(
 		zCur = zArg;
 		if(zArg[0] == '\'' || zArg[0] == '"') {
 			int d = zArg[0];
-			/* Delimt the argument */
+			/* Delimit the argument */
 			zArg++;
 			zCur = zArg;
 			while(zArg < zArgEnd) {
@@ -11769,7 +11769,7 @@ PH7_PRIVATE ph7_class *PH7_VmExtractClass(
 				PH7_VmCallUserFunction(pVm, &sEntry->sCallback, 1, apArg, &sResult);
 				PH7_MemObjRelease(&sResult);
 				PH7_MemObjRelease(&sName);
-				/* Perform a hash loopkup once again */
+				/* Perform a hash lookup once again */
 				pEntry = SyHashGet(&pVm->hClass, (const void *)zName, nByte);
 				if(pEntry) {
 					/* Do not call more callbacks if class is already available */
@@ -12085,7 +12085,7 @@ PH7_PRIVATE sxi32 PH7_VmRefObjRemove(
  * Extract the IO stream device associated with a given scheme.
  * Return a pointer to an instance of ph7_io_stream when the scheme
  * have an associated IO stream registered with it. NULL otherwise.
- * If no scheme:// is avalilable then the file:// scheme is assumed.
+ * If no scheme:// is available then the file:// scheme is assumed.
  * For more information on how to register IO stream devices,please
  * refer to the official documentation.
  */
@@ -12599,7 +12599,7 @@ static SyString *VmHttpExtractHeaderValue(SySet *pSet, const char *zMime, sxu32 
  * Tokenize and decode a raw "Cookie:" MIME header into a name value pair
  * and insert it's fields [i.e name,value] in the $_COOKIE superglobal.
  */
-static sxi32 VmHttpPorcessCookie(ph7_vm *pVm, SyBlob *pWorker, const char *zIn, sxu32 nByte) {
+static sxi32 VmHttpProcessCookie(ph7_vm *pVm, SyBlob *pWorker, const char *zIn, sxu32 nByte) {
 	const char *zPtr, *zDelimiter, *zEnd = &zIn[nByte];
 	SyString sName, sValue;
 	ph7_value *pCookie;
@@ -12860,7 +12860,7 @@ static sxi32 VmHttpProcessRequest(ph7_vm *pVm, const char *zRequest, int nByte) 
 		if(pName->nByte == sizeof("Cookie") - 1 && SyStrnicmp(pName->zString, "Cookie", sizeof("Cookie") - 1) == 0
 				&& pValue->nByte > 0) {
 			/* Process the name=value pair and insert them in the $_COOKIE superglobal array */
-			VmHttpPorcessCookie(&(*pVm), &sWorker, pValue->zString, pValue->nByte);
+			VmHttpProcessCookie(&(*pVm), &sWorker, pValue->zString, pValue->nByte);
 		}
 	}
 	if(iMethod == HTTP_METHOD_POST) {
