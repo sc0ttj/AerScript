@@ -4751,7 +4751,7 @@ static sxi32 VmByteCodeExec(
 									pMeth = PH7_ClassExtractMethod(pClass, sName.zString, sName.nByte);
 								}
 								if(pMeth == 0) {
-									VmErrorFormat(&(*pVm), PH7_CTX_ERR, "Undefined class method '%z->%z',PH7 is loading NULL",
+									VmErrorFormat(&(*pVm), PH7_CTX_ERR, "Call to undefined method '%z->%z()'",
 												  &pClass->sName, &sName
 												 );
 									/* Call the '__Call()' magic method if available */
@@ -5554,7 +5554,7 @@ static sxi32 VmByteCodeExec(
 						pEntry = SyHashGet(&pVm->hHostFunction, (const void *)sName.zString, sName.nByte);
 						if(pEntry == 0) {
 							/* Call to undefined function */
-							VmErrorFormat(&(*pVm), PH7_CTX_ERR, "Call to undefined function '%z'", &sName);
+							VmErrorFormat(&(*pVm), PH7_CTX_ERR, "Call to undefined function '%z()'", &sName);
 							/* Pop given arguments */
 							if(pInstr->iP1 > 0) {
 								VmPopOperand(&pTos, pInstr->iP1);
