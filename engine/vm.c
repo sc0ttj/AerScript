@@ -2240,11 +2240,6 @@ static sxi32 VmThrowErrorAp(
 	SyBlobReset(pWorker);
 	/* Peek the processed file if available */
 	pFile = (SyString *)SySetPeek(&pVm->aFiles);
-	if(pFile) {
-		/* Append file name */
-		SyBlobAppend(pWorker, pFile->zString, pFile->nByte);
-		SyBlobAppend(pWorker, (const void *)" ", sizeof(char));
-	}
 	switch(iErr) {
 		case PH7_CTX_WARNING:
 			zErr = "Warning: ";
@@ -2258,12 +2253,12 @@ static sxi32 VmThrowErrorAp(
 			break;
 	}
 	SyBlobAppend(pWorker, zErr, SyStrlen(zErr));
-	if(pFuncName) {
-		/* Append function name first */
-		SyBlobAppend(pWorker, pFuncName->zString, pFuncName->nByte);
-		SyBlobAppend(pWorker, "(): ", sizeof("(): ") - 1);
-	}
 	SyBlobFormatAp(pWorker, zFormat, ap);
+	if(pFile) {
+		/* Append file name */
+		SyBlobAppend(pWorker, " in ", sizeof(" in ") - 1);
+		SyBlobAppend(pWorker, pFile->zString, pFile->nByte);
+	}
 	/* Consume the error message */
 	rc = VmCallErrorHandler(&(*pVm), pWorker);
 	if(iErr == PH7_CTX_ERR) {
