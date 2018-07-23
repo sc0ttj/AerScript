@@ -2905,10 +2905,6 @@ PH7_PRIVATE void *PH7_StreamOpenHandle(ph7_vm *pVm, const ph7_io_stream *pStream
 				/* Try to open the file */
 				rc = pStream->xOpen((const char *)SyBlobData(&sWorker), iFlags, pResource, &pHandle);
 				if(rc == PH7_OK) {
-					if(bPushInclude) {
-						/* Mark as included */
-						PH7_VmPushFilePath(pVm, (const char *)SyBlobData(&sWorker), FALSE, pNew);
-					}
 					break;
 				}
 				/* Reset the working buffer */
