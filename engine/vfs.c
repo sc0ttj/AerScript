@@ -2916,7 +2916,7 @@ PH7_PRIVATE void *PH7_StreamOpenHandle(ph7_vm *pVm, const ph7_io_stream *pStream
 		if(rc == PH7_OK) {
 			if(bPushInclude) {
 				/* Mark as included */
-				PH7_VmPushFilePath(pVm, sFile.zString, FALSE, pNew);
+				PH7_VmPushFilePath(pVm, sFile.zString, -1, FALSE, pNew);
 			}
 		}
 	} else {
