@@ -622,7 +622,8 @@ static sxi32 ProcessScript(
 	const char *zFilePath  /* File path if script come from a file. NULL otherwise */
 ) {
 	ph7_vm *pVm;
-	int rc;
+	int iFileDir, rc;
+	char *pFileDir, *fFilePath[PATH_MAX + 1];
 	/* Allocate a new virtual machine */
 	pVm = (ph7_vm *)SyMemBackendPoolAlloc(&pEngine->sAllocator, sizeof(ph7_vm));
 	if(pVm == 0) {
@@ -646,7 +647,14 @@ static sxi32 ProcessScript(
 		}
 		return PH7_VM_ERR;
 	}
-	if(zFilePath) {
+	/* Install local import path which is the current directory */
+	ph7_vm_config(pVm, PH7_VM_CONFIG_IMPORT_PATH, "./");
+	if(zFilePath && SyRealPath(zFilePath, fFilePath) == PH7_OK) {
+		/* Extract directory name containing processed file */
+		pFileDir = PH7_ExtractDirName(fFilePath, SyStrlen(fFilePath), &iFileDir);
+		pFileDir[iFileDir + 1] = '\0';
+		/* Install local import path which is directory containing entry script */
+		ph7_vm_config(pVm, PH7_VM_CONFIG_IMPORT_PATH, pFileDir);
 		/* Push processed file path */
 		PH7_VmPushFilePath(pVm, zFilePath, -1, TRUE, 0);
 	}
@@ -669,8 +677,6 @@ static sxi32 ProcessScript(
 	if(rc != PH7_OK) {
 		goto Release;
 	}
-	/* Install local import path which is the current directory */
-	ph7_vm_config(pVm, PH7_VM_CONFIG_IMPORT_PATH, "./");
 #if defined(PH7_ENABLE_THREADS)
 	if(sMPGlobal.nThreadingLevel > PH7_THREAD_LEVEL_SINGLE) {
 		/* Associate a recursive mutex with this instance */
