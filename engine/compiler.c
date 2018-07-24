@@ -5160,7 +5160,11 @@ static sxi32 PH7_CompileSwitch(ph7_gen_state *pGen) {
 	for(;;) {
 		sxu32 nKwrd;
 		if(pGen->pIn >= pGen->pEnd) {
-			/* No more input to process */
+			/* No more input to process and switch block not ended */
+			rc = PH7_GenCompileError(&(*pGen), E_ERROR, pGen->pIn->nLine, "Unexpected end of file, expecting 'case' or 'default' or '}'");
+			if(rc == SXERR_ABORT) {
+				return SXERR_ABORT;
+			}
 			break;
 		}
 		if((pGen->pIn->nType & PH7_TK_KEYWORD) == 0) {
