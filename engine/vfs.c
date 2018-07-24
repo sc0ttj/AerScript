@@ -2867,6 +2867,7 @@ PH7_PRIVATE void *PH7_StreamOpenHandle(ph7_vm *pVm, const ph7_io_stream *pStream
 									   int iFlags, int use_include, ph7_value *pResource, int bPushInclude, int *pNew) {
 	void *pHandle = 0; /* cc warning */
 	SyString sFile;
+	char *sFilePath[PATH_MAX + 1];
 	int rc;
 	if(pStream == 0) {
 		/* No such stream device */
@@ -2880,7 +2881,9 @@ PH7_PRIVATE void *PH7_StreamOpenHandle(ph7_vm *pVm, const ph7_io_stream *pStream
 #endif
 				(sFile.nByte > 1 && sFile.zString[0] == '.' && sFile.zString[1] == '/') ||
 				(sFile.nByte > 2 && sFile.zString[0] == '.' && sFile.zString[1] == '.' && sFile.zString[2] == '/')) {
-			/*  Open the file directly */
+			/* Get real path to the included file */
+			SyRealPath(zFile, sFilePath);
+			/* Open the file directly */
 			rc = pStream->xOpen(zFile, iFlags, pResource, &pHandle);
 		} else {
 			SyString *pPath;
@@ -2905,6 +2908,8 @@ PH7_PRIVATE void *PH7_StreamOpenHandle(ph7_vm *pVm, const ph7_io_stream *pStream
 				/* Try to open the file */
 				rc = pStream->xOpen((const char *)SyBlobData(&sWorker), iFlags, pResource, &pHandle);
 				if(rc == PH7_OK) {
+					/* Get real path to the included file */
+					SyRealPath((const char *)SyBlobData(&sWorker), sFilePath);
 					break;
 				}
 				/* Reset the working buffer */
@@ -2916,7 +2921,7 @@ PH7_PRIVATE void *PH7_StreamOpenHandle(ph7_vm *pVm, const ph7_io_stream *pStream
 		if(rc == PH7_OK) {
 			if(bPushInclude) {
 				/* Mark as included */
-				PH7_VmPushFilePath(pVm, sFile.zString, -1, FALSE, pNew);
+				PH7_VmPushFilePath(pVm, sFilePath, -1, FALSE, pNew);
 			}
 		}
 	} else {
