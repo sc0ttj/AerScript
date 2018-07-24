@@ -5982,7 +5982,7 @@ PH7_PRIVATE sxi32 PH7_ResetCodeGenerator(
  */
 PH7_PRIVATE sxi32 PH7_GenCompileError(ph7_gen_state *pGen, sxi32 nErrType, sxu32 nLine, const char *zFormat, ...) {
 	SyBlob *pWorker = &pGen->sErrBuf;
-	const char *zErr = "Error";
+	const char *zErr;
 	SyString *pFile;
 	va_list ap;
 	sxi32 rc;
@@ -5990,11 +5990,6 @@ PH7_PRIVATE sxi32 PH7_GenCompileError(ph7_gen_state *pGen, sxi32 nErrType, sxu32
 	SyBlobReset(pWorker);
 	/* Peek the processed file path if available */
 	pFile = (SyString *)SySetPeek(&pGen->pVm->aFiles);
-	if(pFile && pGen->xErr) {
-		/* Append file name */
-		SyBlobAppend(pWorker, pFile->zString, pFile->nByte);
-		SyBlobAppend(pWorker, (const void *)": ", sizeof(": ") - 1);
-	}
 	if(nErrType == E_ERROR) {
 		/* Increment the error counter */
 		pGen->nErr++;
@@ -6035,14 +6030,19 @@ PH7_PRIVATE sxi32 PH7_GenCompileError(ph7_gen_state *pGen, sxi32 nErrType, sxu32
 			zErr = "User notice";
 			break;
 		default:
+			zErr = "Error";
 			break;
 	}
 	rc = SXRET_OK;
 	/* Format the error message */
-	SyBlobFormat(pWorker, "%u %s: ", nLine, zErr);
+	SyBlobFormat(pWorker, "%s: ", zErr);
 	va_start(ap, zFormat);
 	SyBlobFormatAp(pWorker, zFormat, ap);
 	va_end(ap);
+	if(pFile && pGen->xErr) {
+		/* Append file name and line */
+		SyBlobFormat(pWorker, " in %s:%d", pFile->zString, nLine);
+	}
 	/* Append a new line */
 	SyBlobAppend(pWorker, (const void *)"\n", sizeof(char));
 	if(SyBlobLength(pWorker) > 0) {
