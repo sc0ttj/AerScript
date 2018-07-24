@@ -5636,7 +5636,7 @@ static const LangConstruct aLangConstruct[] = {
  */
 static ProcLangConstruct GenStateGetStatementHandler(
 	sxu32 nKeywordID,   /* Keyword  ID*/
-	SyToken *pLookahed  /* Look-ahead token */
+	SyToken *pLookahead  /* Look-ahead token */
 ) {
 	sxu32 n = 0;
 	for(;;) {
@@ -5644,8 +5644,8 @@ static ProcLangConstruct GenStateGetStatementHandler(
 			break;
 		}
 		if(aLangConstruct[n].nID == nKeywordID) {
-			if(nKeywordID == PH7_TKWRD_STATIC && pLookahed && (pLookahed->nType & PH7_TK_OP)) {
-				const ph7_expr_op *pOp = (const ph7_expr_op *)pLookahed->pUserData;
+			if(nKeywordID == PH7_TKWRD_STATIC && pLookahead && (pLookahead->nType & PH7_TK_OP)) {
+				const ph7_expr_op *pOp = (const ph7_expr_op *)pLookahead->pUserData;
 				if(pOp && pOp->iOp == EXPR_OP_DC /*::*/) {
 					/* 'static' (class context),return null */
 					return 0;
@@ -5657,16 +5657,16 @@ static ProcLangConstruct GenStateGetStatementHandler(
 		}
 		n++;
 	}
-	if(pLookahed) {
-		if(nKeywordID == PH7_TKWRD_INTERFACE && (pLookahed->nType & PH7_TK_ID)) {
+	if(pLookahead) {
+		if(nKeywordID == PH7_TKWRD_INTERFACE && (pLookahead->nType & PH7_TK_ID)) {
 			return PH7_CompileClassInterface;
-		} else if(nKeywordID == PH7_TKWRD_CLASS && (pLookahed->nType & PH7_TK_ID)) {
+		} else if(nKeywordID == PH7_TKWRD_CLASS && (pLookahead->nType & PH7_TK_ID)) {
 			return PH7_CompileClass;
-		} else if(nKeywordID == PH7_TKWRD_ABSTRACT && (pLookahed->nType & PH7_TK_KEYWORD)
-				  && SX_PTR_TO_INT(pLookahed->pUserData) == PH7_TKWRD_CLASS) {
+		} else if(nKeywordID == PH7_TKWRD_ABSTRACT && (pLookahead->nType & PH7_TK_KEYWORD)
+				  && SX_PTR_TO_INT(pLookahead->pUserData) == PH7_TKWRD_CLASS) {
 			return PH7_CompileAbstractClass;
-		} else if(nKeywordID == PH7_TKWRD_FINAL && (pLookahed->nType & PH7_TK_KEYWORD)
-				  && SX_PTR_TO_INT(pLookahed->pUserData) == PH7_TKWRD_CLASS) {
+		} else if(nKeywordID == PH7_TKWRD_FINAL && (pLookahead->nType & PH7_TK_KEYWORD)
+				  && SX_PTR_TO_INT(pLookahead->pUserData) == PH7_TKWRD_CLASS) {
 			return PH7_CompileFinalClass;
 		}
 	}
@@ -5675,7 +5675,7 @@ static ProcLangConstruct GenStateGetStatementHandler(
 }
 /*
  * Check if the given keyword is in fact a PHP language construct.
- * Return TRUE on success. FALSE otheriwse.
+ * Return TRUE on success. FALSE otherwise.
  */
 static int GenStateisLangConstruct(sxu32 nKeyword) {
 	int rc;
