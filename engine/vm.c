@@ -9505,97 +9505,6 @@ rollFrame:
 	return PH7_OK;
 }
 /*
- * Generate a small backtrace.
- * Store the generated dump in the given BLOB
- */
-static int VmMiniBacktrace(
-	ph7_vm *pVm, /* Target VM */
-	SyBlob *pOut /* Store Dump here */
-) {
-	VmFrame *pFrame = pVm->pFrame;
-	ph7_vm_func *pFunc;
-	ph7_class *pClass;
-	SyString *pFile;
-	/* Called function */
-	while(pFrame->pParent && (pFrame->iFlags & VM_FRAME_EXCEPTION)) {
-		/* Safely ignore the exception frame */
-		pFrame = pFrame->pParent;
-	}
-	pFunc = (ph7_vm_func *)pFrame->pUserData;
-	SyBlobAppend(pOut, "[", sizeof(char));
-	if(pFrame->pParent && pFunc) {
-		SyBlobAppend(pOut, "Called function: ", sizeof("Called function: ") - 1);
-		SyBlobAppend(pOut, pFunc->sName.zString, pFunc->sName.nByte);
-	} else {
-		SyBlobAppend(pOut, "Global scope", sizeof("Global scope") - 1);
-	}
-	SyBlobAppend(pOut, "]", sizeof(char));
-	/* Current processed script */
-	pFile = (SyString *)SySetPeek(&pVm->aFiles);
-	if(pFile) {
-		SyBlobAppend(pOut, "[", sizeof(char));
-		SyBlobAppend(pOut, "Processed file: ", sizeof("Processed file: ") - 1);
-		SyBlobAppend(pOut, pFile->zString, pFile->nByte);
-		SyBlobAppend(pOut, "]", sizeof(char));
-	}
-	/* Top class */
-	pClass = PH7_VmPeekTopClass(pVm);
-	if(pClass) {
-		SyBlobAppend(pOut, "[", sizeof(char));
-		SyBlobAppend(pOut, "Class: ", sizeof("Class: ") - 1);
-		SyBlobAppend(pOut, pClass->sName.zString, pClass->sName.nByte);
-		SyBlobAppend(pOut, "]", sizeof(char));
-	}
-	SyBlobAppend(pOut, "\n", sizeof(char));
-	/* All done */
-	return SXRET_OK;
-}
-/*
- * void debug_print_backtrace()
- *  Prints a backtrace
- * Parameters
- * None
- * Return
- * NULL
- */
-static int vm_builtin_debug_print_backtrace(ph7_context *pCtx, int nArg, ph7_value **apArg) {
-	ph7_vm *pVm = pCtx->pVm;
-	SyBlob sDump;
-	SyBlobInit(&sDump, &pVm->sAllocator);
-	/* Generate the backtrace */
-	VmMiniBacktrace(pVm, &sDump);
-	/* Output backtrace */
-	ph7_context_output(pCtx, (const char *)SyBlobData(&sDump), (int)SyBlobLength(&sDump));
-	/* All done,cleanup */
-	SyBlobRelease(&sDump);
-	SXUNUSED(nArg); /* cc warning */
-	SXUNUSED(apArg);
-	return PH7_OK;
-}
-/*
- * string debug_string_backtrace()
- *  Generate a backtrace
- * Parameters
- * None
- * Return
- *  A mini backtrace().
- * Note that this is a symisc extension.
- */
-static int vm_builtin_debug_string_backtrace(ph7_context *pCtx, int nArg, ph7_value **apArg) {
-	ph7_vm *pVm = pCtx->pVm;
-	SyBlob sDump;
-	SyBlobInit(&sDump, &pVm->sAllocator);
-	/* Generate the backtrace */
-	VmMiniBacktrace(pVm, &sDump);
-	/* Return the backtrace */
-	ph7_result_string(pCtx, (const char *)SyBlobData(&sDump), (int)SyBlobLength(&sDump)); /* Will make it's own copy */
-	/* All done,cleanup */
-	SyBlobRelease(&sDump);
-	SXUNUSED(nArg); /* cc warning */
-	SXUNUSED(apArg);
-	return PH7_OK;
-}
-/*
  * The following routine is invoked by the engine when an uncaught
  * exception is triggered.
  */
@@ -11674,8 +11583,6 @@ static const ph7_builtin_func aVmFunc[] = {
 	{ "set_error_handler", vm_builtin_set_error_handler },
 	{ "debug_backtrace",  vm_builtin_debug_backtrace},
 	{ "error_get_last",  vm_builtin_debug_backtrace },
-	{ "debug_print_backtrace", vm_builtin_debug_print_backtrace  },
-	{ "debug_string_backtrace", vm_builtin_debug_string_backtrace },
 	/* Release info */
 	{"ph7version",       vm_builtin_ph7_version  },
 	{"ph7credits",       vm_builtin_ph7_credits  },
