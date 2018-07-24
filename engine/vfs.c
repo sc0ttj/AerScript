@@ -2875,12 +2875,11 @@ PH7_PRIVATE void *PH7_StreamOpenHandle(ph7_vm *pVm, const ph7_io_stream *pStream
 	}
 	SyStringInitFromBuf(&sFile, zFile, SyStrlen(zFile));
 	if(use_include) {
-		if(sFile.zString[0] == '/' ||
+		if(sFile.zString[0] == '/'
 #ifdef __WINNT__
-				(sFile.nByte > 2 && sFile.zString[1] == ':' && (sFile.zString[2] == '\\' || sFile.zString[2] == '/')) ||
+				|| (sFile.nByte > 2 && sFile.zString[1] == ':' && (sFile.zString[2] == '\\' || sFile.zString[2] == '/')) ||
 #endif
-				(sFile.nByte > 1 && sFile.zString[0] == '.' && sFile.zString[1] == '/') ||
-				(sFile.nByte > 2 && sFile.zString[0] == '.' && sFile.zString[1] == '.' && sFile.zString[2] == '/')) {
+				) {
 			/* Get real path to the included file */
 			SyRealPath(zFile, sFilePath);
 			/* Open the file directly */
