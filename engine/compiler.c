@@ -5197,7 +5197,7 @@ static sxi32 PH7_CompileSwitch(ph7_gen_state *pGen) {
 		}
 		if(nKwrd == PH7_TKWRD_DEFAULT) {
 			/*
-			 * Accroding to the PHP language reference manual
+			 * According to the PHP language reference manual
 			 *  A special case is the default case. This case matches anything
 			 *  that wasn't matched by the other cases.
 			 */
