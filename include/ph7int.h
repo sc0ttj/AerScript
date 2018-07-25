@@ -1035,7 +1035,6 @@ struct ph7_class {
 	SyHash hMethod;       /* Class methods */
 	sxu32 nLine;          /* Line number on which this class was declared */
 	SySet aInterface;     /* Implemented interface container */
-	ph7_class *pNextName; /* Next class [interface, abstract, etc.] with the same name */
 };
 /* Class configuration flags */
 #define PH7_CLASS_FINAL       0x001 /* Class is final [cannot be extended] */
