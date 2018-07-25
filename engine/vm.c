@@ -2188,12 +2188,6 @@ PH7_PRIVATE sxi32 PH7_VmThrowError(
 	SyBlobReset(pWorker);
 	/* Peek the processed file if available */
 	pFile = (SyString *)SySetPeek(&pVm->aFiles);
-	if(pFile) {
-		/* Append file name */
-		SyBlobAppend(pWorker, pFile->zString, pFile->nByte);
-		SyBlobAppend(pWorker, (const void *)" ", sizeof(char));
-	}
-	zErr = "Error: ";
 	switch(iErr) {
 		case PH7_CTX_WARNING:
 			zErr = "Warning: ";
@@ -2203,17 +2197,23 @@ PH7_PRIVATE sxi32 PH7_VmThrowError(
 			break;
 		default:
 			iErr = PH7_CTX_ERR;
+			zErr = "Error: ";
 			break;
 	}
 	SyBlobAppend(pWorker, zErr, SyStrlen(zErr));
-	if(pFuncName) {
-		/* Append function name first */
-		SyBlobAppend(pWorker, pFuncName->zString, pFuncName->nByte);
-		SyBlobAppend(pWorker, "(): ", sizeof("(): ") - 1);
-	}
 	SyBlobAppend(pWorker, zMessage, SyStrlen(zMessage));
+	if(pFile) {
+		/* Append file name */
+		SyBlobAppend(pWorker, " in ", sizeof(" in ") - 1);
+		SyBlobAppend(pWorker, pFile->zString, pFile->nByte);
+	}
 	/* Consume the error message */
 	rc = VmCallErrorHandler(&(*pVm), pWorker);
+	if(iErr == PH7_CTX_ERR) {
+		/* Error ocurred, release at least VM gracefully and exit */
+		PH7_VmRelease(pVm);
+		exit(255);
+	}
 	return rc;
 }
 /*
