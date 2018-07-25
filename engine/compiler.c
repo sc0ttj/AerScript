@@ -4277,29 +4277,29 @@ static sxi32 GenStateCompileClass(ph7_gen_state *pGen, sxi32 iFlags) {
 			}
 			/* Extract base class name */
 			pBaseName = &pGen->pIn->sData;
-			/* Perform the query */
-			pBase = PH7_VmExtractClass(pGen->pVm, pBaseName->zString, pBaseName->nByte, FALSE, 0);
-			/* Interfaces are not allowed */
-			while(pBase && (pBase->iFlags & PH7_CLASS_INTERFACE)) {
-				pBase = pBase->pNextName;
-			}
-			if(pBase == 0) {
-				/* Inexistant base class */
-				rc = PH7_GenCompileError(pGen, E_ERROR, pGen->pIn->nLine, "Inexistant base class '%z'", pBaseName);
-				if(rc == SXERR_ABORT) {
-					/* Error count limit reached,abort immediately */
-					return SXERR_ABORT;
-				}
-			} else {
-				if(pBase->iFlags & PH7_CLASS_FINAL) {
-					rc = PH7_GenCompileError(pGen, E_ERROR, nLine,
-											 "Class '%z' may not inherit from final class '%z'", pName, &pBase->sName);
-					if(rc == SXERR_ABORT) {
-						/* Error count limit reached,abort immediately */
-						return SXERR_ABORT;
-					}
-				}
-			}
+//			/* Perform the query */
+//			pBase = PH7_VmExtractClass(pGen->pVm, pBaseName->zString, pBaseName->nByte, FALSE, 0);
+//			/* Interfaces are not allowed */
+//			while(pBase && (pBase->iFlags & PH7_CLASS_INTERFACE)) {
+//				pBase = pBase->pNextName;
+//			}
+//			if(pBase == 0) {
+//				/* Inexistant base class */
+//				rc = PH7_GenCompileError(pGen, E_ERROR, pGen->pIn->nLine, "Inexistant base class '%z'", pBaseName);
+//				if(rc == SXERR_ABORT) {
+//					/* Error count limit reached,abort immediately */
+//					return SXERR_ABORT;
+//				}
+//			} else {
+//				if(pBase->iFlags & PH7_CLASS_FINAL) {
+//					rc = PH7_GenCompileError(pGen, E_ERROR, nLine,
+//											 "Class '%z' may not inherit from final class '%z'", pName, &pBase->sName);
+//					if(rc == SXERR_ABORT) {
+//						/* Error count limit reached,abort immediately */
+//						return SXERR_ABORT;
+//					}
+//				}
+//			}
 			/* Advance the stream cursor */
 			pGen->pIn++;
 		}
@@ -4585,22 +4585,22 @@ static sxi32 GenStateCompileClass(ph7_gen_state *pGen, sxi32 iFlags) {
 	}
 	/* Install the class */
 	rc = PH7_VmInstallClass(pGen->pVm, pClass);
-	if(rc == SXRET_OK) {
-		ph7_class **apInterface;
-		sxu32 n;
-		if(pBase) {
-			/* Inherit from base class and mark as a subclass */
-			rc = PH7_ClassInherit(&(*pGen), pClass, pBase);
-		}
-		apInterface = (ph7_class **)SySetBasePtr(&aInterfaces);
-		for(n = 0 ; n < SySetUsed(&aInterfaces) ; n++) {
-			/* Implements one or more interface */
-			rc = PH7_ClassImplement(pClass, apInterface[n]);
-			if(rc != SXRET_OK) {
-				break;
-			}
-		}
-	}
+//	if(rc == SXRET_OK) {
+//		ph7_class **apInterface;
+//		sxu32 n;
+//		if(pBase) {
+//			/* Inherit from base class and mark as a subclass */
+//			rc = PH7_ClassInherit(&(*pGen), pClass, pBase);
+//		}
+//		apInterface = (ph7_class **)SySetBasePtr(&aInterfaces);
+//		for(n = 0 ; n < SySetUsed(&aInterfaces) ; n++) {
+//			/* Implements one or more interface */
+//			rc = PH7_ClassImplement(pClass, apInterface[n]);
+//			if(rc != SXRET_OK) {
+//				break;
+//			}
+//		}
+//	}
 	SySetRelease(&aInterfaces);
 	if(rc != SXRET_OK) {
 		PH7_GenCompileError(pGen, E_ERROR, nLine, "Fatal, PH7 is running out of memory");
