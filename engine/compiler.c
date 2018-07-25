@@ -4046,11 +4046,8 @@ static sxi32 PH7_CompileClassInterface(ph7_gen_state *pGen) {
 			}
 			pBaseName = &pGen->pIn->sData;
 			pBase = PH7_VmExtractClass(pGen->pVm, pBaseName->zString, pBaseName->nByte, FALSE, 0);
-			/* Only interfaces is allowed */
-			while(pBase && (pBase->iFlags & PH7_CLASS_INTERFACE) == 0) {
-				pBase = pBase->pNextName;
-			}
-			if(pBase == 0) {
+			/* Only interface is allowed */
+			if(pBase == 0 || (pBase->iFlags & PH7_CLASS_INTERFACE) == 0) {
 				/* Inexistant interface */
 				rc = PH7_GenCompileError(pGen, E_ERROR, pGen->pIn->nLine, "Inexistant base interface '%z'", pBaseName);
 				if(rc == SXERR_ABORT) {
@@ -4279,11 +4276,8 @@ static sxi32 GenStateCompileClass(ph7_gen_state *pGen, sxi32 iFlags) {
 			pBaseName = &pGen->pIn->sData;
 //			/* Perform the query */
 //			pBase = PH7_VmExtractClass(pGen->pVm, pBaseName->zString, pBaseName->nByte, FALSE, 0);
-//			/* Interfaces are not allowed */
-//			while(pBase && (pBase->iFlags & PH7_CLASS_INTERFACE)) {
-//				pBase = pBase->pNextName;
-//			}
-//			if(pBase == 0) {
+//			/* Interface is not allowed */
+//			if(pBase == 0 || (pBase->iFlags & PH7_CLASS_INTERFACE)) {
 //				/* Inexistant base class */
 //				rc = PH7_GenCompileError(pGen, E_ERROR, pGen->pIn->nLine, "Inexistant base class '%z'", pBaseName);
 //				if(rc == SXERR_ABORT) {
@@ -4325,10 +4319,7 @@ static sxi32 GenStateCompileClass(ph7_gen_state *pGen, sxi32 iFlags) {
 				/* Make sure the interface is already defined */
 				pInterface = PH7_VmExtractClass(pGen->pVm, pIntName->zString, pIntName->nByte, FALSE, 0);
 				/* Only interfaces are allowed */
-				while(pInterface && (pInterface->iFlags & PH7_CLASS_INTERFACE) == 0) {
-					pInterface = pInterface->pNextName;
-				}
-				if(pInterface == 0) {
+				if(pInterface == 0 || (pInterface->iFlags & PH7_CLASS_INTERFACE) == 0) {
 					/* Inexistant interface */
 					rc = PH7_GenCompileError(pGen, E_ERROR, pGen->pIn->nLine, "Inexistant base interface '%z'", pIntName);
 					if(rc == SXERR_ABORT) {

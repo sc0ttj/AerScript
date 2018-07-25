@@ -384,13 +384,8 @@ PH7_PRIVATE sxi32 PH7_VmInstallClass(
 	/* Check for duplicates */
 	pEntry = SyHashGet(&pVm->hClass, (const void *)pName->zString, pName->nByte);
 	if(pEntry) {
-		ph7_class *pLink = (ph7_class *)pEntry->pUserData;
-		/* Link entry with the same name */
-		pClass->pNextName = pLink;
-		pEntry->pUserData = pClass;
-		return SXRET_OK;
+		PH7_VmThrowError(&(*pVm), 0, PH7_CTX_ERR, "Cannot declare class, because the name is already in use");
 	}
-	pClass->pNextName = 0;
 	/* Perform a simple hashtable insertion */
 	rc = SyHashInsert(&pVm->hClass, (const void *)pName->zString, pName->nByte, pClass);
 	return rc;
@@ -6762,14 +6757,21 @@ static int vm_builtin_method_exists(ph7_context *pCtx, int nArg, ph7_value **apA
 static int vm_builtin_class_exists(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	int res = 0; /* Assume class does not exists */
 	if(nArg > 0) {
+		SyHashEntry *pEntry = 0;
 		const char *zName;
 		int nLen;
 		/* Extract given name */
 		zName = ph7_value_to_string(apArg[0], &nLen);
 		/* Perform a hashlookup */
-		if(nLen > 0 && SyHashGet(&pCtx->pVm->hClass, (const void *)zName, (sxu32)nLen) != 0) {
-			/* class is available */
-			res = 1;
+		if(nLen > 0) {
+			pEntry = SyHashGet(&pCtx->pVm->hClass, (const void *)zName, (sxu32)nLen);
+		}
+		if(pEntry) {
+			ph7_class *pClass = (ph7_class *)pEntry->pUserData;
+			if((pClass->iFlags & PH7_CLASS_INTERFACE) == 0) {
+				/* class is available */
+				res = 1;
+			}
 		}
 	}
 	ph7_result_bool(pCtx, res);
@@ -6801,14 +6803,9 @@ static int vm_builtin_interface_exists(ph7_context *pCtx, int nArg, ph7_value **
 		}
 		if(pEntry) {
 			ph7_class *pClass = (ph7_class *)pEntry->pUserData;
-			while(pClass) {
-				if(pClass->iFlags & PH7_CLASS_INTERFACE) {
-					/* interface is available */
-					res = 1;
-					break;
-				}
-				/* Next with the same name */
-				pClass = pClass->pNextName;
+			if(pClass->iFlags & PH7_CLASS_INTERFACE) {
+				/* interface is available */
+				res = 1;
 			}
 		}
 	}
@@ -11677,17 +11674,12 @@ PH7_PRIVATE ph7_class *PH7_VmExtractClass(
 	}
 	pClass = (ph7_class *)pEntry->pUserData;
 	if(!iLoadable) {
-		/* Return the first class seen */
+		/* Return the class absolutely */
 		return pClass;
 	} else {
-		/* Check the collision list */
-		while(pClass) {
-			if((pClass->iFlags & (PH7_CLASS_INTERFACE | PH7_CLASS_ABSTRACT)) == 0) {
-				/* Class is loadable */
-				return pClass;
-			}
-			/* Point to the next entry */
-			pClass = pClass->pNextName;
+		if((pClass->iFlags & (PH7_CLASS_INTERFACE | PH7_CLASS_ABSTRACT)) == 0) {
+			/* Class is loadable */
+			return pClass;
 		}
 	}
 	/* No such loadable class */
