@@ -1412,10 +1412,6 @@ PH7_PRIVATE sxi32 PH7_VmMakeReady(
 	if(pVm->aOps == 0) {
 		return SXERR_MEM;
 	}
-	/* Set the default VM output consumer callback and it's
-	 * private data. */
-	pVm->sVmConsumer.xConsumer = PH7_VmBlobConsumer;
-	pVm->sVmConsumer.pUserData = &pVm->sConsumer;
 	/* Allocate the reference table */
 	pVm->nRefSize = 0x10; /* Must be a power of two for fast arithemtic */
 	pVm->apRefObj = (VmRefObj **)SyMemBackendAlloc(&pVm->sAllocator, sizeof(VmRefObj *) * pVm->nRefSize);

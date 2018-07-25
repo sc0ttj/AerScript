@@ -604,6 +604,44 @@ int ph7_release(ph7 *pEngine) {
 	SyMemBackendPoolFree(&sMPGlobal.sAllocator, pEngine);
 	return rc;
 }
+int ph7_vm_init(
+	ph7 *pEngine,          /* Running PH7 engine */
+	ph7_vm **ppOutVm          /* OUT: A pointer to the virtual machine */
+) {
+	ph7_vm *pVm;
+	int rc;
+	if(ppOutVm) {
+		*ppOutVm = 0;
+	}
+	/* Allocate a new virtual machine */
+	pVm = (ph7_vm *)SyMemBackendPoolAlloc(&pEngine->sAllocator, sizeof(ph7_vm));
+	if(pVm == 0) {
+		/* If the supplied memory subsystem is so sick that we are unable to allocate
+		 * a tiny chunk of memory, there is no much we can do here. */
+		if(ppOutVm) {
+			*ppOutVm = 0;
+		}
+		return PH7_NOMEM;
+	}
+	/* Initialize the Virtual Machine */
+	rc = PH7_VmInit(pVm, &(*pEngine));
+	if(rc != PH7_OK) {
+		SyMemBackendPoolFree(&pEngine->sAllocator, pVm);
+		if(ppOutVm) {
+			*ppOutVm = 0;
+		}
+		return PH7_VM_ERR;
+	}
+	/* Reset the error message consumer */
+	SyBlobReset(&pEngine->xConf.sErrConsumer);
+	/* Set the default VM output consumer callback and it's
+	 * private data. */
+	pVm->sVmConsumer.xConsumer = PH7_VmBlobConsumer;
+	pVm->sVmConsumer.pUserData = &pVm->sConsumer;
+	/* Point to the freshly created VM */
+	*ppOutVm = pVm;
+	return PH7_OK;
+}
 /*
  * Compile a raw PHP script.
  * To execute a PHP code, it must first be compiled into a byte-code program using this routine.
@@ -621,32 +659,13 @@ static sxi32 ProcessScript(
 	sxi32 iFlags,          /* Compile-time flags */
 	const char *zFilePath  /* File path if script come from a file. NULL otherwise */
 ) {
-	ph7_vm *pVm;
+	ph7_vm *pVm = *ppVm;
 	int iFileDir, rc;
 	char *pFileDir, *fFilePath[PATH_MAX + 1];
 	char *pFilePath[PATH_MAX + 1];
-	/* Allocate a new virtual machine */
-	pVm = (ph7_vm *)SyMemBackendPoolAlloc(&pEngine->sAllocator, sizeof(ph7_vm));
-	if(pVm == 0) {
-		/* If the supplied memory subsystem is so sick that we are unable to allocate
-		 * a tiny chunk of memory, there is no much we can do here. */
-		if(ppVm) {
-			*ppVm = 0;
-		}
-		return PH7_NOMEM;
-	}
 	if(iFlags < 0) {
 		/* Default compile-time flags */
 		iFlags = 0;
-	}
-	/* Initialize the Virtual Machine */
-	rc = PH7_VmInit(pVm, &(*pEngine));
-	if(rc != PH7_OK) {
-		SyMemBackendPoolFree(&pEngine->sAllocator, pVm);
-		if(ppVm) {
-			*ppVm = 0;
-		}
-		return PH7_VM_ERR;
 	}
 	/* Install local import path which is the current directory */
 	ph7_vm_config(pVm, PH7_VM_CONFIG_IMPORT_PATH, "./");
@@ -660,8 +679,6 @@ static sxi32 ProcessScript(
 		/* Push processed file path */
 		PH7_VmPushFilePath(pVm, pFilePath, -1, TRUE, 0);
 	}
-	/* Reset the error message consumer */
-	SyBlobReset(&pEngine->xConf.sErrConsumer);
 	/* Compile the script */
 	PH7_CompileScript(pVm, &(*pScript), iFlags);
 	if(pVm->sCodeGen.nErr > 0 || pVm == 0) {
@@ -691,8 +708,6 @@ static sxi32 ProcessScript(
 	/* Script successfully compiled,link to the list of active virtual machines */
 	MACRO_LD_PUSH(pEngine->pVms, pVm);
 	pEngine->iVm++;
-	/* Point to the freshly created VM */
-	*ppVm = pVm;
 	/* Ready to execute PH7 bytecode */
 	return PH7_OK;
 Release:
@@ -772,9 +787,6 @@ int ph7_compile_v2(ph7 *pEngine, const char *zSource, int nLen, ph7_vm **ppOutVm
 int ph7_compile_file(ph7 *pEngine, const char *zFilePath, ph7_vm **ppOutVm, int iFlags) {
 	const ph7_vfs *pVfs;
 	int rc;
-	if(ppOutVm) {
-		*ppOutVm = 0;
-	}
 	rc = PH7_OK; /* cc warning */
 	if(PH7_ENGINE_MISUSE(pEngine) || SX_EMPTY_STR(zFilePath)) {
 		return PH7_CORRUPT;
@@ -859,7 +871,7 @@ int ph7_vm_config(ph7_vm *pVm, int iConfigOp, ...) {
 		return PH7_ABORT; /* Another thread have released this instance */
 	}
 #endif
-	/* Confiugure the virtual machine */
+	/* Configure the virtual machine */
 	va_start(ap, iConfigOp);
 	rc = PH7_VmConfigure(&(*pVm), iConfigOp, ap);
 	va_end(ap);
