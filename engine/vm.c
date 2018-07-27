@@ -4516,14 +4516,14 @@ static sxi32 VmByteCodeExec(
 			case PH7_OP_CLASS_INIT:
 				{
 					ph7_class *pClassInfo = (ph7_class *)pInstr->p3;
+					ph7_class *pClass = PH7_VmExtractClass(pVm, pClassInfo->sName.zString, pClassInfo->sName.nByte, FALSE, 0);
 					ph7_class *pBase = 0;
-					ph7_class *pClass;
-					printf("Called by class: '%s'\n", pClassInfo->sName);
+					printf("Called by class: '%s'\n", pClass->sName.zString);
 					if(pInstr->iP1) {
 						/* This class inherits from other classes */
 						SyString *apExtends;
 						while(SySetGetNextEntry(&pClassInfo->sExtends, (void **)&apExtends) == SXRET_OK) {
-							printf("Class '%s' inherits from '%s'\n", pClassInfo->sName.zString, apExtends->zString);
+							printf("Class '%s' inherits from '%s'\n", pClass->sName.zString, apExtends->zString);
 							pBase = PH7_VmExtractClass(pVm, apExtends->zString, apExtends->nByte, FALSE, 0);
 							if(pBase == 0) {
 								/* Non-existent base class */
@@ -4535,13 +4535,17 @@ static sxi32 VmByteCodeExec(
 								/* Trying to inherit from final class */
 								PH7_VmThrowError(pVm, 0, PH7_CTX_ERR, "Class cannot inherit from final class");
 							}
+							rc = PH7_ClassInherit(pClass, pBase);
+							if(rc != SXRET_OK) {
+								break;
+							}
 						}
 					}
 					if(pInstr->iP2) {
 						/* This class implements some interfaces */
 						SyString *apImplements;
 						while(SySetGetNextEntry(&pClassInfo->sImplements, (void **)&apImplements) == SXRET_OK) {
-							printf("Class '%s' implements '%s'\n", pClassInfo->sName.zString, apImplements->zString);
+							printf("Class '%s' implements '%s'\n", pClass->sName.zString, apImplements->zString);
 							pBase = PH7_VmExtractClass(pVm, apImplements->zString, apImplements->nByte, FALSE, 0);
 							if(pBase == 0) {
 								/* Non-existent interface */
@@ -4549,6 +4553,10 @@ static sxi32 VmByteCodeExec(
 							} else if((pBase->iFlags & PH7_CLASS_INTERFACE) == 0) {
 								/* Trying to extend a class */
 								PH7_VmThrowError(pVm, 0, PH7_CTX_ERR, "Interface cannot inherit from a class");
+							}
+							rc = PH7_ClassImplement(pClass, pBase);
+							if(rc != SXRET_OK) {
+								break;
 							}
 						}
 					}

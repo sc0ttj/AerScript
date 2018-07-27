@@ -1701,7 +1701,7 @@ PH7_PRIVATE ph7_class_method *PH7_ClassExtractMethod(ph7_class *pClass, const ch
 PH7_PRIVATE ph7_class_attr    *PH7_ClassExtractAttribute(ph7_class *pClass, const char *zName, sxu32 nByte);
 PH7_PRIVATE sxi32 PH7_ClassInstallAttr(ph7_class *pClass, ph7_class_attr *pAttr);
 PH7_PRIVATE sxi32 PH7_ClassInstallMethod(ph7_class *pClass, ph7_class_method *pMeth);
-PH7_PRIVATE sxi32 PH7_ClassInherit(ph7_gen_state *pGen, ph7_class *pSub, ph7_class *pBase);
+PH7_PRIVATE sxi32 PH7_ClassInherit(ph7_class *pSub, ph7_class *pBase);
 PH7_PRIVATE sxi32 PH7_ClassInterfaceInherit(ph7_class *pSub, ph7_class *pBase);
 PH7_PRIVATE sxi32 PH7_ClassImplement(ph7_class *pMain, ph7_class *pInterface);
 PH7_PRIVATE ph7_class_instance *PH7_NewClassInstance(ph7_vm *pVm, ph7_class *pClass);
