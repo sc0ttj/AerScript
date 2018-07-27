@@ -4280,9 +4280,8 @@ static sxi32 GenStateCompileClass(ph7_gen_state *pGen, sxi32 iFlags) {
 					return SXRET_OK;
 				}
 				/* Extract base class name */
-				char *pName = malloc(pGen->pIn->sData.nByte);
-				SyStrncpy(pName, pGen->pIn->sData.zString, pGen->pIn->sData.nByte);
-				SyStringInitFromBuf(&pBaseName, pName, SyStrlen(pName));
+				char *sName = SyMemBackendStrDup(&pGen->pVm->sAllocator, pGen->pIn->sData.zString, pGen->pIn->sData.nByte);
+				SyStringInitFromBuf(&pBaseName, sName, SyStrlen(sName));
 				/* Register inherited class */
 				SySetPut(&pClassInfo->sExtends, (const void *)&pBaseName);
 				/* Advance the stream cursor */
@@ -4296,7 +4295,6 @@ static sxi32 GenStateCompileClass(ph7_gen_state *pGen, sxi32 iFlags) {
 			iP1 = 1;
 		}
 		if(pGen->pIn < pGen->pEnd && (pGen->pIn->nType & PH7_TK_KEYWORD) && SX_PTR_TO_INT(pGen->pIn->pUserData) == PH7_TKWRD_IMPLEMENTS) {
-			ph7_class *pInterface;
 			SyString pIntName;
 			/* Interface implementation */
 			pGen->pIn++; /* Advance the stream cursor */
@@ -4314,9 +4312,8 @@ static sxi32 GenStateCompileClass(ph7_gen_state *pGen, sxi32 iFlags) {
 					return SXRET_OK;
 				}
 				/* Extract interface name */
-				char *pName = malloc(pGen->pIn->sData.nByte);
-				SyStrncpy(pName, pGen->pIn->sData.zString, pGen->pIn->sData.nByte);
-				SyStringInitFromBuf(&pIntName, pName, SyStrlen(pName));
+				char *sName = SyMemBackendStrDup(&pGen->pVm->sAllocator, pGen->pIn->sData.zString, pGen->pIn->sData.nByte);
+				SyStringInitFromBuf(&pIntName, sName, SyStrlen(sName));
 				/* Register inherited class */
 				SySetPut(&pClassInfo->sImplements, (const void *)&pIntName);
 				/* Advance the stream cursor */
