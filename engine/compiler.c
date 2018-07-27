@@ -4006,12 +4006,27 @@ Synchronize:
 static sxi32 PH7_CompileClassInterface(ph7_gen_state *pGen) {
 	sxu32 nLine = pGen->pIn->nLine;
 	ph7_class *pClass, *pBase;
+	ph7_class_info *pClassInfo;
 	SyToken *pEnd, *pTmp;
 	SyString *pName;
 	sxi32 nKwrd;
 	sxi32 rc;
+	sxi32 iP1 = 0;
 	/* Jump the 'interface' keyword */
 	pGen->pIn++;
+		if(pGen->pIn >= pGen->pEnd || (pGen->pIn->nType & PH7_TK_ID) == 0) {
+		/* Syntax error */
+		rc = PH7_GenCompileError(pGen, E_ERROR, nLine, "Invalid interface name");
+		if(rc == SXERR_ABORT) {
+			/* Error count limit reached,abort immediately */
+			return SXERR_ABORT;
+		}
+		/* Synchronize with the first semi-colon or curly braces */
+		while(pGen->pIn < pGen->pEnd && (pGen->pIn->nType & (PH7_TK_OCB/*'{'*/ | PH7_TK_SEMI/*';'*/)) == 0) {
+			pGen->pIn++;
+		}
+		return SXRET_OK;
+	}
 	/* Extract interface name */
 	pName = &pGen->pIn->sData;
 	/* Advance the stream cursor */
@@ -4022,41 +4037,49 @@ static sxi32 PH7_CompileClassInterface(ph7_gen_state *pGen) {
 		PH7_GenCompileError(pGen, E_ERROR, nLine, "Fatal, PH7 is running out of memory");
 		return SXERR_ABORT;
 	}
+	/* Obtain a raw class inheritance storage */
+	pClassInfo = PH7_NewClassInfo(pGen->pVm, pName);
+	if(pClassInfo == 0) {
+		PH7_GenCompileError(pGen, E_ERROR, nLine, "Fatal, PH7 is running out of memory");
+		return SXERR_ABORT;
+	}
 	/* Mark as an interface */
 	pClass->iFlags = PH7_CLASS_INTERFACE;
 	/* Assume no base class is given */
 	pBase = 0;
 	if(pGen->pIn < pGen->pEnd  && (pGen->pIn->nType & PH7_TK_KEYWORD)) {
+		SyString pBaseName;
 		nKwrd = SX_PTR_TO_INT(pGen->pIn->pUserData);
 		if(nKwrd == PH7_TKWRD_EXTENDS /* interface b extends a */) {
-			SyString *pBaseName;
 			/* Extract base interface */
 			pGen->pIn++;
-			if(pGen->pIn >= pGen->pEnd || (pGen->pIn->nType & PH7_TK_ID) == 0) {
-				/* Syntax error */
-				rc = PH7_GenCompileError(pGen, E_ERROR, nLine,
-										 "Expected 'interface_name' after 'extends' keyword inside interface '%z'",
-										 pName);
-				SyMemBackendPoolFree(&pGen->pVm->sAllocator, pClass);
-				if(rc == SXERR_ABORT) {
-					/* Error count limit reached,abort immediately */
-					return SXERR_ABORT;
+			for(;;) {
+				if(pGen->pIn >= pGen->pEnd || (pGen->pIn->nType & PH7_TK_ID) == 0) {
+					/* Syntax error */
+					rc = PH7_GenCompileError(pGen, E_ERROR, nLine,
+											 "Expected 'interface_name' after 'extends' keyword inside interface '%z'",
+											 pName);
+					SyMemBackendPoolFree(&pGen->pVm->sAllocator, pClass);
+					if(rc == SXERR_ABORT) {
+						/* Error count limit reached,abort immediately */
+						return SXERR_ABORT;
+					}
+					return SXRET_OK;
 				}
-				return SXRET_OK;
-			}
-			pBaseName = &pGen->pIn->sData;
-			pBase = PH7_VmExtractClass(pGen->pVm, pBaseName->zString, pBaseName->nByte, FALSE, 0);
-			/* Only interface is allowed */
-			if(pBase == 0 || (pBase->iFlags & PH7_CLASS_INTERFACE) == 0) {
-				/* Inexistant interface */
-				rc = PH7_GenCompileError(pGen, E_ERROR, pGen->pIn->nLine, "Inexistant base interface '%z'", pBaseName);
-				if(rc == SXERR_ABORT) {
-					/* Error count limit reached,abort immediately */
-					return SXERR_ABORT;
+				/* Extract base class name */
+				char *sName = SyMemBackendStrDup(&pGen->pVm->sAllocator, pGen->pIn->sData.zString, pGen->pIn->sData.nByte);
+				SyStringInitFromBuf(&pBaseName, sName, SyStrlen(sName));
+				/* Register inherited class */
+				SySetPut(&pClassInfo->sExtends, (const void *)&pBaseName);
+				/* Advance the stream cursor */
+				pGen->pIn++;
+				if(pGen->pIn >= pGen->pEnd || (pGen->pIn->nType & PH7_TK_COMMA) == 0) {
+					break;
 				}
+				/* Jump the comma operator */
+				pGen->pIn++;
 			}
-			/* Advance the stream cursor */
-			pGen->pIn++;
+			iP1 = 1;
 		}
 	}
 	if(pGen->pIn >= pGen->pEnd  || (pGen->pIn->nType & PH7_TK_OCB /*'{'*/) == 0) {
@@ -4188,9 +4211,9 @@ static sxi32 PH7_CompileClassInterface(ph7_gen_state *pGen) {
 	}
 	/* Install the interface */
 	rc = PH7_VmInstallClass(pGen->pVm, pClass);
-	if(rc == SXRET_OK && pBase) {
-		/* Inherit from the base interface */
-		rc = PH7_ClassInterfaceInherit(pClass, pBase);
+	if(iP1) {
+		/* Emit the INTERFACE_INIT instruction only if there is such a need */
+		PH7_VmEmitInstr(pGen->pVm, PH7_OP_INTERFACE_INIT, iP1, 0, pClassInfo, 0);
 	}
 	if(rc != SXRET_OK) {
 		PH7_GenCompileError(pGen, E_ERROR, nLine, "Fatal, PH7 is running out of memory");

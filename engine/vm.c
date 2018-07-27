@@ -4560,12 +4560,33 @@ static sxi32 VmByteCodeExec(
 					break;
 				}
 			/*
-			 * OP_INTERFACE_INIT * * P3
+			 * OP_INTERFACE_INIT P1 * P3
 			 * Perform additional interface initialization, by adding base interfaces
 			 * to its definition.
 			 */
 			case PH7_OP_INTERFACE_INIT:
 				{
+					ph7_class_info *pClassInfo = (ph7_class_info *)pInstr->p3;
+					ph7_class *pClass = PH7_VmExtractClass(pVm, pClassInfo->sName.zString, pClassInfo->sName.nByte, FALSE, 0);
+					ph7_class *pBase = 0;
+					if(pInstr->iP1) {
+						/* This interface inherits from other interface */
+						SyString *apExtends;
+						while(SySetGetNextEntry(&pClassInfo->sExtends, (void **)&apExtends) == SXRET_OK) {
+							pBase = PH7_VmExtractClass(pVm, apExtends->zString, apExtends->nByte, FALSE, 0);
+							if(pBase == 0) {
+								/* Non-existent base interface */
+								VmErrorFormat(&(*pVm), PH7_CTX_ERR, "Call to non-existent base interface '%z'", &apExtends->zString);
+							} else if((pBase->iFlags & PH7_CLASS_INTERFACE) == 0) {
+								/* Trying to inherit from class */
+								VmErrorFormat(&(*pVm), PH7_CTX_ERR, "Interface '%z' cannot inherit from class '%z'", &pClass->sName.zString, &apExtends->zString);
+							}
+							rc = PH7_ClassInterfaceInherit(pClass, pBase);
+							if(rc != SXRET_OK) {
+								break;
+							}
+						}
+					}
 					break;
 				}
 			/*
