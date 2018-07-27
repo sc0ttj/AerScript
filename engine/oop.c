@@ -154,7 +154,7 @@ PH7_PRIVATE ph7_class_attr *PH7_ClassExtractAttribute(ph7_class *pClass, const c
 		/* No such entry */
 		return 0;
 	}
-	/* Point to the desierd method */
+	/* Point to the desired method */
 	return (ph7_class_attr *)pEntry->pUserData;
 }
 /*
@@ -938,7 +938,7 @@ PH7_PRIVATE sxi32 PH7_ClassInstanceDump(SyBlob *pOut, ph7_class_instance *pThis,
  * The above example will output:
  *  Hello
  *
- * Note that PH7 does not support all the magical method and introudces __toFloat(),__toInt()
+ * Note that PH7 does not support all the magical method and introduces __toFloat(),__toInt()
  * which have the same behaviour as __toString() but for float and integer types
  * respectively.
  * Refer to the official documentation for more information.
@@ -1013,7 +1013,7 @@ PH7_PRIVATE ph7_value *PH7_ClassInstanceExtractAttrValue(ph7_class_instance *pTh
  *     int(991)
  *  }
  * You have noticed that PH7 allow class attributes [i.e: $a,$c,$d in the example above]
- * have any complex expression (even function calls/Annonymous functions) as their default
+ * have any complex expression (even function calls/anonymous functions) as their default
  * value unlike the standard PHP engine.
  * This is a very powerful feature that you have to look at.
  */
@@ -1087,7 +1087,7 @@ PH7_PRIVATE sxi32 PH7_ClassInstanceWalk(
 	return SXRET_OK;
 }
 /*
- * Extract a class atrribute value.
+ * Extract a class attribute value.
  * Return a pointer to the attribute value on success. Otherwise NULL.
  * Note:
  *  Access to static and constant attribute is not allowed. That is,the function
@@ -1103,7 +1103,7 @@ PH7_PRIVATE ph7_value *PH7_ClassInstanceFetchAttr(ph7_class_instance *pThis, con
 		/* No such attribute */
 		return 0;
 	}
-	/* Point to the class atrribute */
+	/* Point to the class attribute */
 	pAttr = (VmClassAttr *)pEntry->pUserData;
 	/* Check if we are dealing with a static/constant attribute */
 	if(pAttr->pAttr->iFlags & (PH7_CLASS_ATTR_CONSTANT | PH7_CLASS_ATTR_STATIC)) {
