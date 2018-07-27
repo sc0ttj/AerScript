@@ -4509,6 +4509,41 @@ static sxi32 VmByteCodeExec(
 					break;
 				}
 			/*
+			 * OP_CLASS_INIT P1 P2 P3
+			 * Perform additional class initialization, by adding base classes
+			 * and interfaces to its definition.
+			 */
+			case PH7_OP_CLASS_INIT:
+				{
+					ph7_class *pClass = (ph7_class *)pInstr->p3;
+					printf("Called by class: '%s'\n", pClass->sName);
+					if(pInstr->iP1) {
+						/* This class inherits from other classes */
+						SyString *apExtends;
+						while(SySetGetNextEntry(&pClass->sExtends, (void **)&apExtends) == SXRET_OK) {
+							printf("Class '%s' inherits from '%s'\n", pClass->sName.zString, apExtends->zString);
+						}
+					}
+					if(pInstr->iP2) {
+						/* This class implements some interfaces */
+						SyString *apImplements;
+						while(SySetGetNextEntry(&pClass->sImplements, (void **)&apImplements) == SXRET_OK) {
+							printf("Class '%s' implements '%s'\n", pClass->sName.zString, apImplements->zString);
+						}
+					}
+					SyStringInitFromBuf(&pClass->sName, "DUPA", 4);
+					break;
+				}
+			/*
+			 * OP_INTERFACE_INIT * * P3
+			 * Perform additional interface initialization, by adding base interfaces
+			 * to its definition.
+			 */
+			case PH7_OP_INTERFACE_INIT:
+				{
+					break;
+				}
+			/*
 			 * OP_FOREACH_INIT * P2 P3
 			 * Prepare a foreach step.
 			 */
@@ -6024,6 +6059,12 @@ static const char *VmInstrToString(sxi32 nOp) {
 			break;
 		case PH7_OP_THROW:
 			zOp = "THROW      ";
+			break;
+		case PH7_OP_CLASS_INIT:
+			zOp = "CLASS_INIT ";
+			break;
+		case PH7_OP_INTERFACE_INIT:
+			zOp = "INTER_INIT ";
 			break;
 		case PH7_OP_FOREACH_INIT:
 			zOp = "4EACH_INIT ";

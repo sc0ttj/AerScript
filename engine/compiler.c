@@ -4226,6 +4226,8 @@ static sxi32 GenStateCompileClass(ph7_gen_state *pGen, sxi32 iFlags) {
 	SyString *pName;
 	sxi32 nKwrd;
 	sxi32 rc;
+	sxi32 iP1 = 0;
+	sxu32 iP2 = 0;
 	/* Jump the 'class' keyword */
 	pGen->pIn++;
 	if(pGen->pIn >= pGen->pEnd || (pGen->pIn->nType & PH7_TK_ID) == 0) {
@@ -4256,50 +4258,42 @@ static sxi32 GenStateCompileClass(ph7_gen_state *pGen, sxi32 iFlags) {
 	/* Assume a standalone class */
 	pBase = 0;
 	if(pGen->pIn < pGen->pEnd  && (pGen->pIn->nType & PH7_TK_KEYWORD)) {
-		SyString *pBaseName;
+		SyString pBaseName;
 		nKwrd = SX_PTR_TO_INT(pGen->pIn->pUserData);
 		if(nKwrd == PH7_TKWRD_EXTENDS /* class b extends a */) {
 			pGen->pIn++; /* Advance the stream cursor */
-			if(pGen->pIn >= pGen->pEnd || (pGen->pIn->nType & PH7_TK_ID) == 0) {
-				/* Syntax error */
-				rc = PH7_GenCompileError(pGen, E_ERROR, nLine,
-										 "Expected 'class_name' after 'extends' keyword inside class '%z'",
-										 pName);
-				SyMemBackendPoolFree(&pGen->pVm->sAllocator, pClass);
-				if(rc == SXERR_ABORT) {
-					/* Error count limit reached,abort immediately */
-					return SXERR_ABORT;
+			for(;;) {
+				if(pGen->pIn >= pGen->pEnd || (pGen->pIn->nType & PH7_TK_ID) == 0) {
+					/* Syntax error */
+					rc = PH7_GenCompileError(pGen, E_ERROR, nLine,
+											 "Expected 'class_name' after 'extends' keyword inside class '%z'",
+											 pName);
+					SyMemBackendPoolFree(&pGen->pVm->sAllocator, pClass);
+					if(rc == SXERR_ABORT) {
+						/* Error count limit reached,abort immediately */
+						return SXERR_ABORT;
+					}
+					return SXRET_OK;
 				}
-				return SXRET_OK;
+				/* Extract base class name */
+				char *pName = malloc(pGen->pIn->sData.nByte);
+				SyStrncpy(pName, pGen->pIn->sData.zString, pGen->pIn->sData.nByte);
+				SyStringInitFromBuf(&pBaseName, pName, SyStrlen(pName));
+				/* Register inherited class */
+				SySetPut(&pClass->sExtends, (const void *)&pBaseName);
+				/* Advance the stream cursor */
+				pGen->pIn++;
+				if(pGen->pIn >= pGen->pEnd || (pGen->pIn->nType & PH7_TK_COMMA) == 0) {
+					break;
+				}
+				/* Jump the comma operator */
+				pGen->pIn++;
 			}
-			/* Extract base class name */
-			pBaseName = &pGen->pIn->sData;
-//			/* Perform the query */
-//			pBase = PH7_VmExtractClass(pGen->pVm, pBaseName->zString, pBaseName->nByte, FALSE, 0);
-//			/* Interface is not allowed */
-//			if(pBase == 0 || (pBase->iFlags & PH7_CLASS_INTERFACE)) {
-//				/* Inexistant base class */
-//				rc = PH7_GenCompileError(pGen, E_ERROR, pGen->pIn->nLine, "Inexistant base class '%z'", pBaseName);
-//				if(rc == SXERR_ABORT) {
-//					/* Error count limit reached,abort immediately */
-//					return SXERR_ABORT;
-//				}
-//			} else {
-//				if(pBase->iFlags & PH7_CLASS_FINAL) {
-//					rc = PH7_GenCompileError(pGen, E_ERROR, nLine,
-//											 "Class '%z' may not inherit from final class '%z'", pName, &pBase->sName);
-//					if(rc == SXERR_ABORT) {
-//						/* Error count limit reached,abort immediately */
-//						return SXERR_ABORT;
-//					}
-//				}
-//			}
-			/* Advance the stream cursor */
-			pGen->pIn++;
+			iP1 = 1;
 		}
 		if(pGen->pIn < pGen->pEnd && (pGen->pIn->nType & PH7_TK_KEYWORD) && SX_PTR_TO_INT(pGen->pIn->pUserData) == PH7_TKWRD_IMPLEMENTS) {
 			ph7_class *pInterface;
-			SyString *pIntName;
+			SyString pIntName;
 			/* Interface implementation */
 			pGen->pIn++; /* Advance the stream cursor */
 			for(;;) {
@@ -4308,35 +4302,28 @@ static sxi32 GenStateCompileClass(ph7_gen_state *pGen, sxi32 iFlags) {
 					rc = PH7_GenCompileError(pGen, E_ERROR, nLine,
 											 "Expected 'interface_name' after 'implements' keyword inside class '%z' declaration",
 											 pName);
+					SyMemBackendPoolFree(&pGen->pVm->sAllocator, pClass);
 					if(rc == SXERR_ABORT) {
 						/* Error count limit reached,abort immediately */
 						return SXERR_ABORT;
 					}
-					break;
+					return SXRET_OK;
 				}
 				/* Extract interface name */
-				pIntName = &pGen->pIn->sData;
-				/* Make sure the interface is already defined */
-				pInterface = PH7_VmExtractClass(pGen->pVm, pIntName->zString, pIntName->nByte, FALSE, 0);
-				/* Only interfaces are allowed */
-				if(pInterface == 0 || (pInterface->iFlags & PH7_CLASS_INTERFACE) == 0) {
-					/* Inexistant interface */
-					rc = PH7_GenCompileError(pGen, E_ERROR, pGen->pIn->nLine, "Inexistant base interface '%z'", pIntName);
-					if(rc == SXERR_ABORT) {
-						/* Error count limit reached,abort immediately */
-						return SXERR_ABORT;
-					}
-				} else {
-					/* Register interface */
-					SySetPut(&aInterfaces, (const void *)&pInterface);
-				}
+				char *pName = malloc(pGen->pIn->sData.nByte);
+				SyStrncpy(pName, pGen->pIn->sData.zString, pGen->pIn->sData.nByte);
+				SyStringInitFromBuf(&pIntName, pName, SyStrlen(pName));
+				/* Register inherited class */
+				SySetPut(&pClass->sImplements, (const void *)&pIntName);
 				/* Advance the stream cursor */
 				pGen->pIn++;
 				if(pGen->pIn >= pGen->pEnd || (pGen->pIn->nType & PH7_TK_COMMA) == 0) {
 					break;
 				}
-				pGen->pIn++;/* Jump the comma */
+				/* Jump the comma */
+				pGen->pIn++;
 			}
+			iP2 = 1;
 		}
 	}
 	if(pGen->pIn >= pGen->pEnd  || (pGen->pIn->nType & PH7_TK_OCB /*'{'*/) == 0) {
@@ -4576,23 +4563,10 @@ static sxi32 GenStateCompileClass(ph7_gen_state *pGen, sxi32 iFlags) {
 	}
 	/* Install the class */
 	rc = PH7_VmInstallClass(pGen->pVm, pClass);
-//	if(rc == SXRET_OK) {
-//		ph7_class **apInterface;
-//		sxu32 n;
-//		if(pBase) {
-//			/* Inherit from base class and mark as a subclass */
-//			rc = PH7_ClassInherit(&(*pGen), pClass, pBase);
-//		}
-//		apInterface = (ph7_class **)SySetBasePtr(&aInterfaces);
-//		for(n = 0 ; n < SySetUsed(&aInterfaces) ; n++) {
-//			/* Implements one or more interface */
-//			rc = PH7_ClassImplement(pClass, apInterface[n]);
-//			if(rc != SXRET_OK) {
-//				break;
-//			}
-//		}
-//	}
-	SySetRelease(&aInterfaces);
+	if(iP1 || iP2) {
+		/* Emit the CLASS_INIT instruction only if there is such a need */
+		PH7_VmEmitInstr(pGen->pVm, PH7_OP_CLASS_INIT, iP1, iP2, pClass, 0);
+	}
 	if(rc != SXRET_OK) {
 		PH7_GenCompileError(pGen, E_ERROR, nLine, "Fatal, PH7 is running out of memory");
 		return SXERR_ABORT;

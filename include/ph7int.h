@@ -1035,6 +1035,8 @@ struct ph7_class {
 	SyHash hMethod;       /* Class methods */
 	sxu32 nLine;          /* Line number on which this class was declared */
 	SySet aInterface;     /* Implemented interface container */
+	SySet sExtends;       /* List of inherited classes / interfaces */
+	SySet sImplements;    /* List of implemented interfaces */
 };
 /* Class configuration flags */
 #define PH7_CLASS_FINAL       0x001 /* Class is final [cannot be extended] */
@@ -1360,6 +1362,8 @@ enum ph7_vm_op {
 	PH7_OP_CVT_NULL,     /* NULL cast */
 	PH7_OP_CVT_ARRAY,    /* Array cast */
 	PH7_OP_CVT_OBJ,      /* Object cast */
+	PH7_OP_CLASS_INIT,    /* Class init */
+	PH7_OP_INTERFACE_INIT,/* Interface init */
 	PH7_OP_FOREACH_INIT, /* For each init */
 	PH7_OP_FOREACH_STEP, /* For each step */
 	PH7_OP_IS_A,         /* Instanceof */
