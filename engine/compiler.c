@@ -4219,9 +4219,9 @@ done:
 static sxi32 GenStateCompileClass(ph7_gen_state *pGen, sxi32 iFlags) {
 	sxu32 nLine = pGen->pIn->nLine;
 	ph7_class *pClass, *pBase;
+	ph7_class_info *pClassInfo;
 	SyToken *pEnd, *pTmp;
 	sxi32 iProtection;
-	SySet aInterfaces;
 	sxi32 iAttrflags;
 	SyString *pName;
 	sxi32 nKwrd;
@@ -4253,8 +4253,12 @@ static sxi32 GenStateCompileClass(ph7_gen_state *pGen, sxi32 iFlags) {
 		PH7_GenCompileError(pGen, E_ERROR, nLine, "Fatal, PH7 is running out of memory");
 		return SXERR_ABORT;
 	}
-	/* implemented interfaces container */
-	SySetInit(&aInterfaces, &pGen->pVm->sAllocator, sizeof(ph7_class *));
+	/* Obtain a raw class inheritance storage */
+	pClassInfo = PH7_NewClassInfo(pGen->pVm, pName);
+	if(pClassInfo == 0) {
+		PH7_GenCompileError(pGen, E_ERROR, nLine, "Fatal, PH7 is running out of memory");
+		return SXERR_ABORT;
+	}
 	/* Assume a standalone class */
 	pBase = 0;
 	if(pGen->pIn < pGen->pEnd  && (pGen->pIn->nType & PH7_TK_KEYWORD)) {
@@ -4280,7 +4284,7 @@ static sxi32 GenStateCompileClass(ph7_gen_state *pGen, sxi32 iFlags) {
 				SyStrncpy(pName, pGen->pIn->sData.zString, pGen->pIn->sData.nByte);
 				SyStringInitFromBuf(&pBaseName, pName, SyStrlen(pName));
 				/* Register inherited class */
-				SySetPut(&pClass->sExtends, (const void *)&pBaseName);
+				SySetPut(&pClassInfo->sExtends, (const void *)&pBaseName);
 				/* Advance the stream cursor */
 				pGen->pIn++;
 				if(pGen->pIn >= pGen->pEnd || (pGen->pIn->nType & PH7_TK_COMMA) == 0) {
@@ -4314,7 +4318,7 @@ static sxi32 GenStateCompileClass(ph7_gen_state *pGen, sxi32 iFlags) {
 				SyStrncpy(pName, pGen->pIn->sData.zString, pGen->pIn->sData.nByte);
 				SyStringInitFromBuf(&pIntName, pName, SyStrlen(pName));
 				/* Register inherited class */
-				SySetPut(&pClass->sImplements, (const void *)&pIntName);
+				SySetPut(&pClassInfo->sImplements, (const void *)&pIntName);
 				/* Advance the stream cursor */
 				pGen->pIn++;
 				if(pGen->pIn >= pGen->pEnd || (pGen->pIn->nType & PH7_TK_COMMA) == 0) {
@@ -4565,7 +4569,7 @@ static sxi32 GenStateCompileClass(ph7_gen_state *pGen, sxi32 iFlags) {
 	rc = PH7_VmInstallClass(pGen->pVm, pClass);
 	if(iP1 || iP2) {
 		/* Emit the CLASS_INIT instruction only if there is such a need */
-		PH7_VmEmitInstr(pGen->pVm, PH7_OP_CLASS_INIT, iP1, iP2, pClass, 0);
+		PH7_VmEmitInstr(pGen->pVm, PH7_OP_CLASS_INIT, iP1, iP2, pClassInfo, 0);
 	}
 	if(rc != SXRET_OK) {
 		PH7_GenCompileError(pGen, E_ERROR, nLine, "Fatal, PH7 is running out of memory");

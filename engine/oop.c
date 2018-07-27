@@ -16,6 +16,33 @@
  * This file implement an Object Oriented (OO) subsystem for the PH7 engine.
  */
 /*
+ * Create an empty class inheritance storage.
+ * Return a pointer to a storage (ph7_class_info instance) on success. NULL otherwise.
+ */
+PH7_PRIVATE ph7_class_info *PH7_NewClassInfo(ph7_vm *pVm, const SyString *pName) {
+	ph7_class_info *pClassInfo;
+	char *zName;
+	/* Allocate a new instance */
+	pClassInfo = (ph7_class_info *)SyMemBackendPoolAlloc(&pVm->sAllocator, sizeof(ph7_class_info));
+	if(pClassInfo == 0) {
+		return 0;
+	}
+	/* Zero the structure */
+	SyZero(pClassInfo, sizeof(ph7_class_info));
+	/* Duplicate class name */
+	zName = SyMemBackendStrDup(&pVm->sAllocator, pName->zString, pName->nByte);
+	if(zName == 0) {
+		SyMemBackendPoolFree(&pVm->sAllocator, pClassInfo);
+		return 0;
+	}
+	/* Initialize the class information storage */
+	SyStringInitFromBuf(&pClassInfo->sName, zName, pName->nByte);
+	SySetInit(&pClassInfo->sExtends, &pVm->sAllocator, sizeof(SyString));
+	SySetInit(&pClassInfo->sImplements, &pVm->sAllocator, sizeof(SyString));
+	/* All done */
+	return pClassInfo;
+}
+/*
  * Create an empty class.
  * Return a pointer to a raw class (ph7_class instance) on success. NULL otherwise.
  */

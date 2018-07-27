@@ -4515,7 +4515,7 @@ static sxi32 VmByteCodeExec(
 			 */
 			case PH7_OP_CLASS_INIT:
 				{
-					ph7_class *pClassInfo = (ph7_class *)pInstr->p3;
+					ph7_class_info *pClassInfo = (ph7_class_info *)pInstr->p3;
 					ph7_class *pClass = PH7_VmExtractClass(pVm, pClassInfo->sName.zString, pClassInfo->sName.nByte, FALSE, 0);
 					ph7_class *pBase = 0;
 					if(pInstr->iP1) {

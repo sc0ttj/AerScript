@@ -38,7 +38,9 @@ typedef struct ph7_foreach_info   ph7_foreach_info;
 typedef struct ph7_foreach_step   ph7_foreach_step;
 typedef struct ph7_hashmap_node   ph7_hashmap_node;
 typedef struct ph7_hashmap        ph7_hashmap;
+typedef struct ph7_class_info     ph7_class_info;
 typedef struct ph7_class          ph7_class;
+
 /* Symisc Standard types */
 #if !defined(SYMISC_STD_TYPES)
 	#define SYMISC_STD_TYPES
@@ -1022,6 +1024,15 @@ struct ph7_builtin_constant {
 typedef struct ph7_class_method ph7_class_method;
 typedef struct ph7_class_attr   ph7_class_attr;
 /*
+ * Information about class/interface inheritance and interface implementation
+ * is stored in an instance of the following structure. 
+ */
+struct ph7_class_info {
+	SyString sName;       /* Class full qualified name */
+	SySet sExtends;       /* List of inherited classes / interfaces */
+	SySet sImplements;    /* List of implemented interfaces */
+};
+/*
  * Each class is parsed out and stored in an instance of the following structure.
  * PH7 introduced powerfull extensions to the PHP 5 OO subsystems.
  * Please refer to the official documentation for more information.
@@ -1693,6 +1704,7 @@ PH7_PRIVATE sxi32 PH7_StripTagsFromString(ph7_context *pCtx, const char *zIn, in
 PH7_PRIVATE sxi32 PH7_ParseIniString(ph7_context *pCtx, const char *zIn, sxu32 nByte, int bProcessSection);
 #endif
 /* oo.c function prototypes */
+PH7_PRIVATE ph7_class_info *PH7_NewClassInfo(ph7_vm *pVm, const SyString *pName);
 PH7_PRIVATE ph7_class *PH7_NewRawClass(ph7_vm *pVm, const SyString *pName, sxu32 nLine);
 PH7_PRIVATE ph7_class_attr *PH7_NewClassAttr(ph7_vm *pVm, const SyString *pName, sxu32 nLine, sxi32 iProtection, sxi32 iFlags);
 PH7_PRIVATE ph7_class_method *PH7_NewClassMethod(ph7_vm *pVm, ph7_class *pClass, const SyString *pName, sxu32 nLine,
@@ -1701,7 +1713,7 @@ PH7_PRIVATE ph7_class_method *PH7_ClassExtractMethod(ph7_class *pClass, const ch
 PH7_PRIVATE ph7_class_attr    *PH7_ClassExtractAttribute(ph7_class *pClass, const char *zName, sxu32 nByte);
 PH7_PRIVATE sxi32 PH7_ClassInstallAttr(ph7_class *pClass, ph7_class_attr *pAttr);
 PH7_PRIVATE sxi32 PH7_ClassInstallMethod(ph7_class *pClass, ph7_class_method *pMeth);
-PH7_PRIVATE sxi32 PH7_ClassInherit(ph7_class *pSub, ph7_class *pBase);
+PH7_PRIVATE sxi32 PH7_ClassInherit(ph7_vm *pVm, ph7_class *pSub, ph7_class *pBase);
 PH7_PRIVATE sxi32 PH7_ClassInterfaceInherit(ph7_class *pSub, ph7_class *pBase);
 PH7_PRIVATE sxi32 PH7_ClassImplement(ph7_class *pMain, ph7_class *pInterface);
 PH7_PRIVATE ph7_class_instance *PH7_NewClassInstance(ph7_vm *pVm, ph7_class *pClass);
