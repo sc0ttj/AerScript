@@ -325,6 +325,13 @@ sxu32 Systrcpy(char *zDest, sxu32 nDestLen, const char *zSrc, sxu32 nLen) {
 	zBuf[0] = 0;
 	return (sxu32)(zBuf - (unsigned char *)zDest);
 }
+sxi32 SyStrncpy(char *zDest, const char *zSrc, sxu32 nLen) {
+	sxu32 i = 0;
+	while(i++ != nLen && (*zDest++ = *zSrc++));
+	*zDest = '\0';
+	return SXRET_OK;
+}
+
 sxi32 SyAsciiToHex(sxi32 c) {
 	if(c >= 'a' && c <= 'f') {
 		c += 10 - 'a';
