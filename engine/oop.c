@@ -68,8 +68,6 @@ PH7_PRIVATE ph7_class *PH7_NewRawClass(ph7_vm *pVm, const SyString *pName, sxu32
 	SyHashInit(&pClass->hAttr, &pVm->sAllocator, 0, 0);
 	SyHashInit(&pClass->hDerived, &pVm->sAllocator, 0, 0);
 	SySetInit(&pClass->aInterface, &pVm->sAllocator, sizeof(ph7_class *));
-	SySetInit(&pClass->sExtends, &pVm->sAllocator, sizeof(SyString));
-	SySetInit(&pClass->sImplements, &pVm->sAllocator, sizeof(SyString));
 	pClass->nLine = nLine;
 	/* All done */
 	return pClass;
