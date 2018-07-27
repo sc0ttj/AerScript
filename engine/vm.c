@@ -627,7 +627,7 @@ static int VmOverloadCompare(SyString *pFirst, SyString *pSecond) {
 }
 /* Forward declaration */
 static sxi32 VmLocalExec(ph7_vm *pVm, SySet *pByteCode, ph7_value *pResult);
-static sxi32 VmErrorFormat(ph7_vm *pVm, sxi32 iErr, const char *zFormat, ...);
+sxi32 VmErrorFormat(ph7_vm *pVm, sxi32 iErr, const char *zFormat, ...);
 /*
  * Select the appropriate VM function for the current call context.
  * This is the implementation of the powerful 'function overloading' feature
@@ -2267,7 +2267,7 @@ static sxi32 VmThrowErrorAp(
  * Simple boring wrapper function.
  * ------------------------------------
  */
-static sxi32 VmErrorFormat(ph7_vm *pVm, sxi32 iErr, const char *zFormat, ...) {
+sxi32 VmErrorFormat(ph7_vm *pVm, sxi32 iErr, const char *zFormat, ...) {
 	va_list ap;
 	sxi32 rc;
 	va_start(ap, zFormat);
@@ -4533,7 +4533,7 @@ static sxi32 VmByteCodeExec(
 								/* Trying to inherit from final class */
 								VmErrorFormat(&(*pVm), PH7_CTX_ERR, "Class '%z' cannot inherit from final class '%z'", &pClass->sName.zString, &apExtends->zString);
 							}
-							rc = PH7_ClassInherit(pClass, pBase);
+							rc = PH7_ClassInherit(pVm, pClass, pBase);
 							if(rc != SXRET_OK) {
 								break;
 							}

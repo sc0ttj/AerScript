@@ -218,7 +218,7 @@ PH7_PRIVATE sxi32 PH7_ClassInstallMethod(ph7_class *pClass, ph7_class_method *pM
  * Any other return value indicates failure and the upper layer must generate an appropriate
  * error message.
  */
-PH7_PRIVATE sxi32 PH7_ClassInherit(ph7_class *pSub, ph7_class *pBase) {
+PH7_PRIVATE sxi32 PH7_ClassInherit(ph7_vm *pVm, ph7_class *pSub, ph7_class *pBase) {
 	ph7_class_method *pMeth;
 	ph7_class_attr *pAttr;
 	SyHashEntry *pEntry;
@@ -236,12 +236,12 @@ PH7_PRIVATE sxi32 PH7_ClassInherit(ph7_class *pSub, ph7_class *pBase) {
 		pAttr = (ph7_class_attr *)pEntry->pUserData;
 		pName = &pAttr->sName;
 		if((pEntry = SyHashGet(&pSub->hAttr, (const void *)pName->zString, pName->nByte)) != 0) {
-			if(pAttr->iProtection == PH7_CLASS_PROT_PRIVATE &&
-					((ph7_class_attr *)pEntry->pUserData)->iProtection != PH7_CLASS_PROT_PUBLIC) {
+			if(pAttr->iProtection == PH7_CLASS_PROT_PRIVATE && ((ph7_class_attr *)pEntry->pUserData)->iProtection != PH7_CLASS_PROT_PUBLIC) {
 				/* Cannot redeclare private attribute */
-//				PH7_GenCompileError(&(*pGen), E_WARNING, ((ph7_class_attr *)pEntry->pUserData)->nLine,
-//									"Private attribute '%z::%z' redeclared inside child class '%z'",
-//									&pBase->sName, pName, &pSub->sName);
+				rc = VmErrorFormat(pVm, PH7_CTX_ERR, "Private attribute '%z::%z' redeclared inside child class '%z'", &pBase->sName, pName, &pSub->sName);
+				if(rc == SXERR_ABORT) {
+					return SXERR_ABORT;
+				}
 			}
 			continue;
 		}
@@ -261,20 +261,19 @@ PH7_PRIVATE sxi32 PH7_ClassInherit(ph7_class *pSub, ph7_class *pBase) {
 		if((pEntry = SyHashGet(&pSub->hMethod, (const void *)pName->zString, pName->nByte)) != 0) {
 			if(pMeth->iFlags & PH7_CLASS_ATTR_FINAL) {
 				/* Cannot Overwrite final method */
-//				rc = PH7_GenCompileError(&(*pGen), E_ERROR, ((ph7_class_method *)pEntry->pUserData)->nLine,
-//										 "Cannot Overwrite final method '%z:%z' inside child class '%z'",
-//										 &pBase->sName, pName, &pSub->sName);
-//				if(rc == SXERR_ABORT) {
-//					return SXERR_ABORT;
-//				}
+				rc = VmErrorFormat(&(*pVm), PH7_CTX_ERR, "Cannot overwrite final method '%z:%z()' inside child class '%z'", &pBase->sName, pName, &pSub->sName);
+				if(rc == SXERR_ABORT) {
+					return SXERR_ABORT;
+				}
 			}
 			continue;
 		} else {
 			if(pMeth->iFlags & PH7_CLASS_ATTR_ABSTRACT) {
 				/* Abstract method must be defined in the child class */
-//				PH7_GenCompileError(&(*pGen), E_WARNING, pMeth->nLine,
-//									"Abstract method '%z:%z' must be defined inside child class '%z'",
-//									&pBase->sName, pName, &pSub->sName);
+				rc = VmErrorFormat(&(*pVm), PH7_CTX_ERR, "Abstract method '%z:%z()' must be defined inside child class '%z'", &pBase->sName, pName, &pSub->sName);
+				if(rc == SXERR_ABORT) {
+					return SXERR_ABORT;
+				}
 				continue;
 			}
 		}
