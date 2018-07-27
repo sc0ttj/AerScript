@@ -4531,7 +4531,6 @@ static sxi32 VmByteCodeExec(
 							printf("Class '%s' implements '%s'\n", pClass->sName.zString, apImplements->zString);
 						}
 					}
-					SyStringInitFromBuf(&pClass->sName, "DUPA", 4);
 					break;
 				}
 			/*
