@@ -5646,30 +5646,6 @@ static sxi32 PH7_CompilePHP(
 		PH7_VmEmitInstr(pGen->pVm, PH7_OP_DONE, (rc != SXERR_EMPTY ? 1 : 0), 0, 0, 0);
 		return SXRET_OK;
 	}
-	if(pGen->pIn < pGen->pEnd && (pGen->pIn->nType & PH7_TK_EQUAL)) {
-		static const sxu32 nKeyID = PH7_TKWRD_ECHO;
-		/*
-		 * Shortcut syntax for the 'echo' language construct.
-		 * According to the PHP reference manual:
-		 *  echo() also has a shortcut syntax, where you can
-		 *  immediately follow
-		 *  the opening tag with an equals sign as follows:
-		 *  <?= 4+5?> is the same as <?echo 4+5?>
-		 * Symisc extension:
-		 *   This short syntax works with all PHP opening
-		 *   tags unlike the default PHP engine that handle
-		 *   only short tag.
-		 */
-		/* Ticket 1433-009: Emulate the 'echo' call */
-		pGen->pIn->nType = PH7_TK_KEYWORD;
-		pGen->pIn->pUserData = SX_INT_TO_PTR(nKeyID);
-		SyStringInitFromBuf(&pGen->pIn->sData, "echo", sizeof("echo") - 1);
-		rc = PH7_CompileExpr(pGen, 0, 0);
-		if(rc != SXERR_EMPTY) {
-			PH7_VmEmitInstr(pGen->pVm, PH7_OP_POP, 1, 0, 0, 0);
-		}
-		return SXRET_OK;
-	}
 	/* Compile the PHP chunk */
 	rc = GenStateCompileChunk(pGen, 0);
 	/* Fix exceptions jumps */
