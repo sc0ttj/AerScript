@@ -2651,7 +2651,7 @@ static sxi32 PH7_CompileReturn(ph7_gen_state *pGen) {
 static sxi32 PH7_CompileHalt(ph7_gen_state *pGen) {
 	sxi32 nExpr = 0;
 	sxi32 rc;
-	/* Jump the die/exit keyword */
+	/* Jump the exit keyword */
 	pGen->pIn++;
 	if(pGen->pIn < pGen->pEnd && (pGen->pIn->nType & PH7_TK_SEMI) == 0) {
 		/* Compile the expression */

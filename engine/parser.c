@@ -320,7 +320,7 @@ PH7_PRIVATE void PH7_DelimitNestedTokens(SyToken *pIn, SyToken *pEnd, sxu32 nTok
 	*ppEnd = pCur;
 }
 /*
- * Retrun TRUE if the given ID represent a language construct [i.e: print,echo..]. FALSE otherwise.
+ * Return TRUE if the given ID represent a language construct [i.e: print,echo..]. FALSE otherwise.
  * Note on reserved keywords.
  *  According to the PHP language reference manual:
  *   These words have special meaning in PHP. Some of them represent things which look like
