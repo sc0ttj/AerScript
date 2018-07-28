@@ -16,6 +16,33 @@
  * This file implement an Object Oriented (OO) subsystem for the PH7 engine.
  */
 /*
+ * Create an empty class inheritance storage.
+ * Return a pointer to a storage (ph7_class_info instance) on success. NULL otherwise.
+ */
+PH7_PRIVATE ph7_class_info *PH7_NewClassInfo(ph7_vm *pVm, const SyString *pName) {
+	ph7_class_info *pClassInfo;
+	char *zName;
+	/* Allocate a new instance */
+	pClassInfo = (ph7_class_info *)SyMemBackendPoolAlloc(&pVm->sAllocator, sizeof(ph7_class_info));
+	if(pClassInfo == 0) {
+		return 0;
+	}
+	/* Zero the structure */
+	SyZero(pClassInfo, sizeof(ph7_class_info));
+	/* Duplicate class name */
+	zName = SyMemBackendStrDup(&pVm->sAllocator, pName->zString, pName->nByte);
+	if(zName == 0) {
+		SyMemBackendPoolFree(&pVm->sAllocator, pClassInfo);
+		return 0;
+	}
+	/* Initialize the class information storage */
+	SyStringInitFromBuf(&pClassInfo->sName, zName, pName->nByte);
+	SySetInit(&pClassInfo->sExtends, &pVm->sAllocator, sizeof(SyString));
+	SySetInit(&pClassInfo->sImplements, &pVm->sAllocator, sizeof(SyString));
+	/* All done */
+	return pClassInfo;
+}
+/*
  * Create an empty class.
  * Return a pointer to a raw class (ph7_class instance) on success. NULL otherwise.
  */
@@ -152,7 +179,7 @@ PH7_PRIVATE ph7_class_attr *PH7_ClassExtractAttribute(ph7_class *pClass, const c
 		/* No such entry */
 		return 0;
 	}
-	/* Point to the desierd method */
+	/* Point to the desired method */
 	return (ph7_class_attr *)pEntry->pUserData;
 }
 /*
@@ -216,7 +243,7 @@ PH7_PRIVATE sxi32 PH7_ClassInstallMethod(ph7_class *pClass, ph7_class_method *pM
  * Any other return value indicates failure and the upper layer must generate an appropriate
  * error message.
  */
-PH7_PRIVATE sxi32 PH7_ClassInherit(ph7_gen_state *pGen, ph7_class *pSub, ph7_class *pBase) {
+PH7_PRIVATE sxi32 PH7_ClassInherit(ph7_vm *pVm, ph7_class *pSub, ph7_class *pBase) {
 	ph7_class_method *pMeth;
 	ph7_class_attr *pAttr;
 	SyHashEntry *pEntry;
@@ -234,12 +261,12 @@ PH7_PRIVATE sxi32 PH7_ClassInherit(ph7_gen_state *pGen, ph7_class *pSub, ph7_cla
 		pAttr = (ph7_class_attr *)pEntry->pUserData;
 		pName = &pAttr->sName;
 		if((pEntry = SyHashGet(&pSub->hAttr, (const void *)pName->zString, pName->nByte)) != 0) {
-			if(pAttr->iProtection == PH7_CLASS_PROT_PRIVATE &&
-					((ph7_class_attr *)pEntry->pUserData)->iProtection != PH7_CLASS_PROT_PUBLIC) {
+			if(pAttr->iProtection == PH7_CLASS_PROT_PRIVATE && ((ph7_class_attr *)pEntry->pUserData)->iProtection != PH7_CLASS_PROT_PUBLIC) {
 				/* Cannot redeclare private attribute */
-				PH7_GenCompileError(&(*pGen), E_WARNING, ((ph7_class_attr *)pEntry->pUserData)->nLine,
-									"Private attribute '%z::%z' redeclared inside child class '%z'",
-									&pBase->sName, pName, &pSub->sName);
+				rc = VmErrorFormat(pVm, PH7_CTX_ERR, "Private attribute '%z::%z' redeclared inside child class '%z'", &pBase->sName, pName, &pSub->sName);
+				if(rc == SXERR_ABORT) {
+					return SXERR_ABORT;
+				}
 			}
 			continue;
 		}
@@ -259,9 +286,7 @@ PH7_PRIVATE sxi32 PH7_ClassInherit(ph7_gen_state *pGen, ph7_class *pSub, ph7_cla
 		if((pEntry = SyHashGet(&pSub->hMethod, (const void *)pName->zString, pName->nByte)) != 0) {
 			if(pMeth->iFlags & PH7_CLASS_ATTR_FINAL) {
 				/* Cannot Overwrite final method */
-				rc = PH7_GenCompileError(&(*pGen), E_ERROR, ((ph7_class_method *)pEntry->pUserData)->nLine,
-										 "Cannot Overwrite final method '%z:%z' inside child class '%z'",
-										 &pBase->sName, pName, &pSub->sName);
+				rc = VmErrorFormat(&(*pVm), PH7_CTX_ERR, "Cannot overwrite final method '%z:%z()' inside child class '%z'", &pBase->sName, pName, &pSub->sName);
 				if(rc == SXERR_ABORT) {
 					return SXERR_ABORT;
 				}
@@ -270,9 +295,10 @@ PH7_PRIVATE sxi32 PH7_ClassInherit(ph7_gen_state *pGen, ph7_class *pSub, ph7_cla
 		} else {
 			if(pMeth->iFlags & PH7_CLASS_ATTR_ABSTRACT) {
 				/* Abstract method must be defined in the child class */
-				PH7_GenCompileError(&(*pGen), E_WARNING, pMeth->nLine,
-									"Abstract method '%z:%z' must be defined inside child class '%z'",
-									&pBase->sName, pName, &pSub->sName);
+				rc = VmErrorFormat(&(*pVm), PH7_CTX_ERR, "Abstract method '%z:%z()' must be defined inside child class '%z'", &pBase->sName, pName, &pSub->sName);
+				if(rc == SXERR_ABORT) {
+					return SXERR_ABORT;
+				}
 				continue;
 			}
 		}
@@ -936,7 +962,7 @@ PH7_PRIVATE sxi32 PH7_ClassInstanceDump(SyBlob *pOut, ph7_class_instance *pThis,
  * The above example will output:
  *  Hello
  *
- * Note that PH7 does not support all the magical method and introudces __toFloat(),__toInt()
+ * Note that PH7 does not support all the magical method and introduces __toFloat(),__toInt()
  * which have the same behaviour as __toString() but for float and integer types
  * respectively.
  * Refer to the official documentation for more information.
@@ -1011,7 +1037,7 @@ PH7_PRIVATE ph7_value *PH7_ClassInstanceExtractAttrValue(ph7_class_instance *pTh
  *     int(991)
  *  }
  * You have noticed that PH7 allow class attributes [i.e: $a,$c,$d in the example above]
- * have any complex expression (even function calls/Annonymous functions) as their default
+ * have any complex expression (even function calls/anonymous functions) as their default
  * value unlike the standard PHP engine.
  * This is a very powerful feature that you have to look at.
  */
@@ -1085,7 +1111,7 @@ PH7_PRIVATE sxi32 PH7_ClassInstanceWalk(
 	return SXRET_OK;
 }
 /*
- * Extract a class atrribute value.
+ * Extract a class attribute value.
  * Return a pointer to the attribute value on success. Otherwise NULL.
  * Note:
  *  Access to static and constant attribute is not allowed. That is,the function
@@ -1101,7 +1127,7 @@ PH7_PRIVATE ph7_value *PH7_ClassInstanceFetchAttr(ph7_class_instance *pThis, con
 		/* No such attribute */
 		return 0;
 	}
-	/* Point to the class atrribute */
+	/* Point to the class attribute */
 	pAttr = (VmClassAttr *)pEntry->pUserData;
 	/* Check if we are dealing with a static/constant attribute */
 	if(pAttr->pAttr->iFlags & (PH7_CLASS_ATTR_CONSTANT | PH7_CLASS_ATTR_STATIC)) {

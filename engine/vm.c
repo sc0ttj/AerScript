@@ -384,13 +384,8 @@ PH7_PRIVATE sxi32 PH7_VmInstallClass(
 	/* Check for duplicates */
 	pEntry = SyHashGet(&pVm->hClass, (const void *)pName->zString, pName->nByte);
 	if(pEntry) {
-		ph7_class *pLink = (ph7_class *)pEntry->pUserData;
-		/* Link entry with the same name */
-		pClass->pNextName = pLink;
-		pEntry->pUserData = pClass;
-		return SXRET_OK;
+		PH7_VmThrowError(&(*pVm), 0, PH7_CTX_ERR, "Cannot declare class, because the name is already in use");
 	}
-	pClass->pNextName = 0;
 	/* Perform a simple hashtable insertion */
 	rc = SyHashInsert(&pVm->hClass, (const void *)pName->zString, pName->nByte, pClass);
 	return rc;
@@ -632,7 +627,7 @@ static int VmOverloadCompare(SyString *pFirst, SyString *pSecond) {
 }
 /* Forward declaration */
 static sxi32 VmLocalExec(ph7_vm *pVm, SySet *pByteCode, ph7_value *pResult);
-static sxi32 VmErrorFormat(ph7_vm *pVm, sxi32 iErr, const char *zFormat, ...);
+sxi32 VmErrorFormat(ph7_vm *pVm, sxi32 iErr, const char *zFormat, ...);
 /*
  * Select the appropriate VM function for the current call context.
  * This is the implementation of the powerful 'function overloading' feature
@@ -1412,10 +1407,6 @@ PH7_PRIVATE sxi32 PH7_VmMakeReady(
 	if(pVm->aOps == 0) {
 		return SXERR_MEM;
 	}
-	/* Set the default VM output consumer callback and it's
-	 * private data. */
-	pVm->sVmConsumer.xConsumer = PH7_VmBlobConsumer;
-	pVm->sVmConsumer.pUserData = &pVm->sConsumer;
 	/* Allocate the reference table */
 	pVm->nRefSize = 0x10; /* Must be a power of two for fast arithemtic */
 	pVm->apRefObj = (VmRefObj **)SyMemBackendAlloc(&pVm->sAllocator, sizeof(VmRefObj *) * pVm->nRefSize);
@@ -2276,7 +2267,7 @@ static sxi32 VmThrowErrorAp(
  * Simple boring wrapper function.
  * ------------------------------------
  */
-static sxi32 VmErrorFormat(ph7_vm *pVm, sxi32 iErr, const char *zFormat, ...) {
+sxi32 VmErrorFormat(ph7_vm *pVm, sxi32 iErr, const char *zFormat, ...) {
 	va_list ap;
 	sxi32 rc;
 	va_start(ap, zFormat);
@@ -4518,6 +4509,87 @@ static sxi32 VmByteCodeExec(
 					break;
 				}
 			/*
+			 * OP_CLASS_INIT P1 P2 P3
+			 * Perform additional class initialization, by adding base classes
+			 * and interfaces to its definition.
+			 */
+			case PH7_OP_CLASS_INIT:
+				{
+					ph7_class_info *pClassInfo = (ph7_class_info *)pInstr->p3;
+					ph7_class *pClass = PH7_VmExtractClass(pVm, pClassInfo->sName.zString, pClassInfo->sName.nByte, FALSE, 0);
+					ph7_class *pBase = 0;
+					if(pInstr->iP1) {
+						/* This class inherits from other classes */
+						SyString *apExtends;
+						while(SySetGetNextEntry(&pClassInfo->sExtends, (void **)&apExtends) == SXRET_OK) {
+							pBase = PH7_VmExtractClass(pVm, apExtends->zString, apExtends->nByte, FALSE, 0);
+							if(pBase == 0) {
+								/* Non-existent base class */
+								VmErrorFormat(&(*pVm), PH7_CTX_ERR, "Call to non-existent base class '%z'", &apExtends->zString);
+							} else if(pBase->iFlags & PH7_CLASS_INTERFACE) {
+								/* Trying to inherit from interface */
+								VmErrorFormat(&(*pVm), PH7_CTX_ERR, "Class '%z' cannot inherit from interface '%z'", &pClass->sName.zString, &apExtends->zString);
+							} else if(pBase->iFlags & PH7_CLASS_FINAL) {
+								/* Trying to inherit from final class */
+								VmErrorFormat(&(*pVm), PH7_CTX_ERR, "Class '%z' cannot inherit from final class '%z'", &pClass->sName.zString, &apExtends->zString);
+							}
+							rc = PH7_ClassInherit(pVm, pClass, pBase);
+							if(rc != SXRET_OK) {
+								break;
+							}
+						}
+					}
+					if(pInstr->iP2) {
+						/* This class implements some interfaces */
+						SyString *apImplements;
+						while(SySetGetNextEntry(&pClassInfo->sImplements, (void **)&apImplements) == SXRET_OK) {
+							pBase = PH7_VmExtractClass(pVm, apImplements->zString, apImplements->nByte, FALSE, 0);
+							if(pBase == 0) {
+								/* Non-existent interface */
+								VmErrorFormat(&(*pVm), PH7_CTX_ERR, "Call to non-existent interface '%z'", &apImplements->zString);
+							} else if((pBase->iFlags & PH7_CLASS_INTERFACE) == 0) {
+								/* Trying to implement a class */
+								VmErrorFormat(&(*pVm), PH7_CTX_ERR, "Class '%z' cannot implement a class '%z'", &pClass->sName.zString, &apImplements->zString);
+							}
+							rc = PH7_ClassImplement(pClass, pBase);
+							if(rc != SXRET_OK) {
+								break;
+							}
+						}
+					}
+					break;
+				}
+			/*
+			 * OP_INTERFACE_INIT P1 * P3
+			 * Perform additional interface initialization, by adding base interfaces
+			 * to its definition.
+			 */
+			case PH7_OP_INTERFACE_INIT:
+				{
+					ph7_class_info *pClassInfo = (ph7_class_info *)pInstr->p3;
+					ph7_class *pClass = PH7_VmExtractClass(pVm, pClassInfo->sName.zString, pClassInfo->sName.nByte, FALSE, 0);
+					ph7_class *pBase = 0;
+					if(pInstr->iP1) {
+						/* This interface inherits from other interface */
+						SyString *apExtends;
+						while(SySetGetNextEntry(&pClassInfo->sExtends, (void **)&apExtends) == SXRET_OK) {
+							pBase = PH7_VmExtractClass(pVm, apExtends->zString, apExtends->nByte, FALSE, 0);
+							if(pBase == 0) {
+								/* Non-existent base interface */
+								VmErrorFormat(&(*pVm), PH7_CTX_ERR, "Call to non-existent base interface '%z'", &apExtends->zString);
+							} else if((pBase->iFlags & PH7_CLASS_INTERFACE) == 0) {
+								/* Trying to inherit from class */
+								VmErrorFormat(&(*pVm), PH7_CTX_ERR, "Interface '%z' cannot inherit from class '%z'", &pClass->sName.zString, &apExtends->zString);
+							}
+							rc = PH7_ClassInterfaceInherit(pClass, pBase);
+							if(rc != SXRET_OK) {
+								break;
+							}
+						}
+					}
+					break;
+				}
+			/*
 			 * OP_FOREACH_INIT * P2 P3
 			 * Prepare a foreach step.
 			 */
@@ -6034,6 +6106,12 @@ static const char *VmInstrToString(sxi32 nOp) {
 		case PH7_OP_THROW:
 			zOp = "THROW      ";
 			break;
+		case PH7_OP_CLASS_INIT:
+			zOp = "CLASS_INIT ";
+			break;
+		case PH7_OP_INTERFACE_INIT:
+			zOp = "INTER_INIT ";
+			break;
 		case PH7_OP_FOREACH_INIT:
 			zOp = "4EACH_INIT ";
 			break;
@@ -6766,14 +6844,21 @@ static int vm_builtin_method_exists(ph7_context *pCtx, int nArg, ph7_value **apA
 static int vm_builtin_class_exists(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	int res = 0; /* Assume class does not exists */
 	if(nArg > 0) {
+		SyHashEntry *pEntry = 0;
 		const char *zName;
 		int nLen;
 		/* Extract given name */
 		zName = ph7_value_to_string(apArg[0], &nLen);
 		/* Perform a hashlookup */
-		if(nLen > 0 && SyHashGet(&pCtx->pVm->hClass, (const void *)zName, (sxu32)nLen) != 0) {
-			/* class is available */
-			res = 1;
+		if(nLen > 0) {
+			pEntry = SyHashGet(&pCtx->pVm->hClass, (const void *)zName, (sxu32)nLen);
+		}
+		if(pEntry) {
+			ph7_class *pClass = (ph7_class *)pEntry->pUserData;
+			if((pClass->iFlags & PH7_CLASS_INTERFACE) == 0) {
+				/* class is available */
+				res = 1;
+			}
 		}
 	}
 	ph7_result_bool(pCtx, res);
@@ -6805,14 +6890,9 @@ static int vm_builtin_interface_exists(ph7_context *pCtx, int nArg, ph7_value **
 		}
 		if(pEntry) {
 			ph7_class *pClass = (ph7_class *)pEntry->pUserData;
-			while(pClass) {
-				if(pClass->iFlags & PH7_CLASS_INTERFACE) {
-					/* interface is available */
-					res = 1;
-					break;
-				}
-				/* Next with the same name */
-				pClass = pClass->pNextName;
+			if(pClass->iFlags & PH7_CLASS_INTERFACE) {
+				/* interface is available */
+				res = 1;
 			}
 		}
 	}
@@ -11681,17 +11761,12 @@ PH7_PRIVATE ph7_class *PH7_VmExtractClass(
 	}
 	pClass = (ph7_class *)pEntry->pUserData;
 	if(!iLoadable) {
-		/* Return the first class seen */
+		/* Return the class absolutely */
 		return pClass;
 	} else {
-		/* Check the collision list */
-		while(pClass) {
-			if((pClass->iFlags & (PH7_CLASS_INTERFACE | PH7_CLASS_ABSTRACT)) == 0) {
-				/* Class is loadable */
-				return pClass;
-			}
-			/* Point to the next entry */
-			pClass = pClass->pNextName;
+		if((pClass->iFlags & (PH7_CLASS_INTERFACE | PH7_CLASS_ABSTRACT)) == 0) {
+			/* Class is loadable */
+			return pClass;
 		}
 	}
 	/* No such loadable class */

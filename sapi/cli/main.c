@@ -152,6 +152,36 @@ int main(int argc, char **argv) {
 			   Output_Consumer, /* Error log consumer */
 			   0 /* NULL: Callback Private data */
 			  );
+	/* Initialize the VM */
+	rc = ph7_vm_init(pEngine, &pVm);
+	if(rc != PH7_OK) {
+		if(rc == PH7_NOMEM) {
+			Fatal("Out of memory");
+		} else if(rc == PH7_VM_ERR) {
+			Fatal("VM initialization error");
+		}
+	}
+	/*
+	 * Now we have our VM initialized,it's time to configure our VM.
+	 * We will install the VM output consumer callback defined above
+	 * so that we can consume the VM output and redirect it to STDOUT.
+	 */
+	rc = ph7_vm_config(pVm,
+					   PH7_VM_CONFIG_OUTPUT,
+					   Output_Consumer,    /* Output Consumer callback */
+					   0                   /* Callback private data */
+					  );
+	if(rc != PH7_OK) {
+		Fatal("Error while installing the VM output consumer callback");
+	}
+	rc = ph7_vm_config(pVm, PH7_VM_CONFIG_ERR_REPORT, 1, 0);
+	if(rc != PH7_OK) {
+		Fatal("Error while configuring the VM error reporting");
+	}
+	if(err_report) {
+		/* Report script run-time errors */
+		ph7_vm_config(pVm, PH7_VM_CONFIG_ERR_REPORT);
+	}
 	/* Now,it's time to compile our PHP file */
 	rc = ph7_compile_file(
 			 pEngine, /* PH7 Engine */
@@ -169,32 +199,11 @@ int main(int argc, char **argv) {
 			Fatal("Compile error");
 		}
 	}
-	/*
-	 * Now we have our script compiled,it's time to configure our VM.
-	 * We will install the VM output consumer callback defined above
-	 * so that we can consume the VM output and redirect it to STDOUT.
-	 */
-	rc = ph7_vm_config(pVm,
-					   PH7_VM_CONFIG_OUTPUT,
-					   Output_Consumer,    /* Output Consumer callback */
-					   0                   /* Callback private data */
-					  );
-	if(rc != PH7_OK) {
-		Fatal("Error while installing the VM output consumer callback");
-	}
-	rc = ph7_vm_config(pVm, PH7_VM_CONFIG_ERR_REPORT, 1, 0);
-	if(rc != PH7_OK) {
-		Fatal("Error while configuring the VM error reporting");
-	}
 	/* Register script agruments so we can access them later using the $argv[]
 	 * array from the compiled PHP program.
 	 */
 	for(n = n + 1; n < argc ; ++n) {
 		ph7_vm_config(pVm, PH7_VM_CONFIG_ARGV_ENTRY, argv[n]/* Argument value */);
-	}
-	if(err_report) {
-		/* Report script run-time errors */
-		ph7_vm_config(pVm, PH7_VM_CONFIG_ERR_REPORT);
 	}
 	if(dump_vm) {
 		/* Dump PH7 byte-code instructions */
