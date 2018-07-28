@@ -4871,7 +4871,7 @@ static sxi32 PH7_CompileTry(ph7_gen_state *pGen) {
  * Compile a switch block.
  *  (See block-comment below for more information)
  */
-static sxi32 GenStateCompileSwitchBlock(ph7_gen_state *pGen, sxu32 iTokenDelim, sxu32 *pBlockStart) {
+static sxi32 GenStateCompileSwitchBlock(ph7_gen_state *pGen, sxu32 *pBlockStart) {
 	sxi32 rc = SXRET_OK;
 	while(pGen->pIn < pGen->pEnd && (pGen->pIn->nType & (PH7_TK_SEMI/*';'*/ | PH7_TK_COLON/*':'*/)) == 0) {
 		/* Unexpected token */
@@ -4884,8 +4884,7 @@ static sxi32 GenStateCompileSwitchBlock(ph7_gen_state *pGen, sxu32 iTokenDelim, 
 	pGen->pIn++;
 	/* First instruction to execute in this block. */
 	*pBlockStart = PH7_VmInstrLength(pGen->pVm);
-	/* Compile the block until we hit a case/default/endswitch keyword
-	 * or the '}' token */
+	/* Compile the block until we hit a case/default keyword or the '}' token */
 	for(;;) {
 		if(pGen->pIn >= pGen->pEnd) {
 			/* No more input to process */
@@ -4894,15 +4893,6 @@ static sxi32 GenStateCompileSwitchBlock(ph7_gen_state *pGen, sxu32 iTokenDelim, 
 		rc = SXRET_OK;
 		if((pGen->pIn->nType & PH7_TK_KEYWORD) == 0) {
 			if(pGen->pIn->nType & PH7_TK_CCB /*'}' */) {
-				if(iTokenDelim != PH7_TK_CCB) {
-					/* Unexpected token */
-					rc = PH7_GenCompileError(&(*pGen), E_ERROR, pGen->pIn->nLine, "Unexpected token '%z'",
-											 &pGen->pIn->sData);
-					if(rc == SXERR_ABORT) {
-						return SXERR_ABORT;
-					}
-					/* FALL THROUGH */
-				}
 				rc = SXERR_EOF;
 				break;
 			}
@@ -4911,19 +4901,6 @@ static sxi32 GenStateCompileSwitchBlock(ph7_gen_state *pGen, sxu32 iTokenDelim, 
 			/* Extract the keyword */
 			nKwrd = SX_PTR_TO_INT(pGen->pIn->pUserData);
 			if(nKwrd == PH7_TKWRD_CASE || nKwrd == PH7_TKWRD_DEFAULT) {
-				break;
-			}
-			if(nKwrd == PH7_TKWRD_ENDSWITCH /* endswitch; */) {
-				if(iTokenDelim != PH7_TK_KEYWORD) {
-					/* Unexpected token */
-					rc = PH7_GenCompileError(&(*pGen), E_ERROR, pGen->pIn->nLine, "Unexpected token '%z'",
-											 &pGen->pIn->sData);
-					if(rc == SXERR_ABORT) {
-						return SXERR_ABORT;
-					}
-					/* FALL THROUGH */
-				}
-				/* Block compiled */
 				break;
 			}
 		}
@@ -5011,7 +4988,6 @@ static sxi32 PH7_CompileSwitch(ph7_gen_state *pGen) {
 	GenBlock *pSwitchBlock;
 	SyToken *pTmp, *pEnd;
 	ph7_switch *pSwitch;
-	sxu32 nToken;
 	sxu32 nLine;
 	sxi32 rc;
 	nLine = pGen->pIn->nLine;
@@ -5066,7 +5042,7 @@ static sxi32 PH7_CompileSwitch(ph7_gen_state *pGen) {
 	pGen->pIn  = &pEnd[1];
 	pGen->pEnd = pTmp;
 	if(pGen->pIn >= pGen->pEnd || &pGen->pIn[1] >= pGen->pEnd ||
-			(pGen->pIn->nType & (PH7_TK_OCB/*'{'*/ | PH7_TK_COLON/*:*/)) == 0) {
+			(pGen->pIn->nType & PH7_TK_OCB/*'{'*/) == 0) {
 		pTmp = pGen->pIn;
 		if(pTmp >= pGen->pEnd) {
 			pTmp--;
@@ -5077,13 +5053,6 @@ static sxi32 PH7_CompileSwitch(ph7_gen_state *pGen) {
 			return SXERR_ABORT;
 		}
 		goto Synchronize;
-	}
-	/* Set the delimiter token */
-	if(pGen->pIn->nType & PH7_TK_COLON) {
-		nToken = PH7_TK_KEYWORD;
-		/* Stop compilation when the 'endswitch;' keyword is seen */
-	} else {
-		nToken = PH7_TK_CCB; /* '}' */
 	}
 	pGen->pIn++; /* Jump the leading curly braces/colons */
 	/* Create the switch blocks container */
@@ -5111,33 +5080,11 @@ static sxi32 PH7_CompileSwitch(ph7_gen_state *pGen) {
 			break;
 		}
 		if((pGen->pIn->nType & PH7_TK_KEYWORD) == 0) {
-			if(nToken != PH7_TK_CCB || (pGen->pIn->nType & PH7_TK_CCB /*}*/) == 0) {
-				/* Unexpected token */
-				rc = PH7_GenCompileError(&(*pGen), E_ERROR, pGen->pIn->nLine, "Switch: Unexpected token '%z'",
-										 &pGen->pIn->sData);
-				if(rc == SXERR_ABORT) {
-					return SXERR_ABORT;
-				}
-				/* FALL THROUGH */
-			}
 			/* Block compiled */
 			break;
 		}
 		/* Extract the keyword */
 		nKwrd = SX_PTR_TO_INT(pGen->pIn->pUserData);
-		if(nKwrd == PH7_TKWRD_ENDSWITCH /* endswitch; */) {
-			if(nToken != PH7_TK_KEYWORD) {
-				/* Unexpected token */
-				rc = PH7_GenCompileError(&(*pGen), E_ERROR, pGen->pIn->nLine, "Switch: Unexpected token '%z'",
-										 &pGen->pIn->sData);
-				if(rc == SXERR_ABORT) {
-					return SXERR_ABORT;
-				}
-				/* FALL THROUGH */
-			}
-			/* Block compiled */
-			break;
-		}
 		if(nKwrd == PH7_TKWRD_DEFAULT) {
 			/*
 			 * According to the PHP language reference manual
@@ -5153,7 +5100,7 @@ static sxi32 PH7_CompileSwitch(ph7_gen_state *pGen) {
 			}
 			pGen->pIn++; /* Jump the 'default' keyword */
 			/* Compile the default block */
-			rc = GenStateCompileSwitchBlock(pGen, nToken, &pSwitch->nDefault);
+			rc = GenStateCompileSwitchBlock(pGen, &pSwitch->nDefault);
 			if(rc == SXERR_ABORT) {
 				return SXERR_ABORT;
 			} else if(rc == SXERR_EOF) {
@@ -5171,7 +5118,7 @@ static sxi32 PH7_CompileSwitch(ph7_gen_state *pGen) {
 				return SXERR_ABORT;
 			}
 			/* Compile the case block */
-			rc = GenStateCompileSwitchBlock(pGen, nToken, &sCase.nStart);
+			rc = GenStateCompileSwitchBlock(pGen, &sCase.nStart);
 			/* Insert in the switch container */
 			SySetPut(&pSwitch->aCaseExpr, (const void *)&sCase);
 			if(rc == SXERR_ABORT) {

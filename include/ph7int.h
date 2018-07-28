@@ -1478,7 +1478,6 @@ enum ph7_expr_id {
  * Using them as variable names is generally OK, but could lead to confusion.
  */
 #define PH7_TKWRD_EXTENDS      1 /* extends */
-#define PH7_TKWRD_ENDSWITCH    2 /* endswitch */
 #define PH7_TKWRD_SWITCH       3 /* switch */
 #define PH7_TKWRD_PRINT        4 /* print */
 #define PH7_TKWRD_INTERFACE    5 /* interface */
