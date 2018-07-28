@@ -310,8 +310,11 @@ PH7_PRIVATE sxi32 PH7_ClassInherit(ph7_vm *pVm, ph7_class *pSub, ph7_class *pBas
 			}
 		}
 	}
-	/* Mark as subclass */
-	pSub->pBase = pBase;
+	/* Mark first inherited class as direct subclass */
+	ph7_class *pClass = pSub;
+	if(!pSub->pBase) {
+		pSub->pBase = pBase;
+	}
 	/* All done */
 	return SXRET_OK;
 }
