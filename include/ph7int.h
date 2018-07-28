@@ -1494,13 +1494,11 @@ enum ph7_expr_id {
 #define PH7_TKWRD_SELF         18 /* self */
 #define PH7_TKWRD_FUNCTION     19 /* function */
 #define PH7_TKWRD_NAMESPACE    20 /* namespace */
-#define PH7_TKWRD_ENDIF        0x400000 /* endif: MUST BE A POWER OF TWO */
 #define PH7_TKWRD_CLONE        0x80 /* clone: MUST BE A POWER OF TWO  */
 #define PH7_TKWRD_NEW          0x100 /* new: MUST BE A POWER OF TWO  */
 #define PH7_TKWRD_CONST        22 /* const */
 #define PH7_TKWRD_THROW        23 /* throw */
 #define PH7_TKWRD_USE          24 /* use */
-#define PH7_TKWRD_ENDWHILE     0x800000 /* endwhile: MUST BE A POWER OF TWO */
 #define PH7_TKWRD_WHILE        26 /* while */
 #define PH7_TKWRD_EVAL         27 /* eval */
 #define PH7_TKWRD_VAR          28 /* var */
@@ -1522,8 +1520,6 @@ enum ph7_expr_id {
 #define PH7_TKWRD_ISSET        43 /* isset */
 #define PH7_TKWRD_PARENT       44 /* parent */
 #define PH7_TKWRD_PRIVATE      45 /* private */
-#define PH7_TKWRD_ENDFOR       0x1000000 /* endfor: MUST BE A POWER OF TWO */
-#define PH7_TKWRD_END4EACH     0x2000000 /* endforeach: MUST BE A POWER OF TWO */
 #define PH7_TKWRD_FOR          48 /* for */
 #define PH7_TKWRD_FOREACH      49 /* foreach */
 #define PH7_TKWRD_PROTECTED    50 /* protected */

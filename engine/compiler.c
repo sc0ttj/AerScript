@@ -1712,8 +1712,7 @@ static sxi32 GenStateNextChunk(ph7_gen_state *pGen) {
  * message.
  */
 static sxi32 PH7_CompileBlock(
-	ph7_gen_state *pGen, /* Code generator state */
-	sxi32 nKeywordEnd    /* EOF-keyword [i.e: endif;endfor;...]. 0 (zero) otherwise */
+	ph7_gen_state *pGen /* Code generator state */
 ) {
 	sxi32 rc;
 	if(pGen->pIn->nType & PH7_TK_OCB /* '{' */) {
@@ -1740,48 +1739,6 @@ static sxi32 PH7_CompileBlock(
 				/* Closing braces found,break immediately*/
 				pGen->pIn++;
 				break;
-			}
-			/* Compile a single statement */
-			rc = GenStateCompileChunk(&(*pGen), PH7_COMPILE_SINGLE_STMT);
-			if(rc == SXERR_ABORT) {
-				return SXERR_ABORT;
-			}
-		}
-		GenStateLeaveBlock(&(*pGen), 0);
-	} else if((pGen->pIn->nType & PH7_TK_COLON /* ':' */) && nKeywordEnd > 0) {
-		pGen->pIn++;
-		rc = GenStateEnterBlock(&(*pGen), GEN_BLOCK_STD, PH7_VmInstrLength(pGen->pVm), 0, 0);
-		if(rc != SXRET_OK) {
-			return SXERR_ABORT;
-		}
-		/* Compile until we hit the EOF-keyword [i.e: endif;endfor;...] */
-		for(;;) {
-			if(pGen->pIn >= pGen->pEnd) {
-				rc = GenStateNextChunk(&(*pGen));
-				if(rc == SXERR_ABORT) {
-					return SXERR_ABORT;
-				}
-				if(rc == SXERR_EOF || pGen->pIn >= pGen->pEnd) {
-					/* No more token to process */
-					if(rc == SXERR_EOF) {
-						PH7_GenCompileError(&(*pGen), E_WARNING, pGen->pEnd[-1].nLine,
-											"Missing 'endfor;','endwhile;','endswitch;' or 'endforeach;' keyword");
-					}
-					break;
-				}
-			}
-			if(pGen->pIn->nType & PH7_TK_KEYWORD) {
-				sxi32 nKwrd;
-				/* Keyword found */
-				nKwrd = SX_PTR_TO_INT(pGen->pIn->pUserData);
-				if(nKwrd == nKeywordEnd ||
-						(nKeywordEnd == PH7_TKWRD_ENDIF && (nKwrd == PH7_TKWRD_ELSE || nKwrd == PH7_TKWRD_ELIF))) {
-					/* Delimiter keyword found,break */
-					if(nKwrd != PH7_TKWRD_ELSE && nKwrd != PH7_TKWRD_ELIF) {
-						pGen->pIn++; /*  endif;endswitch... */
-					}
-					break;
-				}
 			}
 			/* Compile a single statement */
 			rc = GenStateCompileChunk(&(*pGen), PH7_COMPILE_SINGLE_STMT);
@@ -1882,7 +1839,7 @@ static sxi32 PH7_CompileWhile(ph7_gen_state *pGen) {
 	/* Save the instruction index so we can fix it later when the jump destination is resolved */
 	GenStateNewJumpFixup(pWhileBlock, PH7_OP_JZ, nFalseJump);
 	/* Compile the loop body */
-	rc = PH7_CompileBlock(&(*pGen), PH7_TKWRD_ENDWHILE);
+	rc = PH7_CompileBlock(&(*pGen));
 	if(rc == SXERR_ABORT) {
 		return SXERR_ABORT;
 	}
@@ -1936,7 +1893,7 @@ static sxi32 PH7_CompileDoWhile(ph7_gen_state *pGen) {
 	}
 	/* Deffer 'continue;' jumps until we compile the block */
 	pDoBlock->bPostContinue = TRUE;
-	rc = PH7_CompileBlock(&(*pGen), 0);
+	rc = PH7_CompileBlock(&(*pGen));
 	if(rc == SXERR_ABORT) {
 		return SXERR_ABORT;
 	}
@@ -2144,7 +2101,7 @@ static sxi32 PH7_CompileFor(ph7_gen_state *pGen) {
 	/* Compile the loop body */
 	pGen->pIn  = &pEnd[1]; /* Jump the trailing parenthesis ')' */
 	pGen->pEnd = pTmp;
-	rc = PH7_CompileBlock(&(*pGen), PH7_TKWRD_ENDFOR);
+	rc = PH7_CompileBlock(&(*pGen));
 	if(rc == SXERR_ABORT) {
 		return SXERR_ABORT;
 	}
@@ -2407,7 +2364,7 @@ static sxi32 PH7_CompileForeach(ph7_gen_state *pGen) {
 	/* Compile the loop body */
 	pGen->pIn = &pEnd[1];
 	pGen->pEnd = pTmp;
-	rc = PH7_CompileBlock(&(*pGen), PH7_TKWRD_END4EACH);
+	rc = PH7_CompileBlock(&(*pGen));
 	if(rc == SXERR_ABORT) {
 		/* Don't worry about freeing memory, everything will be released shortly */
 		return SXERR_ABORT;
@@ -2525,7 +2482,7 @@ static sxi32 PH7_CompileIf(ph7_gen_state *pGen) {
 		/* Save the instruction index so we can fix it later when the jump destination is resolved */
 		GenStateNewJumpFixup(pCondBlock, PH7_OP_JZ, nJumpIdx);
 		/* Compile the body */
-		rc = PH7_CompileBlock(&(*pGen), PH7_TKWRD_ENDIF);
+		rc = PH7_CompileBlock(&(*pGen));
 		if(rc == SXERR_ABORT) {
 			return SXERR_ABORT;
 		}
@@ -2561,7 +2518,7 @@ static sxi32 PH7_CompileIf(ph7_gen_state *pGen) {
 			(SX_PTR_TO_INT(pGen->pIn->pUserData) & PH7_TKWRD_ELSE)) {
 		/* Compile the else block */
 		pGen->pIn++;
-		rc = PH7_CompileBlock(&(*pGen), PH7_TKWRD_ENDIF);
+		rc = PH7_CompileBlock(&(*pGen));
 		if(rc == SXERR_ABORT) {
 			return SXERR_ABORT;
 		}
@@ -3303,7 +3260,7 @@ static sxi32 GenStateCompileFuncBody(
 	pInstrContainer = PH7_VmGetByteCodeContainer(pGen->pVm);
 	PH7_VmSetByteCodeContainer(pGen->pVm, &pFunc->aByteCode);
 	/* Compile the body */
-	PH7_CompileBlock(&(*pGen), 0);
+	PH7_CompileBlock(&(*pGen));
 	/* Fix exception jumps now the destination is resolved */
 	GenStateFixJumps(pGen->pCurrent, PH7_OP_THROW, PH7_VmInstrLength(pGen->pVm));
 	/* Emit the final return if not yet done */
@@ -4773,7 +4730,7 @@ static sxi32 PH7_CompileCatch(ph7_gen_state *pGen, ph7_exception *pException) {
 	pInstrContainer = PH7_VmGetByteCodeContainer(pGen->pVm);
 	PH7_VmSetByteCodeContainer(pGen->pVm, &sCatch.sByteCode);
 	/* Compile the block */
-	PH7_CompileBlock(&(*pGen), 0);
+	PH7_CompileBlock(&(*pGen));
 	/* Fix forward jumps now the destination is resolved  */
 	GenStateFixJumps(pCatch, -1, PH7_VmInstrLength(pGen->pVm));
 	/* Emit the DONE instruction */
@@ -4827,7 +4784,7 @@ static sxi32 PH7_CompileTry(ph7_gen_state *pGen) {
 	GenStateNewJumpFixup(pTry, PH7_OP_LOAD_EXCEPTION, nJmpIdx);
 	pGen->pIn++; /* Jump the 'try' keyword */
 	/* Compile the block */
-	rc = PH7_CompileBlock(&(*pGen), 0);
+	rc = PH7_CompileBlock(&(*pGen));
 	if(rc == SXERR_ABORT) {
 		return SXERR_ABORT;
 	}
@@ -4905,7 +4862,7 @@ static sxi32 GenStateCompileSwitchBlock(ph7_gen_state *pGen, sxu32 *pBlockStart)
 			}
 		}
 		/* Compile block */
-		rc = PH7_CompileBlock(&(*pGen), 0);
+		rc = PH7_CompileBlock(&(*pGen));
 		if(rc == SXERR_ABORT) {
 			return SXERR_ABORT;
 		}
@@ -5601,7 +5558,7 @@ static sxi32 GenStateCompileChunk(
 		}
 		if(pGen->pIn->nType & PH7_TK_OCB /* '{' */) {
 			/* Compile block */
-			rc = PH7_CompileBlock(&(*pGen), 0);
+			rc = PH7_CompileBlock(&(*pGen));
 			if(rc == SXERR_ABORT) {
 				break;
 			}
