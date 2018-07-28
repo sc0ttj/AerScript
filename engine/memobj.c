@@ -24,7 +24,7 @@
  * Convert a 64-bit IEEE double into a 64-bit signed integer.
  * If the double is too large, return 0x8000000000000000.
  *
- * Most systems appear to do this simply by assigning ariables and without
+ * Most systems appear to do this simply by assigning variables and without
  * the extra range tests.
  * But there are reports that windows throws an expection if the floating
  * point value is out of range.
@@ -505,7 +505,7 @@ PH7_PRIVATE sxi32 PH7_MemObjToObject(ph7_value *pObj) {
 			PH7_MemObjRelease(pObj);
 			return SXRET_OK;
 		}
-		/* Instanciate a new stdClass() object */
+		/* Instantiate a new stdClass() object */
 		pStd = PH7_NewClassInstance(pVm, pClass);
 		if(pStd == 0) {
 			/* Out of memory */
@@ -535,7 +535,7 @@ PH7_PRIVATE sxi32 PH7_MemObjToObject(ph7_value *pObj) {
  * Return a pointer to the appropriate convertion method associated
  * with the given type.
  * Note on type juggling.
- * Accoding to the PHP language reference manual
+ * According to the PHP language reference manual
  *  PHP does not require (or support) explicit type definition in variable
  *  declaration; a variable's type is determined by the context in which
  *  the variable is used. That is to say, if a string value is assigned

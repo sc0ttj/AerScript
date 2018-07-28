@@ -60,7 +60,7 @@ static sxu32 BinHash(const void *pSrc, sxu32 nLen) {
 }
 /*
  * Return the total number of entries in a given hashmap.
- * If bRecurisve is set to TRUE then recurse on hashmap entries.
+ * If bRecursive is set to TRUE then recurse on hashmap entries.
  * If the nesting limit is reached,this function abort immediately.
  */
 static sxi64 HashmapCount(ph7_hashmap *pMap, int bRecursive, int iRecCount) {
@@ -752,7 +752,7 @@ static sxi32 HashmapInsertNode(ph7_hashmap *pMap, ph7_hashmap_node *pNode, int b
  * or < 0 if pRight is greater than pLeft.
  * For a full description on ph7_values comparison,refer to the implementation
  * of the [PH7_MemObjCmp()] function defined in memobj.c or the official
- * documenation.
+ * documentation.
  */
 static sxi32 HashmapNodeCmp(ph7_hashmap_node *pLeft, ph7_hashmap_node *pRight, int bStrict) {
 	ph7_value sObj1, sObj2;
@@ -760,7 +760,7 @@ static sxi32 HashmapNodeCmp(ph7_hashmap_node *pLeft, ph7_hashmap_node *pRight, i
 	if(pLeft == pRight) {
 		/*
 		 * Same node.Refer to the sort() implementation defined
-		 * below for more information on this sceanario.
+		 * below for more information on this scenario.
 		 */
 		return 0;
 	}
@@ -1910,7 +1910,7 @@ static sxi32 HashmapCmpCallback6(ph7_hashmap_node *pA, ph7_hashmap_node *pB, voi
 	/* Invoke the callback */
 	rc = PH7_VmCallUserFunction(pA->pMap->pVm, pCallback, 2, apArg, &sResult);
 	if(rc != SXRET_OK) {
-		/* An error occured while calling user defined function [i.e: not defined] */
+		/* An error ocurred while calling user defined function [i.e: not defined] */
 		rc = -1; /* Set a dummy result */
 	} else {
 		/* Extract callback result */
@@ -2488,7 +2488,7 @@ static int ph7_hashmap_key_exists(ph7_context *pCtx, int nArg, ph7_value **apArg
  * Parameter
  *  The array to get the value from.
  * Return
- *  Poped value or NULL on failure.
+ *  Popped value or NULL on failure.
  */
 static int ph7_hashmap_pop(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	ph7_hashmap *pMap;
@@ -2955,7 +2955,7 @@ static int ph7_hashmap_range(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	}
 	/* Return the new array */
 	ph7_result_value(pCtx, pArray);
-	/* Dont'worry about freeing 'pValue',it will be released automatically
+	/* Dont' worry about freeing 'pValue',it will be released automatically
 	 * by the virtual machine as soon we return from this foreign function.
 	 */
 	return PH7_OK;
@@ -3546,7 +3546,7 @@ static int ph7_hashmap_search(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 		/* Extract node value */
 		pVal = HashmapExtractNodeValue(pEntry);
 		if(pVal) {
-			/* Make a copy of the vuurent values since the comparison routine
+			/* Make a copy of the current values since the comparison routine
 			 * can change their type.
 			 */
 			PH7_MemObjLoad(pVal, &sVal);
@@ -4840,7 +4840,7 @@ static int ph7_hashmap_product(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 		return PH7_OK;
 	}
 	/* If the first element is of type float,then perform floating
-	 * point computaion.Otherwise switch to int64 computaion.
+	 * point computation.Otherwise switch to int64 computation.
 	 */
 	pObj = HashmapExtractNodeValue(pMap->pFirst);
 	if(pObj == 0) {
@@ -5266,7 +5266,7 @@ static int ph7_hashmap_map(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	/* Perform the requested operation */
 	pEntry = pMap->pFirst;
 	for(n = 0 ; n < pMap->nEntry ; n++) {
-		/* Extrcat the node value */
+		/* Extract the node value */
 		pValue = HashmapExtractNodeValue(pEntry);
 		if(pValue) {
 			sxi32 rc;
@@ -5275,7 +5275,7 @@ static int ph7_hashmap_map(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 			/* Extract the node key */
 			PH7_HashmapExtractNodeKey(pEntry, &sKey);
 			if(rc != SXRET_OK) {
-				/* An error occured while invoking the supplied callback [i.e: not defined] */
+				/* An error ocurred while invoking the supplied callback [i.e: not defined] */
 				ph7_array_add_elem(pArray, &sKey, pValue); /* Keep the same value */
 			} else {
 				/* Insert the callback return value */
@@ -5386,7 +5386,7 @@ static int ph7_hashmap_walk(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 			rc = PH7_VmCallUserFunctionAp(pMap->pVm, apArg[1], 0, pValue, &sKey, pUserData, 0);
 			PH7_MemObjRelease(&sKey);
 			if(rc != SXRET_OK) {
-				/* An error occured while invoking the supplied callback [i.e: not defined] */
+				/* An error ocurred while invoking the supplied callback [i.e: not defined] */
 				ph7_result_bool(pCtx, 0); /* return FALSE */
 				return PH7_OK;
 			}
