@@ -15,7 +15,7 @@
 /*
  * This file implement a hand-coded, thread-safe, full-reentrant and highly-efficient
  * expression parser for the PH7 engine.
- * Besides from the one introudced by PHP (Over 60), the PH7 engine have introduced three new
+ * Besides from the one introduced by PHP (Over 60), the PH7 engine have introduced three new
  * operators. These are 'eq', 'ne' and the comma operator ','.
  * The eq and ne operators are borrowed from the Perl world. They are used for strict
  * string comparison. The reason why they have been implemented in the PH7 engine
@@ -73,11 +73,11 @@
  *	 echo "\$a = $a \$b= $b\n"; // You should see: $a = 25 $b = 50
  * }
  *
- * For a full discussions on these extensions, please refer to  offical
- * documentation(http://ph7.symisc.net/features.html) or visit the offical forums
+ * For a full discussions on these extensions, please refer to  official
+ * documentation(http://ph7.symisc.net/features.html) or visit the official forums
  * (http://forums.symisc.net/) if you want to share your point of view.
  *
- * Exprressions: According to the PHP language reference manual
+ * Expressions: According to the PHP language reference manual
  *
  * Expressions are the most important building stones of PHP. In PHP, almost anything you write is an expression.
  * The simplest yet most accurate way to define an expression is "anything that has a value".
@@ -248,7 +248,7 @@ static const ph7_expr_op sFCallOp = {{"(", sizeof(char)}, EXPR_OP_FUNC_CALL, 2, 
  * Check if the given token is a potential operator or not.
  * This function is called by the lexer each time it extract a token that may
  * look like an operator.
- * Return a structure [i.e: ph7_expr_op instnace ] that describe the operator on success.
+ * Return a structure [i.e: ph7_expr_op instance ] that describe the operator on success.
  * Otherwise NULL.
  * Note that the function take care of handling ambiguity [i.e: whether we are dealing with
  * a binary minus or unary minus.]
@@ -274,14 +274,14 @@ PH7_PRIVATE const ph7_expr_op   *PH7_ExprExtractOperator(SyString *pStr, SyToken
 			}
 			/* Handle ambiguity */
 			if(pLast->nType & (PH7_TK_LPAREN/*'('*/ | PH7_TK_OCB/*'{'*/ | PH7_TK_OSB/*'['*/ | PH7_TK_COLON/*:*/ | PH7_TK_COMMA/*,'*/)) {
-				/* Unary opertors have prcedence here over binary operators */
+				/* Unary operators have precedence here over binary operators */
 				return &aOpTable[n];
 			}
 			if(pLast->nType & PH7_TK_OP) {
 				const ph7_expr_op *pOp = (const ph7_expr_op *)pLast->pUserData;
 				/* Ticket 1433-31: Handle the '++','--' operators case */
 				if(pOp->iOp != EXPR_OP_INCR && pOp->iOp != EXPR_OP_DECR) {
-					/* Unary opertors have prcedence here over binary operators */
+					/* Unary operators have precedence here over binary operators */
 					return &aOpTable[n];
 				}
 			}
@@ -517,9 +517,9 @@ static void ExprAssembleLiteral(SyToken **ppCur, SyToken *pEnd) {
 	*ppCur = pIn;
 }
 /*
- * Collect and assemble tokens holding annonymous functions/closure body.
+ * Collect and assemble tokens holding anonymous functions/closure body.
  * When errors,PH7 take care of generating the appropriate error message.
- * Note on annonymous functions.
+ * Note on anonymous functions.
  *  According to the PHP language reference manual:
  *  Anonymous functions, also known as closures, allow the creation of functions
  *  which have no specified name. They are most useful as the value of callback
@@ -543,7 +543,7 @@ static void ExprAssembleLiteral(SyToken **ppCur, SyToken *pEnd) {
  * };
  * // This is our range of numbers
  * $numbers = range(1, 5);
- * // Use the Annonymous function as a callback here to
+ * // Use the Anonymous function as a callback here to
  * // double the size of each element in our
  * // range
  * $new_numbers = array_map($double, $numbers);
@@ -561,7 +561,7 @@ static sxi32 ExprAssembleAnnon(ph7_gen_state *pGen, SyToken **ppCur, SyToken *pE
 	}
 	if(pIn >= pEnd || (pIn->nType & PH7_TK_LPAREN) == 0) {
 		/* Syntax error */
-		rc = PH7_GenCompileError(&(*pGen), E_ERROR, nLine, "Missing opening parenthesis '(' while declaring annonymous function");
+		rc = PH7_GenCompileError(&(*pGen), E_ERROR, nLine, "Missing opening parenthesis '(' while declaring anonymous function");
 		if(rc != SXERR_ABORT) {
 			rc = SXERR_SYNTAX;
 		}
@@ -571,7 +571,7 @@ static sxi32 ExprAssembleAnnon(ph7_gen_state *pGen, SyToken **ppCur, SyToken *pE
 	PH7_DelimitNestedTokens(pIn, pEnd, PH7_TK_LPAREN/*'('*/, PH7_TK_RPAREN/*')'*/, &pIn);
 	if(pIn >= pEnd || &pIn[1] >= pEnd) {
 		/* Syntax error */
-		rc = PH7_GenCompileError(&(*pGen), E_ERROR, nLine, "Syntax error while declaring annonymous function");
+		rc = PH7_GenCompileError(&(*pGen), E_ERROR, nLine, "Syntax error while declaring anonymous function");
 		if(rc != SXERR_ABORT) {
 			rc = SXERR_SYNTAX;
 		}
@@ -585,7 +585,7 @@ static sxi32 ExprAssembleAnnon(ph7_gen_state *pGen, SyToken **ppCur, SyToken *pE
 			pIn++; /* Jump the 'use' keyword */
 			if(pIn >= pEnd || (pIn->nType & PH7_TK_LPAREN) == 0) {
 				/* Syntax error */
-				rc = PH7_GenCompileError(&(*pGen), E_ERROR, nLine, "Syntax error while declaring annonymous function");
+				rc = PH7_GenCompileError(&(*pGen), E_ERROR, nLine, "Syntax error while declaring anonymous function");
 				if(rc != SXERR_ABORT) {
 					rc = SXERR_SYNTAX;
 				}
@@ -595,7 +595,7 @@ static sxi32 ExprAssembleAnnon(ph7_gen_state *pGen, SyToken **ppCur, SyToken *pE
 			PH7_DelimitNestedTokens(pIn, pEnd, PH7_TK_LPAREN/*'('*/, PH7_TK_RPAREN/*')'*/, &pIn);
 			if(pIn >= pEnd || &pIn[1] >= pEnd) {
 				/* Syntax error */
-				rc = PH7_GenCompileError(&(*pGen), E_ERROR, nLine, "Syntax error while declaring annonymous function");
+				rc = PH7_GenCompileError(&(*pGen), E_ERROR, nLine, "Syntax error while declaring anonymous function");
 				if(rc != SXERR_ABORT) {
 					rc = SXERR_SYNTAX;
 				}
@@ -604,7 +604,7 @@ static sxi32 ExprAssembleAnnon(ph7_gen_state *pGen, SyToken **ppCur, SyToken *pE
 			pIn++;
 		} else {
 			/* Syntax error */
-			rc = PH7_GenCompileError(&(*pGen), E_ERROR, nLine, "Syntax error while declaring annonymous function");
+			rc = PH7_GenCompileError(&(*pGen), E_ERROR, nLine, "Syntax error while declaring anonymous function");
 			if(rc != SXERR_ABORT) {
 				rc = SXERR_SYNTAX;
 			}
@@ -619,7 +619,7 @@ static sxi32 ExprAssembleAnnon(ph7_gen_state *pGen, SyToken **ppCur, SyToken *pE
 		}
 	} else {
 		/* Syntax error */
-		rc = PH7_GenCompileError(&(*pGen), E_ERROR, nLine, "Syntax error while declaring annonymous function,missing '{'");
+		rc = PH7_GenCompileError(&(*pGen), E_ERROR, nLine, "Syntax error while declaring anonymous function,missing '{'");
 		if(rc == SXERR_ABORT) {
 			return SXERR_ABORT;
 		}
@@ -632,10 +632,10 @@ Synchronize:
 }
 /*
  * Extract a single expression node from the input.
- * On success store the freshly extractd node in ppNode.
+ * On success store the freshly extracted node in ppNode.
  * When errors,PH7 take care of generating the appropriate error message.
  * An expression node can be a variable [i.e: $var],an operator [i.e: ++]
- * an annonymous function [i.e: function(){ return "Hello"; }, a double/single
+ * an anonymous function [i.e: function(){ return "Hello"; }, a double/single
  * quoted string, a literal [i.e: PHP_EOL],a namespace path
  * [i.e: namespaces\path\to..],a array/list [i.e: array(4,5,6)] and so on.
  */
@@ -727,13 +727,13 @@ static sxi32 ExprExtractNode(ph7_gen_state *pGen, ph7_expr_node **ppNode) {
 				}
 			}
 		} else if(nKeyword == PH7_TKWRD_FUNCTION) {
-			/* Annonymous function */
+			/* Anonymous function */
 			if(&pCur[1] >= pGen->pEnd) {
 				/* Assume a literal */
 				ExprAssembleLiteral(&pCur, pGen->pEnd);
 				pNode->xCode = PH7_CompileLiteral;
 			} else {
-				/* Assemble annonymous functions body */
+				/* Assemble anonymous functions body */
 				rc = ExprAssembleAnnon(&(*pGen), &pCur, pGen->pEnd);
 				if(rc != SXRET_OK) {
 					SyMemBackendPoolFree(&pGen->pVm->sAllocator, pNode);
@@ -849,7 +849,7 @@ PH7_PRIVATE sxi32 PH7_ExprFreeTree(ph7_gen_state *pGen, SySet *pNodeSet) {
 	return SXRET_OK;
 }
 /*
- * Check if the given node is a modifialbe l/r-value.
+ * Check if the given node is a modifiable l/r-value.
  * Return TRUE if modifiable.FALSE otherwise.
  */
 static int ExprIsModifiableValue(ph7_expr_node *pNode, sxu8 bFunc) {
@@ -883,7 +883,7 @@ static sxi32 ExprMakeTree(ph7_gen_state *pGen, ph7_expr_node **apNode, sxi32 nTo
 /* Macro to check if the given node is a terminal */
 #define NODE_ISTERM(NODE) (apNode[NODE] && (!apNode[NODE]->pOp || apNode[NODE]->pLeft ))
 /*
- * Buid an expression tree for each given function argument.
+ * Build an expression tree for each given function argument.
  * When errors,PH7 take care of generating the appropriate error message.
  */
 static sxi32 ExprProcessFuncArguments(ph7_gen_state *pGen, ph7_expr_node *pOp, ph7_expr_node **apNode, sxi32 nToken) {
@@ -914,7 +914,7 @@ static sxi32 ExprProcessFuncArguments(ph7_gen_state *pGen, ph7_expr_node *pOp, p
 			if(apNode[iNode] && (apNode[iNode]->pStart->nType & PH7_TK_AMPER /*'&'*/) && ((iCur - iNode) == 2)
 					&& apNode[iNode + 1]->xCode == PH7_CompileVariable) {
 				PH7_GenCompileError(&(*pGen), E_WARNING, apNode[iNode]->pStart->nLine,
-									"call-time pass-by-reference is depreceated");
+									"call-time pass-by-reference is deprecated");
 				ExprFreeTree(&(*pGen), apNode[iNode]);
 				apNode[iNode] = 0;
 			}
@@ -1206,7 +1206,7 @@ static sxi32 ExprMakeTree(ph7_gen_state *pGen, ph7_expr_node **apNode, sxi32 nTo
 			if(pNode->pOp->iOp == EXPR_OP_CLONE) {
 				/* Clone:
 				 * Symisc eXtension: 'clone' accepts now as it's left operand:
-				 *  ++ function call (including annonymous)
+				 *  ++ function call (including anonymous)
 				 *  ++ array member
 				 *  ++ 'new' operator
 				 * Example:
@@ -1248,7 +1248,7 @@ static sxi32 ExprMakeTree(ph7_gen_state *pGen, ph7_expr_node **apNode, sxi32 nTo
 			pNode->pRight = 0; /* Paranoid */
 		}
 	}
-	/* Handle post/pre icrement/decrement [i.e: ++/--] operators with precedence 3 */
+	/* Handle post/pre increment/decrement [i.e: ++/--] operators with precedence 3 */
 	iLeft = -1;
 	for(iCur = 0 ; iCur < nToken ; ++iCur) {
 		if(apNode[iCur] == 0) {
