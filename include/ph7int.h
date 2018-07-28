@@ -1512,7 +1512,6 @@ enum ph7_expr_id {
 #define PH7_TKWRD_AS           33 /* as */
 #define PH7_TKWRD_CONTINUE     34 /* continue */
 #define PH7_TKWRD_EXIT         35 /* exit */
-#define PH7_TKWRD_DIE          36 /* die */
 #define PH7_TKWRD_ECHO         37 /* echo */
 #define PH7_TKWRD_GLOBAL       38 /* global */
 #define PH7_TKWRD_IMPLEMENTS   39 /* implements */

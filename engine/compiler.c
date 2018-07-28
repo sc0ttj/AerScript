@@ -5511,7 +5511,6 @@ static const LangConstruct aLangConstruct[] = {
 	{ PH7_TKWRD_DO,       PH7_CompileDoWhile  }, /* do{ }while(); statement */
 	{ PH7_TKWRD_GLOBAL,   PH7_CompileGlobal   }, /* global statement */
 	{ PH7_TKWRD_STATIC,   PH7_CompileStatic   }, /* static statement */
-	{ PH7_TKWRD_DIE,      PH7_CompileHalt     }, /* die language construct */
 	{ PH7_TKWRD_EXIT,     PH7_CompileHalt     }, /* exit language construct */
 	{ PH7_TKWRD_TRY,      PH7_CompileTry      }, /* try statement */
 	{ PH7_TKWRD_THROW,    PH7_CompileThrow    }, /* throw statement */

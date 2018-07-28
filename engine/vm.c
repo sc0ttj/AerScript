@@ -11623,7 +11623,6 @@ static const ph7_builtin_func aVmFunc[] = {
 	{ "echo",  vm_builtin_echo                    },
 	{ "print", vm_builtin_print                   },
 	{ "exit",  vm_builtin_exit                    },
-	{ "die",   vm_builtin_exit                    },
 	{ "eval",  vm_builtin_eval                    },
 	/* Variable handling functions */
 	{ "get_defined_vars", vm_builtin_get_defined_vars},
