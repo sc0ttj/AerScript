@@ -447,12 +447,8 @@ typedef sxi64 ph7_int64;
  * processing the input.
  * Refer to the official documentation for additional information.
  */
-#define PH7_PHP_ONLY 0x01 /* If this flag is set then the code to compile is assumed
-                           * to be plain PHP only. That is, there is no need to delimit
-						   * the PHP code using the standard tags such as <?php ?> or <? ?>.
-						   * Everything will pass through the PH7 compiler.
-						   */
-#define PH7_PHP_EXPR 0x02 /* This flag is reserved for future use. */
+#define PH7_PHP_CODE 0x01 /* PHP Block of Code */
+#define PH7_PHP_EXPR 0x02 /* PHP Simple Expression */
 /*
  * Call Context Error Message Severity Level.
  *

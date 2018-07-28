@@ -1441,11 +1441,6 @@ enum ph7_expr_id {
 	EXPR_OP_COMMA       /* Comma expression */
 };
 /*
- * Very high level tokens.
- */
-#define PH7_TOKEN_RAW 0x001 /* Raw text [i.e: HTML,XML...] */
-#define PH7_TOKEN_PHP 0x002 /* PHP chunk */
-/*
  * Lexer token codes
  * The following set of constants are the tokens recognized
  * by the lexer when processing PHP input.

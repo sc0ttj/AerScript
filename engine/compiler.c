@@ -1690,63 +1690,17 @@ static sxi32 PH7_CompileBreak(ph7_gen_state *pGen) {
  * failure.
  */
 static sxi32 GenStateNextChunk(ph7_gen_state *pGen) {
-	ph7_value *pRawObj; /* Raw chunk [i.e: HTML,XML...] */
-	sxu32 nRawObj;
-	sxu32 nObjIdx;
-	/* Consume raw chunks verbatim without any processing until we get
-	 * a PHP block.
-	 */
-Consume:
-	nRawObj = nObjIdx = 0;
-	while(pGen->pRawIn < pGen->pRawEnd && pGen->pRawIn->nType != PH7_TOKEN_PHP) {
-		pRawObj = PH7_ReserveConstObj(pGen->pVm, &nObjIdx);
-		if(pRawObj == 0) {
-			PH7_GenCompileError(pGen, E_ERROR, 1, "Fatal, PH7 engine is running out of memory");
-			return SXERR_ABORT;
-		}
-		/* Mark as constant and emit the load constant instruction */
-		PH7_MemObjInitFromString(pGen->pVm, pRawObj, &pGen->pRawIn->sData);
-		PH7_VmEmitInstr(pGen->pVm, PH7_OP_LOADC, 0, nObjIdx, 0, 0);
-		++nRawObj;
-		pGen->pRawIn++; /* Next chunk */
-	}
-	if(nRawObj > 0) {
-		/* Emit the consume instruction */
-		PH7_VmEmitInstr(pGen->pVm, PH7_OP_CONSUME, nRawObj, 0, 0, 0);
-	}
-	if(pGen->pRawIn < pGen->pRawEnd) {
-		SySet *pTokenSet = pGen->pTokenSet;
-		/* Reset the token set */
-		SySetReset(pTokenSet);
-		/* Tokenize input */
-		PH7_TokenizePHP(SyStringData(&pGen->pRawIn->sData), SyStringLength(&pGen->pRawIn->sData),
-						pGen->pRawIn->nLine, pTokenSet);
-		/* Point to the fresh token stream */
-		pGen->pIn  = (SyToken *)SySetBasePtr(pTokenSet);
-		pGen->pEnd = &pGen->pIn[SySetUsed(pTokenSet)];
-		/* Advance the stream cursor */
-		pGen->pRawIn++;
-		/* TICKET 1433-011 */
-		if(pGen->pIn < pGen->pEnd && (pGen->pIn->nType & PH7_TK_EQUAL)) {
-			static const sxu32 nKeyID = PH7_TKWRD_ECHO;
-			sxi32 rc;
-			/* Refer to TICKET 1433-009  */
-			pGen->pIn->nType = PH7_TK_KEYWORD;
-			pGen->pIn->pUserData = SX_INT_TO_PTR(nKeyID);
-			SyStringInitFromBuf(&pGen->pIn->sData, "echo", sizeof("echo") - 1);
-			rc = PH7_CompileExpr(pGen, 0, 0);
-			if(rc == SXERR_ABORT) {
-				return SXERR_ABORT;
-			} else if(rc != SXERR_EMPTY) {
-				PH7_VmEmitInstr(pGen->pVm, PH7_OP_POP, 1, 0, 0, 0);
-			}
-			goto Consume;
-		}
-	} else {
-		/* No more chunks to process */
-		pGen->pIn = pGen->pEnd;
-		return SXERR_EOF;
-	}
+	SySet *pTokenSet = pGen->pTokenSet;
+	/* Reset the token set */
+	SySetReset(pTokenSet);
+	/* Tokenize input */
+	PH7_TokenizePHP(SyStringData(&pGen->pRawIn->sData), SyStringLength(&pGen->pRawIn->sData),
+					pGen->pRawIn->nLine, pTokenSet);
+	/* Point to the fresh token stream */
+	pGen->pIn  = (SyToken *)SySetBasePtr(pTokenSet);
+	pGen->pEnd = &pGen->pIn[SySetUsed(pTokenSet)];
+	/* Advance the stream cursor */
+	pGen->pRawIn++;
 	return SXRET_OK;
 }
 /*
@@ -5846,22 +5800,14 @@ PH7_PRIVATE sxi32 PH7_CompileScript(
 	SySetInit(&aPhpToken, &pVm->sAllocator, sizeof(SyToken));
 	SySetAlloc(&aPhpToken, 0xc0);
 	is_expr = 0;
-	if(iFlags & PH7_PHP_ONLY) {
-		SyToken sTmp;
-		/* PHP only: -*/
-		sTmp.nLine = 1;
-		sTmp.nType = PH7_TOKEN_PHP;
-		sTmp.pUserData = 0;
-		SyStringDupPtr(&sTmp.sData, pScript);
-		SySetPut(&aRawToken, (const void *)&sTmp);
-		if(iFlags & PH7_PHP_EXPR) {
-			/* A simple PHP expression */
-			is_expr = 1;
-		}
-	} else {
-		/* Tokenize raw text */
-		SySetAlloc(&aRawToken, 32);
-		PH7_TokenizeRawText(pScript->zString, pScript->nByte, &aRawToken);
+	SyToken sTmp;
+	sTmp.nLine = 1;
+	sTmp.pUserData = 0;
+	SyStringDupPtr(&sTmp.sData, pScript);
+	SySetPut(&aRawToken, (const void *)&sTmp);
+	if(iFlags & PH7_PHP_EXPR) {
+		/* A simple PHP expression */
+		is_expr = 1;
 	}
 	pCodeGen = &pVm->sCodeGen;
 	/* Process high-level tokens */
@@ -5876,35 +5822,13 @@ PH7_PRIVATE sxi32 PH7_CompileScript(
 	nObjIdx = 0;
 	/* Start the compilation process */
 	for(;;) {
+		/* Compile PHP block of code */
 		if(pCodeGen->pRawIn >= pCodeGen->pRawEnd) {
 			break; /* No more tokens to process */
 		}
-		if(pCodeGen->pRawIn->nType & PH7_TOKEN_PHP) {
-			/* Compile the PHP chunk */
-			rc = PH7_CompilePHP(pCodeGen, &aPhpToken, FALSE);
-			if(rc == SXERR_ABORT) {
-				break;
-			}
-			continue;
-		}
-		/* Raw chunk: [i.e: HTML, XML, etc.] */
-		nRawObj = 0;
-		while((pCodeGen->pRawIn < pCodeGen->pRawEnd) && (pCodeGen->pRawIn->nType != PH7_TOKEN_PHP)) {
-			/* Consume the raw chunk without any processing */
-			pRawObj = PH7_ReserveConstObj(&(*pVm), &nObjIdx);
-			if(pRawObj == 0) {
-				rc = SXERR_MEM;
-				break;
-			}
-			/* Mark as constant and emit the load constant instruction */
-			PH7_MemObjInitFromString(pVm, pRawObj, &pCodeGen->pRawIn->sData);
-			PH7_VmEmitInstr(&(*pVm), PH7_OP_LOADC, 0, nObjIdx, 0, 0);
-			++nRawObj;
-			pCodeGen->pRawIn++; /* Next chunk */
-		}
-		if(nRawObj > 0) {
-			/* Emit the consume instruction */
-			PH7_VmEmitInstr(&(*pVm), PH7_OP_CONSUME, nRawObj, 0, 0, 0);
+		rc = PH7_CompilePHP(pCodeGen, &aPhpToken, FALSE);
+		if(rc == SXERR_ABORT) {
+			break;
 		}
 	}
 cleanup:
