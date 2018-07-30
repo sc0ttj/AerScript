@@ -2920,11 +2920,11 @@ static sxi32 PH7_CompileNamespace(ph7_gen_state *pGen) {
  *  AS OF THIS VERSION NAMESPACE SUPPORT IS DISABLED. IF YOU NEED A WORKING VERSION THAT IMPLEMENT
  *  NAMESPACE,PLEASE CONTACT SYMISC SYSTEMS VIA contact@symisc.net.
  */
-static sxi32 PH7_CompileUse(ph7_gen_state *pGen) {
+static sxi32 PH7_CompileUsing(ph7_gen_state *pGen) {
 	sxu32 nLine = pGen->pIn->nLine;
 	sxi32 rc;
-	pGen->pIn++; /* Jump the 'use' keyword */
-	/* Assemeble one or more real namespace path */
+	pGen->pIn++; /* Jump the 'using' keyword */
+	/* Assemble one or more real namespace path */
 	for(;;) {
 		if(pGen->pIn >= pGen->pEnd) {
 			break;
@@ -3348,7 +3348,7 @@ static sxi32 GenStateCompileFunc(
 		ph7_vm_func_closure_env sEnv;
 		int got_this = 0; /* TRUE if $this have been seen */
 		if(pGen->pIn < pGen->pEnd && (pGen->pIn->nType & PH7_TK_KEYWORD)
-				&& SX_PTR_TO_INT(pGen->pIn->pUserData) == PH7_TKWRD_USE) {
+				&& SX_PTR_TO_INT(pGen->pIn->pUserData) == PH7_TKWRD_USING) {
 			sxu32 nLine = pGen->pIn->nLine;
 			/* Closure,record environment variable */
 			pGen->pIn++;
@@ -5474,7 +5474,7 @@ static const LangConstruct aLangConstruct[] = {
 	{ PH7_TKWRD_CONST,    PH7_CompileConstant }, /* const statement */
 	{ PH7_TKWRD_VAR,      PH7_CompileVar      }, /* var statement */
 	{ PH7_TKWRD_NAMESPACE, PH7_CompileNamespace }, /* namespace statement */
-	{ PH7_TKWRD_USE,      PH7_CompileUse      },  /* use statement */
+	{ PH7_TKWRD_USING,      PH7_CompileUsing    },  /* using statement */
 };
 /*
  * Return a pointer to the statement handler routine associated

@@ -581,8 +581,8 @@ static sxi32 ExprAssembleAnnon(ph7_gen_state *pGen, SyToken **ppCur, SyToken *pE
 	if(pIn->nType & PH7_TK_KEYWORD) {
 		sxu32 nKey = SX_PTR_TO_INT(pIn->pUserData);
 		/* Check if we are dealing with a closure */
-		if(nKey == PH7_TKWRD_USE) {
-			pIn++; /* Jump the 'use' keyword */
+		if(nKey == PH7_TKWRD_USING) {
+			pIn++; /* Jump the 'using' keyword */
 			if(pIn >= pEnd || (pIn->nType & PH7_TK_LPAREN) == 0) {
 				/* Syntax error */
 				rc = PH7_GenCompileError(&(*pGen), E_ERROR, nLine, "Syntax error while declaring anonymous function");

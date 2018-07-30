@@ -1498,7 +1498,7 @@ enum ph7_expr_id {
 #define PH7_TKWRD_NEW          0x100 /* new: MUST BE A POWER OF TWO  */
 #define PH7_TKWRD_CONST        22 /* const */
 #define PH7_TKWRD_THROW        23 /* throw */
-#define PH7_TKWRD_USE          24 /* use */
+#define PH7_TKWRD_USING        24 /* using */
 #define PH7_TKWRD_WHILE        26 /* while */
 #define PH7_TKWRD_EVAL         27 /* eval */
 #define PH7_TKWRD_VAR          28 /* var */
