@@ -1041,7 +1041,7 @@ struct ph7_class {
 	ph7_class *pBase;     /* Base class if any */
 	SyHash hDerived;      /* Derived [child] classes */
 	SyString sName;       /* Class full qualified name */
-	sxi32 iFlags;         /* Class configuration flags [i.e: final, interface, abstract, etc.]  */
+	sxi32 iFlags;         /* Class configuration flags [i.e: final, interface, virtual, etc.]  */
 	SyHash hAttr;         /* Class attributes [i.e: variables and constants] */
 	SyHash hMethod;       /* Class methods */
 	sxu32 nLine;          /* Line number on which this class was declared */
@@ -1050,7 +1050,7 @@ struct ph7_class {
 /* Class configuration flags */
 #define PH7_CLASS_FINAL       0x001 /* Class is final [cannot be extended] */
 #define PH7_CLASS_INTERFACE   0x002 /* Class is interface */
-#define PH7_CLASS_ABSTRACT    0x004 /* Class is abstract */
+#define PH7_CLASS_VIRTUAL    0x004 /* Class is virtual */
 /* Class attribute/methods/constants protection levels */
 #define PH7_CLASS_PROT_PUBLIC     1 /* public */
 #define PH7_CLASS_PROT_PROTECTED  2 /* protected */
@@ -1070,7 +1070,7 @@ struct ph7_class_attr {
 /* Attribute configuration */
 #define PH7_CLASS_ATTR_STATIC       0x001  /* Static attribute */
 #define PH7_CLASS_ATTR_CONSTANT     0x002  /* Constant attribute */
-#define PH7_CLASS_ATTR_ABSTRACT     0x004  /* Abstract method */
+#define PH7_CLASS_ATTR_VIRTUAL     0x004  /* Virtual method */
 #define PH7_CLASS_ATTR_FINAL        0x008  /* Final method */
 /*
  * Each class method is parsed out and stored in an instance of the following
@@ -1503,7 +1503,7 @@ enum ph7_expr_id {
 #define PH7_TKWRD_EVAL         27 /* eval */
 #define PH7_TKWRD_VAR          28 /* var */
 #define PH7_TKWRD_ARRAY        0x200 /* array: MUST BE A POWER OF TWO */
-#define PH7_TKWRD_ABSTRACT     29 /* abstract */
+#define PH7_TKWRD_VIRTUAL      29 /* virtual */
 #define PH7_TKWRD_TRY          30 /* try */
 #define PH7_TKWRD_DEFAULT      31 /* default */
 #define PH7_TKWRD_CLASS        32 /* class */

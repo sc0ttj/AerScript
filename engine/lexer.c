@@ -610,7 +610,7 @@ static sxu32 KeywordCode(const char *z, int n) {
 		{"float", PH7_TKWRD_FLOAT},
 		{"var", PH7_TKWRD_VAR},
 		{"array", PH7_TKWRD_ARRAY},
-		{"abstract", PH7_TKWRD_ABSTRACT},
+		{"virtual", PH7_TKWRD_VIRTUAL},
 		{"class", PH7_TKWRD_CLASS},
 		{"as", PH7_TKWRD_AS},
 		{"continue", PH7_TKWRD_CONTINUE},

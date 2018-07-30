@@ -293,9 +293,9 @@ PH7_PRIVATE sxi32 PH7_ClassInherit(ph7_vm *pVm, ph7_class *pSub, ph7_class *pBas
 			}
 			continue;
 		} else {
-			if(pMeth->iFlags & PH7_CLASS_ATTR_ABSTRACT) {
-				/* Abstract method must be defined in the child class */
-				rc = VmErrorFormat(&(*pVm), PH7_CTX_ERR, "Abstract method '%z:%z()' must be defined inside child class '%z'", &pBase->sName, pName, &pSub->sName);
+			if(pMeth->iFlags & PH7_CLASS_ATTR_VIRTUAL) {
+				/* Virtual method must be defined in the child class */
+				rc = VmErrorFormat(&(*pVm), PH7_CTX_ERR, "Virtual method '%z:%z()' must be defined inside child class '%z'", &pBase->sName, pName, &pSub->sName);
 				if(rc == SXERR_ABORT) {
 					return SXERR_ABORT;
 				}

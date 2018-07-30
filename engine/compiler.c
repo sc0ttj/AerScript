@@ -3821,11 +3821,11 @@ static sxi32 GenStateCompileClassMethod(
 	nLine = pGen->pIn->nLine;
 	/* Jump the method name */
 	pGen->pIn++;
-	if(iFlags & PH7_CLASS_ATTR_ABSTRACT) {
-		/* Abstract method */
+	if(iFlags & PH7_CLASS_ATTR_VIRTUAL) {
+		/* Virtual method */
 		if(iProtection == PH7_CLASS_PROT_PRIVATE) {
 			rc = PH7_GenCompileError(pGen, E_ERROR, nLine,
-									 "Access type for abstract method '%z::%z' cannot be 'private'",
+									 "Access type for virtual method '%z::%z' cannot be 'private'",
 									 &pClass->sName, pName);
 			if(rc == SXERR_ABORT) {
 				return SXERR_ABORT;
@@ -4388,11 +4388,11 @@ static sxi32 GenStateCompileClass(ph7_gen_state *pGen, sxi32 iFlags) {
 					}
 					/* Extract the keyword */
 					nKwrd = SX_PTR_TO_INT(pGen->pIn->pUserData);
-				} else if(nKwrd == PH7_TKWRD_ABSTRACT) {
-					/* Abstract method,record that */
-					iAttrflags |= PH7_CLASS_ATTR_ABSTRACT;
-					/* Mark the whole class as abstract */
-					pClass->iFlags |= PH7_CLASS_ABSTRACT;
+				} else if(nKwrd == PH7_TKWRD_VIRTUAL) {
+					/* Virtual method,record that */
+					iAttrflags |= PH7_CLASS_ATTR_VIRTUAL;
+					/* Mark the whole class as virtual */
+					pClass->iFlags |= PH7_CLASS_VIRTUAL;
 					/* Advance the stream cursor */
 					pGen->pIn++;
 					if(pGen->pIn < pGen->pEnd && (pGen->pIn->nType & PH7_TK_KEYWORD)) {
@@ -4411,7 +4411,7 @@ static sxi32 GenStateCompileClass(ph7_gen_state *pGen, sxi32 iFlags) {
 					if(pGen->pIn >= pGen->pEnd || (pGen->pIn->nType & PH7_TK_KEYWORD) == 0 ||
 							SX_PTR_TO_INT(pGen->pIn->pUserData) != PH7_TKWRD_FUNCTION) {
 						rc = PH7_GenCompileError(pGen, E_ERROR, pGen->pIn->nLine,
-												 "Unexpected token '%z',Expecting method declaration after 'abstract' keyword inside class '%z'",
+												 "Unexpected token '%z',Expecting method declaration after 'virtual' keyword inside class '%z'",
 												 &pGen->pIn->sData, pName);
 						if(rc == SXERR_ABORT) {
 							/* Error count limit reached,abort immediately */
@@ -4513,7 +4513,7 @@ done:
 	return PH7_OK;
 }
 /*
- * Compile a user-defined abstract class.
+ * Compile a user-defined virtual class.
  *  According to the PHP language reference manual
  *   PHP 5 introduces abstract classes and methods. Classes defined as abstract
  *   may not be instantiated, and any class that contains at least one abstract
@@ -4528,10 +4528,10 @@ done:
  *   This also applies to constructors as of PHP 5.4. Before 5.4 constructor signatures
  *   could differ.
  */
-static sxi32 PH7_CompileAbstractClass(ph7_gen_state *pGen) {
+static sxi32 PH7_CompileVirtualClass(ph7_gen_state *pGen) {
 	sxi32 rc;
-	pGen->pIn++; /* Jump the 'abstract' keyword */
-	rc = GenStateCompileClass(&(*pGen), PH7_CLASS_ABSTRACT);
+	pGen->pIn++; /* Jump the 'virtual' keyword */
+	rc = GenStateCompileClass(&(*pGen), PH7_CLASS_VIRTUAL);
 	return rc;
 }
 /*
@@ -5508,9 +5508,9 @@ static ProcLangConstruct GenStateGetStatementHandler(
 			return PH7_CompileClassInterface;
 		} else if(nKeywordID == PH7_TKWRD_CLASS && (pLookahead->nType & PH7_TK_ID)) {
 			return PH7_CompileClass;
-		} else if(nKeywordID == PH7_TKWRD_ABSTRACT && (pLookahead->nType & PH7_TK_KEYWORD)
+		} else if(nKeywordID == PH7_TKWRD_VIRTUAL && (pLookahead->nType & PH7_TK_KEYWORD)
 				  && SX_PTR_TO_INT(pLookahead->pUserData) == PH7_TKWRD_CLASS) {
-			return PH7_CompileAbstractClass;
+			return PH7_CompileVirtualClass;
 		} else if(nKeywordID == PH7_TKWRD_FINAL && (pLookahead->nType & PH7_TK_KEYWORD)
 				  && SX_PTR_TO_INT(pLookahead->pUserData) == PH7_TKWRD_CLASS) {
 			return PH7_CompileFinalClass;
@@ -5529,7 +5529,7 @@ static int GenStateisLangConstruct(sxu32 nKeyword) {
 	if(rc == FALSE) {
 		if(nKeyword == PH7_TKWRD_SELF || nKeyword == PH7_TKWRD_PARENT || nKeyword == PH7_TKWRD_STATIC
 				/*|| nKeyword == PH7_TKWRD_CLASS || nKeyword == PH7_TKWRD_FINAL || nKeyword == PH7_TKWRD_EXTENDS
-				  || nKeyword == PH7_TKWRD_ABSTRACT || nKeyword == PH7_TKWRD_INTERFACE
+				  || nKeyword == PH7_TKWRD_VIRTUAL || nKeyword == PH7_TKWRD_INTERFACE
 				  || nKeyword == PH7_TKWRD_PUBLIC || nKeyword == PH7_TKWRD_PROTECTED
 				  || nKeyword == PH7_TKWRD_PRIVATE || nKeyword == PH7_TKWRD_IMPLEMENTS
 				*/

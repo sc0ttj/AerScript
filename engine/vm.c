@@ -762,7 +762,7 @@ static sxi32 VmMountUserClass(
 	SyHashResetLoopCursor(&pClass->hMethod);
 	while((pEntry = SyHashGetNextEntry(&pClass->hMethod)) != 0) {
 		pMeth = (ph7_class_method *)pEntry->pUserData;
-		if((pMeth->iFlags & PH7_CLASS_ATTR_ABSTRACT) == 0) {
+		if((pMeth->iFlags & PH7_CLASS_ATTR_VIRTUAL) == 0) {
 			rc = PH7_VmInstallUserFunction(&(*pVm), &pMeth->sFunc, &pMeth->sVmName);
 			if(rc != SXRET_OK) {
 				return rc;
@@ -4947,9 +4947,9 @@ static sxi32 VmByteCodeExec(
 										/* Extract the target method */
 										pMeth = PH7_ClassExtractMethod(pClass, sName.zString, sName.nByte);
 									}
-									if(pMeth == 0 || (pMeth->iFlags & PH7_CLASS_ATTR_ABSTRACT)) {
+									if(pMeth == 0 || (pMeth->iFlags & PH7_CLASS_ATTR_VIRTUAL)) {
 										if(pMeth) {
-											VmErrorFormat(&(*pVm), PH7_CTX_ERR, "Cannot call abstract method '%z:%z',PH7 is loading NULL",
+											VmErrorFormat(&(*pVm), PH7_CTX_ERR, "Cannot call virtual method '%z:%z',PH7 is loading NULL",
 														  &pClass->sName, &sName
 														 );
 										} else {
@@ -5042,7 +5042,7 @@ static sxi32 VmByteCodeExec(
 					if((pTos->iFlags & MEMOBJ_STRING) && SyBlobLength(&pTos->sBlob) > 0) {
 						/* Try to extract the desired class */
 						pClass = PH7_VmExtractClass(&(*pVm), (const char *)SyBlobData(&pTos->sBlob),
-													SyBlobLength(&pTos->sBlob), TRUE /* Only loadable class but not 'interface' or 'abstract' class*/, 0);
+													SyBlobLength(&pTos->sBlob), TRUE /* Only loadable class but not 'interface' or 'virtual' class*/, 0);
 					} else if(pTos->iFlags & MEMOBJ_OBJ) {
 						/* Take the base class from the loaded instance */
 						pClass = ((ph7_class_instance *)pTos->x.pOther)->pClass;
@@ -11718,7 +11718,7 @@ PH7_PRIVATE ph7_class *PH7_VmExtractClass(
 	const char *zName,  /* Name of the target class */
 	sxu32 nByte,        /* zName length */
 	sxi32 iLoadable,    /* TRUE to return only loadable class
-						 * [i.e: no abstract classes or interfaces]
+						 * [i.e: no virtual classes or interfaces]
 						 */
 	sxi32 iNest         /* Nesting level (Not used) */
 ) {
@@ -11763,7 +11763,7 @@ PH7_PRIVATE ph7_class *PH7_VmExtractClass(
 		/* Return the class absolutely */
 		return pClass;
 	} else {
-		if((pClass->iFlags & (PH7_CLASS_INTERFACE | PH7_CLASS_ABSTRACT)) == 0) {
+		if((pClass->iFlags & (PH7_CLASS_INTERFACE | PH7_CLASS_VIRTUAL)) == 0) {
 			/* Class is loadable */
 			return pClass;
 		}
