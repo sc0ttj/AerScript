@@ -1529,7 +1529,6 @@ enum ph7_expr_id {
 #define PH7_TKWRD_RETURN       54 /* return */
 #define PH7_TKWRD_UNSET        0x2000 /* unset: MUST BE A POWER OF TWO  */
 #define PH7_TKWRD_BREAK        55 /* break */
-#define PH7_TKWRD_GOTO         56 /* goto */
 #define PH7_TKWRD_BOOL         0x8000  /* bool:  MUST BE A POWER OF TWO */
 #define PH7_TKWRD_INT          0x10000  /* int:   MUST BE A POWER OF TWO */
 #define PH7_TKWRD_FLOAT        0x20000  /* float:  MUST BE A POWER OF TWO */
