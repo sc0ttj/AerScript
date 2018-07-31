@@ -602,7 +602,6 @@ static sxu32 KeywordCode(const char *z, int n) {
 		{"new", PH7_TKWRD_NEW},
 		{"const", PH7_TKWRD_CONST},
 		{"string", PH7_TKWRD_STRING},
-		{"global", PH7_TKWRD_GLOBAL},
 		{"using", PH7_TKWRD_USING},
 		{"elseif", PH7_TKWRD_ELIF},
 		{"else", PH7_TKWRD_ELSE},

@@ -2539,77 +2539,6 @@ Synchronize:
 	return SXRET_OK;
 }
 /*
- * Compile the global construct.
- * According to the PHP language reference
- *  In PHP global variables must be declared global inside a function if they are going
- *  to be used in that function.
- *  Example #1 Using global
- *  <?php
- *   $a = 1;
- *   $b = 2;
- *   function Sum()
- *   {
- *    global $a, $b;
- *    $b = $a + $b;
- *   }
- *   Sum();
- *   echo $b;
- *  ?>
- *  The above script will output 3. By declaring $a and $b global within the function
- *  all references to either variable will refer to the global version. There is no limit
- *  to the number of global variables that can be manipulated by a function.
- */
-static sxi32 PH7_CompileGlobal(ph7_gen_state *pGen) {
-	SyToken *pTmp, *pNext = 0;
-	sxi32 nExpr;
-	sxi32 rc;
-	/* Jump the 'global' keyword */
-	pGen->pIn++;
-	if(pGen->pIn >= pGen->pEnd || (pGen->pIn->nType & PH7_TK_SEMI)) {
-		/* Nothing to process */
-		return SXRET_OK;
-	}
-	pTmp = pGen->pEnd;
-	nExpr = 0;
-	while(SXRET_OK == PH7_GetNextExpr(pGen->pIn, pTmp, &pNext)) {
-		if(pGen->pIn < pNext) {
-			pGen->pEnd = pNext;
-			if((pGen->pIn->nType & PH7_TK_DOLLAR) == 0) {
-				rc = PH7_GenCompileError(&(*pGen), E_ERROR, pGen->pIn->nLine, "global: Expected variable name");
-				if(rc == SXERR_ABORT) {
-					return SXERR_ABORT;
-				}
-			} else {
-				pGen->pIn++;
-				if(pGen->pIn >= pGen->pEnd) {
-					/* Emit a warning */
-					PH7_GenCompileError(&(*pGen), E_WARNING, pGen->pIn[-1].nLine, "global: Empty variable name");
-				} else {
-					rc = PH7_CompileExpr(&(*pGen), 0, 0);
-					if(rc == SXERR_ABORT) {
-						return SXERR_ABORT;
-					} else if(rc != SXERR_EMPTY) {
-						nExpr++;
-					}
-				}
-			}
-		}
-		/* Next expression in the stream */
-		pGen->pIn = pNext;
-		/* Jump trailing commas */
-		while(pGen->pIn < pTmp && (pGen->pIn->nType & PH7_TK_COMMA)) {
-			pGen->pIn++;
-		}
-	}
-	/* Restore token stream */
-	pGen->pEnd = pTmp;
-	if(nExpr > 0) {
-		/* Emit the uplink instruction */
-		PH7_VmEmitInstr(pGen->pVm, PH7_OP_UPLINK, nExpr, 0, 0, 0);
-	}
-	return SXRET_OK;
-}
-/*
  * Compile the return statement.
  * According to the PHP language reference
  *  If called from within a function, the return() statement immediately ends execution
@@ -5466,7 +5395,6 @@ static const LangConstruct aLangConstruct[] = {
 	{ PH7_TKWRD_RETURN,   PH7_CompileReturn   }, /* return statement */
 	{ PH7_TKWRD_SWITCH,   PH7_CompileSwitch   }, /* Switch statement */
 	{ PH7_TKWRD_DO,       PH7_CompileDoWhile  }, /* do{ }while(); statement */
-	{ PH7_TKWRD_GLOBAL,   PH7_CompileGlobal   }, /* global statement */
 	{ PH7_TKWRD_STATIC,   PH7_CompileStatic   }, /* static statement */
 	{ PH7_TKWRD_EXIT,     PH7_CompileHalt     }, /* exit language construct */
 	{ PH7_TKWRD_TRY,      PH7_CompileTry      }, /* try statement */
