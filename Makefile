@@ -98,7 +98,7 @@ ASTYLE_FLAGS =\
 	--formatted \
 	--lineend=linux
 
-BINARY := psharp
+BINARY := aer
 BUILD_DIR := build
 CFLAGS := $(CFLAGS) -DPH7_LIBRARY_SUFFIX=\"$(LIBSUFFIX)\"
 LIBFLAGS := -Wl,-rpath,$(DESTDIR) -L$(BUILD_DIR) -l$(BINARY)
