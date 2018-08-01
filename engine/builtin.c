@@ -7528,7 +7528,6 @@ static const ph7_builtin_func aBuiltInFunc[] = {
 	{ "html_entity_decode", PH7_builtin_html_entity_decode},
 	{ "strlen", PH7_builtin_strlen     },
 	{ "strcmp", PH7_builtin_strcmp     },
-	{ "strcoll", PH7_builtin_strcmp     },
 	{ "strncmp", PH7_builtin_strncmp    },
 	{ "strcasecmp", PH7_builtin_strcasecmp },
 	{ "strncasecmp", PH7_builtin_strncasecmp},
@@ -7541,9 +7540,7 @@ static const ph7_builtin_func aBuiltInFunc[] = {
 	{ "rtrim", PH7_builtin_rtrim      },
 	{ "ltrim", PH7_builtin_ltrim      },
 	{ "strtolower",   PH7_builtin_strtolower },
-	{ "mb_strtolower", PH7_builtin_strtolower }, /* Only UTF-8 encoding is supported */
 	{ "strtoupper",   PH7_builtin_strtoupper },
-	{ "mb_strtoupper", PH7_builtin_strtoupper }, /* Only UTF-8 encoding is supported */
 	{ "ucfirst",      PH7_builtin_ucfirst    },
 	{ "lcfirst",      PH7_builtin_lcfirst    },
 	{ "ord",          PH7_builtin_ord        },
@@ -7551,7 +7548,6 @@ static const ph7_builtin_func aBuiltInFunc[] = {
 	{ "bin2hex",      PH7_builtin_bin2hex    },
 	{ "strstr",       PH7_builtin_strstr     },
 	{ "stristr",      PH7_builtin_stristr    },
-	{ "strchr",       PH7_builtin_strstr     },
 	{ "strpos",       PH7_builtin_strpos     },
 	{ "stripos",      PH7_builtin_stripos    },
 	{ "strrpos",      PH7_builtin_strrpos    },
