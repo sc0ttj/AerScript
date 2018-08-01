@@ -5,8 +5,8 @@
        incomplete details will be handled as an invalid report.
 -->
 
-# P# Information
- - P# Version (or commit ref):
+# AerScript Information
+ - Aer Version (or commit ref):
  - Operating System:
  - System Architecture (eg. arm, x86_64, ...):
 
