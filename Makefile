@@ -152,7 +152,7 @@ $(SAPI):
 clean:
 	$(RM) $(BUILD_DIR)
 
-install:
+install: engine modules sapi
 	$(MD) $(DESTDIR)
 	$(CP) $(BUILD_DIR)/$(BINARY)* $(DESTDIR)/
 	$(CP) $(BUILD_DIR)/*$(LIBSUFFIX) $(DESTDIR)/
