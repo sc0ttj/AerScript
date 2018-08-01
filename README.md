@@ -63,4 +63,4 @@ to use other C compiler, especially MSVC.
 Aer and the PH7 Engine are OpenSource projects. That is, the complete source code of the engine, interpreter, language
 specification, the official documentation and related utilities are available to download. Aer is licensed under the
 [GNU General Public License v3.0](https://www.gnu.org/licenses/gpl-3.0-standalone.html) with a permission of Symisc Systems
-to redistrubute PH7 Engine under the GPLv3.
+to redistribute PH7 Engine under the GPLv3.
