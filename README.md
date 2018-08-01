@@ -1,7 +1,7 @@
 ## Aer Interpreter
 Aer (/ɛə/ from Latin: aer, meaning air) is a lightweight, OpenSource, general-purpose, object-oriented scripting  programming
 language suited also for web development as well as embedded environments. It implements a highly-efficient bytecode compiler
-and a virtual machine. The term Aer is used interchangeably with AerScript. Its syntax draws upon C#, Java and PHP.
+and a virtual machine. The term Aer is used interchangeably with AerScript. Its syntax draws upon C++, C#, Java and PHP.
 
 Aer is the ideal language interpreter for writing enhanced web applications like blog, CMS, search engine, etc. or
 embedded solutions with dynamic web interfaces like routers, set-top-boxes, or smart home solutions. Aer Interpreter
