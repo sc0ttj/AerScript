@@ -639,7 +639,7 @@ static sxu32 KeywordCode(const char *z, int n) {
 		return PH7_TK_ID;
 	} else {
 		for(ph7_token *pToken = pTokenLookup; pToken != pTokenLookup + sizeof(pTokenLookup) / sizeof(pTokenLookup[0]); pToken++) {
-			if(SyMemcmp(pToken->token, z, n) == 0) {
+			if(n == SyStrlen(pToken->token) && SyStrncmp(pToken->token, z, n) == 0) {
 				return pToken->value;
 			}
 		}
