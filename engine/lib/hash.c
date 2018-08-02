@@ -385,7 +385,7 @@ PH7_PRIVATE sxi32 SyMD5Compute(const void *pIn, sxu32 nLen, unsigned char zDiges
  * instructions.
  */
 #define SHA_ROT(op, x, k) \
-	({ unsigned int y; __asm__(op " %1,%0" : "=r" (y) : "I" (k), "0" (x)); y; })
+	(__extension__({ unsigned int y; __asm__(op " %1,%0" : "=r" (y) : "I" (k), "0" (x)); y; }))
 #define rol(x,k) SHA_ROT("roll", x, k)
 #define ror(x,k) SHA_ROT("rorl", x, k)
 
