@@ -111,6 +111,10 @@ ENGINE_OBJS := $(addprefix $(BUILD_DIR)/,$(ENGINE_MAKE))
 MODULE := $(subst /,,$(subst modules/,,$(dir $(wildcard modules/*/))))
 SAPI := $(subst /,,$(subst sapi/,,$(dir $(wildcard sapi/*/))))
 
+TEST_DIR := tests
+TEST_EXT := aer
+TESTS := $(subst .$(TEST_EXT),.test,$(wildcard $(TEST_DIR)/*.$(TEST_EXT)))
+
 
 .SUFFIXES:
 .PHONY: clean debug install release style test
@@ -149,6 +153,25 @@ $(SAPI):
 	$(MAKE) $(SAPI_OBJS)
 	$(CC) -o $(BUILD_DIR)/$(SAPI_PROG) $(LDFLAGS) $(LIBFLAGS) $(SAPI_OBJS)
 
+%.test: %.exp %.$(TEST_EXT)
+	@$(MD) ${BUILD_DIR}/${TEST_DIR}
+	@echo -n "Executing test: $*.$(TEST_EXT) ... "
+	@if [ "x`echo $* | grep args`" != "x" ]; \
+	then \
+		binary/$(BINARY)$(EXESUFFIX) $*.$(TEST_EXT) - arg1 arg2 arg3 arg4 2>&1 >$(BUILD_DIR)/$*.out; \
+	else \
+		binary/$(BINARY)$(EXESUFFIX) $*.$(TEST_EXT) 2>&1 >$(BUILD_DIR)/$*.out; \
+	fi
+	@if [ "x`diff -qbu $*.exp $(BUILD_DIR)/$*.out`" != "x" ]; \
+	then \
+		echo "ERROR!"; \
+		diff -u $*.exp $(BUILD_DIR)/$*.out; \
+		rm -f $(BUILD_DIR)/$(TEST_DIR)/*.out \
+		exit 1; \
+	fi;
+	@rm -f $(BUILD_DIR)/$(TEST_DIR)/*.out
+	@echo "OK!"
+
 clean:
 	$(RM) $(BUILD_DIR)
 
@@ -159,3 +182,5 @@ install: engine modules sapi
 
 style:
 	astyle $(ASTYLE_FLAGS) --recursive ./*.c,*.h
+
+test: $(TESTS)
