@@ -64,6 +64,19 @@ On Windows, it is required to install MingW32 or MingW64 to build the Aer Interp
 to use other C compiler, especially MSVC.
 
 
+## Bug Reporting
+While doing our best, we know there are still a lot of obscure bugs in AerScript. To help us make Aer the stable and solid
+product we want it to be, we need bug reports and bug fixes. If you can't fix a bug yourself and submit a fix for it, try
+to report an as detailed report. When reporting a bug, you should include all information that will help us understand what's
+wrong, what you expected to happen and how to repeat the bad behavior. You therefore need to tell us:
+ * your operating system's name and version
+ * what version of Aer Interpreter you're using
+ * anything and everything else you think matters.
+Tell us what you expected to happen, what did happen and how you could make it work another way. Dig around, try out and test.
+Then, please include all the tiny bits and pieces in your report. You will benefit from this, as it will enable us to help you
+quicker and more accurately.
+
+
 ## Licensing
 Aer and the PH7 Engine are OpenSource projects. That is, the complete source code of the engine, interpreter, language
 specification, the official documentation and related utilities are available to download. Aer is licensed under the
