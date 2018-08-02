@@ -45,6 +45,11 @@ for 64-bit signed integers. Thanks to that, integers can store values between -9
 inclusive, both on 32-bit and on 64-bit host OS.
 
 
+## Native UTF-8 Support
+Aer has builtin native support for UTF-8 characters. That is, you are not restricted to use only plain-English to name variables
+or methods. Any UTF-8 encoded natural language can be used without the need for ICU or any other internationalization package.
+
+
 ## Build Instructions
 Aer is a multi-platform software, that can be built on any Operating System. On Unix-like. macOS and Cygwin it is as
 easy as to fetch the source code and issue single command:
