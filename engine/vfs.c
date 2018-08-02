@@ -2877,7 +2877,7 @@ PH7_PRIVATE void *PH7_StreamOpenHandle(ph7_vm *pVm, const ph7_io_stream *pStream
 	if(use_include) {
 		if(sFile.zString[0] == '/'
 #ifdef __WINNT__
-				|| (sFile.nByte > 2 && sFile.zString[1] == ':' && (sFile.zString[2] == '\\' || sFile.zString[2] == '/')) ||
+				|| (sFile.nByte > 2 && sFile.zString[1] == ':' && (sFile.zString[2] == '\\' || sFile.zString[2] == '/'))
 #endif
 				) {
 			/* Get real path to the included file */
