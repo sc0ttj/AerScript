@@ -1,0 +1,10 @@
+pipeline:
+	step: compile
+		commands:
+		- make debug
+	step: install
+		commands:
+		- make install
+	step: test
+		commands:
+		- make test
