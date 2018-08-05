@@ -1,0 +1,32 @@
+class Main {
+
+	private function num2Roman($num) {
+		$n = intval($num);
+		$result = '';
+		$lookup = array('M' => 1000, 'CM' => 900, 'D' => 500, 'CD' => 400,
+			'C' => 100, 'XC' => 90, 'L' => 50, 'XL' => 40,
+			'X' => 10, 'IX' => 9, 'V' => 5, 'IV' => 4, 'I' => 1);
+
+		foreach($lookup as $roman => $value) {
+			$matches = intval($n / $value);
+			$result .= str_repeat($roman, $matches);
+			$n = $n % $value;
+		}
+		return $result;
+	}
+
+	public function __construct() {
+		print('   7 => ' . $this->num2Roman(7) . "\n");	
+		print('   9 => ' . $this->num2Roman(9) . "\n");	
+		print('  11 => ' . $this->num2Roman(11) . "\n");	
+		print('  42 => ' . $this->num2Roman(42) . "\n");	
+		print(' 105 => ' . $this->num2Roman(105) . "\n");	
+		print('1984 => ' . $this->num2Roman(1984) . "\n");	
+		print('1999 => ' . $this->num2Roman(1999) . "\n");	
+		print('2018 => ' . $this->num2Roman(2018) . "\n");	
+		print('2144 => ' . $this->num2Roman(2144) . "\n");	
+	 }
+
+}
+
+new Main();
