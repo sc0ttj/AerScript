@@ -1,0 +1,9 @@
+class Main {
+
+	public function __construct() {
+		print('Hello world!');
+	}
+
+}
+
+new Main();
