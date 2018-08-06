@@ -366,11 +366,6 @@ PH7_PRIVATE sxi32 PH7_CompileSimpleString(ph7_gen_state *pGen, sxi32 iCompileFla
 	/* Delimit the string */
 	zIn  = pStr->zString;
 	zEnd = &zIn[pStr->nByte];
-	if(zIn >= zEnd) {
-		/* Empty string,load NULL */
-		PH7_VmEmitInstr(pGen->pVm, PH7_OP_LOADC, 0, 0, 0, 0);
-		return SXRET_OK;
-	}
 	if(SXRET_OK == GenStateFindLiteral(&(*pGen), pStr, &nIdx)) {
 		/* Already processed,emit the load constant instruction
 		 * and return.
