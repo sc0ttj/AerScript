@@ -50,6 +50,17 @@ Aer has builtin native support for UTF-8 characters. That is, you are not restri
 or methods. Any UTF-8 encoded natural language can be used without the need for ICU or any other internationalization package.
 
 
+## Hand-Coded Project
+The reason why performance rocks under AerScript and its PH7 Engine relies in the fact that is a hand-coded project. That is,
+Aer does not use any external tools to generate it's lexical analyzer such as lex or flex, nor does not use LALR(1) parsers such
+as Bison or YACC to generate it's parser. By acting so, the lexer and the parser are thread-safe, full re-entrant, generate
+better error message, takes less space in the source tree and are easier to maintain.
+
+Aer is written in C. It compiles and runs unmodified on any platform including restricted embedded device with a C compiler.
+The PH7 Engine have been extensively tested under Windows and UNIX including Linux and FreeBSD. If you have successfully compiled
+and tested Aer in an exotic environment or a proprietary UNIX, please let us know.
+
+
 ## Build Instructions
 Aer is a multi-platform software, that can be built on any Operating System. On Unix-like. macOS and Cygwin it is as
 easy as to fetch the source code and issue single command:
