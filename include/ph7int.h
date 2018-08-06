@@ -1479,7 +1479,6 @@ enum ph7_expr_id {
  */
 #define PH7_TKWRD_EXTENDS      1 /* extends */
 #define PH7_TKWRD_SWITCH       3 /* switch */
-#define PH7_TKWRD_PRINT        4 /* print */
 #define PH7_TKWRD_INTERFACE    5 /* interface */
 /* The number '8' is reserved for PH7_TK_ID */
 #define PH7_TKWRD_REQONCE      9 /* require_once */
@@ -1510,7 +1509,6 @@ enum ph7_expr_id {
 #define PH7_TKWRD_AS           33 /* as */
 #define PH7_TKWRD_CONTINUE     34 /* continue */
 #define PH7_TKWRD_EXIT         35 /* exit */
-#define PH7_TKWRD_ECHO         37 /* echo */
 #define PH7_TKWRD_IMPLEMENTS   39 /* implements */
 #define PH7_TKWRD_INCONCE      40 /* include_once */
 #define PH7_TKWRD_INCLUDE      41 /* include */

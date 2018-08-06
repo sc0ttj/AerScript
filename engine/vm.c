@@ -8622,46 +8622,13 @@ static int vm_builtin_uniqid(ph7_context *pCtx, int nArg, ph7_value **apArg) {
  *    Stable.
  */
 /*
- * void echo($string...)
- *  Output one or more messages.
- * Parameters
- *  $string
- *   Message to output.
- * Return
- *  NULL.
- */
-static int vm_builtin_echo(ph7_context *pCtx, int nArg, ph7_value **apArg) {
-	const char *zData;
-	int nDataLen = 0;
-	ph7_vm *pVm;
-	int i, rc;
-	/* Point to the target VM */
-	pVm = pCtx->pVm;
-	/* Output */
-	for(i = 0 ; i < nArg ; ++i) {
-		zData = ph7_value_to_string(apArg[i], &nDataLen);
-		if(nDataLen > 0) {
-			rc = pVm->sVmConsumer.xConsumer((const void *)zData, (unsigned int)nDataLen, pVm->sVmConsumer.pUserData);
-			if(pVm->sVmConsumer.xConsumer != VmObConsumer) {
-				/* Increment output length */
-				pVm->nOutputLen += nDataLen;
-			}
-			if(rc == SXERR_ABORT) {
-				/* Output consumer callback request an operation abort */
-				return PH7_ABORT;
-			}
-		}
-	}
-	return SXRET_OK;
-}
-/*
  * int print($string...)
  *  Output one or more messages.
  * Parameters
  *  $string
  *   Message to output.
  * Return
- *  1 always.
+ *  NULL.
  */
 static int vm_builtin_print(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	const char *zData;
@@ -8685,8 +8652,6 @@ static int vm_builtin_print(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 			}
 		}
 	}
-	/* Return 1 */
-	ph7_result_int(pCtx, 1);
 	return SXRET_OK;
 }
 /*
@@ -11620,7 +11585,6 @@ static const ph7_builtin_func aVmFunc[] = {
 #endif /* PH7_DISABLE_HASH_FUNC */
 #endif /* PH7_DISABLE_BUILTIN_FUNC */
 	/* Language constructs functions */
-	{ "echo",  vm_builtin_echo                    },
 	{ "print", vm_builtin_print                   },
 	{ "exit",  vm_builtin_exit                    },
 	{ "eval",  vm_builtin_eval                    },

@@ -329,8 +329,8 @@ PH7_PRIVATE void PH7_DelimitNestedTokens(SyToken *pIn, SyToken *pEnd, sxu32 nTok
  *   or method names. Using them as variable names is generally OK, but could lead to confusion.
  */
 PH7_PRIVATE int PH7_IsLangConstruct(sxu32 nKeyID, sxu8 bCheckFunc) {
-	if(nKeyID == PH7_TKWRD_ECHO || nKeyID == PH7_TKWRD_PRINT || nKeyID == PH7_TKWRD_INCLUDE
-			|| nKeyID == PH7_TKWRD_INCONCE || nKeyID == PH7_TKWRD_REQUIRE || nKeyID == PH7_TKWRD_REQONCE
+	if(nKeyID == PH7_TKWRD_INCLUDE || nKeyID == PH7_TKWRD_INCONCE
+			|| nKeyID == PH7_TKWRD_REQUIRE || nKeyID == PH7_TKWRD_REQONCE
 	  ) {
 		return TRUE;
 	}

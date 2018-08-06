@@ -1144,66 +1144,30 @@ PH7_PRIVATE sxi32 PH7_CompileLangConstruct(ph7_gen_state *pGen, sxi32 iCompileFl
 	pName = &pGen->pIn->sData;
 	nKeyID = (sxu32)SX_PTR_TO_INT(pGen->pIn->pUserData);
 	pGen->pIn++; /* Jump the language construct keyword */
-	if(nKeyID == PH7_TKWRD_ECHO) {
-		SyToken *pTmp, *pNext = 0;
-		/* Compile arguments one after one */
-		pTmp = pGen->pEnd;
-		/* Symisc eXtension to the PHP programming language:
-		 * 'echo' can be used in the context of a function which
-		 *  mean that the following expression is valid:
-		 *      fopen('file.txt','r') or echo "IO error";
-		 */
-		PH7_VmEmitInstr(pGen->pVm, PH7_OP_LOADC, 0, 1 /* Boolean true index */, 0, 0);
-		while(SXRET_OK == PH7_GetNextExpr(pGen->pIn, pTmp, &pNext)) {
-			if(pGen->pIn < pNext) {
-				pGen->pEnd = pNext;
-				rc = PH7_CompileExpr(&(*pGen), EXPR_FLAG_RDONLY_LOAD/* Do not create variable if inexistant */, 0);
-				if(rc == SXERR_ABORT) {
-					return SXERR_ABORT;
-				}
-				if(rc != SXERR_EMPTY) {
-					/* Ticket 1433-008: Optimization #1: Consume input directly
-					 * without the overhead of a function call.
-					 * This is a very powerful optimization that improve
-					 * performance greatly.
-					 */
-					PH7_VmEmitInstr(pGen->pVm, PH7_OP_CONSUME, 1, 0, 0, 0);
-				}
-			}
-			/* Jump trailing commas */
-			while(pNext < pTmp && (pNext->nType & PH7_TK_COMMA)) {
-				pNext++;
-			}
-			pGen->pIn = pNext;
-		}
-		/* Restore token stream */
-		pGen->pEnd = pTmp;
-	} else {
-		sxi32 nArg = 0;
-		sxu32 nIdx = 0;
-		rc = PH7_CompileExpr(&(*pGen), EXPR_FLAG_RDONLY_LOAD/* Do not create variable if inexistant */, 0);
-		if(rc == SXERR_ABORT) {
-			return SXERR_ABORT;
-		} else if(rc != SXERR_EMPTY) {
-			nArg = 1;
-		}
-		if(SXRET_OK != GenStateFindLiteral(&(*pGen), pName, &nIdx)) {
-			ph7_value *pObj;
-			/* Emit the call instruction */
-			pObj = PH7_ReserveConstObj(pGen->pVm, &nIdx);
-			if(pObj == 0) {
-				PH7_GenCompileError(&(*pGen), E_ERROR, 1, "Fatal, PH7 engine is running out of memory");
-				SXUNUSED(iCompileFlag); /* cc warning */
-				return SXERR_ABORT;
-			}
-			PH7_MemObjInitFromString(pGen->pVm, pObj, pName);
-			/* Install in the literal table */
-			GenStateInstallLiteral(&(*pGen), pObj, nIdx);
-		}
-		/* Emit the call instruction */
-		PH7_VmEmitInstr(pGen->pVm, PH7_OP_LOADC, 0, nIdx, 0, 0);
-		PH7_VmEmitInstr(pGen->pVm, PH7_OP_CALL, nArg, 0, 0, 0);
+	sxi32 nArg = 0;
+	sxu32 nIdx = 0;
+	rc = PH7_CompileExpr(&(*pGen), EXPR_FLAG_RDONLY_LOAD/* Do not create variable if non-existent */, 0);
+	if(rc == SXERR_ABORT) {
+		return SXERR_ABORT;
+	} else if(rc != SXERR_EMPTY) {
+		nArg = 1;
 	}
+	if(SXRET_OK != GenStateFindLiteral(&(*pGen), pName, &nIdx)) {
+		ph7_value *pObj;
+		/* Emit the call instruction */
+		pObj = PH7_ReserveConstObj(pGen->pVm, &nIdx);
+		if(pObj == 0) {
+			PH7_GenCompileError(&(*pGen), E_ERROR, 1, "Fatal, PH7 engine is running out of memory");
+			SXUNUSED(iCompileFlag); /* cc warning */
+			return SXERR_ABORT;
+		}
+		PH7_MemObjInitFromString(pGen->pVm, pObj, pName);
+		/* Install in the literal table */
+		GenStateInstallLiteral(&(*pGen), pObj, nIdx);
+	}
+	/* Emit the call instruction */
+	PH7_VmEmitInstr(pGen->pVm, PH7_OP_LOADC, 0, nIdx, 0, 0);
+	PH7_VmEmitInstr(pGen->pVm, PH7_OP_CALL, nArg, 0, 0, 0);
 	/* Node successfully compiled */
 	return SXRET_OK;
 }
@@ -2587,37 +2551,6 @@ static sxi32 PH7_CompileHalt(ph7_gen_state *pGen) {
 	}
 	/* Emit the HALT instruction */
 	PH7_VmEmitInstr(pGen->pVm, PH7_OP_HALT, nExpr, 0, 0, 0);
-	return SXRET_OK;
-}
-/*
- * Compile the 'echo' language construct.
- */
-static sxi32 PH7_CompileEcho(ph7_gen_state *pGen) {
-	SyToken *pTmp, *pNext = 0;
-	sxi32 rc;
-	/* Jump the 'echo' keyword */
-	pGen->pIn++;
-	/* Compile arguments one after one */
-	pTmp = pGen->pEnd;
-	while(SXRET_OK == PH7_GetNextExpr(pGen->pIn, pTmp, &pNext)) {
-		if(pGen->pIn < pNext) {
-			pGen->pEnd = pNext;
-			rc = PH7_CompileExpr(&(*pGen), EXPR_FLAG_RDONLY_LOAD/* Do not create variable if inexistant */, 0);
-			if(rc == SXERR_ABORT) {
-				return SXERR_ABORT;
-			} else if(rc != SXERR_EMPTY) {
-				/* Emit the consume instruction */
-				PH7_VmEmitInstr(pGen->pVm, PH7_OP_CONSUME, 1, 0, 0, 0);
-			}
-		}
-		/* Jump trailing commas */
-		while(pNext < pTmp && (pNext->nType & PH7_TK_COMMA)) {
-			pNext++;
-		}
-		pGen->pIn = pNext;
-	}
-	/* Restore token stream */
-	pGen->pEnd = pTmp;
 	return SXRET_OK;
 }
 /*
@@ -5378,7 +5311,6 @@ PH7_PRIVATE ProcNodeConstruct PH7_GetNodeHandler(sxu32 nNodeType) {
  * PHP Language construct table.
  */
 static const LangConstruct aLangConstruct[] = {
-	{ PH7_TKWRD_ECHO,     PH7_CompileEcho     }, /* echo language construct */
 	{ PH7_TKWRD_IF,       PH7_CompileIf       }, /* if statement */
 	{ PH7_TKWRD_FOR,      PH7_CompileFor      }, /* for statement */
 	{ PH7_TKWRD_WHILE,    PH7_CompileWhile    }, /* while statement */

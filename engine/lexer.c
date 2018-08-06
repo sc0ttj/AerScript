@@ -581,13 +581,11 @@ static sxu32 KeywordCode(const char *z, int n) {
 	static ph7_token pTokenLookup[] = {
 		{"extends", PH7_TKWRD_EXTENDS},
 		{"switch", PH7_TKWRD_SWITCH},
-		{"print", PH7_TKWRD_PRINT},
 		{"int", PH7_TKWRD_INT},
 		{"require_once", PH7_TKWRD_REQONCE},
 		{"require", PH7_TKWRD_REQUIRE},
 		{"return", PH7_TKWRD_RETURN},
 		{"namespace", PH7_TKWRD_NAMESPACE},
-		{"echo", PH7_TKWRD_ECHO},
 		{"object", PH7_TKWRD_OBJECT},
 		{"throw", PH7_TKWRD_THROW},
 		{"bool", PH7_TKWRD_BOOL},
