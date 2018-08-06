@@ -527,9 +527,8 @@ static sxi32 GenStateCompileString(ph7_gen_state *pGen) {
 	zIn  = pStr->zString;
 	zEnd = &zIn[pStr->nByte];
 	if(zIn >= zEnd) {
-		/* Empty string,load NULL */
-		PH7_VmEmitInstr(pGen->pVm, PH7_OP_LOADC, 0, 0, 0, 0);
-		return SXRET_OK;
+		/* Empty string can be served as single-quoted string */
+		return PH7_CompileSimpleString(pGen, 0);
 	}
 	zCur = 0;
 	/* Compile the node */
