@@ -1,0 +1,13 @@
+Array(1) {
+ [0] =>
+  First A
+ }
+Array(1) {
+ [0] =>
+  Second A
+ }
+Array(1) {
+ [0] =>
+  Third A
+ }
+First A, Second A, Third A
