@@ -9349,6 +9349,7 @@ static int vm_builtin_debug_backtrace(ph7_context *pCtx, int nArg, ph7_value **a
 	/* Create a new array */
 	pArray = ph7_context_new_array(pCtx);
 	pValue = ph7_context_new_scalar(pCtx);
+	VmFrame *oFrame = pVm->pFrame;
 	iLine = -1;
 	if(pArray == 0 || pValue == 0) {
 		/* Out of memory,return NULL */
@@ -9429,6 +9430,7 @@ static int vm_builtin_debug_backtrace(ph7_context *pCtx, int nArg, ph7_value **a
 rollFrame:
 		pVm->pFrame = pVm->pFrame->pParent;
 	}
+	pVm->pFrame = oFrame;
 	/* Return the freshly created array */
 	ph7_result_value(pCtx, pArray);
 	/*
