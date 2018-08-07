@@ -7348,7 +7348,7 @@ PH7_PRIVATE sxi32 PH7_VmCallClassMethod(
 	SyBlobAppend(&aStack[i].sBlob, (const void *)SyStringData(&pMethod->sVmName), SyStringLength(&pMethod->sVmName));
 	aStack[i].iFlags = MEMOBJ_STRING;
 	aStack[i].nIdx = SXU32_HIGH;
-	/* Emit the CALL istruction */
+	/* Emit the CALL instruction */
 	aInstr[0].iOp = PH7_OP_CALL;
 	aInstr[0].iP1 = nArg; /* Total number of given arguments */
 	aInstr[0].iP2 = 0;
@@ -7480,7 +7480,7 @@ PH7_PRIVATE sxi32 PH7_VmCallUserFunction(
 	return PH7_OK;
 }
 /*
- * Call a user defined or foreign function with a varible number
+ * Call a user defined or foreign function with a variable number
  * of arguments where the name of the function is stored in the pFunc
  * parameter.
  * Return SXRET_OK if the function was successfully called.Any other
