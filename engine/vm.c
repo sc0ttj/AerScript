@@ -3963,77 +3963,6 @@ static sxi32 VmByteCodeExec(
 					VmPopOperand(&pTos, 1);
 					break;
 				}
-			/* CAT:  P1 * *
-			 *
-			 * Pop P1 elements from the stack. Concatenate them together and push the result
-			 * back.
-			 */
-			case PH7_OP_CAT: {
-					ph7_value *pNos, *pCur;
-					if(pInstr->iP1 < 1) {
-						pNos = &pTos[-1];
-					} else {
-						pNos = &pTos[-pInstr->iP1 + 1];
-					}
-#ifdef UNTRUST
-					if(pNos < pStack) {
-						goto Abort;
-					}
-#endif
-					/* Force a string cast */
-					if((pNos->iFlags & MEMOBJ_STRING) == 0) {
-						PH7_MemObjToString(pNos);
-					}
-					pCur = &pNos[1];
-					while(pCur <= pTos) {
-						if((pCur->iFlags & MEMOBJ_STRING) == 0) {
-							PH7_MemObjToString(pCur);
-						}
-						/* Perform the concatenation */
-						if(SyBlobLength(&pCur->sBlob) > 0) {
-							PH7_MemObjStringAppend(pNos, (const char *)SyBlobData(&pCur->sBlob), SyBlobLength(&pCur->sBlob));
-						}
-						SyBlobRelease(&pCur->sBlob);
-						pCur++;
-					}
-					pTos = pNos;
-					break;
-				}
-			/*  CAT_STORE: * * *
-			 *
-			 * Pop two elements from the stack. Concatenate them together and push the result
-			 * back.
-			 */
-			case PH7_OP_CAT_STORE: {
-					ph7_value *pNos = &pTos[-1];
-					ph7_value *pObj;
-#ifdef UNTRUST
-					if(pNos < pStack) {
-						goto Abort;
-					}
-#endif
-					if((pTos->iFlags & MEMOBJ_STRING) == 0) {
-						/* Force a string cast */
-						PH7_MemObjToString(pTos);
-					}
-					if((pNos->iFlags & MEMOBJ_STRING) == 0) {
-						/* Force a string cast */
-						PH7_MemObjToString(pNos);
-					}
-					/* Perform the concatenation (Reverse order) */
-					if(SyBlobLength(&pNos->sBlob) > 0) {
-						PH7_MemObjStringAppend(pTos, (const char *)SyBlobData(&pNos->sBlob), SyBlobLength(&pNos->sBlob));
-					}
-					/* Perform the store operation */
-					if(pTos->nIdx == SXU32_HIGH) {
-						PH7_VmThrowError(&(*pVm), 0, PH7_CTX_ERR, "Cannot perform assignment on a constant class attribute");
-					} else if((pObj = (ph7_value *)SySetAt(&pVm->aMemObj, pTos->nIdx)) != 0) {
-						PH7_MemObjStore(pTos, pObj);
-					}
-					PH7_MemObjStore(pTos, pNos);
-					VmPopOperand(&pTos, 1);
-					break;
-				}
 			/* OP_AND: * * *
 			 *
 			 * Pop two values off the stack.  Take the logical AND of the
@@ -5940,9 +5869,6 @@ static const char *VmInstrToString(sxi32 nOp) {
 		case PH7_OP_POP:
 			zOp = "POP        ";
 			break;
-		case PH7_OP_CAT:
-			zOp = "CAT        ";
-			break;
 		case PH7_OP_CVT_INT:
 			zOp = "CVT_INT    ";
 			break;
@@ -6089,9 +6015,6 @@ static const char *VmInstrToString(sxi32 nOp) {
 			break;
 		case PH7_OP_MOD_STORE:
 			zOp = "MOD_STORE  ";
-			break;
-		case PH7_OP_CAT_STORE:
-			zOp = "CAT_STORE  ";
 			break;
 		case PH7_OP_SHL_STORE:
 			zOp = "SHL_STORE  ";

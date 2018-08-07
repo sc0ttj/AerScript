@@ -505,12 +505,6 @@ static sxi32 TokenizePHP(SyStream *pStream, SyToken *pToken, void *pUserData, vo
 					}
 				}
 				break;
-			case '.':
-				if(pStream->zText < pStream->zEnd && pStream->zText[0] == '=') {
-					/* Current operator: .= */
-					pStream->zText++;
-				}
-				break;
 			case '<':
 				if(pStream->zText < pStream->zEnd) {
 					if(pStream->zText[0] == '<') {

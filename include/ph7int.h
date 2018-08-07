@@ -1310,7 +1310,6 @@ enum ph7_vm_op {
 	PH7_OP_JZ,           /* Jump on zero (FALSE jump) */
 	PH7_OP_JNZ,          /* Jump on non-zero (TRUE jump) */
 	PH7_OP_POP,          /* Stack POP */
-	PH7_OP_CAT,          /* Concatenation */
 	PH7_OP_CVT_INT,      /* Integer cast */
 	PH7_OP_CVT_STR,      /* String cast */
 	PH7_OP_CVT_REAL,     /* Float cast */
@@ -1357,7 +1356,6 @@ enum ph7_vm_op {
 	PH7_OP_MUL_STORE,    /* Mul and store '*=' */
 	PH7_OP_DIV_STORE,    /* Div and store '/=' */
 	PH7_OP_MOD_STORE,    /* Mod and store '%=' */
-	PH7_OP_CAT_STORE,    /* Cat and store '.=' */
 	PH7_OP_SHL_STORE,    /* Shift left and store '>>=' */
 	PH7_OP_SHR_STORE,    /* Shift right and store '<<=' */
 	PH7_OP_BAND_STORE,   /* Bitand and store '&=' */
@@ -1407,7 +1405,6 @@ enum ph7_expr_id {
 	EXPR_OP_MOD,       /* Modulus */
 	EXPR_OP_ADD,       /* Addition */
 	EXPR_OP_SUB,       /* Substraction */
-	EXPR_OP_DOT,       /* Concatenation */
 	EXPR_OP_SHL,       /* Left shift */
 	EXPR_OP_SHR,       /* Right shift */
 	EXPR_OP_LT,        /* Less than */
@@ -1432,7 +1429,6 @@ enum ph7_expr_id {
 	EXPR_OP_MUL_ASSIGN, /* Combined operator: *= */
 	EXPR_OP_DIV_ASSIGN, /* Combined operator: /= */
 	EXPR_OP_MOD_ASSIGN, /* Combined operator: %= */
-	EXPR_OP_DOT_ASSIGN, /* Combined operator: .= */
 	EXPR_OP_AND_ASSIGN, /* Combined operator: &= */
 	EXPR_OP_OR_ASSIGN,  /* Combined operator: |= */
 	EXPR_OP_XOR_ASSIGN, /* Combined operator: ^= */

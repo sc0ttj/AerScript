@@ -192,7 +192,6 @@ static const ph7_expr_op aOpTable[] = {
 	/* Precedence 8,left-associative */
 	{ {"+", sizeof(char)}, EXPR_OP_ADD, 8,  EXPR_OP_ASSOC_LEFT, PH7_OP_ADD},
 	{ {"-", sizeof(char)}, EXPR_OP_SUB, 8,  EXPR_OP_ASSOC_LEFT, PH7_OP_SUB},
-	{ {".", sizeof(char)}, EXPR_OP_DOT, 8,  EXPR_OP_ASSOC_LEFT, PH7_OP_CAT},
 	/* Precedence 9,left-associative */
 	{ {"<<", sizeof(char) * 2}, EXPR_OP_SHL, 9, EXPR_OP_ASSOC_LEFT, PH7_OP_SHL},
 	{ {">>", sizeof(char) * 2}, EXPR_OP_SHR, 9, EXPR_OP_ASSOC_LEFT, PH7_OP_SHR},
@@ -230,7 +229,6 @@ static const ph7_expr_op aOpTable[] = {
 	{ {"=", sizeof(char)},     EXPR_OP_ASSIGN,     19,  EXPR_OP_ASSOC_RIGHT, PH7_OP_STORE},
 	{ {"+=", sizeof(char) * 2},  EXPR_OP_ADD_ASSIGN, 19,  EXPR_OP_ASSOC_RIGHT, PH7_OP_ADD_STORE },
 	{ {"-=", sizeof(char) * 2},  EXPR_OP_SUB_ASSIGN, 19,  EXPR_OP_ASSOC_RIGHT, PH7_OP_SUB_STORE },
-	{ {".=", sizeof(char) * 2},  EXPR_OP_DOT_ASSIGN, 19,  EXPR_OP_ASSOC_RIGHT, PH7_OP_CAT_STORE },
 	{ {"*=", sizeof(char) * 2},  EXPR_OP_MUL_ASSIGN, 19,  EXPR_OP_ASSOC_RIGHT, PH7_OP_MUL_STORE },
 	{ {"/=", sizeof(char) * 2},  EXPR_OP_DIV_ASSIGN, 19,  EXPR_OP_ASSOC_RIGHT, PH7_OP_DIV_STORE },
 	{ {"%=", sizeof(char) * 2},  EXPR_OP_MOD_ASSIGN, 19,  EXPR_OP_ASSOC_RIGHT, PH7_OP_MOD_STORE },
