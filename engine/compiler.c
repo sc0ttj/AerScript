@@ -778,7 +778,7 @@ static sxi32 GenStateCompileString(ph7_gen_state *pGen) {
 	}/*for(;;)*/
 	if(iCons > 1) {
 		/* Concatenate all compiled constants */
-		PH7_VmEmitInstr(pGen->pVm, PH7_OP_CAT, iCons, 0, 0, 0);
+		PH7_VmEmitInstr(pGen->pVm, PH7_OP_ADD, iCons, 1, 0, 0);
 	}
 	/* Node successfully compiled */
 	return SXRET_OK;

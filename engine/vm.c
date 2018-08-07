@@ -3394,19 +3394,24 @@ static sxi32 VmByteCodeExec(
 					VmPopOperand(&pTos, 1);
 					break;
 				}
-			/* OP_ADD * * *
+			/* OP_ADD P1 P2 *
 			 *
 			 * Pop the top two elements from the stack, add them together,
 			 * and push the result back onto the stack.
 			 */
 			case PH7_OP_ADD: {
-					ph7_value *pNos = &pTos[-1];
+					ph7_value *pNos;
+					if(pInstr->iP1 < 1) {
+						pNos = &pTos[-1];
+					} else {
+						pNos = &pTos[-pInstr->iP1 + 1];
+					}
 #ifdef UNTRUST
 					if(pNos < pStack) {
 						goto Abort;
 					}
 #endif
-					if(pNos->iFlags & MEMOBJ_STRING || pTos->iFlags & MEMOBJ_STRING) {
+					if(pInstr->iP2 || pNos->iFlags & MEMOBJ_STRING || pTos->iFlags & MEMOBJ_STRING) {
 						/* Perform the string addition */
 						ph7_value *pCur;
 						if((pNos->iFlags & MEMOBJ_STRING) == 0) {
