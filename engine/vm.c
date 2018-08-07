@@ -619,7 +619,7 @@ static ph7_vm_func *VmOverload(
 	}
 	if(i < 1) {
 		/* No candidates, throw an error */
-		VmErrorFormat(&(*pVm), PH7_CTX_ERR, "Invalid number of arguments passed to function/method '%s'", pList->sName);
+		VmErrorFormat(&(*pVm), PH7_CTX_ERR, "Invalid number of arguments passed to function/method '%z()'", &pList->sName);
 	}
 	if(nArg < 1 || i < 2) {
 		/* Return the only candidate */
