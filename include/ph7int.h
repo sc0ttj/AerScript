@@ -1365,7 +1365,6 @@ enum ph7_vm_op {
 	PH7_OP_LOAD_REF,     /* Load reference */
 	PH7_OP_STORE_REF,    /* Store a reference to a variable*/
 	PH7_OP_MEMBER,       /* Class member run-time access */
-	PH7_OP_UPLINK,       /* Run-Time frame link */
 	PH7_OP_CVT_NULL,     /* NULL cast */
 	PH7_OP_CVT_ARRAY,    /* Array cast */
 	PH7_OP_CVT_OBJ,      /* Object cast */

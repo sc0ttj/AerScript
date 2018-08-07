@@ -530,48 +530,6 @@ static sxi32 VmEnterFrame(
 	return SXRET_OK;
 }
 /*
- * Link a foreign variable with the TOP most active frame.
- * Refer to the PH7_OP_UPLINK instruction implementation for more
- * information.
- */
-static sxi32 VmFrameLink(ph7_vm *pVm, SyString *pName) {
-	VmFrame *pTarget, *pFrame;
-	SyHashEntry *pEntry = 0;
-	sxi32 rc;
-	/* Point to the upper frame */
-	pFrame = pVm->pFrame;
-	while(pFrame->pParent && (pFrame->iFlags & VM_FRAME_EXCEPTION)) {
-		/* Safely ignore the exception frame */
-		pFrame = pFrame->pParent;
-	}
-	pTarget = pFrame;
-	pFrame = pTarget->pParent;
-	while(pFrame) {
-		if((pFrame->iFlags & VM_FRAME_EXCEPTION) == 0) {
-			/* Query the current frame */
-			pEntry = SyHashGet(&pFrame->hVar, (const void *)pName->zString, pName->nByte);
-			if(pEntry) {
-				/* Variable found */
-				break;
-			}
-		}
-		/* Point to the upper frame */
-		pFrame = pFrame->pParent;
-	}
-	if(pEntry == 0) {
-		/* Inexistent variable */
-		return SXERR_NOTFOUND;
-	}
-	/* Link to the current frame */
-	rc = SyHashInsert(&pTarget->hVar, pEntry->pKey, pEntry->nKeyLen, pEntry->pUserData);
-	if(rc == SXRET_OK) {
-		sxu32 nIdx;
-		nIdx = SX_PTR_TO_INT(pEntry->pUserData);
-		PH7_VmRefObjInstall(&(*pVm), nIdx, SyHashLastEntry(&pTarget->hVar), 0, 0);
-	}
-	return rc;
-}
-/*
  * Leave the top-most active frame.
  */
 static void VmLeaveFrame(ph7_vm *pVm) {
@@ -4350,31 +4308,6 @@ static sxi32 VmByteCodeExec(
 					break;
 				}
 			/*
-			 * OP_UPLINK P1 * *
-			 * Link a variable to the top active VM frame.
-			 * This is used to implement the 'global' PHP construct.
-			 */
-			case PH7_OP_UPLINK: {
-					if(pVm->pFrame->pParent) {
-						ph7_value *pLink = &pTos[-pInstr->iP1 + 1];
-						SyString sName;
-						/* Perform the link */
-						while(pLink <= pTos) {
-							if((pLink->iFlags & MEMOBJ_STRING) == 0) {
-								/* Force a string cast */
-								PH7_MemObjToString(pLink);
-							}
-							SyStringInitFromBuf(&sName, SyBlobData(&pLink->sBlob), SyBlobLength(&pLink->sBlob));
-							if(sName.nByte > 0) {
-								VmFrameLink(&(*pVm), &sName);
-							}
-							pLink++;
-						}
-					}
-					VmPopOperand(&pTos, pInstr->iP1);
-					break;
-				}
-			/*
 			 * OP_LOAD_EXCEPTION * P2 P3
 			 * Push an exception in the corresponding container so that
 			 * it can be thrown later by the OP_THROW instruction.
@@ -6042,9 +5975,6 @@ static const char *VmInstrToString(sxi32 nOp) {
 			break;
 		case PH7_OP_MEMBER:
 			zOp = "MEMBER     ";
-			break;
-		case PH7_OP_UPLINK:
-			zOp = "UPLINK     ";
 			break;
 		case PH7_OP_ERR_CTRL:
 			zOp = "ERR_CTRL   ";
