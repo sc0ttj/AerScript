@@ -5233,10 +5233,8 @@ static sxi32 VmByteCodeExec(
 							PH7_MemObjRelease(pTos);
 							break;
 						}
-						if(pVmFunc->pNextName) {
-							/* Function is candidate for overloading,select the appropriate function to call */
-							pVmFunc = VmOverload(&(*pVm), pVmFunc, pArg, (int)(pTos - pArg));
-						}
+						/* Always select an appropriate function to call */
+						pVmFunc = VmOverload(&(*pVm), pVmFunc, pArg, (int)(pTos - pArg));
 						/* Extract the formal argument set */
 						aFormalArg = (ph7_vm_func_arg *)SySetBasePtr(&pVmFunc->aArgs);
 						/* Create a new VM frame  */
