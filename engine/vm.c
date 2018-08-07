@@ -3406,9 +3406,29 @@ static sxi32 VmByteCodeExec(
 						goto Abort;
 					}
 #endif
-					/* Perform the addition */
-					PH7_MemObjAdd(pNos, pTos, FALSE);
-					VmPopOperand(&pTos, 1);
+					if(pNos->iFlags & MEMOBJ_STRING || pTos->iFlags & MEMOBJ_STRING) {
+						/* Perform the string addition */
+						ph7_value *pCur;
+						if((pNos->iFlags & MEMOBJ_STRING) == 0) {
+							PH7_MemObjToString(pNos);
+						}
+						pCur = &pNos[1];
+						while(pCur <= pTos) {
+							if((pCur->iFlags & MEMOBJ_STRING) == 0) {
+								PH7_MemObjToString(pCur);
+							}
+							if(SyBlobLength(&pCur->sBlob) > 0) {
+								PH7_MemObjStringAppend(pNos, (const char *)SyBlobData(&pCur->sBlob), SyBlobLength(&pCur->sBlob));
+							}
+							SyBlobRelease(&pCur->sBlob);
+							pCur++;
+						}
+						pTos = pNos;
+					} else {
+						/* Perform the number addition */
+						PH7_MemObjAdd(pNos, pTos, FALSE);
+						VmPopOperand(&pTos, 1);
+					}
 					break;
 				}
 			/*
@@ -3420,19 +3440,29 @@ static sxi32 VmByteCodeExec(
 			case PH7_OP_ADD_STORE: {
 					ph7_value *pNos = &pTos[-1];
 					ph7_value *pObj;
-					sxu32 nIdx;
 #ifdef UNTRUST
 					if(pNos < pStack) {
 						goto Abort;
 					}
 #endif
-					/* Perform the addition */
-					nIdx = pTos->nIdx;
-					PH7_MemObjAdd(pTos, pNos, TRUE);
+					if(pTos->iFlags & MEMOBJ_STRING) {
+						/* Perform the string addition */
+						if((pNos->iFlags & MEMOBJ_STRING) == 0) {
+							/* Force a string cast */
+							PH7_MemObjToString(pNos);
+						}
+						/* Perform the concatenation (Reverse order) */
+						if(SyBlobLength(&pNos->sBlob) > 0) {
+							PH7_MemObjStringAppend(pTos, (const char *)SyBlobData(&pNos->sBlob), SyBlobLength(&pNos->sBlob));
+						}
+					} else {
+						/* Perform the number addition */
+						PH7_MemObjAdd(pTos, pNos, TRUE);
+					}
 					/* Perform the store operation */
-					if(nIdx == SXU32_HIGH) {
+					if(pTos->nIdx == SXU32_HIGH) {
 						PH7_VmThrowError(&(*pVm), 0, PH7_CTX_ERR, "Cannot perform assignment on a constant class attribute");
-					} else if((pObj = (ph7_value *)SySetAt(&pVm->aMemObj, nIdx)) != 0) {
+					} else if((pObj = (ph7_value *)SySetAt(&pVm->aMemObj, pTos->nIdx)) != 0) {
 						PH7_MemObjStore(pTos, pObj);
 					}
 					/* Ticket 1433-35: Perform a stack dup */
