@@ -9,7 +9,7 @@ class Main {
 	}
 
 	private function ダウンロード(){
-		print($this->概要 . "\n");
+		print($this->概要 + "\n");
 	}
 
 	private function isUTF8($str) {

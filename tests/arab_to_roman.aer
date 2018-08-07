@@ -9,22 +9,22 @@ class Main {
 
 		foreach($lookup as $roman => $value) {
 			$matches = intval($n / $value);
-			$result .= str_repeat($roman, $matches);
+			$result += str_repeat($roman, $matches);
 			$n = $n % $value;
 		}
 		return $result;
 	}
 
 	public function __construct() {
-		print('   7 => ' . $this->num2Roman(7) . "\n");	
-		print('   9 => ' . $this->num2Roman(9) . "\n");	
-		print('  11 => ' . $this->num2Roman(11) . "\n");	
-		print('  42 => ' . $this->num2Roman(42) . "\n");	
-		print(' 105 => ' . $this->num2Roman(105) . "\n");	
-		print('1984 => ' . $this->num2Roman(1984) . "\n");	
-		print('1999 => ' . $this->num2Roman(1999) . "\n");	
-		print('2018 => ' . $this->num2Roman(2018) . "\n");	
-		print('2144 => ' . $this->num2Roman(2144) . "\n");	
+		print('   7 => ' + $this->num2Roman(7) + "\n");	
+		print('   9 => ' + $this->num2Roman(9) + "\n");	
+		print('  11 => ' + $this->num2Roman(11) + "\n");	
+		print('  42 => ' + $this->num2Roman(42) + "\n");	
+		print(' 105 => ' + $this->num2Roman(105) + "\n");	
+		print('1984 => ' + $this->num2Roman(1984) + "\n");	
+		print('1999 => ' + $this->num2Roman(1999) + "\n");	
+		print('2018 => ' + $this->num2Roman(2018) + "\n");	
+		print('2144 => ' + $this->num2Roman(2144) + "\n");	
 	 }
 
 }
