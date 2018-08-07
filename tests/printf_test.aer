@@ -1,0 +1,40 @@
+class Main {
+	private $s = 'monkey';
+	private $t = 'many monkeys';
+	private $n =  43951789;
+	private $u = -43951789;
+	private $c = 65;
+
+	public function __construct() {
+		$this->testMonkey();
+		$this->testNumbers();
+	}
+
+	private function testMonkey() {
+		printf("[%s]\n", $this->s);
+		printf("[%10s]\n", $this->s);
+		printf("[%-10s]\n", $this->s);
+		printf("[%010s]\n", $this->s);
+		printf("[%'#10s]\n", $this->s);
+		printf("[%10.10s]\n", $this->t);
+	}
+
+	private function testNumbers() {
+		printf("%%b = '%b'\n", $this->n);
+		printf("%%c = '%c'\n", $this->c);
+		printf("%%d = '%d'\n", $this->n);
+		printf("%%e = '%e'\n", $this->n);
+		printf("%%u = '%u'\n", $this->n);
+		printf("%%u = '%u'\n", $this->u);
+		printf("%%f = '%f'\n", $this->n);
+		printf("%%o = '%o'\n", $this->n);
+		printf("%%s = '%s'\n", $this->n);
+		printf("%%x = '%x'\n", $this->n);
+		printf("%%X = '%X'\n", $this->n);
+		printf("%%+d = '%+d'\n", $this->n);
+		printf("%%+d = '%+d'\n", $this->u);
+	}
+
+}
+
+new Main();
