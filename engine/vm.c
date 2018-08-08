@@ -601,6 +601,7 @@ static ph7_vm_func *VmOverload(
 	int iTarget, i, j, iArgs, iCur, iMax;
 	ph7_vm_func *apSet[10];   /* Maximum number of candidates */
 	ph7_vm_func *pLink;
+	ph7_vm_func_arg *pFuncArg;
 	SyString sArgSig;
 	SyBlob sSig;
 	pLink = pList;
@@ -612,12 +613,17 @@ static ph7_vm_func *VmOverload(
 		}
 		iArgs = (int) SySetUsed(&pLink->aArgs);
 		if(nArg == iArgs) {
-			/* Exact amount of parameters, a candidate for overloading */
+			/* Exact amount of parameters, a candidate to call */
 			apSet[i++] = pLink;
 		} else if(nArg < iArgs) {
 			/* Fewer parameters passed, check if all are required */
-			/* Temporarily a candidate for overloading to fix master branch */
-			apSet[i++] = pLink;
+			pFuncArg = (ph7_vm_func_arg *) SySetAt(&pLink->aArgs, nArg);
+			if(pFuncArg) {
+				if(SySetUsed(&pFuncArg->aByteCode) >= 1) {
+					/* First missing parameter has a compiled default value associated, a candidate to call */
+					apSet[i++] = pLink;
+				}
+			}
 		}
 		/* Point to the next entry */
 		pLink = pLink->pNextName;
