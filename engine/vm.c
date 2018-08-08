@@ -598,7 +598,7 @@ static ph7_vm_func *VmOverload(
 	ph7_value *aArg,     /* Array of passed arguments */
 	int nArg             /* Total number of passed arguments  */
 ) {
-	int iTarget, i, j, iCur, iMax;
+	int iTarget, i, j, iArgs, iCur, iMax;
 	ph7_vm_func *apSet[10];   /* Maximum number of candidates */
 	ph7_vm_func *pLink;
 	SyString sArgSig;
@@ -610,8 +610,13 @@ static ph7_vm_func *VmOverload(
 		if(pLink == 0) {
 			break;
 		}
-		if((int)SySetUsed(&pLink->aArgs) == nArg) {
-			/* Candidate for overloading */
+		iArgs = (int) SySetUsed(&pLink->aArgs);
+		if(nArg == iArgs) {
+			/* Exact amount of parameters, a candidate for overloading */
+			apSet[i++] = pLink;
+		} else if(nArg < iArgs) {
+			/* Fewer parameters passed, check if all are required */
+			/* Temporarily a candidate for overloading to fix master branch */
 			apSet[i++] = pLink;
 		}
 		/* Point to the next entry */
