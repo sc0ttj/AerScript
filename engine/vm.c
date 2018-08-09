@@ -11472,10 +11472,8 @@ static const ph7_builtin_func aVmFunc[] = {
 	{ "is_a", vm_builtin_is_a },
 	/* Random numbers/strings generators */
 	{ "rand",          vm_builtin_rand            },
-	{ "mt_rand",       vm_builtin_rand            },
 	{ "rand_str",      vm_builtin_rand_str        },
 	{ "getrandmax",    vm_builtin_getrandmax      },
-	{ "mt_getrandmax", vm_builtin_getrandmax      },
 	{ "random_int",    vm_builtin_random_int      },
 	{ "random_bytes",  vm_builtin_random_bytes    },
 #ifndef PH7_DISABLE_BUILTIN_FUNC
@@ -11497,7 +11495,6 @@ static const ph7_builtin_func aVmFunc[] = {
 	{ "print_r",   vm_builtin_print_r              },
 	{ "var_export", vm_builtin_var_export           },
 	/* Ouput control functions */
-	{ "flush",        vm_builtin_ob_flush          },
 	{ "ob_clean",     vm_builtin_ob_clean          },
 	{ "ob_end_clean", vm_builtin_ob_end_clean      },
 	{ "ob_end_flush", vm_builtin_ob_end_flush      },
@@ -11516,7 +11513,6 @@ static const ph7_builtin_func aVmFunc[] = {
 	{ "assert",          vm_builtin_assert         },
 	/* Error reporting functions */
 	{ "trigger_error", vm_builtin_trigger_error     },
-	{ "user_error",   vm_builtin_trigger_error     },
 	{ "error_reporting", vm_builtin_error_reporting },
 	{ "error_log",       vm_builtin_error_log      },
 	{ "restore_exception_handler", vm_builtin_restore_exception_handler },
@@ -11524,14 +11520,9 @@ static const ph7_builtin_func aVmFunc[] = {
 	{ "restore_error_handler", vm_builtin_restore_error_handler },
 	{ "set_error_handler", vm_builtin_set_error_handler },
 	{ "debug_backtrace",  vm_builtin_debug_backtrace},
-	{ "error_get_last",  vm_builtin_debug_backtrace },
 	/* Release info */
 	{"ph7version",       vm_builtin_ph7_version  },
-	{"ph7credits",       vm_builtin_ph7_credits  },
-	{"ph7info",          vm_builtin_ph7_credits  },
-	{"ph7_info",         vm_builtin_ph7_credits  },
 	{"phpinfo",          vm_builtin_ph7_credits  },
-	{"ph7copyright",     vm_builtin_ph7_credits  },
 	/* hashmap */
 	{"compact",          vm_builtin_compact       },
 	{"extract",          vm_builtin_extract       },
