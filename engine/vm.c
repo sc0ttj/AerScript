@@ -11463,7 +11463,6 @@ static const ph7_builtin_func aVmFunc[] = {
 	{ "get_parent_class", vm_builtin_get_parent_class  },
 	{ "get_called_class", vm_builtin_get_called_class  },
 	{ "get_declared_classes",    vm_builtin_get_declared_classes   },
-	{ "get_defined_classes",     vm_builtin_get_declared_classes    },
 	{ "get_declared_interfaces", vm_builtin_get_declared_interfaces},
 	{ "get_class_methods",       vm_builtin_get_class_methods },
 	{ "get_class_vars",          vm_builtin_get_class_vars    },
