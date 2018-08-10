@@ -11,7 +11,7 @@ RCFLAGS = -O3 -s
 LDFLAGS =
 
 # Destination directory
-DESTDIR ?= $(realpath .)/binary/
+DESTDIR ?= $(realpath .)/binary
 
 ##############################################
 ### Do not modify anything below this line ###
