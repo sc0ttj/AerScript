@@ -1,0 +1,9 @@
+final class Main {
+	function __construct() {
+		var_dump(function_exists('dummy_function'));
+		var_dump(import('dummy'));
+		var_dump(function_exists('dummy_function'));
+	}
+}
+
+new Main();

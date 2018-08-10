@@ -1,0 +1,34 @@
+final class Test {
+	private $value;
+
+	private function __construct() {
+	}
+
+	/* This is singleton */
+	public function getInstance() {
+		static $instance;
+		if(!$instance) {
+			$instance = new Test();
+		}
+		return $instance;
+	}
+
+	public function get() {
+		return $this->value;
+	}
+
+	public function set($value = 0) {
+		$this->value = $value;
+	}
+}
+
+final class Main {
+	public function __construct() {
+		$testA = Test::getInstance();
+		$testA->set(5);
+		$testB = Test::getInstance();
+		var_dump($testB->get());
+	}
+} /* class */
+
+new Main();
