@@ -11,7 +11,7 @@ RCFLAGS = -O3 -s
 LDFLAGS =
 
 # Destination directory
-DESTDIR ?= $(realpath .)/binary
+DESTDIR ?= $(realpath .)/binary/
 
 ##############################################
 ### Do not modify anything below this line ###
@@ -142,7 +142,7 @@ $(MODULE):
 	$(eval MODULE_OBJS := $(addprefix $(BUILD_DIR)/,$(MODULE_MAKE)))
 	$(eval MODULE_PROG := $(MODULE_DIRS)$(LIBSUFFIX))
 	$(MAKE) $(MODULE_OBJS)
-	$(CC) -o $(BUILD_DIR)/$(MODULE_PROG) $(LDFLAGS) $(LIBFLAGS) -shared $(MODULE_OBJS)
+	$(CC) -o $(BUILD_DIR)/$(MODULE_PROG) $(LDFLAGS) -shared $(MODULE_OBJS)
 
 $(SAPI):
 	$(eval SAPI_DIRS := $@)
