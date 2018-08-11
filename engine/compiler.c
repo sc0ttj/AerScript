@@ -3678,8 +3678,16 @@ static sxi32 GenStateCompileClassMethod(
 		/* Virtual method */
 		if(iProtection == PH7_CLASS_PROT_PRIVATE) {
 			rc = PH7_GenCompileError(pGen, E_ERROR, nLine,
-									 "Access type for virtual method '%z::%z' cannot be 'private'",
+									 "Access type for virtual method '%z::%z()' cannot be 'private'",
 									 &pClass->sName, pName);
+			if(rc == SXERR_ABORT) {
+				return SXERR_ABORT;
+			}
+		}
+		if((pClass->iFlags & PH7_CLASS_VIRTUAL) == 0) {
+			rc = PH7_GenCompileError(pGen, E_ERROR, nLine,
+									 "Class '%z' contains virtual method and must therefore be declared virtual or implement the remaining method '%z::%z()'",
+									 &pClass->sName, &pClass->sName, pName);
 			if(rc == SXERR_ABORT) {
 				return SXERR_ABORT;
 			}
@@ -3726,6 +3734,15 @@ static sxi32 GenStateCompileClassMethod(
 	/* Point beyond method signature */
 	pGen->pIn = &pEnd[1];
 	if(doBody) {
+		if(pGen->pIn < pGen->pEnd && (pGen->pIn->nType & PH7_TK_OCB /* '{'*/) == 0) {
+			rc = PH7_GenCompileError(pGen, E_ERROR, pGen->pIn->nLine,
+									 "Non-virtual method '%z::%z()' must contain body", &pClass->sName, pName);
+			if(rc == SXERR_ABORT) {
+				/* Error count limit reached,abort immediately */
+				return SXERR_ABORT;
+			}
+			return SXERR_CORRUPT;
+		}
 		/* Compile method body */
 		rc = GenStateCompileFuncBody(&(*pGen), &pMeth->sFunc);
 		if(rc == SXERR_ABORT) {
@@ -4244,8 +4261,6 @@ static sxi32 GenStateCompileClass(ph7_gen_state *pGen, sxi32 iFlags) {
 				} else if(nKwrd == PH7_TKWRD_VIRTUAL) {
 					/* Virtual method,record that */
 					iAttrflags |= PH7_CLASS_ATTR_VIRTUAL;
-					/* Mark the whole class as virtual */
-					pClass->iFlags |= PH7_CLASS_VIRTUAL;
 					/* Advance the stream cursor */
 					pGen->pIn++;
 					if(pGen->pIn < pGen->pEnd && (pGen->pIn->nType & PH7_TK_KEYWORD)) {
