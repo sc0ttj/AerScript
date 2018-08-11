@@ -954,7 +954,7 @@ PH7_PRIVATE sxi32 PH7_CompileArray(ph7_gen_state *pGen, sxi32 iCompileFlag) {
 			}
 		}
 		/* Compile indice value */
-		rc = GenStateCompileArrayEntry(&(*pGen), pCur, pGen->pIn, EXPR_FLAG_RDONLY_LOAD/*Do not create the variable if inexistant*/, xValidator);
+		rc = GenStateCompileArrayEntry(&(*pGen), pCur, pGen->pIn, EXPR_FLAG_RDONLY_LOAD/*Do not create the variable if non-existent*/, xValidator);
 		if(rc == SXERR_ABORT) {
 			return SXERR_ABORT;
 		}
@@ -1067,8 +1067,8 @@ static sxi32 GenStateCompileFunc(ph7_gen_state *pGen, SyString *pName, sxi32 iFl
  * Note that the implementation of anonymous function and closure under
  * PH7 is completely different from the one used by the zend engine.
  */
-PH7_PRIVATE sxi32 PH7_CompileAnnonFunc(ph7_gen_state *pGen, sxi32 iCompileFlag) {
-	ph7_vm_func *pAnnonFunc; /* Anonymous function body */
+PH7_PRIVATE sxi32 PH7_CompileAnonFunc(ph7_gen_state *pGen, sxi32 iCompileFlag) {
+	ph7_vm_func *pAnonFunc; /* Anonymous function body */
 	char zName[512];         /* Unique closure name */
 	static int iCnt = 1;     /* There is no worry about thread-safety here,because only
 							  * one thread is allowed to compile the script.
@@ -1098,13 +1098,13 @@ PH7_PRIVATE sxi32 PH7_CompileAnnonFunc(ph7_gen_state *pGen, sxi32 iCompileFlag) 
 	SyStringInitFromBuf(&sName, zName, nLen);
 	PH7_MemObjInitFromString(pGen->pVm, pObj, &sName);
 	/* Compile the closure body */
-	rc = GenStateCompileFunc(&(*pGen), &sName, 0, TRUE, &pAnnonFunc);
+	rc = GenStateCompileFunc(&(*pGen), &sName, 0, TRUE, &pAnonFunc);
 	if(rc == SXERR_ABORT) {
 		return SXERR_ABORT;
 	}
-	if(pAnnonFunc->iFlags & VM_FUNC_CLOSURE) {
+	if(pAnonFunc->iFlags & VM_FUNC_CLOSURE) {
 		/* Emit the load closure instruction */
-		PH7_VmEmitInstr(pGen->pVm, PH7_OP_LOAD_CLOSURE, 0, 0, pAnnonFunc, 0);
+		PH7_VmEmitInstr(pGen->pVm, PH7_OP_LOAD_CLOSURE, 0, 0, pAnonFunc, 0);
 	} else {
 		/* Emit the load constant instruction */
 		PH7_VmEmitInstr(pGen->pVm, PH7_OP_LOADC, 0, nIdx, 0, 0);
