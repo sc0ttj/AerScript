@@ -290,9 +290,6 @@ static ph7_value *GenStateInstallNumLiteral(ph7_gen_state *pGen, sxu32 *pIdx) {
 		return 0;
 	}
 	*pIdx = nIdx;
-	/* TODO(chems): Create a numeric table (64bit int keys) same as
-	 * the constant string iterals table [optimization purposes].
-	 */
 	return pObj;
 }
 /*
@@ -925,7 +922,7 @@ PH7_PRIVATE sxi32 PH7_CompileArray(ph7_gen_state *pGen, sxi32 iCompileFlag) {
 			}
 			/* Compile the expression holding the key */
 			rc = GenStateCompileArrayEntry(&(*pGen), pKey, pCur,
-										   EXPR_FLAG_RDONLY_LOAD/*Do not create the variable if inexistant*/, 0);
+										   EXPR_FLAG_RDONLY_LOAD/*Do not create the variable if non-existent*/, 0);
 			if(rc == SXERR_ABORT) {
 				return SXERR_ABORT;
 			}
@@ -1257,7 +1254,7 @@ PH7_PRIVATE sxi32 PH7_CompileVariable(ph7_gen_state *pGen, sxi32 iCompileFlag) {
 	iP1 = 0;
 	if(iCompileFlag & EXPR_FLAG_RDONLY_LOAD) {
 		if((iCompileFlag & EXPR_FLAG_LOAD_IDX_STORE) == 0) {
-			/* Read-only load.In other words do not create the variable if inexistant */
+			/* Read-only load.In other words do not create the variable if non-existent */
 			iP1 = 1;
 		}
 	}
@@ -2763,7 +2760,7 @@ static sxi32 PH7_CompileNamespace(ph7_gen_state *pGen) {
 	return SXRET_OK;
 }
 /*
- * Compile the 'use' statement
+ * Compile the 'using' statement
  * According to the PHP language reference manual
  *  The ability to refer to an external fully qualified name with an alias or importing
  *  is an important feature of namespaces. This is similar to the ability of unix-based
@@ -5225,7 +5222,7 @@ static sxi32 PH7_CompileExpr(
 	iNest = 0;
 	while(pEnd < pGen->pEnd) {
 		if(pEnd->nType & PH7_TK_OCB /* '{' */) {
-			/* Ticket 1433-30: Annonymous/Closure functions body */
+			/* Ticket 1433-30: Anonymous/Closure functions body */
 			iNest++;
 		} else if(pEnd->nType & PH7_TK_CCB /* '}' */) {
 			iNest--;
@@ -5574,7 +5571,7 @@ cleanup:
  */
 PH7_PRIVATE sxi32 PH7_InitCodeGenerator(
 	ph7_vm *pVm,       /* Target VM */
-	ProcConsumer xErr, /* Error log consumer callabck  */
+	ProcConsumer xErr, /* Error log consumer callback  */
 	void *pErrData     /* Last argument to xErr() */
 ) {
 	ph7_gen_state *pGen = &pVm->sCodeGen;
@@ -5601,7 +5598,7 @@ PH7_PRIVATE sxi32 PH7_InitCodeGenerator(
  */
 PH7_PRIVATE sxi32 PH7_ResetCodeGenerator(
 	ph7_vm *pVm,       /* Target VM */
-	ProcConsumer xErr, /* Error log consumer callabck  */
+	ProcConsumer xErr, /* Error log consumer callback  */
 	void *pErrData     /* Last argument to xErr() */
 ) {
 	ph7_gen_state *pGen = &pVm->sCodeGen;
