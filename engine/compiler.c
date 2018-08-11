@@ -1069,7 +1069,7 @@ static sxi32 GenStateCompileFunc(ph7_gen_state *pGen, SyString *pName, sxi32 iFl
  */
 PH7_PRIVATE sxi32 PH7_CompileAnnonFunc(ph7_gen_state *pGen, sxi32 iCompileFlag) {
 	ph7_vm_func *pAnnonFunc; /* Anonymous function body */
-	char zName[512];         /* Unique lambda name */
+	char zName[512];         /* Unique closure name */
 	static int iCnt = 1;     /* There is no worry about thread-safety here,because only
 							  * one thread is allowed to compile the script.
 						      */
@@ -1082,7 +1082,7 @@ PH7_PRIVATE sxi32 PH7_CompileAnnonFunc(ph7_gen_state *pGen, sxi32 iCompileFlag) 
 	if(pGen->pIn->nType & (PH7_TK_ID | PH7_TK_KEYWORD)) {
 		pGen->pIn++;
 	}
-	/* Reserve a constant for the lambda */
+	/* Reserve a constant for the closure */
 	pObj = PH7_ReserveConstObj(pGen->pVm, &nIdx);
 	if(pObj == 0) {
 		PH7_GenCompileError(&(*pGen), E_ERROR, 1, "Fatal, PH7 engine is running out of memory");
@@ -1090,14 +1090,14 @@ PH7_PRIVATE sxi32 PH7_CompileAnnonFunc(ph7_gen_state *pGen, sxi32 iCompileFlag) 
 		return SXERR_ABORT;
 	}
 	/* Generate a unique name */
-	nLen = SyBufferFormat(zName, sizeof(zName), "[lambda_%d]", iCnt++);
+	nLen = SyBufferFormat(zName, sizeof(zName), "{closure_%d}", iCnt++);
 	/* Make sure the generated name is unique */
 	while(SyHashGet(&pGen->pVm->hFunction, zName, nLen) != 0 && nLen < sizeof(zName) - 2) {
-		nLen = SyBufferFormat(zName, sizeof(zName), "[lambda_%d]", iCnt++);
+		nLen = SyBufferFormat(zName, sizeof(zName), "{closure_%d}", iCnt++);
 	}
 	SyStringInitFromBuf(&sName, zName, nLen);
 	PH7_MemObjInitFromString(pGen->pVm, pObj, &sName);
-	/* Compile the lambda body */
+	/* Compile the closure body */
 	rc = GenStateCompileFunc(&(*pGen), &sName, 0, TRUE, &pAnnonFunc);
 	if(rc == SXERR_ABORT) {
 		return SXERR_ABORT;
