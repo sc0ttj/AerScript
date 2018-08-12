@@ -1450,60 +1450,60 @@ enum ph7_expr_id {
  * You cannot use any of the following words as constants, class names, function or method names.
  * Using them as variable names is generally OK, but could lead to confusion.
  */
-#define PH7_TKWRD_EXTENDS      1 /* extends */
-#define PH7_TKWRD_SWITCH       3 /* switch */
-#define PH7_TKWRD_INTERFACE    5 /* interface */
+#define PH7_KEYWORD_EXTENDS      1 /* extends */
+#define PH7_KEYWORD_SWITCH       3 /* switch */
+#define PH7_KEYWORD_INTERFACE    5 /* interface */
 /* The number '8' is reserved for PH7_TK_ID */
-#define PH7_TKWRD_REQONCE      9 /* require_once */
-#define PH7_TKWRD_REQUIRE      10 /* require */
-#define PH7_TKWRD_ELIF         0x4000000 /* elseif: MUST BE A POWER OF TWO */
-#define PH7_TKWRD_ELSE         0x8000000 /* else:  MUST BE A POWER OF TWO */
-#define PH7_TKWRD_IF           13 /* if */
-#define PH7_TKWRD_FINAL        14 /* final */
-#define PH7_TKWRD_LIST         15 /* list */
-#define PH7_TKWRD_STATIC       16 /* static */
-#define PH7_TKWRD_CASE         17 /* case */
-#define PH7_TKWRD_SELF         18 /* self */
-#define PH7_TKWRD_FUNCTION     19 /* function */
-#define PH7_TKWRD_NAMESPACE    20 /* namespace */
-#define PH7_TKWRD_CLONE        0x80 /* clone: MUST BE A POWER OF TWO  */
-#define PH7_TKWRD_NEW          0x100 /* new: MUST BE A POWER OF TWO  */
-#define PH7_TKWRD_CONST        22 /* const */
-#define PH7_TKWRD_THROW        23 /* throw */
-#define PH7_TKWRD_USING        24 /* using */
-#define PH7_TKWRD_WHILE        26 /* while */
-#define PH7_TKWRD_EVAL         27 /* eval */
-#define PH7_TKWRD_VAR          28 /* var */
-#define PH7_TKWRD_ARRAY        0x200 /* array: MUST BE A POWER OF TWO */
-#define PH7_TKWRD_VIRTUAL      29 /* virtual */
-#define PH7_TKWRD_TRY          30 /* try */
-#define PH7_TKWRD_DEFAULT      31 /* default */
-#define PH7_TKWRD_CLASS        32 /* class */
-#define PH7_TKWRD_AS           33 /* as */
-#define PH7_TKWRD_CONTINUE     34 /* continue */
-#define PH7_TKWRD_EXIT         35 /* exit */
-#define PH7_TKWRD_IMPLEMENTS   39 /* implements */
-#define PH7_TKWRD_INCONCE      40 /* include_once */
-#define PH7_TKWRD_INCLUDE      41 /* include */
-#define PH7_TKWRD_EMPTY        42 /* empty */
-#define PH7_TKWRD_INSTANCEOF   0x800 /* instanceof: MUST BE A POWER OF TWO  */
-#define PH7_TKWRD_ISSET        43 /* isset */
-#define PH7_TKWRD_PARENT       44 /* parent */
-#define PH7_TKWRD_PRIVATE      45 /* private */
-#define PH7_TKWRD_FOR          48 /* for */
-#define PH7_TKWRD_FOREACH      49 /* foreach */
-#define PH7_TKWRD_PROTECTED    50 /* protected */
-#define PH7_TKWRD_DO           51 /* do */
-#define PH7_TKWRD_PUBLIC       52 /* public */
-#define PH7_TKWRD_CATCH        53 /* catch */
-#define PH7_TKWRD_RETURN       54 /* return */
-#define PH7_TKWRD_UNSET        0x2000 /* unset: MUST BE A POWER OF TWO  */
-#define PH7_TKWRD_BREAK        55 /* break */
-#define PH7_TKWRD_BOOL         0x8000  /* bool:  MUST BE A POWER OF TWO */
-#define PH7_TKWRD_INT          0x10000  /* int:   MUST BE A POWER OF TWO */
-#define PH7_TKWRD_FLOAT        0x20000  /* float:  MUST BE A POWER OF TWO */
-#define PH7_TKWRD_STRING       0x40000  /* string: MUST BE A POWER OF TWO */
-#define PH7_TKWRD_OBJECT       0x80000 /* object: MUST BE A POWER OF TWO */
+#define PH7_KEYWORD_REQONCE      9 /* require_once */
+#define PH7_KEYWORD_REQUIRE      10 /* require */
+#define PH7_KEYWORD_ELIF         0x4000000 /* elseif: MUST BE A POWER OF TWO */
+#define PH7_KEYWORD_ELSE         0x8000000 /* else:  MUST BE A POWER OF TWO */
+#define PH7_KEYWORD_IF           13 /* if */
+#define PH7_KEYWORD_FINAL        14 /* final */
+#define PH7_KEYWORD_LIST         15 /* list */
+#define PH7_KEYWORD_STATIC       16 /* static */
+#define PH7_KEYWORD_CASE         17 /* case */
+#define PH7_KEYWORD_SELF         18 /* self */
+#define PH7_KEYWORD_FUNCTION     19 /* function */
+#define PH7_KEYWORD_NAMESPACE    20 /* namespace */
+#define PH7_KEYWORD_CLONE        0x80 /* clone: MUST BE A POWER OF TWO  */
+#define PH7_KEYWORD_NEW          0x100 /* new: MUST BE A POWER OF TWO  */
+#define PH7_KEYWORD_CONST        22 /* const */
+#define PH7_KEYWORD_THROW        23 /* throw */
+#define PH7_KEYWORD_USING        24 /* using */
+#define PH7_KEYWORD_WHILE        26 /* while */
+#define PH7_KEYWORD_EVAL         27 /* eval */
+#define PH7_KEYWORD_VAR          28 /* var */
+#define PH7_KEYWORD_ARRAY        0x200 /* array: MUST BE A POWER OF TWO */
+#define PH7_KEYWORD_VIRTUAL      29 /* virtual */
+#define PH7_KEYWORD_TRY          30 /* try */
+#define PH7_KEYWORD_DEFAULT      31 /* default */
+#define PH7_KEYWORD_CLASS        32 /* class */
+#define PH7_KEYWORD_AS           33 /* as */
+#define PH7_KEYWORD_CONTINUE     34 /* continue */
+#define PH7_KEYWORD_EXIT         35 /* exit */
+#define PH7_KEYWORD_IMPLEMENTS   39 /* implements */
+#define PH7_KEYWORD_INCONCE      40 /* include_once */
+#define PH7_KEYWORD_INCLUDE      41 /* include */
+#define PH7_KEYWORD_EMPTY        42 /* empty */
+#define PH7_KEYWORD_INSTANCEOF   0x800 /* instanceof: MUST BE A POWER OF TWO  */
+#define PH7_KEYWORD_ISSET        43 /* isset */
+#define PH7_KEYWORD_PARENT       44 /* parent */
+#define PH7_KEYWORD_PRIVATE      45 /* private */
+#define PH7_KEYWORD_FOR          48 /* for */
+#define PH7_KEYWORD_FOREACH      49 /* foreach */
+#define PH7_KEYWORD_PROTECTED    50 /* protected */
+#define PH7_KEYWORD_DO           51 /* do */
+#define PH7_KEYWORD_PUBLIC       52 /* public */
+#define PH7_KEYWORD_CATCH        53 /* catch */
+#define PH7_KEYWORD_RETURN       54 /* return */
+#define PH7_KEYWORD_UNSET        0x2000 /* unset: MUST BE A POWER OF TWO  */
+#define PH7_KEYWORD_BREAK        55 /* break */
+#define PH7_KEYWORD_BOOL         0x8000  /* bool:  MUST BE A POWER OF TWO */
+#define PH7_KEYWORD_INT          0x10000  /* int:   MUST BE A POWER OF TWO */
+#define PH7_KEYWORD_FLOAT        0x20000  /* float:  MUST BE A POWER OF TWO */
+#define PH7_KEYWORD_STRING       0x40000  /* string: MUST BE A POWER OF TWO */
+#define PH7_KEYWORD_OBJECT       0x80000 /* object: MUST BE A POWER OF TWO */
 /* JSON encoding/decoding related definition */
 enum json_err_code {
 	JSON_ERROR_NONE = 0,  /* No error has occurred. */

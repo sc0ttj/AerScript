@@ -37,7 +37,7 @@ struct JumpFixup {
  * of the following structure.
  */
 struct LangConstruct {
-	sxu32 nID;                     /* Language construct ID [i.e: PH7_TKWRD_WHILE,PH7_TKWRD_FOR,PH7_TKWRD_IF...] */
+	sxu32 nID;                     /* Language construct ID [i.e: PH7_KEYWORD_WHILE,PH7_KEYWORD_FOR,PH7_KEYWORD_IF...] */
 	ProcLangConstruct xConstruct;  /* C function implementing the language construct */
 };
 
