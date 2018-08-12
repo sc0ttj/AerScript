@@ -3542,7 +3542,7 @@ loop:
 	pGen->pIn++; /* Jump the dollar sign */
 	if(pGen->pIn >= pGen->pEnd || (pGen->pIn->nType & (PH7_TK_KEYWORD | PH7_TK_ID)) == 0) {
 		/* Invalid attribute name */
-		rc = PH7_GenCompileError(pGen, E_ERROR, nLine, "Invalid attribute name");
+		rc = PH7_GenCompileError(pGen, E_ERROR, nLine, "Invalid attribute name '%z' in class '%z'", &pGen->pIn->sData, &pClass->sName);
 		if(rc == SXERR_ABORT) {
 			/* Error count limit reached,abort immediately */
 			return SXERR_ABORT;
