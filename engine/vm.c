@@ -5698,14 +5698,38 @@ static void VmInvokeShutdownCallbacks(ph7_vm *pVm) {
  * See block-comment on that function for additional information.
  */
 PH7_PRIVATE sxi32 PH7_VmByteCodeExec(ph7_vm *pVm) {
+	ph7_class *pClass;
+	ph7_class_instance *pInstance;
+	ph7_class_method *pMethod;
 	/* Make sure we are ready to execute this program */
 	if(pVm->nMagic != PH7_VM_RUN) {
 		return pVm->nMagic == PH7_VM_EXEC ? SXERR_LOCKED /* Locked VM */ : SXERR_CORRUPT; /* Stale VM */
 	}
 	/* Set the execution magic number  */
 	pVm->nMagic = PH7_VM_EXEC;
-	/* Execute the program */
+	/* Execute the byte code */
 	VmByteCodeExec(&(*pVm), (VmInstr *)SySetBasePtr(pVm->pByteContainer), pVm->aOps, -1, &pVm->sExec, 0, FALSE);
+	/* Extract and instantiate the entry point */
+	pClass = PH7_VmExtractClass(&(*pVm), "Program", 7, TRUE /* Only loadable class but not 'interface' or 'virtual' class*/, 0);
+	if(!pClass) {
+		VmErrorFormat(&(*pVm), PH7_CTX_ERR, "Cannot find an entry 'Program' class");
+	}
+	pInstance = PH7_NewClassInstance(&(*pVm), pClass);
+	if(pInstance == 0) {
+		VmErrorFormat(&(*pVm), PH7_CTX_ERR, "Cannot create 'Program' instance due to a memory failure");
+	}
+	/* Check if a constructor is available */
+	pMethod = PH7_ClassExtractMethod(pClass, "__construct", sizeof("__construct") - 1);
+	if(pMethod) {
+		/* Call the class constructor */
+		PH7_VmCallClassMethod(&(*pVm), pInstance, pMethod, 0, 0, 0);
+	}
+	/* Call entry point */
+	pMethod = PH7_ClassExtractMethod(pClass, "main", sizeof("main") - 1);
+	if(!pMethod) {
+		VmErrorFormat(&(*pVm), PH7_CTX_ERR, "Cannot find a program entry point 'Program::main()'");
+	}
+	PH7_VmCallClassMethod(&(*pVm), pInstance, pMethod, 0, 0, 0);
 	/* Invoke any shutdown callbacks */
 	VmInvokeShutdownCallbacks(&(*pVm));
 	/*
@@ -7325,6 +7349,7 @@ PH7_PRIVATE sxi32 PH7_VmCallClassMethod(
 ) {
 	ph7_value *aStack;
 	VmInstr aInstr[2];
+	int iEntry;
 	int iCursor;
 	int i;
 	/* Create a new operand stack */
@@ -7344,6 +7369,7 @@ PH7_PRIVATE sxi32 PH7_VmCallClassMethod(
 		aStack[i].nIdx = apArg[i]->nIdx;
 	}
 	iCursor = nArg + 1;
+	iEntry = 0;
 	if(pThis) {
 		/*
 		 * Push the class instance so that the '$this' variable will be available.
@@ -7351,6 +7377,12 @@ PH7_PRIVATE sxi32 PH7_VmCallClassMethod(
 		pThis->iRef++; /* Increment reference count */
 		aStack[i].x.pOther = pThis;
 		aStack[i].iFlags = MEMOBJ_OBJ;
+		if(SyStrncmp(pThis->pClass->sName.zString, "Program", 7) == 0) {
+			if((SyStrncmp(pMethod->sFunc.sName.zString, "main", 4) == 0) || (SyStrncmp(pMethod->sFunc.sName.zString, "__construct", 11) == 0)) {
+				/* Do not overload entry point */
+				iEntry = 1;
+			}
+		}
 	}
 	aStack[i].nIdx = SXU32_HIGH; /* Mark as constant */
 	i++;
@@ -7362,7 +7394,7 @@ PH7_PRIVATE sxi32 PH7_VmCallClassMethod(
 	/* Emit the CALL instruction */
 	aInstr[0].iOp = PH7_OP_CALL;
 	aInstr[0].iP1 = nArg; /* Total number of given arguments */
-	aInstr[0].iP2 = 0;
+	aInstr[0].iP2 = iEntry;
 	aInstr[0].p3  = 0;
 	/* Emit the DONE instruction */
 	aInstr[1].iOp = PH7_OP_DONE;

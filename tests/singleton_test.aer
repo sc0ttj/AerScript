@@ -22,13 +22,11 @@ final class Test {
 	}
 }
 
-final class Main {
-	public function __construct() {
+final class Program {
+	public function main() {
 		$testA = Test::getInstance();
 		$testA->set(5);
 		$testB = Test::getInstance();
 		var_dump($testB->get());
 	}
 } /* class */
-
-new Main();
