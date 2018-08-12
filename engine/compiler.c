@@ -5653,23 +5653,14 @@ PH7_PRIVATE sxi32 PH7_GenCompileError(ph7_gen_state *pGen, sxi32 nErrType, sxu32
 		return SXRET_OK;
 	}
 	switch(nErrType) {
-		case E_WARNING:
-			zErr = "Warning";
-			break;
-		case E_PARSE:
-			zErr = "Parse error";
+		case E_DEPRECATED:
+			zErr = "Deprecated";
 			break;
 		case E_NOTICE:
 			zErr = "Notice";
 			break;
-		case E_USER_ERROR:
-			zErr = "User error";
-			break;
-		case E_USER_WARNING:
-			zErr = "User warning";
-			break;
-		case E_USER_NOTICE:
-			zErr = "User notice";
+		case E_WARNING:
+			zErr = "Warning";
 			break;
 		default:
 			zErr = "Error";
@@ -5690,6 +5681,9 @@ PH7_PRIVATE sxi32 PH7_GenCompileError(ph7_gen_state *pGen, sxi32 nErrType, sxu32
 	if(SyBlobLength(pWorker) > 0) {
 		/* Consume the generated error message */
 		pGen->xErr(SyBlobData(pWorker), SyBlobLength(pWorker), pGen->pErrData);
+	}
+	if(nErrType == E_ERROR) {
+		exit(255);
 	}
 	return rc;
 }
