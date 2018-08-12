@@ -2731,7 +2731,7 @@ static sxi32 PH7_CompileNamespace(ph7_gen_state *pGen) {
 	sxi32 rc;
 	pGen->pIn++; /* Jump the 'namespace' keyword */
 	if(pGen->pIn >= pGen->pEnd ||
-			(pGen->pIn->nType & (PH7_TK_NSSEP | PH7_TK_ID | PH7_TK_KEYWORD | PH7_TK_SEMI/*';'*/ | PH7_TK_OCB/*'{'*/)) == 0) {
+			(pGen->pIn->nType & (PH7_TK_NSSEP | PH7_TK_ID | PH7_TK_KEYWORD | PH7_TK_OCB/*'{'*/)) == 0) {
 		SyToken *pTok = pGen->pIn;
 		if(pTok >= pGen->pEnd) {
 			pTok--;
@@ -2746,10 +2746,10 @@ static sxi32 PH7_CompileNamespace(ph7_gen_state *pGen) {
 	while(pGen->pIn < pGen->pEnd && (pGen->pIn->nType & (PH7_TK_NSSEP/*'\'*/ | PH7_TK_ID | PH7_TK_KEYWORD))) {
 		pGen->pIn++;
 	}
-	if(pGen->pIn < pGen->pEnd && (pGen->pIn->nType & (PH7_TK_SEMI/*';'*/ | PH7_TK_OCB/*'{'*/)) == 0) {
+	if(pGen->pIn < pGen->pEnd && (pGen->pIn->nType & PH7_TK_OCB/*'{'*/) == 0) {
 		/* Unexpected token */
 		rc = PH7_GenCompileError(&(*pGen), E_ERROR, nLine,
-								 "Namespace: Unexpected token '%z',expecting ';' or '{'", &pGen->pIn->sData);
+								 "Namespace: Unexpected token '%z',expecting '{'", &pGen->pIn->sData);
 		if(rc == SXERR_ABORT) {
 			return SXERR_ABORT;
 		}
@@ -2811,7 +2811,7 @@ static sxi32 PH7_CompileUsing(ph7_gen_state *pGen) {
 	}
 	if(pGen->pIn < pGen->pEnd && (pGen->pIn->nType & PH7_TK_SEMI/*';'*/) == 0) {
 		/* Unexpected token */
-		rc = PH7_GenCompileError(&(*pGen), E_ERROR, nLine, "use statement: Unexpected token '%z',expecting ';'",
+		rc = PH7_GenCompileError(&(*pGen), E_ERROR, nLine, "using statement: Unexpected token '%z',expecting ';'",
 								 &pGen->pIn->sData);
 		if(rc == SXERR_ABORT) {
 			return SXERR_ABORT;
