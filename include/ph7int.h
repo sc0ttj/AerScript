@@ -1482,6 +1482,7 @@ enum ph7_expr_id {
 #define PH7_KEYWORD_AS           33 /* as */
 #define PH7_KEYWORD_CONTINUE     34 /* continue */
 #define PH7_KEYWORD_EXIT         35 /* exit */
+#define PH7_KEYWORD_FINALLY      36 /* finally */
 #define PH7_KEYWORD_IMPLEMENTS   39 /* implements */
 #define PH7_KEYWORD_INCONCE      40 /* include_once */
 #define PH7_KEYWORD_INCLUDE      41 /* include */

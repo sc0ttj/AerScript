@@ -588,6 +588,7 @@ static sxu32 KeywordCode(const char *z, int n) {
 		{"case", PH7_KEYWORD_CASE},
 		{"self", PH7_KEYWORD_SELF},
 		{"final", PH7_KEYWORD_FINAL},
+		{"finally", PH7_KEYWORD_FINALLY},
 		{"list", PH7_KEYWORD_LIST},
 		{"static", PH7_KEYWORD_STATIC},
 		{"clone", PH7_KEYWORD_CLONE},
