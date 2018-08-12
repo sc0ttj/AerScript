@@ -4116,7 +4116,7 @@ static sxi32 GenStateCompileClass(ph7_gen_state *pGen, sxi32 iFlags) {
 	}
 	if(pGen->pIn >= pGen->pEnd  || (pGen->pIn->nType & PH7_TK_OCB /*'{'*/) == 0) {
 		/* Syntax error */
-		rc = PH7_GenCompileError(pGen, E_ERROR, nLine, "Expected '{' after class '%z' declaration", pName);
+		rc = PH7_GenCompileError(pGen, E_ERROR, nLine, "Expected opening braces '{' after class '%z' declaration", pName);
 		SyMemBackendPoolFree(&pGen->pVm->sAllocator, pClass);
 		if(rc == SXERR_ABORT) {
 			/* Error count limit reached,abort immediately */
@@ -4130,7 +4130,7 @@ static sxi32 GenStateCompileClass(ph7_gen_state *pGen, sxi32 iFlags) {
 	PH7_DelimitNestedTokens(pGen->pIn, pGen->pEnd, PH7_TK_OCB/*'{'*/, PH7_TK_CCB/*'}'*/, &pEnd);
 	if(pEnd >= pGen->pEnd) {
 		/* Syntax error */
-		rc = PH7_GenCompileError(pGen, E_ERROR, nLine, "Missing closing braces'}' after class '%z' definition", pName);
+		rc = PH7_GenCompileError(pGen, E_ERROR, nLine, "Missing closing braces '}' after class '%z' definition", pName);
 		SyMemBackendPoolFree(&pGen->pVm->sAllocator, pClass);
 		if(rc == SXERR_ABORT) {
 			/* Error count limit reached,abort immediately */
