@@ -5103,7 +5103,7 @@ static sxi32 VmByteCodeExec(
 					break;
 				}
 			/*
-			 * OP_CALL P1 * *
+			 * OP_CALL P1 P2 *
 			 *  Call a PHP or a foreign function and push the return value of the called
 			 *  function on the stack.
 			 */
@@ -5244,8 +5244,10 @@ static sxi32 VmByteCodeExec(
 							PH7_MemObjRelease(pTos);
 							break;
 						}
-						/* Always select an appropriate function to call */
-						pVmFunc = VmOverload(&(*pVm), pVmFunc, pArg, (int)(pTos - pArg));
+						/* Select an appropriate function to call, if not entry point */
+						if(pInstr->iP2 == 0) {
+							pVmFunc = VmOverload(&(*pVm), pVmFunc, pArg, (int)(pTos - pArg));
+						}
 						/* Extract the formal argument set */
 						aFormalArg = (ph7_vm_func_arg *)SySetBasePtr(&pVmFunc->aArgs);
 						/* Create a new VM frame  */
