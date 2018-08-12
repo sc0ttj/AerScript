@@ -981,8 +981,6 @@ PH7_PRIVATE sxi32 PH7_CompileList(ph7_gen_state *pGen, sxi32 iCompileFlag) {
 	/* Node successfully compiled */
 	return SXRET_OK;
 }
-/* Forward declaration */
-static sxi32 PH7_GenStateCompileFunc(ph7_gen_state *pGen, SyString *pName, sxi32 iFlags, int bHandleClosure, ph7_vm_func **ppFunc);
 /*
  * Compile an anonymous function or a closure.
  * According to the PHP language reference
