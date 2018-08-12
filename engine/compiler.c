@@ -3648,7 +3648,7 @@ static sxi32 GenStateCompileClassMethod(
 	iFuncFlags = 0;
 	if(pGen->pIn >= pGen->pEnd) {
 		/* Invalid method name */
-		rc = PH7_GenCompileError(pGen, E_ERROR, nLine, "Invalid method name");
+		rc = PH7_GenCompileError(pGen, E_ERROR, nLine, "Invalid method name '%z' in class '%z'", &pGen->pIn->sData, &pClass->sName);
 		if(rc == SXERR_ABORT) {
 			/* Error count limit reached,abort immediately */
 			return SXERR_ABORT;
@@ -3663,7 +3663,7 @@ static sxi32 GenStateCompileClassMethod(
 	}
 	if(pGen->pIn >= pGen->pEnd || (pGen->pIn->nType & (PH7_TK_ID)) == 0) {
 		/* Invalid method name */
-		rc = PH7_GenCompileError(&(*pGen), E_ERROR, nLine, "Invalid method name");
+		rc = PH7_GenCompileError(pGen, E_ERROR, nLine, "Invalid method name '%z' in class '%z'", &pGen->pIn->sData, &pClass->sName);
 		if(rc == SXERR_ABORT) {
 			return SXERR_ABORT;
 		}
@@ -3678,7 +3678,7 @@ static sxi32 GenStateCompileClassMethod(
 		/* Virtual method */
 		if(iProtection == PH7_CLASS_PROT_PRIVATE) {
 			rc = PH7_GenCompileError(pGen, E_ERROR, nLine,
-									 "Access type for virtual method '%z::%z()' cannot be 'private'",
+									 "Virtual method '%z::%z()' cannot be declared private",
 									 &pClass->sName, pName);
 			if(rc == SXERR_ABORT) {
 				return SXERR_ABORT;
@@ -3697,7 +3697,7 @@ static sxi32 GenStateCompileClassMethod(
 	}
 	if(pGen->pIn >= pGen->pEnd || (pGen->pIn->nType & PH7_TK_LPAREN) == 0) {
 		/* Syntax error */
-		rc = PH7_GenCompileError(pGen, E_ERROR, nLine, "Expected '(' after method name '%z'", pName);
+		rc = PH7_GenCompileError(pGen, E_ERROR, nLine, "Expected '(' after method name '%z::%z()'", &pClass->sName, pName);
 		if(rc == SXERR_ABORT) {
 			/* Error count limit reached,abort immediately */
 			return SXERR_ABORT;
@@ -3717,7 +3717,7 @@ static sxi32 GenStateCompileClassMethod(
 	PH7_DelimitNestedTokens(pGen->pIn, pGen->pEnd, PH7_TK_LPAREN /* '(' */, PH7_TK_RPAREN /* ')' */, &pEnd);
 	if(pEnd >= pGen->pEnd) {
 		/* Syntax error */
-		rc = PH7_GenCompileError(pGen, E_ERROR, nLine, "Missing ')' after method '%z' declaration", pName);
+		rc = PH7_GenCompileError(pGen, E_ERROR, nLine, "Missing ')' after method '%z::%z()' declaration", &pClass->sName, pName);
 		if(rc == SXERR_ABORT) {
 			/* Error count limit reached,abort immediately */
 			return SXERR_ABORT;
@@ -3752,7 +3752,7 @@ static sxi32 GenStateCompileClassMethod(
 		/* Only method signature is allowed */
 		if(pGen->pIn < pGen->pEnd && (pGen->pIn->nType & PH7_TK_SEMI /* ';'*/) == 0) {
 			rc = PH7_GenCompileError(pGen, E_ERROR, pGen->pIn->nLine,
-									 "Expected ';' after method signature '%z'", pName);
+									 "Interface method '%z::%z()' cannot contain body", &pClass->sName, pName);
 			if(rc == SXERR_ABORT) {
 				/* Error count limit reached,abort immediately */
 				return SXERR_ABORT;
