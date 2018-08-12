@@ -1113,23 +1113,6 @@ PH7_PRIVATE sxi32 PH7_CompileAnonFunc(ph7_gen_state *pGen, sxi32 iCompileFlag) {
 	return SXRET_OK;
 }
 /*
- * Compile a backtick quoted string.
- */
-static sxi32 PH7_CompileBacktic(ph7_gen_state *pGen, sxi32 iCompileFlag) {
-	/* TICKET 1433-40: This construct is disabled in the current release of the PH7 engine.
-	 * If you want this feature,please contact symisc systems via contact@symisc.net
-	 */
-	PH7_GenCompileError(&(*pGen), E_NOTICE, pGen->pIn->nLine,
-						"Command line invocation is disabled in the current release of the PH7(%s) engine",
-						ph7_lib_version()
-					   );
-	/* Load NULL */
-	PH7_VmEmitInstr(pGen->pVm, PH7_OP_LOADC, 0, 0, 0, 0);
-	SXUNUSED(iCompileFlag); /* cc warning */
-	/* Node successfully compiled */
-	return SXRET_OK;
-}
-/*
  * Compile a function [i.e: die(),exit(),include(),...] which is a langauge
  * construct.
  */
@@ -5313,9 +5296,6 @@ PH7_PRIVATE ProcNodeConstruct PH7_GetNodeHandler(sxu32 nNodeType) {
 	} else if(nNodeType & PH7_TK_SSTR) {
 		/* Single quoted string */
 		return PH7_CompileSimpleString;
-	} else if(nNodeType & PH7_TK_BSTR) {
-		/* Backtick quoted string */
-		return PH7_CompileBacktic;
 	}
 	return 0;
 }
