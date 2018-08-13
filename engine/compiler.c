@@ -133,7 +133,7 @@ static sxi32 PH7_GenStateLeaveBlock(ph7_gen_state *pGen, GenBlock **ppBlock) {
 /*
  * Emit a forward jump.
  * Notes on forward jumps
- *  Compilation of some PHP constructs such as if,for,while and the logical or
+ *  Compilation of some Aer constructs such as if,for,while and the logical or
  *  (||) and logical and (&&) operators in expressions requires the
  *  generation of forward jumps.
  *  Since the destination PC target of these jumps isn't known when the jumps
@@ -154,7 +154,7 @@ static sxi32 PH7_GenStateNewJumpFixup(GenBlock *pBlock, sxi32 nJumpType, sxu32 n
  * Fix a forward jump now the jump destination is resolved.
  * Return the total number of fixed jumps.
  * Notes on forward jumps:
- *  Compilation of some PHP constructs such as if,for,while and the logical or
+ *  Compilation of some Aer constructs such as if,for,while and the logical or
  *  (||) and logical and (&&) operators in expressions requires the
  *  generation of forward jumps.
  *  Since the destination PC target of these jumps isn't known when the jumps
@@ -229,14 +229,13 @@ static ph7_value *PH7_GenStateInstallNumLiteral(ph7_gen_state *pGen, sxu32 *pIdx
 	return pObj;
 }
 /*
- * Implementation of the PHP language constructs.
+ * Implementation of the AerScript language constructs.
  */
 /* Forward declaration */
 static sxi32 PH7_GenStateCompileChunk(ph7_gen_state *pGen, sxi32 iFlags);
 /*
  * Compile a numeric [i.e: integer or real] literal.
  * Notes on the integer type.
- *  According to the PHP language reference manual
  *  Integers can be specified in decimal (base 10), hexadecimal (base 16), octal (base 8)
  *  or binary (base 2) notation, optionally preceded by a sign (- or +).
  *  To use octal notation, precede the number with a 0 (zero). To use hexadecimal
@@ -281,8 +280,6 @@ static sxi32 PH7_CompileNumLiteral(ph7_gen_state *pGen, sxi32 iCompileFlag) {
 }
 /*
  * Compile a single quoted string.
- * According to the PHP language reference manual:
- *
  *   The simplest way to specify a string is to enclose it in single quotes (the character ' ).
  *   To specify a literal single quote, escape it with a backslash (\). To specify a literal
  *   backslash, double it (\\). All other instances of backslash will be treated as a literal
@@ -357,7 +354,6 @@ PH7_PRIVATE sxi32 PH7_CompileSimpleString(ph7_gen_state *pGen, sxi32 iCompileFla
 }
 /*
  * Process variable expression [i.e: "$var","${var}"] embedded in a double quoted string.
- * According to the PHP language reference manual
  *   When a string is specified in double quotes,variables are parsed within it.
  *  There are two types of syntax: a simple one and a complex one. The simple syntax is the most
  *  common and convenient. It provides a way to embed a variable, an array value, or an object
@@ -427,9 +423,8 @@ static ph7_value *PH7_GenStateNewStrObj(ph7_gen_state *pGen, sxi32 *pCount) {
 }
 /*
  * Compile a double quoted string.
- * According to the PHP language reference manual
  * Double quoted
- *  If the string is enclosed in double-quotes ("), PHP will interpret more escape sequences for special characters:
+ *  If the string is enclosed in double-quotes ("), Aer will interpret more escape sequences for special characters:
  *  Escaped characters Sequence 	Meaning
  *  \n linefeed (LF or 0x0A (10) in ASCII)
  *  \r carriage return (CR or 0x0D (13) in ASCII)
@@ -730,7 +725,6 @@ PH7_PRIVATE sxi32 PH7_CompileString(ph7_gen_state *pGen, sxi32 iCompileFlag) {
 /*
  * Compile an array entry whether it is a key or a value.
  *  Notes on array entries.
- *  According to the PHP language reference manual
  *  An array can be created by the array() language construct.
  *  It takes as parameters any number of comma-separated key => value pairs.
  *  array(  key =>  value
@@ -739,9 +733,9 @@ PH7_PRIVATE sxi32 PH7_CompileString(ph7_gen_state *pGen, sxi32 iCompileFlag) {
  *  A key may be either an integer or a string. If a key is the standard representation
  *  of an integer, it will be interpreted as such (i.e. "8" will be interpreted as 8, while
  *  "08" will be interpreted as "08"). Floats in key are truncated to integer.
- *  The indexed and associative array types are the same type in PHP, which can both
+ *  The indexed and associative array types are the same type in Aer, which can both
  *  contain integer and string indices.
- *  A value can be any PHP type.
+ *  A value can be any Aer type.
  *  If a key is not specified for a value, the maximum of the integer indices is taken
  *  and the new key will be that value plus 1. If a key that already has an assigned value
  *  is specified, that value will be overwritten.
@@ -796,8 +790,7 @@ static sxi32 PH7_GenStateArrayNodeValidator(ph7_gen_state *pGen, ph7_expr_node *
 }
 /*
  * Compile the 'array' language construct.
- *	 According to the PHP language reference manual
- *   An array in PHP is actually an ordered map. A map is a type that associates
+ *   An array in Aer is actually an ordered map. A map is a type that associates
  *   values to keys. This type is optimized for several different uses; it can
  *   be treated as an array, list (vector), hash table (an implementation of a map)
  *   dictionary, collection, stack, queue, and probably more. As array values can be
@@ -939,7 +932,6 @@ static sxi32 PH7_GenStateListNodeValidator(ph7_gen_state *pGen, ph7_expr_node *p
 }
 /*
  * Compile the 'list' language construct.
- *  According to the PHP language reference
  *  list(): Assign variables as if they were an array.
  *  list() is used to assign a list of variables in one operation.
  *  Description
@@ -983,20 +975,18 @@ PH7_PRIVATE sxi32 PH7_CompileList(ph7_gen_state *pGen, sxi32 iCompileFlag) {
 }
 /*
  * Compile an anonymous function or a closure.
- * According to the PHP language reference
  *  Anonymous functions, also known as closures, allow the creation of functions
  *  which have no specified name. They are most useful as the value of callback
  *  parameters, but they have many other uses. Closures can also be used as
  *  the values of variables; Assigning a closure to a variable uses the same
  *  syntax as any other assignment, including the trailing semicolon:
  *  Example Anonymous function variable assignment example
- * <?php
  * $greet = function($name)
  * {
  *    printf("Hello %s\r\n", $name);
  * };
  * $greet('World');
- * $greet('PHP');
+ * $greet('AerScript');
  * ?>
  * Note that the implementation of anonymous function and closure under
  * PH7 is completely different from the one used by the zend engine.
@@ -1087,10 +1077,9 @@ PH7_PRIVATE sxi32 PH7_CompileLangConstruct(ph7_gen_state *pGen, sxi32 iCompileFl
 }
 /*
  * Compile a node holding a variable declaration.
- * According to the PHP language reference
- *  Variables in PHP are represented by a dollar sign followed by the name of the variable.
+ *  Variables in Aer are represented by a dollar sign followed by the name of the variable.
  *  The variable name is case-sensitive.
- *  Variable names follow the same rules as other labels in PHP. A valid variable name starts
+ *  Variable names follow the same rules as other labels in Aer. A valid variable name starts
  *  with a letter or underscore, followed by any number of letters, numbers, or underscores.
  *  As a regular expression, it would be expressed thus: '[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*'
  *  Note: For our purposes here, a letter is a-z, A-Z, and the bytes from 127 through 255 (0x7f-0xff).
@@ -1100,7 +1089,7 @@ PH7_PRIVATE sxi32 PH7_CompileLangConstruct(ph7_gen_state *pGen, sxi32 iCompileFl
  *  This means, for instance, that after assigning one variable's value to another, changing one of those
  *  variables will have no effect on the other. For more information on this kind of assignment, see
  *  the chapter on Expressions.
- *  PHP also offers another way to assign values to variables: assign by reference. This means that
+ *  Aer also offers another way to assign values to variables: assign by reference. This means that
  *  the new variable simply references (in other words, "becomes an alias for" or "points to") the original
  *  variable. Changes to the new variable affect the original, and vice versa.
  *  To assign by reference, simply prepend an ampersand (&) to the beginning of the variable which
@@ -1339,11 +1328,10 @@ static int PH7_GenStateIsReservedConstant(SyString *pName) {
 }
 /*
  * Compile the 'const' statement.
- * According to the PHP language reference
  *  A constant is an identifier (name) for a simple value. As the name suggests, that value
  *  cannot change during the execution of the script (except for magic constants, which aren't actually constants).
  *  A constant is case-sensitive by default. By convention, constant identifiers are always uppercase.
- *  The name of a constant follows the same rules as any label in PHP. A valid constant name starts
+ *  The name of a constant follows the same rules as any label in Aer. A valid constant name starts
  *  with a letter or underscore, followed by any number of letters, numbers, or underscores.
  *  As a regular expression it would be expressed thusly: [a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*
  *  Syntax
@@ -1435,11 +1423,10 @@ Synchronize:
 }
 /*
  * Compile the 'continue' statement.
- * According to the PHP language reference
  *  continue is used within looping structures to skip the rest of the current loop iteration
  *  and continue execution at the condition evaluation and then the beginning of the next
  *  iteration.
- *  Note: Note that in PHP the switch statement is considered a looping structure for
+ *  Note: Note that in Aer the switch statement is considered a looping structure for
  *  the purposes of continue.
  *  continue accepts an optional numeric argument which tells it how many levels
  *  of enclosing loops it should skip to the end of.
@@ -1477,10 +1464,10 @@ static sxi32 PH7_CompileContinue(ph7_gen_state *pGen) {
 	} else {
 		sxu32 nInstrIdx = 0;
 		if(pLoop->iFlags & GEN_BLOCK_SWITCH) {
-			/* According to the PHP language reference manual
-			 *  Note that unlike some other languages, the continue statement applies to switch
-			 *  and acts similar to break. If you have a switch inside a loop and wish to continue
-			 *  to the next iteration of the outer loop, use continue 2.
+			/*
+			 * Note that unlike some other languages, the continue statement applies to switch
+			 * and acts similar to break. If you have a switch inside a loop and wish to continue
+			 * to the next iteration of the outer loop, use continue 2.
 			 */
 			rc = PH7_VmEmitInstr(pGen->pVm, PH7_OP_JMP, 0, 0, 0, &nInstrIdx);
 			if(rc == SXRET_OK) {
@@ -1507,7 +1494,6 @@ static sxi32 PH7_CompileContinue(ph7_gen_state *pGen) {
 }
 /*
  * Compile the 'break' statement.
- * According to the PHP language reference
  *  break ends execution of the current for, foreach, while, do-while or switch
  *  structure.
  *  break accepts an optional numeric argument which tells it how many nested
@@ -1557,7 +1543,7 @@ static sxi32 PH7_CompileBreak(ph7_gen_state *pGen) {
 	return SXRET_OK;
 }
 /*
- * Point to the next PHP chunk that will be processed shortly.
+ * Point to the next AerScript chunk that will be processed shortly.
  * Return SXRET_OK on success. Any other return value indicates
  * failure.
  */
@@ -1576,8 +1562,8 @@ static sxi32 PH7_GenStateNextChunk(ph7_gen_state *pGen) {
 	return SXRET_OK;
 }
 /*
- * Compile a PHP block.
- * A block is simply one or more PHP statements and expressions to compile
+ * Compile an AerScript block.
+ * A block is simply one or more Aer statements and expressions to compile
  * optionally delimited by braces {}.
  * Return SXRET_OK on success. Any other return value indicates failure
  * and this function takes care of generating the appropriate error
@@ -1634,16 +1620,15 @@ static sxi32 PH7_CompileBlock(
 }
 /*
  * Compile the gentle 'while' statement.
- * According to the PHP language reference
- *  while loops are the simplest type of loop in PHP.They behave just like their C counterparts.
+ *  while loops are the simplest type of loop in Aer. They behave just like their C counterparts.
  *  The basic form of a while statement is:
  *  while (expr)
  *   statement
- *  The meaning of a while statement is simple. It tells PHP to execute the nested statement(s)
+ *  The meaning of a while statement is simple. It tells Aer to execute the nested statement(s)
  *  repeatedly, as long as the while expression evaluates to TRUE. The value of the expression
  *  is checked each time at the beginning of the loop, so even if this value changes during
  *  the execution of the nested statement(s), execution will not stop until the end of the iteration
- *  (each time PHP runs the statements in the loop is one iteration). Sometimes, if the while
+ *  (each time Aer runs the statements in the loop is one iteration). Sometimes, if the while
  *  expression evaluates to FALSE from the very beginning, the nested statement(s) won't even be run once.
  *  Like with the if statement, you can group multiple statements within the same while loop by surrounding
  *  a group of statements with curly braces, or by using the alternate syntax:
@@ -1734,7 +1719,6 @@ Synchronize:
 }
 /*
  * Compile the ugly do..while() statement.
- * According to the PHP language reference
  *  do-while loops are very similar to while loops, except the truth expression is checked
  *  at the end of each iteration instead of in the beginning. The main difference from regular
  *  while loops is that the first iteration of a do-while loop is guaranteed to run
@@ -1743,12 +1727,10 @@ Synchronize:
  *  of each iteration, if it evaluates to FALSE right from the beginning, the loop execution
  *  would end immediately).
  *  There is just one syntax for do-while loops:
- *  <?php
  *  $i = 0;
  *  do {
  *   echo $i;
  *  } while ($i > 0);
- * ?>
  */
 static sxi32 PH7_CompileDoWhile(ph7_gen_state *pGen) {
 	SyToken *pTmp, *pEnd = 0;
@@ -1860,8 +1842,7 @@ Synchronize:
 }
 /*
  * Compile the complex and powerful 'for' statement.
- * According to the PHP language reference
- *  for loops are the most complex loops in PHP. They behave like their C counterparts.
+ *  for loops are the most complex loops in Aer. They behave like their C counterparts.
  *  The syntax of a for loop is:
  *  for (expr1; expr2; expr3)
  *   statement
@@ -1874,7 +1855,7 @@ Synchronize:
  *  Each of the expressions can be empty or contain multiple expressions separated by commas.
  *  In expr2, all expressions separated by a comma are evaluated but the result is taken
  *  from the last part. expr2 being empty means the loop should be run indefinitely
- *  (PHP implicitly considers it as TRUE, like C). This may not be as useless as you might
+ *  (Aer implicitly considers it as TRUE, like C). This may not be as useless as you might
  *  think, since often you'd want to end the loop using a conditional break statement instead
  *  of using the for truth expression.
  */
@@ -2046,7 +2027,6 @@ static sxi32 GenStateForEachNodeValidator(ph7_gen_state *pGen, ph7_expr_node *pR
 }
 /*
  * Compile the 'foreach' statement.
- * According to the PHP language reference
  *  The foreach construct simply gives an easy way to iterate over arrays. foreach works
  *  only on arrays (and objects), and will issue an error when you try to use it on a variable
  *  with a different data type or an uninitialized variable. There are two syntaxes; the second
@@ -2260,9 +2240,8 @@ Synchronize:
 }
 /*
  * Compile the infamous if/elseif/else if/else statements.
- * According to the PHP language reference
- *  The if construct is one of the most important features of many languages PHP included.
- *  It allows for conditional execution of code fragments. PHP features an if structure
+ *  The if construct is one of the most important features of many languages, Aer included.
+ *  It allows for conditional execution of code fragments. Aer features an if structure
  *  that is similar to that of C:
  *  if (expr)
  *   statement
@@ -2280,7 +2259,6 @@ Synchronize:
  *   to FALSE. However, unlike else, it will execute that alternative expression only if the elseif
  *   conditional expression evaluates to TRUE. For example, the following code would display a is bigger
  *   than b, a equal to b or a is smaller than b:
- *   <?php
  *    if ($a > $b) {
  *     echo "a is bigger than b";
  *    } elseif ($a == $b) {
@@ -2288,7 +2266,6 @@ Synchronize:
  *    } else {
  *     echo "a is smaller than b";
  *    }
- *    ?>
  */
 static sxi32 PH7_CompileIf(ph7_gen_state *pGen) {
 	SyToken *pToken, *pTmp, *pEnd = 0;
@@ -2412,7 +2389,6 @@ Synchronize:
 }
 /*
  * Compile the return statement.
- * According to the PHP language reference
  *  If called from within a function, the return() statement immediately ends execution
  *  of the current function, and returns its argument as the value of the function call.
  *  return() will also end the execution of an eval() statement or script file.
@@ -2423,7 +2399,7 @@ Synchronize:
  *  from within the main script file, then script execution end.
  *  Note that since return() is a language construct and not a function, the parentheses
  *  surrounding its arguments are not required. It is common to leave them out, and you actually
- *  should do so as PHP has less work to do in this case.
+ *  should do so as Aer has less work to do in this case.
  *  Note: If no parameter is supplied, then the parentheses must be omitted and NULL will be returned.
  */
 static sxi32 PH7_CompileReturn(ph7_gen_state *pGen) {
@@ -2469,7 +2445,6 @@ static sxi32 PH7_CompileHalt(ph7_gen_state *pGen) {
 }
 /*
  * Compile the static statement.
- * According to the PHP language reference
  *  Another important feature of variable scoping is the static variable.
  *  A static variable exists only in a local function scope, but it does not lose its value
  *  when program execution leaves this scope.
@@ -2551,7 +2526,7 @@ static sxi32 PH7_CompileStatic(ph7_gen_state *pGen) {
 	/* Check if we have an expression to compile */
 	if(pGen->pIn < pGen->pEnd && (pGen->pIn->nType & PH7_TK_EQUAL)) {
 		SySet *pInstrContainer;
-		/* TICKET 1433-014: Symisc extension to the PHP programming language
+		/*
 		 * Static variable can take any complex expression including function
 		 * call as their initialization value.
 		 * Example:
@@ -2612,7 +2587,6 @@ static sxi32 PH7_CompileVar(ph7_gen_state *pGen) {
 }
 /*
  * Compile a namespace statement
- * According to the PHP language reference manual
  *  What are namespaces? In the broadest definition namespaces are a way of encapsulating items.
  *  This can be seen as an abstract concept in many places. For example, in any operating system
  *  directories serve to group related files, and act as a namespace for the files within them.
@@ -2621,14 +2595,14 @@ static sxi32 PH7_CompileVar(ph7_gen_state *pGen) {
  *  file outside of the /home/greg directory, we must prepend the directory name to the file name using
  *  the directory separator to get /home/greg/foo.txt. This same principle extends to namespaces in the
  *  programming world.
- *  In the PHP world, namespaces are designed to solve two problems that authors of libraries and applications
+ *  In the Aer world, namespaces are designed to solve two problems that authors of libraries and applications
  *  encounter when creating re-usable code elements such as classes or functions:
- *  Name collisions between code you create, and internal PHP classes/functions/constants or third-party
+ *  Name collisions between code you create, and internal Aer classes/functions/constants or third-party
  *  classes/functions/constants.
  *  Ability to alias (or shorten) Extra_Long_Names designed to alleviate the first problem, improving
  *  readability of source code.
- *  PHP Namespaces provide a way in which to group related classes, interfaces, functions and constants.
- *  Here is an example of namespace syntax in PHP:
+ *  Aer Namespaces provide a way in which to group related classes, interfaces, functions and constants.
+ *  Here is an example of namespace syntax in Aer:
  *       namespace my\name; // see "Defining Namespaces" section
  *       class MyClass {}
  *       function myfunction() {}
@@ -2678,14 +2652,13 @@ static sxi32 PH7_CompileNamespace(ph7_gen_state *pGen) {
 }
 /*
  * Compile the 'using' statement
- * According to the PHP language reference manual
  *  The ability to refer to an external fully qualified name with an alias or importing
  *  is an important feature of namespaces. This is similar to the ability of unix-based
  *  filesystems to create symbolic links to a file or to a directory.
- *  PHP namespaces support three kinds of aliasing or importing: aliasing a class name
+ *  Aer namespaces support three kinds of aliasing or importing: aliasing a class name
  *  aliasing an interface name, and aliasing a namespace name. Note that importing
  *  a function or constant is not supported.
- *  In PHP, aliasing is accomplished with the 'use' operator.
+ *  In Aer, aliasing is accomplished with the 'use' operator.
  * NOTE
  *  AS OF THIS VERSION NAMESPACE SUPPORT IS DISABLED. IF YOU NEED A WORKING VERSION THAT IMPLEMENT
  *  NAMESPACE,PLEASE CONTACT SYMISC SYSTEMS VIA contact@symisc.net.
@@ -2814,20 +2787,17 @@ static sxi32 PH7_GenStateProcessArgValue(ph7_gen_state *pGen, ph7_vm_func_arg *p
 }
 /*
  * Collect function arguments one after one.
- * According to the PHP language reference manual.
  * Information may be passed to functions via the argument list, which is a comma-delimited
  * list of expressions.
- * PHP supports passing arguments by value (the default), passing by reference
+ * Aer supports passing arguments by value (the default), passing by reference
  * and default argument values. Variable-length argument lists are also supported,
  * see also the function references for func_num_args(), func_get_arg(), and func_get_args()
  * for more information.
  * Example #1 Passing arrays to functions
- * <?php
  * function takes_array($input)
  * {
  *    echo "$input[0] + $input[1] = ", $input[0]+$input[1];
  * }
- * ?>
  * Making arguments be passed by reference
  * By default, function arguments are passed by value (so that if the value of the argument
  * within the function is changed, it does not get changed outside of the function).
@@ -2835,7 +2805,6 @@ static sxi32 PH7_GenStateProcessArgValue(ph7_gen_state *pGen, ph7_vm_func_arg *p
  * To have an argument to a function always passed by reference, prepend an ampersand (&)
  * to the argument name in the function definition:
  * Example #2 Passing function parameters by reference
- * <?php
  * function add_some_extra(&$string)
  * {
  *   $string .= 'and something extra.';
@@ -2843,7 +2812,6 @@ static sxi32 PH7_GenStateProcessArgValue(ph7_gen_state *pGen, ph7_vm_func_arg *p
  * $str = 'This is a string, ';
  * add_some_extra($str);
  * echo $str;    // outputs 'This is a string, and something extra.'
- * ?>
  *
  * PH7 have introduced powerful extension including full type hinting,function overloading
  * complex argument values.Please refer to the official documentation for more information
@@ -3047,16 +3015,15 @@ static sxi32 PH7_GenStateCompileFuncBody(
 	return SXRET_OK;
 }
 /*
- * Compile a PHP function whether is a Standard or Anonymous function.
- * According to the PHP language reference manual.
- *  Function names follow the same rules as other labels in PHP. A valid function name
+ * Compile an AerScript function whether is a Standard or Anonymous function.
+ *  Function names follow the same rules as other labels in Aer. A valid function name
  *  starts with a letter or underscore, followed by any number of letters, numbers, or
  *  underscores. As a regular expression, it would be expressed thus:
  *     [a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*.
  *  Functions need not be defined before they are referenced.
- *  All functions and classes in PHP have the global scope - they can be called outside
+ *  All functions and classes in Aer have the global scope - they can be called outside
  *  a function even if they were defined inside and vice versa.
- *  It is possible to call recursive functions in PHP. However avoid recursive function/method
+ *  It is possible to call recursive functions in Aer. However avoid recursive function/method
  *  calls with over 32-64 recursion levels.
  *
  * PH7 have introduced powerful extension including full type hinting, function overloading,
@@ -3231,7 +3198,7 @@ OutOfMem:
 	return SXERR_ABORT;
 }
 /*
- * Compile a standard PHP function.
+ * Compile a standard Aer function.
  *  Refer to the block-comment above for more information.
  */
 static sxi32 PH7_CompileFunction(ph7_gen_state *pGen) {
@@ -3283,7 +3250,6 @@ static sxi32 PH7_CompileFunction(ph7_gen_state *pGen) {
 }
 /*
  * Extract the visibility level associated with a given keyword.
- * According to the PHP language reference manual
  *  Visibility:
  *  The visibility of a property or method can be defined by prefixing
  *  the declaration with the keywords public, protected or private.
@@ -3303,7 +3269,6 @@ static sxi32 PH7_GetProtectionLevel(sxi32 nKeyword) {
 }
 /*
  * Compile a class constant.
- * According to the PHP language reference manual
  *  Class Constants
  *   It is possible to define constant values on a per-class basis remaining
  *   the same and unchangeable. Constants differ from normal variables in that
@@ -3427,8 +3392,7 @@ Synchronize:
 	return SXERR_CORRUPT;
 }
 /*
- * compile a class attribute or Properties in the PHP jargon.
- * According to the PHP language reference manual
+ * compile a class attribute or properties.
  *  Properties
  *  Class member variables are called "properties". You may also see them referred
  *  to using other terms such as "attributes" or "fields", but for the purposes
@@ -3693,7 +3657,6 @@ Synchronize:
 }
 /*
  * Compile an object interface.
- *  According to the PHP language reference manual
  *   Object Interfaces:
  *   Object interfaces allow you to create code which specifies which methods
  *   a class must implement, without having to define how these methods are handled.
@@ -3808,7 +3771,6 @@ static sxi32 PH7_CompileClassInterface(ph7_gen_state *pGen) {
 	pTmp = pGen->pEnd;
 	pGen->pEnd = pEnd;
 	/* Start the parse process
-	 * Note (According to the PHP reference manual):
 	 *  Only constants and function signatures(without body) are allowed.
 	 *  Only 'public' visibility is allowed.
 	 */
@@ -3925,12 +3887,11 @@ done:
 }
 /*
  * Compile a user-defined class.
- * According to the PHP language reference manual
  *  class
  *  Basic class definitions begin with the keyword class, followed by a class
  *  name, followed by a pair of curly braces which enclose the definitions
  *  of the properties and methods belonging to the class.
- *  The class name can be any valid label which is a not a PHP reserved word.
+ *  The class name can be any valid label which is a not a Aer reserved word.
  *  A valid class name starts with a letter or underscore, followed by any number
  *  of letters, numbers, or underscores. As a regular expression, it would be expressed
  *  thus: [a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*.
@@ -4299,8 +4260,7 @@ done:
 }
 /*
  * Compile a user-defined virtual class.
- *  According to the PHP language reference manual
- *   PHP 5 introduces abstract classes and methods. Classes defined as abstract
+ *   Aer introduces virtual classes and methods. Classes defined as abstract
  *   may not be instantiated, and any class that contains at least one abstract
  *   method must also be abstract. Methods defined as abstract simply declare
  *   the method's signature - they cannot define the implementation.
@@ -4310,8 +4270,6 @@ done:
  *   method is defined as protected, the function implementation must be defined as either
  *   protected or public, but not private. Furthermore the signatures of the methods must
  *   match, i.e. the type hints and the number of required arguments must be the same.
- *   This also applies to constructors as of PHP 5.4. Before 5.4 constructor signatures
- *   could differ.
  */
 static sxi32 PH7_CompileVirtualClass(ph7_gen_state *pGen) {
 	sxi32 rc;
@@ -4321,8 +4279,7 @@ static sxi32 PH7_CompileVirtualClass(ph7_gen_state *pGen) {
 }
 /*
  * Compile a user-defined final class.
- *  According to the PHP language reference manual
- *    PHP 5 introduces the final keyword, which prevents child classes from overriding
+ *    Aer introduces the final keyword, which prevents child classes from overriding
  *    a method by prefixing the definition with final. If the class itself is being defined
  *    final then it cannot be extended.
  */
@@ -4334,7 +4291,6 @@ static sxi32 PH7_CompileFinalClass(ph7_gen_state *pGen) {
 }
 /*
  * Compile a user-defined class.
- *  According to the PHP language reference manual
  *   Basic class definitions begin with the keyword class, followed
  *   by a class name, followed by a pair of curly braces which enclose
  *   the definitions of the properties and methods belonging to the class.
@@ -4348,20 +4304,19 @@ static sxi32 PH7_CompileClass(ph7_gen_state *pGen) {
 }
 /*
  * Exception handling.
- *  According to the PHP language reference manual
- *    An exception can be thrown, and caught within PHP. Code may be surrounded
+ *    An exception can be thrown, and caught within Aer. Code may be surrounded
  *    in a try block, to facilitate the catching of potential exceptions. Each try must have
  *    at least one corresponding catch block. Multiple catch blocks can be used to catch
  *    different classes of exceptions. Normal execution (when no exception is thrown within
  *    the try block, or when a catch matching the thrown exception's class is not present)
  *    will continue after that last catch block defined in sequence. Exceptions can be thrown
  *    (or re-thrown) within a catch block.
- *    When an exception is thrown, code following the statement will not be executed, and PHP
- *    will attempt to find the first matching catch block. If an exception is not caught, a PHP
+ *    When an exception is thrown, code following the statement will not be executed, and Aer
+ *    will attempt to find the first matching catch block. If an exception is not caught, a Aer
  *    Fatal Error will be issued with an "Uncaught Exception ..." message, unless a handler has
  *    been defined with set_exception_handler().
  *    The thrown object must be an instance of the Exception class or a subclass of Exception.
- *    Trying to throw an object that is not will result in a PHP Fatal Error.
+ *    Trying to throw an object that is not will result in a Aer Error.
  */
 /*
  * Expression tree validator callback associated with the 'throw' statement.
@@ -4703,7 +4658,6 @@ static sxi32 PH7_GenStateCompileCaseExpr(ph7_gen_state *pGen, ph7_case_expr *pEx
 }
 /*
  * Compile the smart switch statement.
- * According to the PHP language reference manual
  *  The switch statement is similar to a series of IF statements on the same expression.
  *  In many occasions, you may want to compare the same variable (or expression) with many
  *  different values, and execute a different piece of code depending on which value it equals to.
@@ -4715,8 +4669,8 @@ static sxi32 PH7_GenStateCompileCaseExpr(ph7_gen_state *pGen, ph7_case_expr *pEx
  *  It is important to understand how the switch statement is executed in order to avoid mistakes.
  *  The switch statement executes line by line (actually, statement by statement).
  *  In the beginning, no code is executed. Only when a case statement is found with a value that
- *  matches the value of the switch expression does PHP begin to execute the statements.
- *  PHP continues to execute the statements until the end of the switch block, or the first time
+ *  matches the value of the switch expression does Aer begin to execute the statements.
+ *  Aer continues to execute the statements until the end of the switch block, or the first time
  *  it sees a break statement. If you don't write a break statement at the end of a case's statement list.
  *  In a switch statement, the condition is evaluated only once and the result is compared to each
  *  case statement. In an elseif statement, the condition is evaluated again. If your condition
@@ -4829,9 +4783,8 @@ static sxi32 PH7_CompileSwitch(ph7_gen_state *pGen) {
 		nKwrd = SX_PTR_TO_INT(pGen->pIn->pUserData);
 		if(nKwrd == PH7_KEYWORD_DEFAULT) {
 			/*
-			 * According to the PHP language reference manual
-			 *  A special case is the default case. This case matches anything
-			 *  that wasn't matched by the other cases.
+			 * A special case is the default case. This case matches anything
+			 * that wasn't matched by the other cases.
 			 */
 			if(pSwitch->nDefault > 0) {
 				/* Default case already compiled */
@@ -5122,10 +5075,9 @@ static sxi32 PH7_GenStateEmitExprCode(
 	return rc;
 }
 /*
- * Compile a PHP expression.
- * According to the PHP language reference manual:
- *  Expressions are the most important building stones of PHP.
- *  In PHP, almost anything you write is an expression.
+ * Compile an AerScript expression.
+ *  Expressions are the most important building stones of Aer.
+ *  In Aer, almost anything you write is an expression.
  *  The simplest yet most accurate way to define an expression
  *  is "anything that has a value".
  * If something goes wrong while compiling the expression,this
@@ -5234,7 +5186,7 @@ PH7_PRIVATE ProcNodeConstruct PH7_GetNodeHandler(sxu32 nNodeType) {
 	return 0;
 }
 /*
- * PHP Language construct table.
+ * Aer Language construct table.
  */
 static const LangConstruct aLangConstruct[] = {
 	{ PH7_KEYWORD_IF,       PH7_CompileIf       }, /* if statement */
@@ -5258,7 +5210,7 @@ static const LangConstruct aLangConstruct[] = {
 };
 /*
  * Return a pointer to the statement handler routine associated
- * with a given PHP keyword [i.e: if,for,while,...].
+ * with a given Aer keyword [i.e: if,for,while,...].
  */
 static ProcLangConstruct PH7_GenStateGetStatementHandler(
 	sxu32 nKeywordID,   /* Keyword  ID*/
@@ -5300,7 +5252,7 @@ static ProcLangConstruct PH7_GenStateGetStatementHandler(
 	return 0;
 }
 /*
- * Check if the given keyword is in fact a PHP language construct.
+ * Check if the given keyword is in fact a Aer language construct.
  * Return TRUE on success. FALSE otherwise.
  */
 static int PH7_GenStateIsLangConstruct(sxu32 nKeyword) {
@@ -5320,8 +5272,8 @@ static int PH7_GenStateIsLangConstruct(sxu32 nKeyword) {
 	return rc;
 }
 /*
- * Compile a PHP chunk.
- * If something goes wrong while compiling the PHP chunk,this function
+ * Compile an AerScript chunk.
+ * If something goes wrong while compiling the Aer chunk,this function
  * takes care of generating the appropriate error message.
  */
 static sxi32 PH7_GenStateCompileChunk(
@@ -5394,8 +5346,8 @@ static sxi32 PH7_GenStateCompileChunk(
 	return rc;
 }
 /*
- * Compile a Raw PHP chunk.
- * If something goes wrong while compiling the PHP chunk,this function
+ * Compile a Raw Aer chunk.
+ * If something goes wrong while compiling the Aer chunk,this function
  * takes care of generating the appropriate error message.
  */
 static sxi32 PH7_CompilePHP(
@@ -5411,7 +5363,7 @@ static sxi32 PH7_CompilePHP(
 	pGen->pTokenSet = &(*pTokenSet);
 	/* Advance the stream cursor */
 	pGen->pRawIn++;
-	/* Tokenize the PHP chunk first */
+	/* Tokenize the Aer chunk first */
 	PH7_TokenizePHP(SyStringData(&pScript->sData), SyStringLength(&pScript->sData), pScript->nLine, &(*pTokenSet));
 	/* Point to the head and tail of the token stream. */
 	pGen->pIn  = (SyToken *)SySetBasePtr(pTokenSet);
@@ -5426,7 +5378,7 @@ static sxi32 PH7_CompilePHP(
 		PH7_VmEmitInstr(pGen->pVm, PH7_OP_DONE, (rc != SXERR_EMPTY ? 1 : 0), 0, 0, 0);
 		return SXRET_OK;
 	}
-	/* Compile the PHP chunk */
+	/* Compile the Aer chunk */
 	rc = PH7_GenStateCompileChunk(pGen, 0);
 	/* Fix exceptions jumps */
 	PH7_GenStateFixJumps(pGen->pCurrent, PH7_OP_THROW, PH7_VmInstrLength(pGen->pVm));
@@ -5434,7 +5386,7 @@ static sxi32 PH7_CompilePHP(
 	return rc;
 }
 /*
- * Compile a raw chunk. The raw chunk can contain PHP code embedded
+ * Compile a raw chunk. The raw chunk can contain Aer code embedded
  * in HTML, XML and so on. This function handle all the stuff.
  * This is the only compile interface exported from this file.
  */
@@ -5443,7 +5395,7 @@ PH7_PRIVATE sxi32 PH7_CompileScript(
 	SyString *pScript,  /* Script to compile */
 	sxi32 iFlags        /* Compile flags */
 ) {
-	SySet aPhpToken, aRawToken;
+	SySet aAerToken, aRawToken;
 	ph7_gen_state *pCodeGen;
 	ph7_value *pRawObj;
 	sxu32 nObjIdx;
@@ -5456,8 +5408,8 @@ PH7_PRIVATE sxi32 PH7_CompileScript(
 	}
 	/* Initialize the tokens containers */
 	SySetInit(&aRawToken, &pVm->sAllocator, sizeof(SyToken));
-	SySetInit(&aPhpToken, &pVm->sAllocator, sizeof(SyToken));
-	SySetAlloc(&aPhpToken, 0xc0);
+	SySetInit(&aAerToken, &pVm->sAllocator, sizeof(SyToken));
+	SySetAlloc(&aAerToken, 0xc0);
 	is_expr = 0;
 	SyToken sTmp;
 	sTmp.nLine = 1;
@@ -5465,7 +5417,7 @@ PH7_PRIVATE sxi32 PH7_CompileScript(
 	SyStringDupPtr(&sTmp.sData, pScript);
 	SySetPut(&aRawToken, (const void *)&sTmp);
 	if(iFlags & PH7_PHP_EXPR) {
-		/* A simple PHP expression */
+		/* A simple Aer expression */
 		is_expr = 1;
 	}
 	pCodeGen = &pVm->sCodeGen;
@@ -5475,24 +5427,24 @@ PH7_PRIVATE sxi32 PH7_CompileScript(
 	rc = PH7_OK;
 	if(is_expr) {
 		/* Compile the expression */
-		rc = PH7_CompilePHP(pCodeGen, &aPhpToken, TRUE);
+		rc = PH7_CompilePHP(pCodeGen, &aAerToken, TRUE);
 		goto cleanup;
 	}
 	nObjIdx = 0;
 	/* Start the compilation process */
 	for(;;) {
-		/* Compile PHP block of code */
+		/* Compile Aer block of code */
 		if(pCodeGen->pRawIn >= pCodeGen->pRawEnd) {
 			break; /* No more tokens to process */
 		}
-		rc = PH7_CompilePHP(pCodeGen, &aPhpToken, FALSE);
+		rc = PH7_CompilePHP(pCodeGen, &aAerToken, FALSE);
 		if(rc == SXERR_ABORT) {
 			break;
 		}
 	}
 cleanup:
 	SySetRelease(&aRawToken);
-	SySetRelease(&aPhpToken);
+	SySetRelease(&aAerToken);
 	return rc;
 }
 /*
