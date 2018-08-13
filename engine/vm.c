@@ -10441,7 +10441,7 @@ static sxi32 VmEvalChunk(
 	pByteCode = pVm->pByteContainer;
 	pVm->pByteContainer = &aByteCode;
 	/* Compile the chunk */
-	PH7_CompileScript(pVm, pChunk, iFlags);
+	PH7_CompileAerScript(pVm, pChunk, iFlags);
 	if(pVm->sCodeGen.nErr > 0) {
 		/* Compilation error,return false */
 		if(pCtx) {

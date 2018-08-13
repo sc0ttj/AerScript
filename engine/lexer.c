@@ -643,7 +643,7 @@ static sxu32 KeywordCode(const char *z, int n) {
  * Tokenize a raw PHP input.
  * This is the public tokenizer called by most code generator routines.
  */
-PH7_PRIVATE sxi32 PH7_TokenizePHP(const char *zInput, sxu32 nLen, sxu32 nLineStart, SySet *pOut) {
+PH7_PRIVATE sxi32 PH7_TokenizeAerScript(const char *zInput, sxu32 nLen, sxu32 nLineStart, SySet *pOut) {
 	SyLex sLexer;
 	sxi32 rc;
 	/* Initialize the lexer */

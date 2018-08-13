@@ -1551,7 +1551,7 @@ PH7_PRIVATE sxi32 PH7_MemObjToBool(ph7_value *pObj);
 PH7_PRIVATE sxi64 PH7_TokenValueToInt64(SyString *pData);
 /* lex.c function prototypes */
 PH7_PRIVATE sxi32 PH7_TokenizeRawText(const char *zInput, sxu32 nLen, SySet *pOut);
-PH7_PRIVATE sxi32 PH7_TokenizePHP(const char *zInput, sxu32 nLen, sxu32 nLineStart, SySet *pOut);
+PH7_PRIVATE sxi32 PH7_TokenizeAerScript(const char *zInput, sxu32 nLen, sxu32 nLineStart, SySet *pOut);
 /* vm.c function prototypes */
 PH7_PRIVATE void PH7_VmReleaseContextValue(ph7_context *pCtx, ph7_value *pValue);
 PH7_PRIVATE sxi32 PH7_VmInitFuncState(ph7_vm *pVm, ph7_vm_func *pFunc, const char *zName, sxu32 nByte,
@@ -1625,7 +1625,7 @@ PH7_PRIVATE sxi32 PH7_CompileAnonFunc(ph7_gen_state *pGen, sxi32 iCompileFlag);
 PH7_PRIVATE sxi32 PH7_InitCodeGenerator(ph7_vm *pVm, ProcConsumer xErr, void *pErrData);
 PH7_PRIVATE sxi32 PH7_ResetCodeGenerator(ph7_vm *pVm, ProcConsumer xErr, void *pErrData);
 PH7_PRIVATE sxi32 PH7_GenCompileError(ph7_gen_state *pGen, sxi32 nErrType, sxu32 nLine, const char *zFormat, ...);
-PH7_PRIVATE sxi32 PH7_CompileScript(ph7_vm *pVm, SyString *pScript, sxi32 iFlags);
+PH7_PRIVATE sxi32 PH7_CompileAerScript(ph7_vm *pVm, SyString *pScript, sxi32 iFlags);
 /* constant.c function prototypes */
 PH7_PRIVATE void PH7_RegisterBuiltInConstant(ph7_vm *pVm);
 /* builtin.c function prototypes */

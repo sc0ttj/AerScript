@@ -652,7 +652,7 @@ int ph7_vm_init(
  * This API does not actually evaluate the PHP code. It merely compile and prepares the PHP script
  * for evaluation.
  */
-static sxi32 ProcessScript(
+static sxi32 ProcessSourceFile(
 	ph7 *pEngine,          /* Running PH7 engine */
 	ph7_vm **ppVm,         /* OUT: A pointer to the virtual machine */
 	SyString *pScript,     /* Raw PHP script to compile */
@@ -680,7 +680,7 @@ static sxi32 ProcessScript(
 		PH7_VmPushFilePath(pVm, pFilePath, -1, TRUE, 0);
 	}
 	/* Compile the script */
-	PH7_CompileScript(pVm, &(*pScript), iFlags);
+	PH7_CompileAerScript(pVm, &(*pScript), iFlags);
 	if(pVm->sCodeGen.nErr > 0 || pVm == 0) {
 		sxu32 nErr = pVm->sCodeGen.nErr;
 		/* Compilation error or null ppVm pointer,release this VM */
@@ -740,7 +740,7 @@ int ph7_compile(ph7 *pEngine, const char *zSource, int nLen, ph7_vm **ppOutVm) {
 	}
 #endif
 	/* Compile the script */
-	rc = ProcessScript(&(*pEngine), ppOutVm, &sScript, 0, 0);
+	rc = ProcessSourceFile(&(*pEngine), ppOutVm, &sScript, 0, 0);
 #if defined(PH7_ENABLE_THREADS)
 	/* Leave engine mutex */
 	SyMutexLeave(sMPGlobal.pMutexMethods, pEngine->pMutex); /* NO-OP if sMPGlobal.nThreadingLevel != PH7_THREAD_LEVEL_MULTI */
@@ -772,7 +772,7 @@ int ph7_compile_v2(ph7 *pEngine, const char *zSource, int nLen, ph7_vm **ppOutVm
 	}
 #endif
 	/* Compile the script */
-	rc = ProcessScript(&(*pEngine), ppOutVm, &sScript, iFlags, 0);
+	rc = ProcessSourceFile(&(*pEngine), ppOutVm, &sScript, iFlags, 0);
 #if defined(PH7_ENABLE_THREADS)
 	/* Leave engine mutex */
 	SyMutexLeave(sMPGlobal.pMutexMethods, pEngine->pMutex); /* NO-OP if sMPGlobal.nThreadingLevel != PH7_THREAD_LEVEL_MULTI */
@@ -819,7 +819,7 @@ int ph7_compile_file(ph7 *pEngine, const char *zFilePath, ph7_vm **ppOutVm, int 
 		} else {
 			/* Compile the file */
 			SyStringInitFromBuf(&sScript, pMapView, nSize);
-			rc = ProcessScript(&(*pEngine), ppOutVm, &sScript, iFlags, zFilePath);
+			rc = ProcessSourceFile(&(*pEngine), ppOutVm, &sScript, iFlags, zFilePath);
 			/* Release the memory view of the whole file */
 			if(pVfs->xUnmap) {
 				pVfs->xUnmap(pMapView, nSize);

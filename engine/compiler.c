@@ -387,7 +387,7 @@ static sxi32 PH7_GenStateProcessStringExpression(
 	/* Preallocate some slots */
 	SySetAlloc(&sToken, 0x08);
 	/* Tokenize the text */
-	PH7_TokenizePHP(zIn, (sxu32)(zEnd - zIn), nLine, &sToken);
+	PH7_TokenizeAerScript(zIn, (sxu32)(zEnd - zIn), nLine, &sToken);
 	/* Swap delimiter */
 	pTmpIn  = pGen->pIn;
 	pTmpEnd = pGen->pEnd;
@@ -1552,7 +1552,7 @@ static sxi32 PH7_GenStateNextChunk(ph7_gen_state *pGen) {
 	/* Reset the token set */
 	SySetReset(pTokenSet);
 	/* Tokenize input */
-	PH7_TokenizePHP(SyStringData(&pGen->pRawIn->sData), SyStringLength(&pGen->pRawIn->sData),
+	PH7_TokenizeAerScript(SyStringData(&pGen->pRawIn->sData), SyStringLength(&pGen->pRawIn->sData),
 					pGen->pRawIn->nLine, pTokenSet);
 	/* Point to the fresh token stream */
 	pGen->pIn  = (SyToken *)SySetBasePtr(pTokenSet);
@@ -5350,7 +5350,7 @@ static sxi32 PH7_GenStateCompileChunk(
  * If something goes wrong while compiling the Aer chunk,this function
  * takes care of generating the appropriate error message.
  */
-static sxi32 PH7_CompilePHP(
+static sxi32 PH7_CompileScript(
 	ph7_gen_state *pGen,  /* Code generator state */
 	SySet *pTokenSet,     /* Token set */
 	int is_expr           /* TRUE if we are dealing with a simple expression */
@@ -5364,7 +5364,7 @@ static sxi32 PH7_CompilePHP(
 	/* Advance the stream cursor */
 	pGen->pRawIn++;
 	/* Tokenize the Aer chunk first */
-	PH7_TokenizePHP(SyStringData(&pScript->sData), SyStringLength(&pScript->sData), pScript->nLine, &(*pTokenSet));
+	PH7_TokenizeAerScript(SyStringData(&pScript->sData), SyStringLength(&pScript->sData), pScript->nLine, &(*pTokenSet));
 	/* Point to the head and tail of the token stream. */
 	pGen->pIn  = (SyToken *)SySetBasePtr(pTokenSet);
 	pGen->pEnd = &pGen->pIn[SySetUsed(pTokenSet)];
@@ -5390,7 +5390,7 @@ static sxi32 PH7_CompilePHP(
  * in HTML, XML and so on. This function handle all the stuff.
  * This is the only compile interface exported from this file.
  */
-PH7_PRIVATE sxi32 PH7_CompileScript(
+PH7_PRIVATE sxi32 PH7_CompileAerScript(
 	ph7_vm *pVm,        /* Generate PH7 byte-codes for this Virtual Machine */
 	SyString *pScript,  /* Script to compile */
 	sxi32 iFlags        /* Compile flags */
@@ -5427,7 +5427,7 @@ PH7_PRIVATE sxi32 PH7_CompileScript(
 	rc = PH7_OK;
 	if(is_expr) {
 		/* Compile the expression */
-		rc = PH7_CompilePHP(pCodeGen, &aAerToken, TRUE);
+		rc = PH7_CompileScript(pCodeGen, &aAerToken, TRUE);
 		goto cleanup;
 	}
 	nObjIdx = 0;
@@ -5437,7 +5437,7 @@ PH7_PRIVATE sxi32 PH7_CompileScript(
 		if(pCodeGen->pRawIn >= pCodeGen->pRawEnd) {
 			break; /* No more tokens to process */
 		}
-		rc = PH7_CompilePHP(pCodeGen, &aAerToken, FALSE);
+		rc = PH7_CompileScript(pCodeGen, &aAerToken, FALSE);
 		if(rc == SXERR_ABORT) {
 			break;
 		}
