@@ -1281,7 +1281,7 @@ PH7_PRIVATE sxi32 PH7_VmInit(
 	pVm->nMagic = PH7_VM_INIT;
 	SyStringInitFromBuf(&sBuiltin, PH7_BUILTIN_LIB, sizeof(PH7_BUILTIN_LIB) - 1);
 	/* Compile the built-in library */
-	VmEvalChunk(&(*pVm), 0, &sBuiltin, PH7_PHP_CODE, FALSE);
+	VmEvalChunk(&(*pVm), 0, &sBuiltin, PH7_AERSCRIPT_CODE, FALSE);
 	/* Reset the code generator */
 	PH7_ResetCodeGenerator(&(*pVm), pEngine->xConf.xErr, pEngine->xConf.pErrData);
 	return SXRET_OK;
@@ -9004,7 +9004,7 @@ static int vm_builtin_assert(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 		SyString sChunk;
 		SyStringInitFromBuf(&sChunk, SyBlobData(&pAssert->sBlob), SyBlobLength(&pAssert->sBlob));
 		if(sChunk.nByte > 0) {
-			VmEvalChunk(pVm, pCtx, &sChunk, PH7_PHP_CODE | PH7_PHP_EXPR, FALSE);
+			VmEvalChunk(pVm, pCtx, &sChunk, PH7_AERSCRIPT_CODE | PH7_AERSCRIPT_EXPR, FALSE);
 			/* Extract evaluation result */
 			iResult = ph7_value_to_bool(pCtx->pRet);
 		} else {
@@ -10513,7 +10513,7 @@ static int vm_builtin_eval(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 		return SXRET_OK;
 	}
 	/* Eval the chunk */
-	VmEvalChunk(pCtx->pVm, &(*pCtx), &sChunk, PH7_PHP_CODE, FALSE);
+	VmEvalChunk(pCtx->pVm, &(*pCtx), &sChunk, PH7_AERSCRIPT_CODE, FALSE);
 	return SXRET_OK;
 }
 /*
@@ -10636,7 +10636,7 @@ static sxi32 VmExecIncludedFile(
 			SyString sScript;
 			/* Compile and execute the script */
 			SyStringInitFromBuf(&sScript, SyBlobData(&sContents), SyBlobLength(&sContents));
-			VmEvalChunk(pCtx->pVm, &(*pCtx), &sScript, PH7_PHP_CODE, TRUE);
+			VmEvalChunk(pCtx->pVm, &(*pCtx), &sScript, PH7_AERSCRIPT_CODE, TRUE);
 		}
 	}
 	/* Pop from the set of included file */

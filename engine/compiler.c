@@ -5353,7 +5353,7 @@ static sxi32 PH7_GenStateCompileChunk(
 static sxi32 PH7_CompileScript(
 	ph7_gen_state *pGen,  /* Code generator state */
 	SySet *pTokenSet,     /* Token set */
-	int is_expr           /* TRUE if we are dealing with a simple expression */
+	sxbool bExpr          /* TRUE if we are dealing with a simple expression */
 ) {
 	SyToken *pScript = pGen->pRawIn; /* Script to compile */
 	sxi32 rc;
@@ -5368,7 +5368,7 @@ static sxi32 PH7_CompileScript(
 	/* Point to the head and tail of the token stream. */
 	pGen->pIn  = (SyToken *)SySetBasePtr(pTokenSet);
 	pGen->pEnd = &pGen->pIn[SySetUsed(pTokenSet)];
-	if(is_expr) {
+	if(bExpr) {
 		rc = SXERR_EMPTY;
 		if(pGen->pIn < pGen->pEnd) {
 			/* A simple expression,compile it */
@@ -5378,7 +5378,7 @@ static sxi32 PH7_CompileScript(
 		PH7_VmEmitInstr(pGen->pVm, PH7_OP_DONE, (rc != SXERR_EMPTY ? 1 : 0), 0, 0, 0);
 		return SXRET_OK;
 	}
-	/* Compile the Aer chunk */
+	/* Compile the Aer global scope */
 	rc = PH7_GenStateCompileChunk(pGen, 0);
 	/* Fix exceptions jumps */
 	PH7_GenStateFixJumps(pGen->pCurrent, PH7_OP_THROW, PH7_VmInstrLength(pGen->pVm));
@@ -5400,7 +5400,6 @@ PH7_PRIVATE sxi32 PH7_CompileAerScript(
 	ph7_value *pRawObj;
 	sxu32 nObjIdx;
 	sxi32 nRawObj;
-	int is_expr;
 	sxi32 rc;
 	if(pScript->nByte < 1) {
 		/* Nothing to compile */
@@ -5410,39 +5409,34 @@ PH7_PRIVATE sxi32 PH7_CompileAerScript(
 	SySetInit(&aRawToken, &pVm->sAllocator, sizeof(SyToken));
 	SySetInit(&aAerToken, &pVm->sAllocator, sizeof(SyToken));
 	SySetAlloc(&aAerToken, 0xc0);
-	is_expr = 0;
 	SyToken sTmp;
 	sTmp.nLine = 1;
 	sTmp.pUserData = 0;
 	SyStringDupPtr(&sTmp.sData, pScript);
 	SySetPut(&aRawToken, (const void *)&sTmp);
-	if(iFlags & PH7_PHP_EXPR) {
-		/* A simple Aer expression */
-		is_expr = 1;
-	}
 	pCodeGen = &pVm->sCodeGen;
 	/* Process high-level tokens */
 	pCodeGen->pRawIn = (SyToken *)SySetBasePtr(&aRawToken);
 	pCodeGen->pRawEnd = &pCodeGen->pRawIn[SySetUsed(&aRawToken)];
 	rc = PH7_OK;
-	if(is_expr) {
+	if(iFlags & PH7_AERSCRIPT_EXPR) {
 		/* Compile the expression */
 		rc = PH7_CompileScript(pCodeGen, &aAerToken, TRUE);
-		goto cleanup;
-	}
-	nObjIdx = 0;
-	/* Start the compilation process */
-	for(;;) {
-		/* Compile Aer block of code */
-		if(pCodeGen->pRawIn >= pCodeGen->pRawEnd) {
-			break; /* No more tokens to process */
+	} else {
+		nObjIdx = 0;
+		/* Start the compilation process */
+		for(;;) {
+			/* Compile Aer block of code */
+			if(pCodeGen->pRawIn >= pCodeGen->pRawEnd) {
+				break; /* No more tokens to process */
+			}
+			/* Compile the global scope */
+			rc = PH7_CompileScript(pCodeGen, &aAerToken, FALSE);
+			if(rc == SXERR_ABORT) {
+				break;
+			}
 		}
-		rc = PH7_CompileScript(pCodeGen, &aAerToken, FALSE);
-		if(rc == SXERR_ABORT) {
-			break;
-		}
 	}
-cleanup:
 	SySetRelease(&aRawToken);
 	SySetRelease(&aAerToken);
 	return rc;

@@ -656,17 +656,12 @@ static sxi32 ProcessSourceFile(
 	ph7 *pEngine,          /* Running PH7 engine */
 	ph7_vm **ppVm,         /* OUT: A pointer to the virtual machine */
 	SyString *pScript,     /* Raw PHP script to compile */
-	sxi32 iFlags,          /* Compile-time flags */
 	const char *zFilePath  /* File path if script come from a file. NULL otherwise */
 ) {
 	ph7_vm *pVm = *ppVm;
 	int iFileDir, rc;
 	char *pFileDir, *fFilePath[PATH_MAX + 1];
 	char *pFilePath[PATH_MAX + 1];
-	if(iFlags < 0) {
-		/* Default compile-time flags */
-		iFlags = 0;
-	}
 	/* Install local import path which is the current directory */
 	ph7_vm_config(pVm, PH7_VM_CONFIG_IMPORT_PATH, "./");
 	if(zFilePath && SyRealPath(zFilePath, fFilePath) == PH7_OK) {
@@ -680,7 +675,7 @@ static sxi32 ProcessSourceFile(
 		PH7_VmPushFilePath(pVm, pFilePath, -1, TRUE, 0);
 	}
 	/* Compile the script */
-	PH7_CompileAerScript(pVm, &(*pScript), iFlags);
+	PH7_CompileAerScript(pVm, &(*pScript), PH7_AERSCRIPT_CODE);
 	if(pVm->sCodeGen.nErr > 0 || pVm == 0) {
 		sxu32 nErr = pVm->sCodeGen.nErr;
 		/* Compilation error or null ppVm pointer,release this VM */
@@ -740,39 +735,7 @@ int ph7_compile(ph7 *pEngine, const char *zSource, int nLen, ph7_vm **ppOutVm) {
 	}
 #endif
 	/* Compile the script */
-	rc = ProcessSourceFile(&(*pEngine), ppOutVm, &sScript, 0, 0);
-#if defined(PH7_ENABLE_THREADS)
-	/* Leave engine mutex */
-	SyMutexLeave(sMPGlobal.pMutexMethods, pEngine->pMutex); /* NO-OP if sMPGlobal.nThreadingLevel != PH7_THREAD_LEVEL_MULTI */
-#endif
-	/* Compilation result */
-	return rc;
-}
-/*
- * [CAPIREF: ph7_compile_v2()]
- * Please refer to the official documentation for function purpose and expected parameters.
- */
-int ph7_compile_v2(ph7 *pEngine, const char *zSource, int nLen, ph7_vm **ppOutVm, int iFlags) {
-	SyString sScript;
-	int rc;
-	if(PH7_ENGINE_MISUSE(pEngine) || zSource == 0) {
-		return PH7_CORRUPT;
-	}
-	if(nLen < 0) {
-		/* Compute input length automatically */
-		nLen = (int)SyStrlen(zSource);
-	}
-	SyStringInitFromBuf(&sScript, zSource, nLen);
-#if defined(PH7_ENABLE_THREADS)
-	/* Acquire engine mutex */
-	SyMutexEnter(sMPGlobal.pMutexMethods, pEngine->pMutex); /* NO-OP if sMPGlobal.nThreadingLevel != PH7_THREAD_LEVEL_MULTI */
-	if(sMPGlobal.nThreadingLevel > PH7_THREAD_LEVEL_SINGLE &&
-			PH7_THRD_ENGINE_RELEASE(pEngine)) {
-		return PH7_ABORT; /* Another thread have released this instance */
-	}
-#endif
-	/* Compile the script */
-	rc = ProcessSourceFile(&(*pEngine), ppOutVm, &sScript, iFlags, 0);
+	rc = ProcessSourceFile(&(*pEngine), ppOutVm, &sScript, 0);
 #if defined(PH7_ENABLE_THREADS)
 	/* Leave engine mutex */
 	SyMutexLeave(sMPGlobal.pMutexMethods, pEngine->pMutex); /* NO-OP if sMPGlobal.nThreadingLevel != PH7_THREAD_LEVEL_MULTI */
@@ -784,7 +747,7 @@ int ph7_compile_v2(ph7 *pEngine, const char *zSource, int nLen, ph7_vm **ppOutVm
  * [CAPIREF: ph7_compile_file()]
  * Please refer to the official documentation for function purpose and expected parameters.
  */
-int ph7_compile_file(ph7 *pEngine, const char *zFilePath, ph7_vm **ppOutVm, int iFlags) {
+int ph7_compile_file(ph7 *pEngine, const char *zFilePath, ph7_vm **ppOutVm) {
 	const ph7_vfs *pVfs;
 	int rc;
 	rc = PH7_OK; /* cc warning */
@@ -819,7 +782,7 @@ int ph7_compile_file(ph7 *pEngine, const char *zFilePath, ph7_vm **ppOutVm, int 
 		} else {
 			/* Compile the file */
 			SyStringInitFromBuf(&sScript, pMapView, nSize);
-			rc = ProcessSourceFile(&(*pEngine), ppOutVm, &sScript, iFlags, zFilePath);
+			rc = ProcessSourceFile(&(*pEngine), ppOutVm, &sScript, zFilePath);
 			/* Release the memory view of the whole file */
 			if(pVfs->xUnmap) {
 				pVfs->xUnmap(pMapView, nSize);

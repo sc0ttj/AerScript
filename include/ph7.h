@@ -447,8 +447,8 @@ typedef sxi64 ph7_int64;
  * processing the input.
  * Refer to the official documentation for additional information.
  */
-#define PH7_PHP_CODE 0x01 /* PHP Block of Code */
-#define PH7_PHP_EXPR 0x02 /* PHP Simple Expression */
+#define PH7_AERSCRIPT_CODE 0x01 /* PHP Block of Code */
+#define PH7_AERSCRIPT_EXPR 0x02 /* PHP Simple Expression */
 /*
  * Call Context Error Message Severity Level.
  *
@@ -607,8 +607,7 @@ PH7_APIEXPORT int ph7_config(ph7 *pEngine, int nConfigOp, ...);
 PH7_APIEXPORT int ph7_release(ph7 *pEngine);
 /* Compile Interfaces */
 PH7_APIEXPORT int ph7_compile(ph7 *pEngine, const char *zSource, int nLen, ph7_vm **ppOutVm);
-PH7_APIEXPORT int ph7_compile_v2(ph7 *pEngine, const char *zSource, int nLen, ph7_vm **ppOutVm, int iFlags);
-PH7_APIEXPORT int ph7_compile_file(ph7 *pEngine, const char *zFilePath, ph7_vm **ppOutVm, int iFlags);
+PH7_APIEXPORT int ph7_compile_file(ph7 *pEngine, const char *zFilePath, ph7_vm **ppOutVm);
 /* Virtual Machine Handling Interfaces */
 PH7_APIEXPORT int ph7_vm_config(ph7_vm *pVm, int iConfigOp, ...);
 PH7_APIEXPORT int ph7_vm_exec(ph7_vm *pVm, int *pExitStatus);
