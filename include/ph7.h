@@ -606,7 +606,7 @@ PH7_APIEXPORT int ph7_init(ph7 **ppEngine);
 PH7_APIEXPORT int ph7_config(ph7 *pEngine, int nConfigOp, ...);
 PH7_APIEXPORT int ph7_release(ph7 *pEngine);
 /* Compile Interfaces */
-PH7_APIEXPORT int ph7_compile(ph7 *pEngine, const char *zSource, int nLen, ph7_vm **ppOutVm);
+PH7_APIEXPORT int ph7_compile_code(ph7 *pEngine, const char *zSource, int nLen, ph7_vm **ppOutVm);
 PH7_APIEXPORT int ph7_compile_file(ph7 *pEngine, const char *zFilePath, ph7_vm **ppOutVm);
 /* Virtual Machine Handling Interfaces */
 PH7_APIEXPORT int ph7_vm_config(ph7_vm *pVm, int iConfigOp, ...);

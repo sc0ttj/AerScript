@@ -715,7 +715,7 @@ Release:
  * [CAPIREF: ph7_compile()]
  * Please refer to the official documentation for function purpose and expected parameters.
  */
-int ph7_compile(ph7 *pEngine, const char *zSource, int nLen, ph7_vm **ppOutVm) {
+int ph7_compile_code(ph7 *pEngine, const char *zSource, int nLen, ph7_vm **ppOutVm) {
 	SyString sScript;
 	int rc;
 	if(PH7_ENGINE_MISUSE(pEngine) || zSource == 0) {
