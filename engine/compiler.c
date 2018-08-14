@@ -1599,7 +1599,7 @@ static sxi32 PH7_CompileBlock(
 				break;
 			}
 			/* Compile a single statement */
-			rc = PH7_GenStateCompileChunk(&(*pGen), PH7_COMPILE_SINGLE_STMT);
+			rc = PH7_GenStateCompileChunk(&(*pGen), PH7_COMPILE_STATEMENT);
 			if(rc == SXERR_ABORT) {
 				return SXERR_ABORT;
 			}
@@ -1607,7 +1607,7 @@ static sxi32 PH7_CompileBlock(
 		PH7_GenStateLeaveBlock(&(*pGen), 0);
 	} else {
 		/* Compile a single statement */
-		rc = PH7_GenStateCompileChunk(&(*pGen), PH7_COMPILE_SINGLE_STMT);
+		rc = PH7_GenStateCompileChunk(&(*pGen), PH7_COMPILE_STATEMENT);
 		if(rc == SXERR_ABORT) {
 			return SXERR_ABORT;
 		}
@@ -5321,7 +5321,7 @@ static sxi32 PH7_GenStateCompileChunk(
 					PH7_VmEmitInstr(pGen->pVm, PH7_OP_POP, 1, 0, 0, 0);
 				}
 			} else {
-				/* Go compile the sucker */
+				/* Compile the statement */
 				rc = xCons(&(*pGen));
 			}
 			if(rc == SXERR_ABORT) {
@@ -5333,14 +5333,10 @@ static sxi32 PH7_GenStateCompileChunk(
 		while(pGen->pIn < pGen->pEnd && (pGen->pIn->nType & PH7_TK_SEMI)) {
 			pGen->pIn++;
 		}
-		if(iFlags & PH7_COMPILE_SINGLE_STMT) {
+		if(iFlags & PH7_COMPILE_STATEMENT) {
 			/* Compile a single statement and return */
 			break;
 		}
-		/* LOOP ONE */
-		/* LOOP TWO */
-		/* LOOP THREE */
-		/* LOOP FOUR */
 	}
 	/* Return compilation status */
 	return rc;

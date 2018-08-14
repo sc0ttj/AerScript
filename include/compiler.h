@@ -42,7 +42,7 @@ struct LangConstruct {
 };
 
 /* Compilation flags */
-#define PH7_COMPILE_SINGLE_STMT 0x001 /* Compile a single statement */
+#define PH7_COMPILE_STATEMENT 0x001 /* Compile a single statement */
 
 /* Token stream synchronization macros */
 #define SWAP_TOKEN_STREAM(GEN,START,END)\
