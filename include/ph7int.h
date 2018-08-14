@@ -60,6 +60,7 @@ typedef struct ph7_class          ph7_class;
 	typedef unsigned short int sxu16; /* 16 bits(2 bytes) unsigned integer */
 	typedef int                sxi32; /* 32 bits(4 bytes) integer */
 	typedef unsigned int       sxu32; /* 32 bits(4 bytes) unsigned integer */
+	typedef int                sxbool; /* boolean */
 	typedef long               sxptr;
 	typedef unsigned long      sxuptr;
 	typedef long               sxlong;
