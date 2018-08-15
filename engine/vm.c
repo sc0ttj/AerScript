@@ -10513,7 +10513,7 @@ static int vm_builtin_eval(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 		return SXRET_OK;
 	}
 	/* Eval the chunk */
-	VmEvalChunk(pCtx->pVm, &(*pCtx), &sChunk, PH7_AERSCRIPT_CODE, FALSE);
+	VmEvalChunk(pCtx->pVm, &(*pCtx), &sChunk, PH7_AERSCRIPT_CODE, TRUE);
 	return SXRET_OK;
 }
 /*
