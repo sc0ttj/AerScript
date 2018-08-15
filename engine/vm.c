@@ -1076,7 +1076,7 @@ PH7_PRIVATE sxi32 PH7_VmInit(
 	/* VM correctly initialized,set the magic number */
 	pVm->nMagic = PH7_VM_INIT;
 	SyStringInitFromBuf(&sBuiltin, PH7_BUILTIN_LIB, sizeof(PH7_BUILTIN_LIB) - 1);
-	/* Compile the built-in library */
+	/* Precompile the built-in library */
 	VmEvalChunk(&(*pVm), 0, &sBuiltin, PH7_AERSCRIPT_CODE);
 	/* Reset the code generator */
 	PH7_ResetCodeGenerator(&(*pVm), pEngine->xConf.xErr, pEngine->xConf.pErrData);
@@ -1421,8 +1421,8 @@ static ph7_value *VmExtractMemObj(
 	}
 	/* Perform the lookup */
 	if(pName == 0 || pName->nByte < 1) {
-		static const SyString sAnnon = { " ", sizeof(char) };
-		pName = &sAnnon;
+		static const SyString sAnon = { " ", sizeof(char) };
+		pName = &sAnon;
 		/* Always nullify the object */
 		bNullify = TRUE;
 		bDup = FALSE;

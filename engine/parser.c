@@ -547,7 +547,7 @@ static void ExprAssembleLiteral(SyToken **ppCur, SyToken *pEnd) {
  * $new_numbers = array_map($double, $numbers);
  * print implode(' ', $new_numbers);
  */
-static sxi32 ExprAssembleAnnon(ph7_gen_state *pGen, SyToken **ppCur, SyToken *pEnd) {
+static sxi32 ExprAssembleAnon(ph7_gen_state *pGen, SyToken **ppCur, SyToken *pEnd) {
 	SyToken *pIn = *ppCur;
 	sxu32 nLine;
 	sxi32 rc;
@@ -732,7 +732,7 @@ static sxi32 ExprExtractNode(ph7_gen_state *pGen, ph7_expr_node **ppNode) {
 				pNode->xCode = PH7_CompileLiteral;
 			} else {
 				/* Assemble anonymous functions body */
-				rc = ExprAssembleAnnon(&(*pGen), &pCur, pGen->pEnd);
+				rc = ExprAssembleAnon(&(*pGen), &pCur, pGen->pEnd);
 				if(rc != SXRET_OK) {
 					SyMemBackendPoolFree(&pGen->pVm->sAllocator, pNode);
 					return rc;
