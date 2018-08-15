@@ -78,7 +78,7 @@ static int PH7_vfs_chdir(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	if(pVfs == 0 || pVfs->xChdir == 0) {
 		/* IO routine not implemented,return NULL */
 		ph7_context_throw_error_format(pCtx, PH7_CTX_WARNING,
-									   "IO routine(%s) not implemented in the underlying VFS,PH7 is returning FALSE",
+									   "IO routine(%s) not implemented in the underlying VFS",
 									   ph7_function_name(pCtx)
 									  );
 		ph7_result_bool(pCtx, 0);
@@ -115,7 +115,7 @@ static int PH7_vfs_chroot(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	if(pVfs == 0 || pVfs->xChroot == 0) {
 		/* IO routine not implemented,return NULL */
 		ph7_context_throw_error_format(pCtx, PH7_CTX_WARNING,
-									   "IO routine(%s) not implemented in the underlying VFS,PH7 is returning FALSE",
+									   "IO routine(%s) not implemented in the underlying VFS",
 									   ph7_function_name(pCtx)
 									  );
 		ph7_result_bool(pCtx, 0);
@@ -147,7 +147,7 @@ static int PH7_vfs_getcwd(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 		SXUNUSED(apArg);
 		/* IO routine not implemented,return NULL */
 		ph7_context_throw_error_format(pCtx, PH7_CTX_WARNING,
-									   "IO routine(%s) not implemented in the underlying VFS,PH7 is returning FALSE",
+									   "IO routine(%s) not implemented in the underlying VFS",
 									   ph7_function_name(pCtx)
 									  );
 		ph7_result_bool(pCtx, 0);
@@ -185,7 +185,7 @@ static int PH7_vfs_rmdir(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	if(pVfs == 0 || pVfs->xRmdir == 0) {
 		/* IO routine not implemented,return NULL */
 		ph7_context_throw_error_format(pCtx, PH7_CTX_WARNING,
-									   "IO routine(%s) not implemented in the underlying VFS,PH7 is returning FALSE",
+									   "IO routine(%s) not implemented in the underlying VFS",
 									   ph7_function_name(pCtx)
 									  );
 		ph7_result_bool(pCtx, 0);
@@ -222,7 +222,7 @@ static int PH7_vfs_is_dir(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	if(pVfs == 0 || pVfs->xIsdir == 0) {
 		/* IO routine not implemented,return NULL */
 		ph7_context_throw_error_format(pCtx, PH7_CTX_WARNING,
-									   "IO routine(%s) not implemented in the underlying VFS,PH7 is returning FALSE",
+									   "IO routine(%s) not implemented in the underlying VFS",
 									   ph7_function_name(pCtx)
 									  );
 		ph7_result_bool(pCtx, 0);
@@ -270,7 +270,7 @@ static int PH7_vfs_mkdir(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	if(pVfs == 0 || pVfs->xMkdir == 0) {
 		/* IO routine not implemented,return NULL */
 		ph7_context_throw_error_format(pCtx, PH7_CTX_WARNING,
-									   "IO routine(%s) not implemented in the underlying VFS,PH7 is returning FALSE",
+									   "IO routine(%s) not implemented in the underlying VFS",
 									   ph7_function_name(pCtx)
 									  );
 		ph7_result_bool(pCtx, 0);
@@ -321,7 +321,7 @@ static int PH7_vfs_rename(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	if(pVfs == 0 || pVfs->xRename == 0) {
 		/* IO routine not implemented,return NULL */
 		ph7_context_throw_error_format(pCtx, PH7_CTX_WARNING,
-									   "IO routine(%s) not implemented in the underlying VFS,PH7 is returning FALSE",
+									   "IO routine(%s) not implemented in the underlying VFS",
 									   ph7_function_name(pCtx)
 									  );
 		ph7_result_bool(pCtx, 0);
@@ -358,7 +358,7 @@ static int PH7_vfs_realpath(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	if(pVfs == 0 || pVfs->xRealpath == 0) {
 		/* IO routine not implemented,return NULL */
 		ph7_context_throw_error_format(pCtx, PH7_CTX_WARNING,
-									   "IO routine(%s) not implemented in the underlying VFS,PH7 is returning FALSE",
+									   "IO routine(%s) not implemented in the underlying VFS",
 									   ph7_function_name(pCtx)
 									  );
 		ph7_result_bool(pCtx, 0);
@@ -396,7 +396,7 @@ static int PH7_vfs_sleep(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	if(pVfs == 0 || pVfs->xSleep == 0) {
 		/* IO routine not implemented,return NULL */
 		ph7_context_throw_error_format(pCtx, PH7_CTX_WARNING,
-									   "IO routine(%s) not implemented in the underlying VFS,PH7 is returning FALSE",
+									   "IO routine(%s) not implemented in the underlying VFS",
 									   ph7_function_name(pCtx)
 									  );
 		ph7_result_bool(pCtx, 0);
@@ -479,7 +479,7 @@ static int PH7_vfs_unlink(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	if(pVfs == 0 || pVfs->xUnlink == 0) {
 		/* IO routine not implemented,return NULL */
 		ph7_context_throw_error_format(pCtx, PH7_CTX_WARNING,
-									   "IO routine(%s) not implemented in the underlying VFS,PH7 is returning FALSE",
+									   "IO routine(%s) not implemented in the underlying VFS",
 									   ph7_function_name(pCtx)
 									  );
 		ph7_result_bool(pCtx, 0);
@@ -519,7 +519,7 @@ static int PH7_vfs_chmod(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	if(pVfs == 0 || pVfs->xChmod == 0) {
 		/* IO routine not implemented,return NULL */
 		ph7_context_throw_error_format(pCtx, PH7_CTX_WARNING,
-									   "IO routine(%s) not implemented in the underlying VFS,PH7 is returning FALSE",
+									   "IO routine(%s) not implemented in the underlying VFS",
 									   ph7_function_name(pCtx)
 									  );
 		ph7_result_bool(pCtx, 0);
@@ -560,7 +560,7 @@ static int PH7_vfs_chown(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	if(pVfs == 0 || pVfs->xChown == 0) {
 		/* IO routine not implemented,return NULL */
 		ph7_context_throw_error_format(pCtx, PH7_CTX_WARNING,
-									   "IO routine(%s) not implemented in the underlying VFS,PH7 is returning FALSE",
+									   "IO routine(%s) not implemented in the underlying VFS",
 									   ph7_function_name(pCtx)
 									  );
 		ph7_result_bool(pCtx, 0);
@@ -601,7 +601,7 @@ static int PH7_vfs_chgrp(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	if(pVfs == 0 || pVfs->xChgrp == 0) {
 		/* IO routine not implemented,return NULL */
 		ph7_context_throw_error_format(pCtx, PH7_CTX_WARNING,
-									   "IO routine(%s) not implemented in the underlying VFS,PH7 is returning FALSE",
+									   "IO routine(%s) not implemented in the underlying VFS",
 									   ph7_function_name(pCtx)
 									  );
 		ph7_result_bool(pCtx, 0);
@@ -640,7 +640,7 @@ static int PH7_vfs_disk_free_space(ph7_context *pCtx, int nArg, ph7_value **apAr
 	if(pVfs == 0 || pVfs->xFreeSpace == 0) {
 		/* IO routine not implemented,return NULL */
 		ph7_context_throw_error_format(pCtx, PH7_CTX_WARNING,
-									   "IO routine(%s) not implemented in the underlying VFS,PH7 is returning FALSE",
+									   "IO routine(%s) not implemented in the underlying VFS",
 									   ph7_function_name(pCtx)
 									  );
 		ph7_result_bool(pCtx, 0);
@@ -677,7 +677,7 @@ static int PH7_vfs_disk_total_space(ph7_context *pCtx, int nArg, ph7_value **apA
 	if(pVfs == 0 || pVfs->xTotalSpace == 0) {
 		/* IO routine not implemented,return NULL */
 		ph7_context_throw_error_format(pCtx, PH7_CTX_WARNING,
-									   "IO routine(%s) not implemented in the underlying VFS,PH7 is returning FALSE",
+									   "IO routine(%s) not implemented in the underlying VFS",
 									   ph7_function_name(pCtx)
 									  );
 		ph7_result_bool(pCtx, 0);
@@ -714,7 +714,7 @@ static int PH7_vfs_file_exists(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	if(pVfs == 0 || pVfs->xFileExists == 0) {
 		/* IO routine not implemented,return NULL */
 		ph7_context_throw_error_format(pCtx, PH7_CTX_WARNING,
-									   "IO routine(%s) not implemented in the underlying VFS,PH7 is returning FALSE",
+									   "IO routine(%s) not implemented in the underlying VFS",
 									   ph7_function_name(pCtx)
 									  );
 		ph7_result_bool(pCtx, 0);
@@ -751,7 +751,7 @@ static int PH7_vfs_file_size(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	if(pVfs == 0 || pVfs->xFileSize == 0) {
 		/* IO routine not implemented,return NULL */
 		ph7_context_throw_error_format(pCtx, PH7_CTX_WARNING,
-									   "IO routine(%s) not implemented in the underlying VFS,PH7 is returning FALSE",
+									   "IO routine(%s) not implemented in the underlying VFS",
 									   ph7_function_name(pCtx)
 									  );
 		ph7_result_bool(pCtx, 0);
@@ -788,7 +788,7 @@ static int PH7_vfs_file_atime(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	if(pVfs == 0 || pVfs->xFileAtime == 0) {
 		/* IO routine not implemented,return NULL */
 		ph7_context_throw_error_format(pCtx, PH7_CTX_WARNING,
-									   "IO routine(%s) not implemented in the underlying VFS,PH7 is returning FALSE",
+									   "IO routine(%s) not implemented in the underlying VFS",
 									   ph7_function_name(pCtx)
 									  );
 		ph7_result_bool(pCtx, 0);
@@ -825,7 +825,7 @@ static int PH7_vfs_file_mtime(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	if(pVfs == 0 || pVfs->xFileMtime == 0) {
 		/* IO routine not implemented,return NULL */
 		ph7_context_throw_error_format(pCtx, PH7_CTX_WARNING,
-									   "IO routine(%s) not implemented in the underlying VFS,PH7 is returning FALSE",
+									   "IO routine(%s) not implemented in the underlying VFS",
 									   ph7_function_name(pCtx)
 									  );
 		ph7_result_bool(pCtx, 0);
@@ -862,7 +862,7 @@ static int PH7_vfs_file_ctime(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	if(pVfs == 0 || pVfs->xFileCtime == 0) {
 		/* IO routine not implemented,return NULL */
 		ph7_context_throw_error_format(pCtx, PH7_CTX_WARNING,
-									   "IO routine(%s) not implemented in the underlying VFS,PH7 is returning FALSE",
+									   "IO routine(%s) not implemented in the underlying VFS",
 									   ph7_function_name(pCtx)
 									  );
 		ph7_result_bool(pCtx, 0);
@@ -899,7 +899,7 @@ static int PH7_vfs_file_inode(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	if(pVfs == 0 || pVfs->xFileCtime == 0) {
 		/* IO routine not implemented,return NULL */
 		ph7_context_throw_error_format(pCtx, PH7_CTX_WARNING,
-									   "IO routine(%s) not implemented in the underlying VFS,PH7 is returning FALSE",
+									   "IO routine(%s) not implemented in the underlying VFS",
 									   ph7_function_name(pCtx)
 									  );
 		ph7_result_bool(pCtx, 0);
@@ -936,7 +936,7 @@ static int PH7_vfs_is_file(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	if(pVfs == 0 || pVfs->xIsFile == 0) {
 		/* IO routine not implemented,return NULL */
 		ph7_context_throw_error_format(pCtx, PH7_CTX_WARNING,
-									   "IO routine(%s) not implemented in the underlying VFS,PH7 is returning FALSE",
+									   "IO routine(%s) not implemented in the underlying VFS",
 									   ph7_function_name(pCtx)
 									  );
 		ph7_result_bool(pCtx, 0);
@@ -973,7 +973,7 @@ static int PH7_vfs_is_link(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	if(pVfs == 0 || pVfs->xIsLink == 0) {
 		/* IO routine not implemented,return NULL */
 		ph7_context_throw_error_format(pCtx, PH7_CTX_WARNING,
-									   "IO routine(%s) not implemented in the underlying VFS,PH7 is returning FALSE",
+									   "IO routine(%s) not implemented in the underlying VFS",
 									   ph7_function_name(pCtx)
 									  );
 		ph7_result_bool(pCtx, 0);
@@ -1010,7 +1010,7 @@ static int PH7_vfs_is_readable(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	if(pVfs == 0 || pVfs->xReadable == 0) {
 		/* IO routine not implemented,return NULL */
 		ph7_context_throw_error_format(pCtx, PH7_CTX_WARNING,
-									   "IO routine(%s) not implemented in the underlying VFS,PH7 is returning FALSE",
+									   "IO routine(%s) not implemented in the underlying VFS",
 									   ph7_function_name(pCtx)
 									  );
 		ph7_result_bool(pCtx, 0);
@@ -1047,7 +1047,7 @@ static int PH7_vfs_is_writable(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	if(pVfs == 0 || pVfs->xWritable == 0) {
 		/* IO routine not implemented,return NULL */
 		ph7_context_throw_error_format(pCtx, PH7_CTX_WARNING,
-									   "IO routine(%s) not implemented in the underlying VFS,PH7 is returning FALSE",
+									   "IO routine(%s) not implemented in the underlying VFS",
 									   ph7_function_name(pCtx)
 									  );
 		ph7_result_bool(pCtx, 0);
@@ -1084,7 +1084,7 @@ static int PH7_vfs_is_executable(ph7_context *pCtx, int nArg, ph7_value **apArg)
 	if(pVfs == 0 || pVfs->xExecutable == 0) {
 		/* IO routine not implemented,return NULL */
 		ph7_context_throw_error_format(pCtx, PH7_CTX_WARNING,
-									   "IO routine(%s) not implemented in the underlying VFS,PH7 is returning FALSE",
+									   "IO routine(%s) not implemented in the underlying VFS",
 									   ph7_function_name(pCtx)
 									  );
 		ph7_result_bool(pCtx, 0);
@@ -1121,7 +1121,7 @@ static int PH7_vfs_filetype(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	if(pVfs == 0 || pVfs->xFiletype == 0) {
 		/* IO routine not implemented,return NULL */
 		ph7_context_throw_error_format(pCtx, PH7_CTX_WARNING,
-									   "IO routine(%s) not implemented in the underlying VFS,PH7 is returning FALSE",
+									   "IO routine(%s) not implemented in the underlying VFS",
 									   ph7_function_name(pCtx)
 									  );
 		ph7_result_bool(pCtx, 0);
@@ -1174,7 +1174,7 @@ static int PH7_vfs_stat(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	if(pVfs == 0 || pVfs->xStat == 0) {
 		/* IO routine not implemented,return NULL */
 		ph7_context_throw_error_format(pCtx, PH7_CTX_WARNING,
-									   "IO routine(%s) not implemented in the underlying VFS,PH7 is returning FALSE",
+									   "IO routine(%s) not implemented in the underlying VFS",
 									   ph7_function_name(pCtx)
 									  );
 		ph7_result_bool(pCtx, 0);
@@ -1242,7 +1242,7 @@ static int PH7_vfs_lstat(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	if(pVfs == 0 || pVfs->xlStat == 0) {
 		/* IO routine not implemented,return NULL */
 		ph7_context_throw_error_format(pCtx, PH7_CTX_WARNING,
-									   "IO routine(%s) not implemented in the underlying VFS,PH7 is returning FALSE",
+									   "IO routine(%s) not implemented in the underlying VFS",
 									   ph7_function_name(pCtx)
 									  );
 		ph7_result_bool(pCtx, 0);
@@ -1295,7 +1295,7 @@ static int PH7_vfs_getenv(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	if(pVfs == 0 || pVfs->xGetenv == 0) {
 		/* IO routine not implemented,return NULL */
 		ph7_context_throw_error_format(pCtx, PH7_CTX_WARNING,
-									   "IO routine(%s) not implemented in the underlying VFS,PH7 is returning FALSE",
+									   "IO routine(%s) not implemented in the underlying VFS",
 									   ph7_function_name(pCtx)
 									  );
 		ph7_result_bool(pCtx, 0);
@@ -1367,7 +1367,7 @@ static int PH7_vfs_putenv(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	if(pVfs == 0 || pVfs->xSetenv == 0) {
 		/* IO routine not implemented,return NULL */
 		ph7_context_throw_error_format(pCtx, PH7_CTX_WARNING,
-									   "IO routine(%s) not implemented in the underlying VFS,PH7 is returning FALSE",
+									   "IO routine(%s) not implemented in the underlying VFS",
 									   ph7_function_name(pCtx)
 									  );
 		ph7_result_bool(pCtx, 0);
@@ -1412,7 +1412,7 @@ static int PH7_vfs_touch(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	if(pVfs == 0 || pVfs->xTouch == 0) {
 		/* IO routine not implemented,return NULL */
 		ph7_context_throw_error_format(pCtx, PH7_CTX_WARNING,
-									   "IO routine(%s) not implemented in the underlying VFS,PH7 is returning FALSE",
+									   "IO routine(%s) not implemented in the underlying VFS",
 									   ph7_function_name(pCtx)
 									  );
 		ph7_result_bool(pCtx, 0);
@@ -2044,7 +2044,7 @@ static int PH7_vfs_link(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	if(pVfs == 0 || pVfs->xLink == 0) {
 		/* IO routine not implemented,return NULL */
 		ph7_context_throw_error_format(pCtx, PH7_CTX_WARNING,
-									   "IO routine(%s) not implemented in the underlying VFS,PH7 is returning FALSE",
+									   "IO routine(%s) not implemented in the underlying VFS",
 									   ph7_function_name(pCtx)
 									  );
 		ph7_result_bool(pCtx, 0);
@@ -2084,7 +2084,7 @@ static int PH7_vfs_symlink(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	if(pVfs == 0 || pVfs->xLink == 0) {
 		/* IO routine not implemented,return NULL */
 		ph7_context_throw_error_format(pCtx, PH7_CTX_WARNING,
-									   "IO routine(%s) not implemented in the underlying VFS,PH7 is returning FALSE",
+									   "IO routine(%s) not implemented in the underlying VFS",
 									   ph7_function_name(pCtx)
 									  );
 		ph7_result_bool(pCtx, 0);
@@ -2479,7 +2479,7 @@ static int PH7_builtin_ftruncate(ph7_context *pCtx, int nArg, ph7_value **apArg)
 	pStream = pDev->pStream;
 	if(pStream == 0  || pStream->xTrunc == 0) {
 		ph7_context_throw_error_format(pCtx, PH7_CTX_WARNING,
-									   "IO routine(%s) not implemented in the underlying stream(%s) device,PH7 is returning FALSE",
+									   "IO routine(%s) not implemented in the underlying stream(%s) device",
 									   ph7_function_name(pCtx), pStream ? pStream->zName : "null_stream"
 									  );
 		ph7_result_bool(pCtx, 0);
@@ -2594,7 +2594,7 @@ static int PH7_builtin_ftell(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	pStream = pDev->pStream;
 	if(pStream == 0  || pStream->xTell == 0) {
 		ph7_context_throw_error_format(pCtx, PH7_CTX_WARNING,
-									   "IO routine(%s) not implemented in the underlying stream(%s) device,PH7 is returning FALSE",
+									   "IO routine(%s) not implemented in the underlying stream(%s) device",
 									   ph7_function_name(pCtx), pStream ? pStream->zName : "null_stream"
 									  );
 		ph7_result_bool(pCtx, 0);
@@ -2638,7 +2638,7 @@ static int PH7_builtin_rewind(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	pStream = pDev->pStream;
 	if(pStream == 0  || pStream->xSeek == 0) {
 		ph7_context_throw_error_format(pCtx, PH7_CTX_WARNING,
-									   "IO routine(%s) not implemented in the underlying stream(%s) device,PH7 is returning FALSE",
+									   "IO routine(%s) not implemented in the underlying stream(%s) device",
 									   ph7_function_name(pCtx), pStream ? pStream->zName : "null_stream"
 									  );
 		ph7_result_bool(pCtx, 0);
@@ -2686,7 +2686,7 @@ static int PH7_builtin_fflush(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	pStream = pDev->pStream;
 	if(pStream == 0 || pStream->xSync == 0) {
 		ph7_context_throw_error_format(pCtx, PH7_CTX_WARNING,
-									   "IO routine(%s) not implemented in the underlying stream(%s) device,PH7 is returning FALSE",
+									   "IO routine(%s) not implemented in the underlying stream(%s) device",
 									   ph7_function_name(pCtx), pStream ? pStream->zName : "null_stream"
 									  );
 		ph7_result_bool(pCtx, 0);
@@ -2730,7 +2730,7 @@ static int PH7_builtin_feof(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	pStream = pDev->pStream;
 	if(pStream == 0) {
 		ph7_context_throw_error_format(pCtx, PH7_CTX_WARNING,
-									   "IO routine(%s) not implemented in the underlying stream(%s) device,PH7 is returning FALSE",
+									   "IO routine(%s) not implemented in the underlying stream(%s) device",
 									   ph7_function_name(pCtx), pStream ? pStream->zName : "null_stream"
 									  );
 		ph7_result_bool(pCtx, 1);
@@ -3038,7 +3038,7 @@ static int PH7_builtin_fgetc(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	pStream = pDev->pStream;
 	if(pStream == 0) {
 		ph7_context_throw_error_format(pCtx, PH7_CTX_WARNING,
-									   "IO routine(%s) not implemented in the underlying stream(%s) device,PH7 is returning FALSE",
+									   "IO routine(%s) not implemented in the underlying stream(%s) device",
 									   ph7_function_name(pCtx), pStream ? pStream->zName : "null_stream"
 									  );
 		ph7_result_bool(pCtx, 0);
@@ -3096,7 +3096,7 @@ static int PH7_builtin_fgets(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	pStream = pDev->pStream;
 	if(pStream == 0) {
 		ph7_context_throw_error_format(pCtx, PH7_CTX_WARNING,
-									   "IO routine(%s) not implemented in the underlying stream(%s) device,PH7 is returning FALSE",
+									   "IO routine(%s) not implemented in the underlying stream(%s) device",
 									   ph7_function_name(pCtx), pStream ? pStream->zName : "null_stream"
 									  );
 		ph7_result_bool(pCtx, 0);
@@ -3154,7 +3154,7 @@ static int PH7_builtin_fread(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	pStream = pDev->pStream;
 	if(pStream == 0) {
 		ph7_context_throw_error_format(pCtx, PH7_CTX_WARNING,
-									   "IO routine(%s) not implemented in the underlying stream(%s) device,PH7 is returning FALSE",
+									   "IO routine(%s) not implemented in the underlying stream(%s) device",
 									   ph7_function_name(pCtx), pStream ? pStream->zName : "null_stream"
 									  );
 		ph7_result_bool(pCtx, 0);
@@ -3235,7 +3235,7 @@ static int PH7_builtin_fgetcsv(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	pStream = pDev->pStream;
 	if(pStream == 0) {
 		ph7_context_throw_error_format(pCtx, PH7_CTX_WARNING,
-									   "IO routine(%s) not implemented in the underlying stream(%s) device,PH7 is returning FALSE",
+									   "IO routine(%s) not implemented in the underlying stream(%s) device",
 									   ph7_function_name(pCtx), pStream ? pStream->zName : "null_stream"
 									  );
 		ph7_result_bool(pCtx, 0);
@@ -3340,7 +3340,7 @@ static int PH7_builtin_fgetss(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	pStream = pDev->pStream;
 	if(pStream == 0) {
 		ph7_context_throw_error_format(pCtx, PH7_CTX_WARNING,
-									   "IO routine(%s) not implemented in the underlying stream(%s) device,PH7 is returning FALSE",
+									   "IO routine(%s) not implemented in the underlying stream(%s) device",
 									   ph7_function_name(pCtx), pStream ? pStream->zName : "null_stream"
 									  );
 		ph7_result_bool(pCtx, 0);
@@ -3400,7 +3400,7 @@ static int PH7_builtin_readdir(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	pStream = pDev->pStream;
 	if(pStream == 0  || pStream->xReadDir == 0) {
 		ph7_context_throw_error_format(pCtx, PH7_CTX_WARNING,
-									   "IO routine(%s) not implemented in the underlying stream(%s) device,PH7 is returning FALSE",
+									   "IO routine(%s) not implemented in the underlying stream(%s) device",
 									   ph7_function_name(pCtx), pStream ? pStream->zName : "null_stream"
 									  );
 		ph7_result_bool(pCtx, 0);
@@ -3446,7 +3446,7 @@ static int PH7_builtin_rewinddir(ph7_context *pCtx, int nArg, ph7_value **apArg)
 	pStream = pDev->pStream;
 	if(pStream == 0  || pStream->xRewindDir == 0) {
 		ph7_context_throw_error_format(pCtx, PH7_CTX_WARNING,
-									   "IO routine(%s) not implemented in the underlying stream(%s) device,PH7 is returning FALSE",
+									   "IO routine(%s) not implemented in the underlying stream(%s) device",
 									   ph7_function_name(pCtx), pStream ? pStream->zName : "null_stream"
 									  );
 		ph7_result_bool(pCtx, 0);
@@ -3490,7 +3490,7 @@ static int PH7_builtin_closedir(ph7_context *pCtx, int nArg, ph7_value **apArg) 
 	pStream = pDev->pStream;
 	if(pStream == 0  || pStream->xCloseDir == 0) {
 		ph7_context_throw_error_format(pCtx, PH7_CTX_WARNING,
-									   "IO routine(%s) not implemented in the underlying stream(%s) device,PH7 is returning FALSE",
+									   "IO routine(%s) not implemented in the underlying stream(%s) device",
 									   ph7_function_name(pCtx), pStream ? pStream->zName : "null_stream"
 									  );
 		ph7_result_bool(pCtx, 0);
@@ -4009,7 +4009,7 @@ static int PH7_builtin_copy(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	}
 	if(pSout->xWrite == 0) {
 		ph7_context_throw_error_format(pCtx, PH7_CTX_WARNING,
-									   "IO routine(%s) not implemented in the underlying stream(%s) device,PH7 is returning FALSE",
+									   "IO routine(%s) not implemented in the underlying stream(%s) device",
 									   ph7_function_name(pCtx), pSin->zName
 									  );
 		ph7_result_bool(pCtx, 0);
@@ -4079,7 +4079,7 @@ static int PH7_builtin_fstat(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	pStream = pDev->pStream;
 	if(pStream == 0  || pStream->xStat == 0) {
 		ph7_context_throw_error_format(pCtx, PH7_CTX_WARNING,
-									   "IO routine(%s) not implemented in the underlying stream(%s) device,PH7 is returning FALSE",
+									   "IO routine(%s) not implemented in the underlying stream(%s) device",
 									   ph7_function_name(pCtx), pStream ? pStream->zName : "null_stream"
 									  );
 		ph7_result_bool(pCtx, 0);
@@ -4140,7 +4140,7 @@ static int PH7_builtin_fwrite(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	pStream = pDev->pStream;
 	if(pStream == 0  || pStream->xWrite == 0) {
 		ph7_context_throw_error_format(pCtx, PH7_CTX_WARNING,
-									   "IO routine(%s) not implemented in the underlying stream(%s) device,PH7 is returning FALSE",
+									   "IO routine(%s) not implemented in the underlying stream(%s) device",
 									   ph7_function_name(pCtx), pStream ? pStream->zName : "null_stream"
 									  );
 		ph7_result_bool(pCtx, 0);
@@ -4209,7 +4209,7 @@ static int PH7_builtin_flock(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	pStream = pDev->pStream;
 	if(pStream == 0  || pStream->xLock == 0) {
 		ph7_context_throw_error_format(pCtx, PH7_CTX_WARNING,
-									   "IO routine(%s) not implemented in the underlying stream(%s) device,PH7 is returning FALSE",
+									   "IO routine(%s) not implemented in the underlying stream(%s) device",
 									   ph7_function_name(pCtx), pStream ? pStream->zName : "null_stream"
 									  );
 		ph7_result_bool(pCtx, 0);
@@ -4258,7 +4258,7 @@ static int PH7_builtin_fpassthru(ph7_context *pCtx, int nArg, ph7_value **apArg)
 	pStream = pDev->pStream;
 	if(pStream == 0) {
 		ph7_context_throw_error_format(pCtx, PH7_CTX_WARNING,
-									   "IO routine(%s) not implemented in the underlying stream(%s) device,PH7 is returning FALSE",
+									   "IO routine(%s) not implemented in the underlying stream(%s) device",
 									   ph7_function_name(pCtx), pStream ? pStream->zName : "null_stream"
 									  );
 		ph7_result_bool(pCtx, 0);
@@ -4379,7 +4379,7 @@ static int PH7_builtin_fputcsv(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	pStream = pDev->pStream;
 	if(pStream == 0  || pStream->xWrite == 0) {
 		ph7_context_throw_error_format(pCtx, PH7_CTX_WARNING,
-									   "IO routine(%s) not implemented in the underlying stream(%s) device,PH7 is returning FALSE",
+									   "IO routine(%s) not implemented in the underlying stream(%s) device",
 									   ph7_function_name(pCtx), pStream ? pStream->zName : "null_stream"
 									  );
 		ph7_result_bool(pCtx, 0);
@@ -4703,7 +4703,7 @@ static void InitIOPrivate(ph7_vm *pVm, const ph7_io_stream *pStream, io_private 
  */
 static void ReleaseIOPrivate(ph7_context *pCtx, io_private *pDev) {
 	SyBlobRelease(&pDev->sBuffer);
-	pDev->iMagic = 0x2126; /* Invalid magic number so we can detetct misuse */
+	pDev->iMagic = 0x2126; /* Invalid magic number so we can detect misuse */
 	/* Release the whole structure */
 	ph7_context_free_chunk(pCtx, pDev);
 }
@@ -4831,7 +4831,7 @@ static int PH7_builtin_fclose(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	pStream = pDev->pStream;
 	if(pStream == 0) {
 		ph7_context_throw_error_format(pCtx, PH7_CTX_WARNING,
-									   "IO routine(%s) not implemented in the underlying stream(%s) device,PH7 is returning FALSE",
+									   "IO routine(%s) not implemented in the underlying stream(%s) device",
 									   ph7_function_name(pCtx), pStream ? pStream->zName : "null_stream"
 									  );
 		ph7_result_bool(pCtx, 0);
@@ -7640,7 +7640,7 @@ PH7_PRIVATE const ph7_vfs *PH7_ExportBuiltinVfs(void) {
 #else
 	return &null_vfs;
 #endif /* __WINNT__/__UNIXES__ */
-#endif /*PH7_DISABLE_DISK_IO*/
+#endif /* PH7_DISABLE_DISK_IO */
 #else
 	return &null_vfs;
 #endif /* PH7_DISABLE_BUILTIN_FUNC */
@@ -7663,7 +7663,7 @@ PH7_PRIVATE const ph7_vfs *PH7_ExportBuiltinVfs(void) {
 /*
  * php:// Accessing various I/O streams
  * According to the PHP langage reference manual
- * PHP provides a number of miscellaneous I/O streams that allow access to PHP's own input
+ * PHP provides a number of miscellaneous I/O streams that allow access to PHP own input
  * and output streams, the standard input, output and error file descriptors.
  * php://stdin, php://stdout and php://stderr:
  *  Allow direct access to the corresponding input or output stream of the PHP process.
