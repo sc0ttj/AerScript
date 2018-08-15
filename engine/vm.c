@@ -1047,11 +1047,6 @@ static sxi32 VmEvalChunk(ph7_vm *pVm, ph7_context *pCtx, SyString *pChunk, int i
 	"  $pHandle = fopen($zTempDir+DIRECTORY_SEPARATOR+'PH7'+rand_str(12),'w+');"\
 	"  return $pHandle;"\
 	"}"\
-	"/* Creates a temporary filename */"\
-	"function tempnam(string $zDir = sys_get_temp_dir() /* Symisc eXtension */,string $zPrefix = 'PH7')"\
-	"{"\
-	"   return $zDir+DIRECTORY_SEPARATOR+$zPrefix+rand_str(12);"\
-	"}"\
 	"function array_unshift(&$pArray ){"\
 	" if( func_num_args() < 1 || !is_array($pArray) ){  return 0; }"\
 	"/* Copy arguments */"\
