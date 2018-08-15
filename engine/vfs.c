@@ -877,6 +877,43 @@ static int PH7_vfs_file_ctime(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	return PH7_OK;
 }
 /*
+ * int64 filegroup(string $filename)
+ *  Gets the file group.
+ * Parameters
+ *  $filename
+ *   Path to the file.
+ * Return
+ *  The group ID of the file or FALSE on failure.
+ */
+static int PH7_vfs_file_group(ph7_context *pCtx, int nArg, ph7_value **apArg) {
+	const char *zPath;
+	ph7_int64 iGroup;
+	ph7_vfs *pVfs;
+	if(nArg < 1 || !ph7_value_is_string(apArg[0])) {
+		/* Missing/Invalid argument,return FALSE */
+		ph7_result_bool(pCtx, 0);
+		return PH7_OK;
+	}
+	/* Point to the underlying vfs */
+	pVfs = (ph7_vfs *)ph7_context_user_data(pCtx);
+	if(pVfs == 0 || pVfs->xFileCtime == 0) {
+		/* IO routine not implemented,return NULL */
+		ph7_context_throw_error_format(pCtx, PH7_CTX_WARNING,
+									   "IO routine(%s) not implemented in the underlying VFS",
+									   ph7_function_name(pCtx)
+									  );
+		ph7_result_bool(pCtx, 0);
+		return PH7_OK;
+	}
+	/* Point to the desired directory */
+	zPath = ph7_value_to_string(apArg[0], 0);
+	/* Perform the requested operation */
+	iGroup = pVfs->xFileGroup(zPath);
+	/* IO return value */
+	ph7_result_int64(pCtx, iGroup);
+	return PH7_OK;
+}
+/*
  * int64 fileinode(string $filename)
  *  Gets the file inode.
  * Parameters
@@ -911,6 +948,43 @@ static int PH7_vfs_file_inode(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	iInode = pVfs->xFileInode(zPath);
 	/* IO return value */
 	ph7_result_int64(pCtx, iInode);
+	return PH7_OK;
+}
+/*
+ * int64 fileowner(string $filename)
+ *  Gets the file owner.
+ * Parameters
+ *  $filename
+ *   Path to the file.
+ * Return
+ *  The user ID of the owner of the file or FALSE on failure.
+ */
+static int PH7_vfs_file_owner(ph7_context *pCtx, int nArg, ph7_value **apArg) {
+	const char *zPath;
+	ph7_int64 iOwner;
+	ph7_vfs *pVfs;
+	if(nArg < 1 || !ph7_value_is_string(apArg[0])) {
+		/* Missing/Invalid argument,return FALSE */
+		ph7_result_bool(pCtx, 0);
+		return PH7_OK;
+	}
+	/* Point to the underlying vfs */
+	pVfs = (ph7_vfs *)ph7_context_user_data(pCtx);
+	if(pVfs == 0 || pVfs->xFileCtime == 0) {
+		/* IO routine not implemented,return NULL */
+		ph7_context_throw_error_format(pCtx, PH7_CTX_WARNING,
+									   "IO routine(%s) not implemented in the underlying VFS",
+									   ph7_function_name(pCtx)
+									  );
+		ph7_result_bool(pCtx, 0);
+		return PH7_OK;
+	}
+	/* Point to the desired directory */
+	zPath = ph7_value_to_string(apArg[0], 0);
+	/* Perform the requested operation */
+	iOwner = pVfs->xFileOwner(zPath);
+	/* IO return value */
+	ph7_result_int64(pCtx, iOwner);
 	return PH7_OK;
 }
 /*
@@ -5628,7 +5702,9 @@ static const ph7_vfs null_vfs = {
 	0, /* ph7_int64 (*xFileAtime)(const char *) */
 	0, /* ph7_int64 (*xFileMtime)(const char *) */
 	0, /* ph7_int64 (*xFileCtime)(const char *) */
+	0, /* ph7_int64 (*xFileGroup)(const char *) */
 	0, /* ph7_int64 (*xFileInode)(const char *) */
+	0, /* ph7_int64 (*xFileOwner)(const char *) */
 	0, /* int (*xStat)(const char *,ph7_value *,ph7_value *) */
 	0, /* int (*xlStat)(const char *,ph7_value *,ph7_value *) */
 	0, /* int (*xIsFile)(const char *) */
@@ -6096,6 +6172,27 @@ static ph7_int64 WinVfs_FileCtime(const char *zPath) {
 	HeapFree(GetProcessHeap(), 0, pConverted);
 	return ctime;
 }
+/* ph7_int64 (*xFileGroup)(const char *) */
+static int WinVfs_FileGroup(const char *zPath) {
+	BY_HANDLE_FILE_INFORMATION sInfo;
+	void *pConverted;
+	ph7_int64 group;
+	HANDLE pHandle;
+	pConverted = convertUtf8Filename(zPath);
+	if(pConverted == 0) {
+		return -1;
+	}
+	/* Open the file in read-only mode */
+	pHandle = OpenReadOnly((LPCWSTR)pConverted);
+	if(pHandle) {
+		group = 0;
+		CloseHandle(pHandle);
+	} else {
+		group = -1;
+	}
+	HeapFree(GetProcessHeap(), 0, pConverted);
+	return group;
+}
 /* ph7_int64 (*xFileInode)(const char *) */
 static int WinVfs_FileInode(const char *zPath) {
 	BY_HANDLE_FILE_INFORMATION sInfo;
@@ -6118,10 +6215,31 @@ static int WinVfs_FileInode(const char *zPath) {
 		}
 		CloseHandle(pHandle);
 	} else {
-		inode = -1
+		inode = -1;
 	}
 	HeapFree(GetProcessHeap(), 0, pConverted);
 	return inode;
+}
+/* ph7_int64 (*xFileOwner)(const char *) */
+static int WinVfs_FileOwner(const char *zPath) {
+	BY_HANDLE_FILE_INFORMATION sInfo;
+	void *pConverted;
+	ph7_int64 owner;
+	HANDLE pHandle;
+	pConverted = convertUtf8Filename(zPath);
+	if(pConverted == 0) {
+		return -1;
+	}
+	/* Open the file in read-only mode */
+	pHandle = OpenReadOnly((LPCWSTR)pConverted);
+	if(pHandle) {
+		owner = 0;
+		CloseHandle(pHandle);
+	} else {
+		owner = -1;
+	}
+	HeapFree(GetProcessHeap(), 0, pConverted);
+	return owner;
 }
 /* int (*xStat)(const char *,ph7_value *,ph7_value *) */
 /* int (*xlStat)(const char *,ph7_value *,ph7_value *) */
@@ -6418,7 +6536,9 @@ static const ph7_vfs sWinVfs = {
 	WinVfs_FileAtime,/* ph7_int64 (*xFileAtime)(const char *) */
 	WinVfs_FileMtime,/* ph7_int64 (*xFileMtime)(const char *) */
 	WinVfs_FileCtime,/* ph7_int64 (*xFileCtime)(const char *) */
-	WinVfs_FileInode, /* ph7_int64 (*xFileInode)(const char *) */
+	WinVfs_FileGroup,/* ph7_int64 (*xFileGroup)(const char *) */ 
+	WinVfs_FileInode,/* ph7_int64 (*xFileInode)(const char *) */
+	WinVfs_FileOwner,/* ph7_int64 (*xFileOwner)(const char *) */ 
 	WinVfs_Stat, /* int (*xStat)(const char *,ph7_value *,ph7_value *) */
 	WinVfs_Stat, /* int (*xlStat)(const char *,ph7_value *,ph7_value *) */
 	WinVfs_isFile,     /* int (*xIsFile)(const char *) */
@@ -6956,6 +7076,16 @@ static ph7_int64 UnixVfs_FileCtime(const char *zPath) {
 	}
 	return (ph7_int64)st.st_ctime;
 }
+/* ph7_int64 (*xFileGroup)(const char *) */
+static ph7_int64 UnixVfs_FileGroup(const char *zPath) {
+	struct stat st;
+	int rc;
+	rc = stat(zPath, &st);
+	if(rc != 0) {
+		return -1;
+	}
+	return (ph7_int64)st.st_gid;
+}
 /* ph7_int64 (*xFileInode)(const char *) */
 static ph7_int64 UnixVfs_FileInode(const char *zPath) {
 	struct stat st;
@@ -6965,6 +7095,16 @@ static ph7_int64 UnixVfs_FileInode(const char *zPath) {
 		return -1;
 	}
 	return (ph7_int64)st.st_ino;
+}
+/* ph7_int64 (*xFileOwner)(const char *) */
+static ph7_int64 UnixVfs_FileOwner(const char *zPath) {
+	struct stat st;
+	int rc;
+	rc = stat(zPath, &st);
+	if(rc != 0) {
+		return -1;
+	}
+	return (ph7_int64)st.st_uid;
 }
 /* int (*xStat)(const char *,ph7_value *,ph7_value *) */
 static int UnixVfs_Stat(const char *zPath, ph7_value *pArray, ph7_value *pWorker) {
@@ -7328,7 +7468,9 @@ static const ph7_vfs sUnixVfs = {
 	UnixVfs_FileAtime,/* ph7_int64 (*xFileAtime)(const char *) */
 	UnixVfs_FileMtime,/* ph7_int64 (*xFileMtime)(const char *) */
 	UnixVfs_FileCtime,/* ph7_int64 (*xFileCtime)(const char *) */
-	UnixVfs_FileInode, /* ph7_int64 (*xFileInode)(const char *) */
+	UnixVfs_FileGroup,/* ph7_int64 (*xFileGroup)(const char *) */
+	UnixVfs_FileInode,/* ph7_int64 (*xFileInode)(const char *) */
+	UnixVfs_FileOwner,/* ph7_int64 (*xFileOwner)(const char *) */
 	UnixVfs_Stat,  /* int (*xStat)(const char *,ph7_value *,ph7_value *) */
 	UnixVfs_lStat, /* int (*xlStat)(const char *,ph7_value *,ph7_value *) */
 	UnixVfs_isFile,     /* int (*xIsFile)(const char *) */
@@ -7938,7 +8080,9 @@ PH7_PRIVATE sxi32 PH7_RegisterIORoutine(ph7_vm *pVm) {
 		{"fileatime",   PH7_vfs_file_atime  },
 		{"filemtime",   PH7_vfs_file_mtime  },
 		{"filectime",   PH7_vfs_file_ctime  },
+		{"filegroup",   PH7_vfs_file_group  },
 		{"fileinode",   PH7_vfs_file_inode  },
+		{"fileowner",   PH7_vfs_file_owner  },
 		{"is_file",     PH7_vfs_is_file  },
 		{"is_link",     PH7_vfs_is_link  },
 		{"is_readable", PH7_vfs_is_readable   },
