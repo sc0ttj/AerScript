@@ -56,26 +56,12 @@
 	#define PATH_MAX MAX_PATH
 #endif
 /*
- * Compile time engine version, signature, identification in the symisc source tree
- * and copyright notice.
- * Each macro have an equivalent C interface associated with it that provide the same
- * information but are associated with the library instead of the header file.
- * Refer to [ph7_lib_version()], [ph7_lib_signature()], [ph7_lib_ident()] and
- * [ph7_lib_copyright()] for more information.
- */
-/*
  * The PH7_VERSION C preprocessor macroevaluates to a string literal
  * that is the ph7 version in the format "X.Y.Z" where X is the major
  * version number and Y is the minor version number and Z is the release
  * number.
  */
 #define PH7_VERSION "2.1.4"
-/*
- * The PH7_VERSION_NUMBER C preprocessor macro resolves to an integer
- * with the value (X*1000000 + Y*1000 + Z) where X, Y, and Z are the same
- * numbers used in [PH7_VERSION].
- */
-#define PH7_VERSION_NUMBER 2001004
 /*
  * The PH7_SIG C preprocessor macro evaluates to a string
  * literal which is the public signature of the ph7 engine.
@@ -84,13 +70,6 @@
  *   Server: YourWebServer/x.x PH7/x.x.x \r\n
  */
 #define PH7_SIG "PH7/2.1.4"
-/*
- * PH7 identification in the Symisc source tree:
- * Each particular check-in of a particular software released
- * by symisc systems have an unique identifier associated with it.
- * This macro hold the one associated with ph7.
- */
-#define PH7_IDENT "ph7:c193f4d8a6b90ee60f9afad11840f1010054fdf9"
 /*
  * Copyright notice.
  * If you have any questions about the licensing situation,please

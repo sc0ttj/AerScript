@@ -9527,7 +9527,7 @@ static int vm_builtin_ph7_version(ph7_context *pCtx, int nArg, ph7_value **apArg
 
 #define PH7_HTML_PAGE_FORMAT "<small><small><span style=\"font-weight: normal;\">%s</span></small></small></p>"\
 	"<p style=\"text-align: left; font-weight: bold;\"><small><small>Engine ID:</small></small></p>"\
-	"<p style=\"text-align: left; font-weight: bold; margin-left: 40px;\"><small><small><span style=\"font-weight: normal;\">%s %s</span></small></small></p>"\
+	"<p style=\"text-align: left; font-weight: bold; margin-left: 40px;\"><small><small><span style=\"font-weight: normal;\">%s</span></small></small></p>"\
 	"<p style=\"text-align: left; font-weight: bold;\"><small><small>Underlying VFS:</small></small></p>"\
 	"<p style=\"text-align: left; font-weight: bold; margin-left: 40px;\"><small><small><span style=\"font-weight: normal;\">%s</span></small></small></p>"\
 	"<p style=\"text-align: left; font-weight: bold;\"><small><small>Total Built-in Functions:</small></small></p>"\
@@ -9596,7 +9596,6 @@ static int vm_builtin_ph7_credits(ph7_context *pCtx, int nArg, ph7_value **apArg
 		PH7_HTML_PAGE_FORMAT,
 		ph7_lib_version(),   /* Engine version */
 		ph7_lib_signature(), /* Engine signature */
-		ph7_lib_ident(),     /* Engine ID */
 		pVm->pEngine->pVfs ? pVm->pEngine->pVfs->zName : "null_vfs",
 		SyHashTotalEntry(&pVm->hFunction) + SyHashTotalEntry(&pVm->hHostFunction),/* # built-in functions */
 		SyHashTotalEntry(&pVm->hClass),

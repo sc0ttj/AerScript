@@ -457,13 +457,6 @@ const char *ph7_lib_signature(void) {
 	return PH7_SIG;
 }
 /*
- * [CAPIREF: ph7_lib_ident()]
- * Please refer to the official documentation for function purpose and expected parameters.
- */
-const char *ph7_lib_ident(void) {
-	return PH7_IDENT;
-}
-/*
  * [CAPIREF: ph7_lib_copyright()]
  * Please refer to the official documentation for function purpose and expected parameters.
  */
