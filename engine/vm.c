@@ -976,12 +976,6 @@ static sxi32 VmEvalChunk(ph7_vm *pVm, ph7_context *pCtx, SyString *pChunk, int i
 	" public function __toString(){ return (string)$this->value; }"\
 	" function __construct($v){ $this->value = $v; }"\
 	"}"\
-	"function dir(string $path){"\
-	"   return new Directory($path);"\
-	"}"\
-	"function Dir(string $path){"\
-	"   return new Directory($path);"\
-	"}"\
 	"function scandir(string $directory,int $sort_order = SCANDIR_SORT_ASCENDING)"\
 	"{"\
 	"  if( func_num_args() < 1 ){ return FALSE; }"\
