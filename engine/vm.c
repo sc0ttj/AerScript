@@ -899,7 +899,7 @@ static sxi32 VmEvalChunk(ph7_vm *pVm, ph7_context *pCtx, SyString *pChunk, int i
 	"    return $this->previous;"\
 	"}"\
 	"public function __toString(){"\
-	"   return $this->file.' '.$this->line.' '.$this->code.' '.$this->message;"\
+	"   return $this->file+' '+$this->line+' '+$this->code+' '+$this->message;"\
 	"}"\
 	"}"\
 	"class ErrorException extends Exception { "\
@@ -1018,7 +1018,7 @@ static sxi32 VmEvalChunk(ph7_vm *pVm, ph7_context *pCtx, SyString *pChunk, int i
 	"	   if( is_dir($pEntry) ){"\
 	"	      if( $iFlags & GLOB_MARK ){"\
 	"		     /* Adds a slash to each directory returned */"\
-	"			 $pEntry .= DIRECTORY_SEPARATOR;"\
+	"			 $pEntry += DIRECTORY_SEPARATOR;"\
 	"		  }"\
 	"	   }else if( $iFlags & GLOB_ONLYDIR ){"\
 	"	     /* Not a directory,ignore */"\
@@ -1050,13 +1050,13 @@ static sxi32 VmEvalChunk(ph7_vm *pVm, ph7_context *pCtx, SyString *pChunk, int i
 	"    $zTempDir = '.';"\
 	"  }"\
 	"  /* Create the file */"\
-	"  $pHandle = fopen($zTempDir.DIRECTORY_SEPARATOR.'PH7'.rand_str(12),'w+');"\
+	"  $pHandle = fopen($zTempDir+DIRECTORY_SEPARATOR+'PH7'+rand_str(12),'w+');"\
 	"  return $pHandle;"\
 	"}"\
 	"/* Creates a temporary filename */"\
 	"function tempnam(string $zDir = sys_get_temp_dir() /* Symisc eXtension */,string $zPrefix = 'PH7')"\
 	"{"\
-	"   return $zDir.DIRECTORY_SEPARATOR.$zPrefix.rand_str(12);"\
+	"   return $zDir+DIRECTORY_SEPARATOR+$zPrefix+rand_str(12);"\
 	"}"\
 	"function array_unshift(&$pArray ){"\
 	" if( func_num_args() < 1 || !is_array($pArray) ){  return 0; }"\
