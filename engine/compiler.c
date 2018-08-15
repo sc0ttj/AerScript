@@ -229,11 +229,6 @@ static ph7_value *PH7_GenStateInstallNumLiteral(ph7_gen_state *pGen, sxu32 *pIdx
 	return pObj;
 }
 /*
- * Implementation of the AerScript language constructs.
- */
-/* Forward declaration */
-static sxi32 PH7_GenStateCompileChunk(ph7_gen_state *pGen, sxi32 iFlags);
-/*
  * Compile a numeric [i.e: integer or real] literal.
  * Notes on the integer type.
  *  Integers can be specified in decimal (base 10), hexadecimal (base 16), octal (base 8)
