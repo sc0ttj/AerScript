@@ -624,6 +624,70 @@ static int PH7_builtin_hypot(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	ph7_result_double(pCtx, r);
 	return PH7_OK;
 }
+/*
+ * float/int64 max(float/int64 $arg )
+ *  Absolute value.
+ * Parameter
+ *  The number to process.
+ * Return
+ *  The absolute value of number.
+ */
+static int PH7_builtin_max(ph7_context *pCtx, int nArg, ph7_value **apArg) {
+	if(nArg < 2) {
+		/* Missing argument,return 0 */
+		ph7_result_int(pCtx, 0);
+		return PH7_OK;
+	}
+	if(ph7_value_is_float(apArg[0]) && ph7_value_is_float(apArg[1])) {
+		double a, b;
+		a = ph7_value_to_double(apArg[0]);
+		b = ph7_value_to_double(apArg[1]);
+		/* Perform the requested operation */
+		ph7_result_double(pCtx, SXMAX(a, b));
+	} else if(ph7_value_is_int(apArg[0]) && ph7_value_is_int(apArg[1])) {
+		sxi64 a, b;
+		a = ph7_value_to_int64(apArg[0]);
+		b = ph7_value_to_int64(apArg[1]);
+		/* Perform the requested operation */
+		ph7_result_int64(pCtx, SXMAX(a, b));
+	} else {
+		/* Two parameters of different type */
+		ph7_result_int(pCtx, 0);
+	}
+	return PH7_OK;
+}
+/*
+ * float/int64 min(float/int64 $arg )
+ *  Absolute value.
+ * Parameter
+ *  The number to process.
+ * Return
+ *  The absolute value of number.
+ */
+static int PH7_builtin_min(ph7_context *pCtx, int nArg, ph7_value **apArg) {
+	if(nArg < 2) {
+		/* Missing argument,return 0 */
+		ph7_result_int(pCtx, 0);
+		return PH7_OK;
+	}
+	if(ph7_value_is_float(apArg[0]) && ph7_value_is_float(apArg[1])) {
+		double a, b;
+		a = ph7_value_to_double(apArg[0]);
+		b = ph7_value_to_double(apArg[1]);
+		/* Perform the requested operation */
+		ph7_result_double(pCtx, SXMIN(a, b));
+	} else if(ph7_value_is_int(apArg[0]) && ph7_value_is_int(apArg[1])) {
+		sxi64 a, b;
+		a = ph7_value_to_int64(apArg[0]);
+		b = ph7_value_to_int64(apArg[1]);
+		/* Perform the requested operation */
+		ph7_result_int64(pCtx, SXMIN(a, b));
+	} else {
+		/* Two parameters of different type */
+		ph7_result_int(pCtx, 0);
+	}
+	return PH7_OK;
+}
 
 PH7_PRIVATE sxi32 initializeModule(ph7_vm *pVm, ph7_real *ver, SyString *desc) {
 	sxi32 rc;
