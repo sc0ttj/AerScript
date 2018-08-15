@@ -1281,7 +1281,7 @@ PH7_PRIVATE sxi32 PH7_VmInit(
 	pVm->nMagic = PH7_VM_INIT;
 	SyStringInitFromBuf(&sBuiltin, PH7_BUILTIN_LIB, sizeof(PH7_BUILTIN_LIB) - 1);
 	/* Compile the built-in library */
-	VmEvalChunk(&(*pVm), 0, &sBuiltin, PH7_AERSCRIPT_CODE, FALSE);
+	VmEvalChunk(&(*pVm), 0, &sBuiltin, PH7_AERSCRIPT_CODE, TRUE);
 	/* Reset the code generator */
 	PH7_ResetCodeGenerator(&(*pVm), pEngine->xConf.xErr, pEngine->xConf.pErrData);
 	return SXRET_OK;
@@ -10432,7 +10432,7 @@ static sxi32 VmEvalChunk(
 	SySetAlloc(&aByteCode, 0x20);
 	/* Reset the code generator */
 	if(bTrueReturn) {
-		/* Included file,log compile-time errors */
+		/* Log compile-time errors */
 		xErr = pVm->pEngine->xConf.xErr;
 		pErrData = pVm->pEngine->xConf.pErrData;
 	}
