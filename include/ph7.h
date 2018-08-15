@@ -494,8 +494,8 @@ struct ph7_vfs {
 	ph7_int64(*xFileInode)(const char *);            /* Gets file inode */
 	int (*xStat)(const char *, ph7_value *, ph7_value *); /* Gives information about a file */
 	int (*xlStat)(const char *, ph7_value *, ph7_value *); /* Gives information about a file */
-	int (*xIsfile)(const char *);                    /* Tells whether the filename is a regular file */
-	int (*xIslink)(const char *);                    /* Tells whether the filename is a symbolic link */
+	int (*xIsFile)(const char *);                    /* Tells whether the filename is a regular file */
+	int (*xIsLink)(const char *);                    /* Tells whether the filename is a symbolic link */
 	int (*xReadable)(const char *);                  /* Tells whether a file exists and is readable */
 	int (*xWritable)(const char *);                  /* Tells whether the filename is writable */
 	int (*xExecutable)(const char *);                /* Tells whether the filename is executable */

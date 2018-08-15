@@ -933,7 +933,7 @@ static int PH7_vfs_is_file(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	}
 	/* Point to the underlying vfs */
 	pVfs = (ph7_vfs *)ph7_context_user_data(pCtx);
-	if(pVfs == 0 || pVfs->xIsfile == 0) {
+	if(pVfs == 0 || pVfs->xIsFile == 0) {
 		/* IO routine not implemented,return NULL */
 		ph7_context_throw_error_format(pCtx, PH7_CTX_WARNING,
 									   "IO routine(%s) not implemented in the underlying VFS,PH7 is returning FALSE",
@@ -945,7 +945,7 @@ static int PH7_vfs_is_file(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	/* Point to the desired directory */
 	zPath = ph7_value_to_string(apArg[0], 0);
 	/* Perform the requested operation */
-	rc = pVfs->xIsfile(zPath);
+	rc = pVfs->xIsFile(zPath);
 	/* IO return value */
 	ph7_result_bool(pCtx, rc == PH7_OK);
 	return PH7_OK;
@@ -970,7 +970,7 @@ static int PH7_vfs_is_link(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	}
 	/* Point to the underlying vfs */
 	pVfs = (ph7_vfs *)ph7_context_user_data(pCtx);
-	if(pVfs == 0 || pVfs->xIslink == 0) {
+	if(pVfs == 0 || pVfs->xIsLink == 0) {
 		/* IO routine not implemented,return NULL */
 		ph7_context_throw_error_format(pCtx, PH7_CTX_WARNING,
 									   "IO routine(%s) not implemented in the underlying VFS,PH7 is returning FALSE",
@@ -982,7 +982,7 @@ static int PH7_vfs_is_link(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	/* Point to the desired directory */
 	zPath = ph7_value_to_string(apArg[0], 0);
 	/* Perform the requested operation */
-	rc = pVfs->xIslink(zPath);
+	rc = pVfs->xIsLink(zPath);
 	/* IO return value */
 	ph7_result_bool(pCtx, rc == PH7_OK);
 	return PH7_OK;
@@ -5631,8 +5631,8 @@ static const ph7_vfs null_vfs = {
 	0, /* ph7_int64 (*xFileInode)(const char *) */
 	0, /* int (*xStat)(const char *,ph7_value *,ph7_value *) */
 	0, /* int (*xlStat)(const char *,ph7_value *,ph7_value *) */
-	0, /* int (*xIsfile)(const char *) */
-	0, /* int (*xIslink)(const char *) */
+	0, /* int (*xIsFile)(const char *) */
+	0, /* int (*xIsLink)(const char *) */
 	0, /* int (*xReadable)(const char *) */
 	0, /* int (*xWritable)(const char *) */
 	0, /* int (*xExecutable)(const char *) */
@@ -6180,8 +6180,8 @@ static int WinVfs_Stat(const char *zPath, ph7_value *pArray, ph7_value *pWorker)
 	ph7_array_add_strkey_elem(pArray, "blocks", pWorker);
 	return PH7_OK;
 }
-/* int (*xIsfile)(const char *) */
-static int WinVfs_isfile(const char *zPath) {
+/* int (*xIsFile)(const char *) */
+static int WinVfs_isFile(const char *zPath) {
 	void *pConverted;
 	DWORD dwAttr;
 	pConverted = convertUtf8Filename(zPath);
@@ -6195,8 +6195,8 @@ static int WinVfs_isfile(const char *zPath) {
 	}
 	return (dwAttr & (FILE_ATTRIBUTE_NORMAL | FILE_ATTRIBUTE_ARCHIVE)) ? PH7_OK : -1;
 }
-/* int (*xIslink)(const char *) */
-static int WinVfs_islink(const char *zPath) {
+/* int (*xIsLink)(const char *) */
+static int WinVfs_isLink(const char *zPath) {
 	void *pConverted;
 	DWORD dwAttr;
 	pConverted = convertUtf8Filename(zPath);
@@ -6421,8 +6421,8 @@ static const ph7_vfs sWinVfs = {
 	WinVfs_FileInode, /* ph7_int64 (*xFileInode)(const char *) */
 	WinVfs_Stat, /* int (*xStat)(const char *,ph7_value *,ph7_value *) */
 	WinVfs_Stat, /* int (*xlStat)(const char *,ph7_value *,ph7_value *) */
-	WinVfs_isfile,     /* int (*xIsfile)(const char *) */
-	WinVfs_islink,     /* int (*xIslink)(const char *) */
+	WinVfs_isFile,     /* int (*xIsFile)(const char *) */
+	WinVfs_isLink,     /* int (*xIsLink)(const char *) */
 	WinVfs_isfile,     /* int (*xReadable)(const char *) */
 	WinVfs_iswritable, /* int (*xWritable)(const char *) */
 	WinVfs_isexecutable, /* int (*xExecutable)(const char *) */
@@ -7102,8 +7102,8 @@ static int UnixVfs_Chgrp(const char *zPath, const char *zGroup) {
 	return -1;
 #endif /* PH7_UNIX_STATIC_BUILD */
 }
-/* int (*xIsfile)(const char *) */
-static int UnixVfs_isfile(const char *zPath) {
+/* int (*xIsFile)(const char *) */
+static int UnixVfs_isFile(const char *zPath) {
 	struct stat st;
 	int rc;
 	rc = stat(zPath, &st);
@@ -7113,8 +7113,8 @@ static int UnixVfs_isfile(const char *zPath) {
 	rc = S_ISREG(st.st_mode);
 	return rc ? PH7_OK : -1 ;
 }
-/* int (*xIslink)(const char *) */
-static int UnixVfs_islink(const char *zPath) {
+/* int (*xIsLink)(const char *) */
+static int UnixVfs_isLink(const char *zPath) {
 	struct stat st;
 	int rc;
 	rc = stat(zPath, &st);
@@ -7331,8 +7331,8 @@ static const ph7_vfs sUnixVfs = {
 	UnixVfs_FileInode, /* ph7_int64 (*xFileInode)(const char *) */
 	UnixVfs_Stat,  /* int (*xStat)(const char *,ph7_value *,ph7_value *) */
 	UnixVfs_lStat, /* int (*xlStat)(const char *,ph7_value *,ph7_value *) */
-	UnixVfs_isfile,     /* int (*xIsfile)(const char *) */
-	UnixVfs_islink,     /* int (*xIslink)(const char *) */
+	UnixVfs_isFile,     /* int (*xIsFile)(const char *) */
+	UnixVfs_isLink,     /* int (*xIsLink)(const char *) */
 	UnixVfs_isreadable, /* int (*xReadable)(const char *) */
 	UnixVfs_iswritable, /* int (*xWritable)(const char *) */
 	UnixVfs_isexecutable,/* int (*xExecutable)(const char *) */
