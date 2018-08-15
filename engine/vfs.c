@@ -1428,7 +1428,7 @@ static int PH7_builtin_dirname(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	/* Point to the target path */
 	zPath = ph7_value_to_string(apArg[0], &iLen);
 	if(iLen < 1) {
-		/* Reuturn "." */
+		/* Return "." */
 		ph7_result_string(pCtx, ".", sizeof(char));
 		return PH7_OK;
 	}
