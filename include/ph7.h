@@ -332,6 +332,8 @@ struct SyMutexMethods {
 #endif
 typedef sxi64 ph7_int64;
 #define PH7_APIEXPORT SX_APIEXPORT
+#define PH7_APIIMPORT SX_APIIMPORT
+
 /*
  * Engine Configuration Commands.
  *
