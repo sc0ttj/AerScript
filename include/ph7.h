@@ -491,6 +491,7 @@ struct ph7_vfs {
 	ph7_int64(*xFileAtime)(const char *);            /* Gets last access time of file */
 	ph7_int64(*xFileMtime)(const char *);            /* Gets file modification time */
 	ph7_int64(*xFileCtime)(const char *);            /* Gets inode change time of file */
+	ph7_int64(*xFileInode)(const char *);            /* Gets file inode */
 	int (*xStat)(const char *, ph7_value *, ph7_value *); /* Gives information about a file */
 	int (*xlStat)(const char *, ph7_value *, ph7_value *); /* Gives information about a file */
 	int (*xIsfile)(const char *);                    /* Tells whether the filename is a regular file */

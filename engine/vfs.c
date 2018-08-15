@@ -877,6 +877,43 @@ static int PH7_vfs_file_ctime(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	return PH7_OK;
 }
 /*
+ * int64 fileinode(string $filename)
+ *  Gets the file inode.
+ * Parameters
+ *  $filename
+ *   Path to the file.
+ * Return
+ *  The inode number of the file or FALSE on failure.
+ */
+static int PH7_vfs_file_inode(ph7_context *pCtx, int nArg, ph7_value **apArg) {
+	const char *zPath;
+	ph7_int64 iInode;
+	ph7_vfs *pVfs;
+	if(nArg < 1 || !ph7_value_is_string(apArg[0])) {
+		/* Missing/Invalid argument,return FALSE */
+		ph7_result_bool(pCtx, 0);
+		return PH7_OK;
+	}
+	/* Point to the underlying vfs */
+	pVfs = (ph7_vfs *)ph7_context_user_data(pCtx);
+	if(pVfs == 0 || pVfs->xFileCtime == 0) {
+		/* IO routine not implemented,return NULL */
+		ph7_context_throw_error_format(pCtx, PH7_CTX_WARNING,
+									   "IO routine(%s) not implemented in the underlying VFS,PH7 is returning FALSE",
+									   ph7_function_name(pCtx)
+									  );
+		ph7_result_bool(pCtx, 0);
+		return PH7_OK;
+	}
+	/* Point to the desired directory */
+	zPath = ph7_value_to_string(apArg[0], 0);
+	/* Perform the requested operation */
+	iInode = pVfs->xFileInode(zPath);
+	/* IO return value */
+	ph7_result_int64(pCtx, iInode);
+	return PH7_OK;
+}
+/*
  * bool is_file(string $filename)
  *  Tells whether the filename is a regular file.
  * Parameters
@@ -3885,7 +3922,7 @@ static int PH7_builtin_file(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 		zPtr = zBuf;
 		zEnd = &zBuf[n];
 		if(iFlags & 0x02 /* FILE_IGNORE_NEW_LINES */) {
-			/* Ignore trailig lines */
+			/* Ignore trailing lines */
 			while(zPtr < zEnd && (zEnd[-1] == '\n'
 #ifdef __WINNT__
 								  || zEnd[-1] == '\r'
@@ -5591,6 +5628,7 @@ static const ph7_vfs null_vfs = {
 	0, /* ph7_int64 (*xFileAtime)(const char *) */
 	0, /* ph7_int64 (*xFileMtime)(const char *) */
 	0, /* ph7_int64 (*xFileCtime)(const char *) */
+	0, /* ph7_int64 (*xFileInode)(const char *) */
 	0, /* int (*xStat)(const char *,ph7_value *,ph7_value *) */
 	0, /* int (*xlStat)(const char *,ph7_value *,ph7_value *) */
 	0, /* int (*xIsfile)(const char *) */
@@ -6058,6 +6096,33 @@ static ph7_int64 WinVfs_FileCtime(const char *zPath) {
 	HeapFree(GetProcessHeap(), 0, pConverted);
 	return ctime;
 }
+/* ph7_int64 (*xFileInode)(const char *) */
+static int WinVfs_FileInode(const char *zPath) {
+	BY_HANDLE_FILE_INFORMATION sInfo;
+	void *pConverted;
+	ph7_int64 inode;
+	HANDLE pHandle;
+	pConverted = convertUtf8Filename(zPath);
+	if(pConverted == 0) {
+		return -1;
+	}
+	/* Open the file in read-only mode */
+	pHandle = OpenReadOnly((LPCWSTR)pConverted);
+	if(pHandle) {
+		BOOL rc;
+		rc = GetFileInformationByHandle(pHandle, &sInfo);
+		if(rc) {
+			inode = (ph7_int64)(((ph7_int64)sInfo.nFileIndexHigh << 32) | sInfo.nFileIndexLow);
+		} else {
+			inode = -1;
+		}
+		CloseHandle(pHandle);
+	} else {
+		inode = -1
+	}
+	HeapFree(GetProcessHeap(), 0, pConverted);
+	return inode;
+}
 /* int (*xStat)(const char *,ph7_value *,ph7_value *) */
 /* int (*xlStat)(const char *,ph7_value *,ph7_value *) */
 static int WinVfs_Stat(const char *zPath, ph7_value *pArray, ph7_value *pWorker) {
@@ -6353,6 +6418,7 @@ static const ph7_vfs sWinVfs = {
 	WinVfs_FileAtime,/* ph7_int64 (*xFileAtime)(const char *) */
 	WinVfs_FileMtime,/* ph7_int64 (*xFileMtime)(const char *) */
 	WinVfs_FileCtime,/* ph7_int64 (*xFileCtime)(const char *) */
+	WinVfs_FileInode, /* ph7_int64 (*xFileInode)(const char *) */
 	WinVfs_Stat, /* int (*xStat)(const char *,ph7_value *,ph7_value *) */
 	WinVfs_Stat, /* int (*xlStat)(const char *,ph7_value *,ph7_value *) */
 	WinVfs_isfile,     /* int (*xIsfile)(const char *) */
@@ -6890,6 +6956,16 @@ static ph7_int64 UnixVfs_FileCtime(const char *zPath) {
 	}
 	return (ph7_int64)st.st_ctime;
 }
+/* ph7_int64 (*xFileInode)(const char *) */
+static ph7_int64 UnixVfs_FileInode(const char *zPath) {
+	struct stat st;
+	int rc;
+	rc = stat(zPath, &st);
+	if(rc != 0) {
+		return -1;
+	}
+	return (ph7_int64)st.st_ino;
+}
 /* int (*xStat)(const char *,ph7_value *,ph7_value *) */
 static int UnixVfs_Stat(const char *zPath, ph7_value *pArray, ph7_value *pWorker) {
 	struct stat st;
@@ -7252,6 +7328,7 @@ static const ph7_vfs sUnixVfs = {
 	UnixVfs_FileAtime,/* ph7_int64 (*xFileAtime)(const char *) */
 	UnixVfs_FileMtime,/* ph7_int64 (*xFileMtime)(const char *) */
 	UnixVfs_FileCtime,/* ph7_int64 (*xFileCtime)(const char *) */
+	UnixVfs_FileInode, /* ph7_int64 (*xFileInode)(const char *) */
 	UnixVfs_Stat,  /* int (*xStat)(const char *,ph7_value *,ph7_value *) */
 	UnixVfs_lStat, /* int (*xlStat)(const char *,ph7_value *,ph7_value *) */
 	UnixVfs_isfile,     /* int (*xIsfile)(const char *) */
@@ -7861,6 +7938,7 @@ PH7_PRIVATE sxi32 PH7_RegisterIORoutine(ph7_vm *pVm) {
 		{"fileatime",   PH7_vfs_file_atime  },
 		{"filemtime",   PH7_vfs_file_mtime  },
 		{"filectime",   PH7_vfs_file_ctime  },
+		{"fileinode",   PH7_vfs_file_inode  },
 		{"is_file",     PH7_vfs_is_file  },
 		{"is_link",     PH7_vfs_is_link  },
 		{"is_readable", PH7_vfs_is_readable   },
