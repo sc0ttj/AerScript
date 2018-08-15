@@ -852,7 +852,7 @@ PH7_PRIVATE ph7_value *VmReserveMemObj(ph7_vm *pVm, sxu32 *pIndex) {
 	return pObj;
 }
 /* Forward declaration */
-static sxi32 VmEvalChunk(ph7_vm *pVm, ph7_context *pCtx, SyString *pChunk, int iFlags, int bTrueReturn);
+static sxi32 VmEvalChunk(ph7_vm *pVm, ph7_context *pCtx, SyString *pChunk, int iFlags);
 /*
  * Built-in classes/interfaces and some functions that cannot be implemented
  * directly as foreign functions.
@@ -1281,7 +1281,7 @@ PH7_PRIVATE sxi32 PH7_VmInit(
 	pVm->nMagic = PH7_VM_INIT;
 	SyStringInitFromBuf(&sBuiltin, PH7_BUILTIN_LIB, sizeof(PH7_BUILTIN_LIB) - 1);
 	/* Compile the built-in library */
-	VmEvalChunk(&(*pVm), 0, &sBuiltin, PH7_AERSCRIPT_CODE, TRUE);
+	VmEvalChunk(&(*pVm), 0, &sBuiltin, PH7_AERSCRIPT_CODE);
 	/* Reset the code generator */
 	PH7_ResetCodeGenerator(&(*pVm), pEngine->xConf.xErr, pEngine->xConf.pErrData);
 	return SXRET_OK;
@@ -9004,7 +9004,7 @@ static int vm_builtin_assert(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 		SyString sChunk;
 		SyStringInitFromBuf(&sChunk, SyBlobData(&pAssert->sBlob), SyBlobLength(&pAssert->sBlob));
 		if(sChunk.nByte > 0) {
-			VmEvalChunk(pVm, pCtx, &sChunk, PH7_AERSCRIPT_CODE | PH7_AERSCRIPT_EXPR, FALSE);
+			VmEvalChunk(pVm, pCtx, &sChunk, PH7_AERSCRIPT_CODE | PH7_AERSCRIPT_EXPR);
 			/* Extract evaluation result */
 			iResult = ph7_value_to_bool(pCtx->pRet);
 		} else {
@@ -10421,8 +10421,7 @@ static sxi32 VmEvalChunk(
 	ph7_vm *pVm,        /* Underlying Virtual Machine */
 	ph7_context *pCtx,  /* Call Context */
 	SyString *pChunk,   /* PHP chunk to evaluate */
-	int iFlags,         /* Compile flag */
-	int bTrueReturn     /* TRUE to return execution result */
+	int iFlags          /* Compile flag */
 ) {
 	SySet *pByteCode, aByteCode;
 	ProcConsumer xErr = 0;
@@ -10430,12 +10429,9 @@ static sxi32 VmEvalChunk(
 	/* Initialize bytecode container */
 	SySetInit(&aByteCode, &pVm->sAllocator, sizeof(VmInstr));
 	SySetAlloc(&aByteCode, 0x20);
-	/* Reset the code generator */
-	if(bTrueReturn) {
-		/* Log compile-time errors */
-		xErr = pVm->pEngine->xConf.xErr;
-		pErrData = pVm->pEngine->xConf.pErrData;
-	}
+	/* Log compile-time errors */
+	xErr = pVm->pEngine->xConf.xErr;
+	pErrData = pVm->pEngine->xConf.pErrData;
 	PH7_ResetCodeGenerator(pVm, xErr, pErrData);
 	/* Swap bytecode container */
 	pByteCode = pVm->pByteContainer;
@@ -10467,13 +10463,8 @@ static sxi32 VmEvalChunk(
 			}
 			goto Cleanup;
 		}
-		if(bTrueReturn) {
-			/* Assume a boolean true return value */
-			PH7_MemObjInitFromBool(pVm, &sResult, 1);
-		} else {
-			/* Assume a null return value */
-			PH7_MemObjInit(pVm, &sResult);
-		}
+		/* Assume a boolean true return value */
+		PH7_MemObjInitFromBool(pVm, &sResult, 1);
 		/* Execute the compiled chunk */
 		VmLocalExec(pVm, &aByteCode, &sResult);
 		if(pCtx) {
@@ -10513,7 +10504,7 @@ static int vm_builtin_eval(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 		return SXRET_OK;
 	}
 	/* Eval the chunk */
-	VmEvalChunk(pCtx->pVm, &(*pCtx), &sChunk, PH7_AERSCRIPT_CODE, TRUE);
+	VmEvalChunk(pCtx->pVm, &(*pCtx), &sChunk, PH7_AERSCRIPT_CODE);
 	return SXRET_OK;
 }
 /*
@@ -10636,7 +10627,7 @@ static sxi32 VmExecIncludedFile(
 			SyString sScript;
 			/* Compile and execute the script */
 			SyStringInitFromBuf(&sScript, SyBlobData(&sContents), SyBlobLength(&sContents));
-			VmEvalChunk(pCtx->pVm, &(*pCtx), &sScript, PH7_AERSCRIPT_CODE, TRUE);
+			VmEvalChunk(pCtx->pVm, &(*pCtx), &sScript, PH7_AERSCRIPT_CODE);
 		}
 	}
 	/* Pop from the set of included file */
