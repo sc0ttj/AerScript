@@ -5732,8 +5732,7 @@ static const ph7_vfs null_vfs = {
 	0, /* unsigned int (*xProcessId)(void) */
 	0, /* int (*xUid)(void) */
 	0, /* int (*xGid)(void) */
-	0, /* void (*xUsername)(ph7_context *) */
-	0  /* int (*xExec)(const char *,ph7_context *) */
+	0 /* void (*xUsername)(ph7_context *) */
 };
 #ifndef PH7_DISABLE_BUILTIN_FUNC
 #ifndef PH7_DISABLE_DISK_IO
@@ -6566,8 +6565,7 @@ static const ph7_vfs sWinVfs = {
 	WinVfs_ProcessId,  /* unsigned int (*xProcessId)(void) */
 	0, /* int (*xUid)(void) */
 	0, /* int (*xGid)(void) */
-	WinVfs_Username,    /* void (*xUsername)(ph7_context *) */
-	0 /* int (*xExec)(const char *,ph7_context *) */
+	WinVfs_Username    /* void (*xUsername)(ph7_context *) */
 };
 /* Windows file IO */
 #ifndef INVALID_SET_FILE_POINTER
@@ -7498,8 +7496,7 @@ static const ph7_vfs sUnixVfs = {
 	UnixVfs_ProcessId,  /* unsigned int (*xProcessId)(void) */
 	UnixVfs_uid, /* int (*xUid)(void) */
 	UnixVfs_gid, /* int (*xGid)(void) */
-	UnixVfs_Username,    /* void (*xUsername)(ph7_context *) */
-	0 /* int (*xExec)(const char *,ph7_context *) */
+	UnixVfs_Username    /* void (*xUsername)(ph7_context *) */
 };
 /* UNIX File IO */
 #define PH7_UNIX_OPEN_MODE	0640 /* Default open mode */

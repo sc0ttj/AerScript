@@ -514,7 +514,6 @@ struct ph7_vfs {
 	int (*xUid)(void);                               /* user ID of the process */
 	int (*xGid)(void);                               /* group ID of the process */
 	void (*xUsername)(ph7_context *);                /* Running username */
-	int (*xExec)(const char *, ph7_context *);       /* Execute an external program */
 };
 /* Current PH7 IO stream structure version. */
 #define PH7_IO_STREAM_VERSION 1
