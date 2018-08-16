@@ -2617,7 +2617,7 @@ static sxi32 PH7_CompileNamespace(ph7_gen_state *pGen) {
 	sxi32 rc;
 	pGen->pIn++; /* Jump the 'namespace' keyword */
 	if(pGen->pIn >= pGen->pEnd ||
-			(pGen->pIn->nType & (PH7_TK_NSSEP | PH7_TK_ID | PH7_TK_KEYWORD | PH7_TK_OCB/*'{'*/)) == 0) {
+			(pGen->pIn->nType & (PH7_TK_NSSEP | PH7_TK_ID | PH7_TK_KEYWORD | PH7_TK_SEMI/*';'*/ | PH7_TK_OCB/*'{'*/)) == 0) {
 		SyToken *pTok = pGen->pIn;
 		if(pTok >= pGen->pEnd) {
 			pTok--;
