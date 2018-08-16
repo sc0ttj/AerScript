@@ -610,6 +610,7 @@ static sxu32 KeywordCode(const char *z, int n) {
 		{"eval", PH7_KEYWORD_EVAL},
 		{"do", PH7_KEYWORD_DO},
 		{"exit", PH7_KEYWORD_EXIT},
+		{"import", PH7_KEYWORD_IMPORT},
 		{"implements", PH7_KEYWORD_IMPLEMENTS},
 		{"include", PH7_KEYWORD_INCLUDE},
 		{"empty", PH7_KEYWORD_EMPTY},
