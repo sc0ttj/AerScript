@@ -490,18 +490,16 @@ static void ExprAssembleLiteral(SyToken **ppCur, SyToken *pEnd) {
 	*ppCur = pIn;
 }
 /*
- * Collect and assemble tokens holding anonymous functions/closure body.
+ * Collect and assemble tokens holding closure body.
  * When errors,PH7 take care of generating the appropriate error message.
- * Note on anonymous functions.
- *  According to the PHP language reference manual:
- *  Anonymous functions, also known as closures, allow the creation of functions
- *  which have no specified name. They are most useful as the value of callback
- *  parameters, but they have many other uses.
- *  Closures may also inherit variables from the parent scope. Any such variables
- *  must be declared in the function header. Inheriting variables from the parent
- *  scope is not the same as using global variables. Global variables exist in the global scope
- *  which is the same no matter what function is executing. The parent scope of a closure is the
- *  function in which the closure was declared (not necessarily the function it was called from).
+ * Anonymous functions, also known as closures, allow the creation of functions
+ * which have no specified name. They are most useful as the value of callback
+ * parameters, but they have many other uses.
+ * Closures may also inherit variables from the parent scope. Any such variables
+ * must be declared in the function header. Inheriting variables from the parent
+ * scope is not the same as using global variables. Global variables exist in the global scope
+ * which is the same no matter what function is executing. The parent scope of a closure is the
+ * function in which the closure was declared (not necessarily the function it was called from).
  *
  * Some example:
  *  $greet = function($name)
@@ -509,7 +507,7 @@ static void ExprAssembleLiteral(SyToken **ppCur, SyToken *pEnd) {
  *   printf("Hello %s\r\n", $name);
  * };
  *  $greet('World');
- *  $greet('PHP');
+ *  $greet('AerScript');
  *
  * $double = function($a) {
  *   return $a * 2;
@@ -520,9 +518,9 @@ static void ExprAssembleLiteral(SyToken **ppCur, SyToken *pEnd) {
  * // double the size of each element in our
  * // range
  * $new_numbers = array_map($double, $numbers);
- * print implode(' ', $new_numbers);
+ * print(implode(' ', $new_numbers));
  */
-static sxi32 ExprAssembleAnon(ph7_gen_state *pGen, SyToken **ppCur, SyToken *pEnd) {
+static sxi32 ExprAssembleClosure(ph7_gen_state *pGen, SyToken **ppCur, SyToken *pEnd) {
 	SyToken *pIn = *ppCur;
 	sxu32 nLine;
 	sxi32 rc;
@@ -707,7 +705,7 @@ static sxi32 ExprExtractNode(ph7_gen_state *pGen, ph7_expr_node **ppNode) {
 				pNode->xCode = PH7_CompileLiteral;
 			} else {
 				/* Assemble anonymous functions body */
-				rc = ExprAssembleAnon(&(*pGen), &pCur, pGen->pEnd);
+				rc = ExprAssembleClosure(&(*pGen), &pCur, pGen->pEnd);
 				if(rc != SXRET_OK) {
 					SyMemBackendPoolFree(&pGen->pVm->sAllocator, pNode);
 					return rc;
