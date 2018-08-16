@@ -5200,15 +5200,40 @@ static const LangConstruct aLangConstruct[] = {
 	{ PH7_KEYWORD_THROW,    PH7_CompileThrow    }, /* throw statement */
 	{ PH7_KEYWORD_CONST,    PH7_CompileConstant }, /* const statement */
 	{ PH7_KEYWORD_VAR,      PH7_CompileVar      }, /* var statement */
-	{ PH7_KEYWORD_NAMESPACE, PH7_CompileNamespace }, /* namespace statement */
-	{ PH7_KEYWORD_USING,      PH7_CompileUsing    },  /* using statement */
 };
+/*
+ * Return a pointer to the global scope handler routine associated
+ */
+static ProcLangConstruct PH7_GenStateGetGlobalScopeHandler(
+	sxu32 nKeywordID,   /* Keyword ID */
+	SyToken *pLookahead  /* Look-ahead token */
+) {
+	if(pLookahead) {
+		if(nKeywordID == PH7_KEYWORD_INTERFACE && (pLookahead->nType & PH7_TK_ID)) {
+			return PH7_CompileClassInterface;
+		} else if(nKeywordID == PH7_KEYWORD_CLASS && (pLookahead->nType & PH7_TK_ID)) {
+			return PH7_CompileClass;
+		} else if(nKeywordID == PH7_KEYWORD_VIRTUAL && (pLookahead->nType & PH7_TK_KEYWORD)
+				&& SX_PTR_TO_INT(pLookahead->pUserData) == PH7_KEYWORD_CLASS) {
+			return PH7_CompileVirtualClass;
+		} else if(nKeywordID == PH7_KEYWORD_FINAL && (pLookahead->nType & PH7_TK_KEYWORD)
+				&& SX_PTR_TO_INT(pLookahead->pUserData) == PH7_KEYWORD_CLASS) {
+			return PH7_CompileFinalClass;
+		} else if(nKeywordID == PH7_KEYWORD_NAMESPACE && (pLookahead->nType & PH7_TK_ID)) {
+			return PH7_CompileNamespace;
+		} else if(nKeywordID == PH7_KEYWORD_USING && (pLookahead->nType & PH7_TK_ID)) {
+			return PH7_CompileUsing;
+		}
+	}
+	/* Not a global scope language construct */
+	return 0;
+}
 /*
  * Return a pointer to the statement handler routine associated
  * with a given Aer keyword [i.e: if,for,while,...].
  */
 static ProcLangConstruct PH7_GenStateGetStatementHandler(
-	sxu32 nKeywordID,   /* Keyword  ID*/
+	sxu32 nKeywordID,   /* Keyword ID */
 	SyToken *pLookahead  /* Look-ahead token */
 ) {
 	sxu32 n = 0;
@@ -5230,19 +5255,6 @@ static ProcLangConstruct PH7_GenStateGetStatementHandler(
 		}
 		n++;
 	}
-	if(pLookahead) {
-		if(nKeywordID == PH7_KEYWORD_INTERFACE && (pLookahead->nType & PH7_TK_ID)) {
-			return PH7_CompileClassInterface;
-		} else if(nKeywordID == PH7_KEYWORD_CLASS && (pLookahead->nType & PH7_TK_ID)) {
-			return PH7_CompileClass;
-		} else if(nKeywordID == PH7_KEYWORD_VIRTUAL && (pLookahead->nType & PH7_TK_KEYWORD)
-				  && SX_PTR_TO_INT(pLookahead->pUserData) == PH7_KEYWORD_CLASS) {
-			return PH7_CompileVirtualClass;
-		} else if(nKeywordID == PH7_KEYWORD_FINAL && (pLookahead->nType & PH7_TK_KEYWORD)
-				  && SX_PTR_TO_INT(pLookahead->pUserData) == PH7_KEYWORD_CLASS) {
-			return PH7_CompileFinalClass;
-		}
-	}
 	/* Not a language construct */
 	return 0;
 }
@@ -5255,11 +5267,6 @@ static int PH7_GenStateIsLangConstruct(sxu32 nKeyword) {
 	rc = PH7_IsLangConstruct(nKeyword, TRUE);
 	if(rc == FALSE) {
 		if(nKeyword == PH7_KEYWORD_SELF || nKeyword == PH7_KEYWORD_PARENT || nKeyword == PH7_KEYWORD_STATIC
-				/*|| nKeyword == PH7_KEYWORD_CLASS || nKeyword == PH7_KEYWORD_FINAL || nKeyword == PH7_KEYWORD_EXTENDS
-				  || nKeyword == PH7_KEYWORD_VIRTUAL || nKeyword == PH7_KEYWORD_INTERFACE
-				  || nKeyword == PH7_KEYWORD_PUBLIC || nKeyword == PH7_KEYWORD_PROTECTED
-				  || nKeyword == PH7_KEYWORD_PRIVATE || nKeyword == PH7_KEYWORD_IMPLEMENTS
-				*/
 		  ) {
 			rc = TRUE;
 		}
@@ -5268,7 +5275,7 @@ static int PH7_GenStateIsLangConstruct(sxu32 nKeyword) {
 }
 /*
  * Compile an AerScript chunk.
- * If something goes wrong while compiling the Aer chunk,this function
+ * If something goes wrong while compiling the Aer chunk, this function
  * takes care of generating the appropriate error message.
  */
 static sxi32 PH7_GenStateCompileChunk(
@@ -5337,6 +5344,47 @@ static sxi32 PH7_GenStateCompileChunk(
 	return rc;
 }
 /*
+ * Compile an AerScript global scope.
+ * If something goes wrong while compiling the Aer global scope, this function
+ * takes care of generating the appropriate error message.
+ */
+static sxi32 PH7_GenStateCompileGlobalScope(
+	ph7_gen_state *pGen /* Code generator state */
+) {
+	ProcLangConstruct xCons;
+	sxi32 rc;
+	rc = SXRET_OK; /* Prevent compiler warning */
+	for(;;) {
+		if(pGen->pIn >= pGen->pEnd) {
+			/* No more input to process */
+			break;
+		}
+		xCons = 0;
+		if(pGen->pIn->nType & PH7_TK_KEYWORD) {
+			sxu32 nKeyword = (sxu32)SX_PTR_TO_INT(pGen->pIn->pUserData);
+			/* Try to extract a language construct handler */
+			xCons = PH7_GenStateGetGlobalScopeHandler(nKeyword, (&pGen->pIn[1] < pGen->pEnd) ? &pGen->pIn[1] : 0);
+			if(xCons == 0) {
+				PH7_GenCompileError(pGen, E_ERROR, pGen->pIn->nLine, "Syntax error: Unexpected keyword '%z'", &pGen->pIn->sData);
+			}
+			/* Compile the statement */
+			rc = xCons(&(*pGen));
+			if(rc == SXERR_ABORT) {
+				/* Request to abort compilation */
+				break;
+			}
+		} else {
+			PH7_GenCompileError(pGen, E_ERROR, pGen->pIn->nLine, "Syntax error: Unexpected token '%z'", &pGen->pIn->sData);
+		}
+		/* Ignore trailing semi-colons ';' */
+		while(pGen->pIn < pGen->pEnd && (pGen->pIn->nType & PH7_TK_SEMI)) {
+			pGen->pIn++;
+		}
+	}
+	/* Return compilation status */
+	return rc;
+}
+/*
  * Compile a Raw Aer chunk.
  * If something goes wrong while compiling the Aer chunk,this function
  * takes care of generating the appropriate error message.
@@ -5344,7 +5392,7 @@ static sxi32 PH7_GenStateCompileChunk(
 static sxi32 PH7_CompileScript(
 	ph7_gen_state *pGen,  /* Code generator state */
 	SySet *pTokenSet,     /* Token set */
-	sxbool bExpr          /* TRUE if we are dealing with a simple expression */
+	sxi32 iFlags          /* Compiler flags */
 ) {
 	SyToken *pScript = pGen->pRawIn; /* Script to compile */
 	sxi32 rc;
@@ -5359,7 +5407,7 @@ static sxi32 PH7_CompileScript(
 	/* Point to the head and tail of the token stream. */
 	pGen->pIn  = (SyToken *)SySetBasePtr(pTokenSet);
 	pGen->pEnd = &pGen->pIn[SySetUsed(pTokenSet)];
-	if(bExpr) {
+	if(iFlags & PH7_AERSCRIPT_EXPR) {
 		rc = SXERR_EMPTY;
 		if(pGen->pIn < pGen->pEnd) {
 			/* A simple expression,compile it */
@@ -5368,9 +5416,13 @@ static sxi32 PH7_CompileScript(
 		/* Emit the DONE instruction */
 		PH7_VmEmitInstr(pGen->pVm, PH7_OP_DONE, (rc != SXERR_EMPTY ? 1 : 0), 0, 0, 0);
 		return SXRET_OK;
+	} else if(iFlags & PH7_AERSCRIPT_CHNK) {
+		/* Compile a chunk of code */
+		rc = PH7_GenStateCompileChunk(pGen, 0);
+	} else {
+		/* Compile the Aer global scope */
+		rc = PH7_GenStateCompileGlobalScope(pGen);
 	}
-	/* Compile the Aer global scope */
-	rc = PH7_GenStateCompileChunk(pGen, 0);
 	/* Fix exceptions jumps */
 	PH7_GenStateFixJumps(pGen->pCurrent, PH7_OP_THROW, PH7_VmInstrLength(pGen->pVm));
 	/* Compilation result */
@@ -5384,7 +5436,7 @@ static sxi32 PH7_CompileScript(
 PH7_PRIVATE sxi32 PH7_CompileAerScript(
 	ph7_vm *pVm,        /* Generate PH7 byte-codes for this Virtual Machine */
 	SyString *pScript,  /* Script to compile */
-	sxi32 iFlags        /* Compile flags */
+	sxi32 iFlags        /* Compiler flags */
 ) {
 	SySet aAerToken, aRawToken;
 	ph7_gen_state *pCodeGen;
@@ -5412,7 +5464,7 @@ PH7_PRIVATE sxi32 PH7_CompileAerScript(
 	rc = PH7_OK;
 	if(iFlags & PH7_AERSCRIPT_EXPR) {
 		/* Compile the expression */
-		rc = PH7_CompileScript(pCodeGen, &aAerToken, TRUE);
+		rc = PH7_CompileScript(pCodeGen, &aAerToken, iFlags);
 	} else {
 		nObjIdx = 0;
 		/* Start the compilation process */
@@ -5421,8 +5473,8 @@ PH7_PRIVATE sxi32 PH7_CompileAerScript(
 			if(pCodeGen->pRawIn >= pCodeGen->pRawEnd) {
 				break; /* No more tokens to process */
 			}
-			/* Compile the global scope */
-			rc = PH7_CompileScript(pCodeGen, &aAerToken, FALSE);
+			/* Compile the code */
+			rc = PH7_CompileScript(pCodeGen, &aAerToken, iFlags);
 			if(rc == SXERR_ABORT) {
 				break;
 			}
