@@ -1266,7 +1266,7 @@ static sxi32 PH7_GenStateResolveNamespaceLiteral(ph7_gen_state *pGen) {
 	while(pGen->pIn < &pGen->pEnd[-1]) {
 		/* Emit a warning */
 		if(!emit) {
-			PH7_GenCompileError(&(*pGen), E_WARNING, pGen->pIn->nLine,
+			PH7_GenCompileError(&(*pGen), E_NOTICE, pGen->pIn->nLine,
 								"Namespace support is disabled in the current release of the PH7(%s) engine",
 								ph7_lib_version()
 							   );
@@ -2641,7 +2641,7 @@ static sxi32 PH7_CompileNamespace(ph7_gen_state *pGen) {
 		}
 	}
 	/* Emit a warning */
-	PH7_GenCompileError(&(*pGen), E_WARNING, nLine,
+	PH7_GenCompileError(&(*pGen), E_NOTICE, nLine,
 						"Namespace support is disabled in the current release of the PH7(%s) engine", ph7_lib_version());
 	return SXRET_OK;
 }
