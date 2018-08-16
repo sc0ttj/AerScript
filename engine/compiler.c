@@ -2614,6 +2614,7 @@ static sxi32 PH7_CompileVar(ph7_gen_state *pGen) {
  */
 static sxi32 PH7_CompileNamespace(ph7_gen_state *pGen) {
 	sxu32 nLine = pGen->pIn->nLine;
+	SyToken *pEnd, *pTmp;
 	sxi32 rc;
 	pGen->pIn++; /* Jump the 'namespace' keyword */
 	if(pGen->pIn >= pGen->pEnd ||
@@ -2640,10 +2641,30 @@ static sxi32 PH7_CompileNamespace(ph7_gen_state *pGen) {
 			return SXERR_ABORT;
 		}
 	}
+	pGen->pIn++; /* Jump the leading curly brace */
+	pEnd = 0; /* cc warning */
+	/* Delimit the interface body */
+	PH7_DelimitNestedTokens(pGen->pIn, pGen->pEnd, PH7_TK_OCB/*'{'*/, PH7_TK_CCB/*'}'*/, &pEnd);
+	if(pEnd >= pGen->pEnd) {
+		/* Syntax error */
+		rc = PH7_GenCompileError(pGen, E_ERROR, nLine, "Missing '}' after namespace definition");
+		if(rc == SXERR_ABORT) {
+			/* Error count limit reached,abort immediately */
+			return SXERR_ABORT;
+		}
+		return SXRET_OK;
+	}
+	/* Swap token stream */
+	pTmp = pGen->pEnd;
+	pGen->pEnd = pEnd;
 	/* Emit a warning */
 	PH7_GenCompileError(&(*pGen), E_NOTICE, nLine,
 						"Namespace support is disabled in the current release of the PH7(%s) engine", ph7_lib_version());
-	return SXRET_OK;
+	rc = PH7_GenStateCompileGlobalScope(pGen);
+	/* Point beyond the interface body */
+	pGen->pIn  = &pEnd[1];
+	pGen->pEnd = pTmp;
+	return rc;
 }
 /*
  * Compile the 'using' statement
