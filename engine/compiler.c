@@ -3214,57 +3214,6 @@ OutOfMem:
 	return SXERR_ABORT;
 }
 /*
- * Compile a standard Aer function.
- *  Refer to the block-comment above for more information.
- */
-static sxi32 PH7_CompileFunction(ph7_gen_state *pGen) {
-	SyString *pName;
-	sxi32 iFlags;
-	sxu32 nLine;
-	sxi32 rc;
-	nLine = pGen->pIn->nLine;
-	pGen->pIn++; /* Jump the 'function' keyword */
-	iFlags = 0;
-	if(pGen->pIn < pGen->pEnd && (pGen->pIn->nType & PH7_TK_AMPER)) {
-		/* Return by reference,remember that */
-		iFlags |= VM_FUNC_REF_RETURN;
-		/* Jump the '&' token */
-		pGen->pIn++;
-	}
-	if(pGen->pIn >= pGen->pEnd || (pGen->pIn->nType & (PH7_TK_ID | PH7_TK_KEYWORD)) == 0) {
-		/* Invalid function name */
-		rc = PH7_GenCompileError(&(*pGen), E_ERROR, nLine, "Invalid function name");
-		if(rc == SXERR_ABORT) {
-			return SXERR_ABORT;
-		}
-		/* Synchronize with the next semi-colon or braces*/
-		while(pGen->pIn < pGen->pEnd && (pGen->pIn->nType & (PH7_TK_SEMI | PH7_TK_OCB)) == 0) {
-			pGen->pIn++;
-		}
-		return SXRET_OK;
-	}
-	pName = &pGen->pIn->sData;
-	nLine = pGen->pIn->nLine;
-	/* Jump the function name */
-	pGen->pIn++;
-	if(pGen->pIn >= pGen->pEnd || (pGen->pIn->nType & PH7_TK_LPAREN) == 0) {
-		/* Syntax error */
-		rc = PH7_GenCompileError(pGen, E_ERROR, nLine, "Expected '(' after function name '%z'", pName);
-		if(rc == SXERR_ABORT) {
-			/* Error count limit reached,abort immediately */
-			return SXERR_ABORT;
-		}
-		/* Synchronize with the next semi-colon or '{' */
-		while(pGen->pIn < pGen->pEnd && (pGen->pIn->nType & (PH7_TK_SEMI | PH7_TK_OCB)) == 0) {
-			pGen->pIn++;
-		}
-		return SXRET_OK;
-	}
-	/* Compile function body */
-	rc = PH7_GenStateCompileFunc(&(*pGen), pName, iFlags, FALSE, 0);
-	return rc;
-}
-/*
  * Extract the visibility level associated with a given keyword.
  *  Visibility:
  *  The visibility of a property or method can be defined by prefixing
@@ -5209,7 +5158,6 @@ static const LangConstruct aLangConstruct[] = {
 	{ PH7_KEYWORD_FOR,      PH7_CompileFor      }, /* for statement */
 	{ PH7_KEYWORD_WHILE,    PH7_CompileWhile    }, /* while statement */
 	{ PH7_KEYWORD_FOREACH,  PH7_CompileForeach  }, /* foreach statement */
-	{ PH7_KEYWORD_FUNCTION, PH7_CompileFunction }, /* function statement */
 	{ PH7_KEYWORD_CONTINUE, PH7_CompileContinue }, /* continue statement */
 	{ PH7_KEYWORD_BREAK,    PH7_CompileBreak    }, /* break statement */
 	{ PH7_KEYWORD_RETURN,   PH7_CompileReturn   }, /* return statement */
