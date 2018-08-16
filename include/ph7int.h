@@ -1455,7 +1455,6 @@ enum ph7_expr_id {
 #define PH7_KEYWORD_SWITCH       3 /* switch */
 #define PH7_KEYWORD_INTERFACE    5 /* interface */
 /* The number '8' is reserved for PH7_TK_ID */
-#define PH7_KEYWORD_REQONCE      9 /* require_once */
 #define PH7_KEYWORD_REQUIRE      10 /* require */
 #define PH7_KEYWORD_ELIF         0x4000000 /* elseif: MUST BE A POWER OF TWO */
 #define PH7_KEYWORD_ELSE         0x8000000 /* else:  MUST BE A POWER OF TWO */
@@ -1485,7 +1484,6 @@ enum ph7_expr_id {
 #define PH7_KEYWORD_EXIT         35 /* exit */
 #define PH7_KEYWORD_FINALLY      36 /* finally */
 #define PH7_KEYWORD_IMPLEMENTS   39 /* implements */
-#define PH7_KEYWORD_INCONCE      40 /* include_once */
 #define PH7_KEYWORD_INCLUDE      41 /* include */
 #define PH7_KEYWORD_EMPTY        42 /* empty */
 #define PH7_KEYWORD_INSTANCEOF   0x800 /* instanceof: MUST BE A POWER OF TWO  */

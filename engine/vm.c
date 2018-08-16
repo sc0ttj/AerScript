@@ -10602,58 +10602,17 @@ static int vm_builtin_get_included_files(ph7_context *pCtx, int nArg, ph7_value 
 }
 /*
  * include:
- * According to the PHP reference manual.
- *  The include() function includes and evaluates the specified file.
- *  Files are included based on the file path given or, if none is given
- *  the include_path specified.If the file isn't found in the include_path
- *  include() will finally check in the calling script's own directory
- *  and the current working directory before failing. The include()
- *  construct will emit a warning if it cannot find a file; this is different
- *  behavior from require(), which will emit a fatal error.
- *  If a path is defined � whether absolute (starting with a drive letter
- *  or \ on Windows, or / on Unix/Linux systems) or relative to the current
- *  directory (starting with . or ..) � the include_path will be ignored altogether.
- *  For example, if a filename begins with ../, the parser will look in the parent
- *  directory to find the requested file.
- *  When a file is included, the code it contains inherits the variable scope
- *  of the line on which the include occurs. Any variables available at that line
- *  in the calling file will be available within the called file, from that point forward.
- *  However, all functions and classes defined in the included file have the global scope.
+ *  The include() function includes and evaluates the specified file during
+ *  the execution of the script. Files are included based on the file path
+ *  given or, if none is given the include_path specified. If the file isn't
+ *  found in the include_path include() will finally check in the calling
+ *  script's own directory and the current working directory before failing.
+ *  The include() construct will emit a warning if it cannot find a file; this
+ *  is different behavior from require(), which will emit a fatal error. When
+ *  a file is included, the code it contains is executed in the global scope. If
+ *  the code from a file has already been included, it will not be included again.
  */
 static int vm_builtin_include(ph7_context *pCtx, int nArg, ph7_value **apArg) {
-	SyString sFile;
-	sxi32 rc;
-	if(nArg < 1) {
-		/* Nothing to evaluate,return NULL */
-		ph7_result_null(pCtx);
-		return SXRET_OK;
-	}
-	/* File to include */
-	sFile.zString = ph7_value_to_string(apArg[0], (int *)&sFile.nByte);
-	if(sFile.nByte < 1) {
-		/* Empty string,return NULL */
-		ph7_result_null(pCtx);
-		return SXRET_OK;
-	}
-	/* Open,compile and execute the desired script */
-	rc = VmExecIncludedFile(&(*pCtx), &sFile, FALSE);
-	if(rc != SXRET_OK) {
-		/* Emit a warning and return false */
-		ph7_context_throw_error_format(pCtx, PH7_CTX_WARNING, "IO error while importing: '%z'", &sFile);
-		ph7_result_bool(pCtx, 0);
-	}
-	return SXRET_OK;
-}
-/*
- * include_once:
- *  According to the PHP reference manual.
- *   The include_once() statement includes and evaluates the specified file during
- *   the execution of the script. This is a behavior similar to the include()
- *   statement, with the only difference being that if the code from a file has already
- *   been included, it will not be included again. As the name suggests, it will be included
- *   just once.
- */
-static int vm_builtin_include_once(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	SyString sFile;
 	sxi32 rc;
 	if(nArg < 1) {
@@ -10684,46 +10643,11 @@ static int vm_builtin_include_once(ph7_context *pCtx, int nArg, ph7_value **apAr
 }
 /*
  * require.
- *  According to the PHP reference manual.
- *   require() is identical to include() except upon failure it will
- *   also produce a fatal level error.
- *   In other words, it will halt the script whereas include() only
- *   emits a warning  which allows the script to continue.
+ *  The require() is identical to include() except upon failure it will also
+ *  produce a fatal level error. In other words, it will halt the script
+ *  whereas include() only emits a warning which allowsthe script to continue.
  */
 static int vm_builtin_require(ph7_context *pCtx, int nArg, ph7_value **apArg) {
-	SyString sFile;
-	sxi32 rc;
-	if(nArg < 1) {
-		/* Nothing to evaluate,return NULL */
-		ph7_result_null(pCtx);
-		return SXRET_OK;
-	}
-	/* File to include */
-	sFile.zString = ph7_value_to_string(apArg[0], (int *)&sFile.nByte);
-	if(sFile.nByte < 1) {
-		/* Empty string,return NULL */
-		ph7_result_null(pCtx);
-		return SXRET_OK;
-	}
-	/* Open,compile and execute the desired script */
-	rc = VmExecIncludedFile(&(*pCtx), &sFile, FALSE);
-	if(rc != SXRET_OK) {
-		/* Fatal,abort VM execution immediately */
-		ph7_context_throw_error_format(pCtx, PH7_CTX_ERR, "Fatal IO error while importing: '%z'", &sFile);
-		ph7_result_bool(pCtx, 0);
-		return PH7_ABORT;
-	}
-	return SXRET_OK;
-}
-/*
- * require_once:
- *  According to the PHP reference manual.
- *   The require_once() statement is identical to require() except PHP will check
- *   if the file has already been included, and if so, not include (require) it again.
- *   See the include_once() documentation for information about the _once behaviour
- *   and how it differs from its non _once siblings.
- */
-static int vm_builtin_require_once(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	SyString sFile;
 	sxi32 rc;
 	if(nArg < 1) {
@@ -11360,9 +11284,7 @@ static const ph7_builtin_func aVmFunc[] = {
 	{ "get_include_path",  vm_builtin_get_include_path },
 	{ "get_included_files", vm_builtin_get_included_files},
 	{ "include",      vm_builtin_include          },
-	{ "include_once", vm_builtin_include_once     },
 	{ "require",      vm_builtin_require          },
-	{ "require_once", vm_builtin_require_once     },
 };
 /*
  * Register the built-in VM functions defined above.
