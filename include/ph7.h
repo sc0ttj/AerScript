@@ -422,14 +422,14 @@ typedef sxi64 ph7_int64;
 #define PH7_LIB_CONFIG_VFS                    6 /* ONE ARGUMENT: const ph7_vfs *pVfs */
 /*
  * Compile-time flags.
- * The new compile interfaces [ph7_compile_v2()] and [ph7_compile_file()] takes
- * as their last argument zero or more combination of compile time flags.
- * These flags are used to control the behavior of the PH7 compiler while
+ *
+ * VmEvalChunk and PH7_CompileAerScript takes iFlags argument
+ * which controls the behavior of the PH7 Engine while
  * processing the input.
- * Refer to the official documentation for additional information.
  */
-#define PH7_AERSCRIPT_CODE 0x01 /* PHP Block of Code */
-#define PH7_AERSCRIPT_EXPR 0x02 /* PHP Simple Expression */
+#define PH7_AERSCRIPT_CODE 0x01 /* AerScript Code */
+#define PH7_AERSCRIPT_CHNK 0x02 /* AerScript Chunk of Code */
+#define PH7_AERSCRIPT_EXPR 0x04 /* AerScript Expression */
 /*
  * Call Context Error Message Severity Level.
  *

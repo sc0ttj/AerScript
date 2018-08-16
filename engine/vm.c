@@ -8800,7 +8800,7 @@ static int vm_builtin_assert(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 		SyString sChunk;
 		SyStringInitFromBuf(&sChunk, SyBlobData(&pAssert->sBlob), SyBlobLength(&pAssert->sBlob));
 		if(sChunk.nByte > 0) {
-			VmEvalChunk(pVm, pCtx, &sChunk, PH7_AERSCRIPT_CODE | PH7_AERSCRIPT_EXPR);
+			VmEvalChunk(pVm, pCtx, &sChunk, PH7_AERSCRIPT_CHNK | PH7_AERSCRIPT_EXPR);
 			/* Extract evaluation result */
 			iResult = ph7_value_to_bool(pCtx->pRet);
 		} else {
@@ -10299,7 +10299,7 @@ static int vm_builtin_eval(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 		return SXRET_OK;
 	}
 	/* Eval the chunk */
-	VmEvalChunk(pCtx->pVm, &(*pCtx), &sChunk, PH7_AERSCRIPT_CODE);
+	VmEvalChunk(pCtx->pVm, &(*pCtx), &sChunk, PH7_AERSCRIPT_CHNK);
 	return SXRET_OK;
 }
 /*
