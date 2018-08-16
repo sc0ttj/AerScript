@@ -1,6 +1,6 @@
-class Main {
+class Program {
 
-	function __construct() {
+	function main() {
 		$foo = '0';
 		var_dump($foo);
 		$foo += 2;
@@ -23,5 +23,3 @@ class Main {
 		var_dump($foo);
 	}
 }
-
-new Main();

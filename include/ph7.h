@@ -56,26 +56,12 @@
 	#define PATH_MAX MAX_PATH
 #endif
 /*
- * Compile time engine version, signature, identification in the symisc source tree
- * and copyright notice.
- * Each macro have an equivalent C interface associated with it that provide the same
- * information but are associated with the library instead of the header file.
- * Refer to [ph7_lib_version()], [ph7_lib_signature()], [ph7_lib_ident()] and
- * [ph7_lib_copyright()] for more information.
- */
-/*
  * The PH7_VERSION C preprocessor macroevaluates to a string literal
  * that is the ph7 version in the format "X.Y.Z" where X is the major
  * version number and Y is the minor version number and Z is the release
  * number.
  */
 #define PH7_VERSION "2.1.4"
-/*
- * The PH7_VERSION_NUMBER C preprocessor macro resolves to an integer
- * with the value (X*1000000 + Y*1000 + Z) where X, Y, and Z are the same
- * numbers used in [PH7_VERSION].
- */
-#define PH7_VERSION_NUMBER 2001004
 /*
  * The PH7_SIG C preprocessor macro evaluates to a string
  * literal which is the public signature of the ph7 engine.
@@ -84,13 +70,6 @@
  *   Server: YourWebServer/x.x PH7/x.x.x \r\n
  */
 #define PH7_SIG "PH7/2.1.4"
-/*
- * PH7 identification in the Symisc source tree:
- * Each particular check-in of a particular software released
- * by symisc systems have an unique identifier associated with it.
- * This macro hold the one associated with ph7.
- */
-#define PH7_IDENT "ph7:c193f4d8a6b90ee60f9afad11840f1010054fdf9"
 /*
  * Copyright notice.
  * If you have any questions about the licensing situation,please
@@ -353,6 +332,8 @@ struct SyMutexMethods {
 #endif
 typedef sxi64 ph7_int64;
 #define PH7_APIEXPORT SX_APIEXPORT
+#define PH7_APIIMPORT SX_APIIMPORT
+
 /*
  * Engine Configuration Commands.
  *
@@ -441,14 +422,14 @@ typedef sxi64 ph7_int64;
 #define PH7_LIB_CONFIG_VFS                    6 /* ONE ARGUMENT: const ph7_vfs *pVfs */
 /*
  * Compile-time flags.
- * The new compile interfaces [ph7_compile_v2()] and [ph7_compile_file()] takes
- * as their last argument zero or more combination of compile time flags.
- * These flags are used to control the behavior of the PH7 compiler while
+ *
+ * VmEvalChunk and PH7_CompileAerScript takes iFlags argument
+ * which controls the behavior of the PH7 Engine while
  * processing the input.
- * Refer to the official documentation for additional information.
  */
-#define PH7_PHP_CODE 0x01 /* PHP Block of Code */
-#define PH7_PHP_EXPR 0x02 /* PHP Simple Expression */
+#define PH7_AERSCRIPT_CODE 0x01 /* AerScript Code */
+#define PH7_AERSCRIPT_CHNK 0x02 /* AerScript Chunk of Code */
+#define PH7_AERSCRIPT_EXPR 0x04 /* AerScript Expression */
 /*
  * Call Context Error Message Severity Level.
  *
@@ -510,10 +491,13 @@ struct ph7_vfs {
 	ph7_int64(*xFileAtime)(const char *);            /* Gets last access time of file */
 	ph7_int64(*xFileMtime)(const char *);            /* Gets file modification time */
 	ph7_int64(*xFileCtime)(const char *);            /* Gets inode change time of file */
+	ph7_int64(*xFileGroup)(const char *);            /* Gets file group */
+	ph7_int64(*xFileInode)(const char *);            /* Gets file inode */
+	ph7_int64(*xFileOwner)(const char *);            /* Gets file owner */
 	int (*xStat)(const char *, ph7_value *, ph7_value *); /* Gives information about a file */
 	int (*xlStat)(const char *, ph7_value *, ph7_value *); /* Gives information about a file */
-	int (*xIsfile)(const char *);                    /* Tells whether the filename is a regular file */
-	int (*xIslink)(const char *);                    /* Tells whether the filename is a symbolic link */
+	int (*xIsFile)(const char *);                    /* Tells whether the filename is a regular file */
+	int (*xIsLink)(const char *);                    /* Tells whether the filename is a symbolic link */
 	int (*xReadable)(const char *);                  /* Tells whether a file exists and is readable */
 	int (*xWritable)(const char *);                  /* Tells whether the filename is writable */
 	int (*xExecutable)(const char *);                /* Tells whether the filename is executable */
@@ -606,9 +590,8 @@ PH7_APIEXPORT int ph7_init(ph7 **ppEngine);
 PH7_APIEXPORT int ph7_config(ph7 *pEngine, int nConfigOp, ...);
 PH7_APIEXPORT int ph7_release(ph7 *pEngine);
 /* Compile Interfaces */
-PH7_APIEXPORT int ph7_compile(ph7 *pEngine, const char *zSource, int nLen, ph7_vm **ppOutVm);
-PH7_APIEXPORT int ph7_compile_v2(ph7 *pEngine, const char *zSource, int nLen, ph7_vm **ppOutVm, int iFlags);
-PH7_APIEXPORT int ph7_compile_file(ph7 *pEngine, const char *zFilePath, ph7_vm **ppOutVm, int iFlags);
+PH7_APIEXPORT int ph7_compile_code(ph7 *pEngine, const char *zSource, int nLen, ph7_vm **ppOutVm);
+PH7_APIEXPORT int ph7_compile_file(ph7 *pEngine, const char *zFilePath, ph7_vm **ppOutVm);
 /* Virtual Machine Handling Interfaces */
 PH7_APIEXPORT int ph7_vm_config(ph7_vm *pVm, int iConfigOp, ...);
 PH7_APIEXPORT int ph7_vm_exec(ph7_vm *pVm, int *pExitStatus);

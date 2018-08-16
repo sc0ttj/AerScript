@@ -47,13 +47,11 @@ class Unicode {
 
 }
 
-final class Main {
+final class Program {
 
-	public function __construct() {
+	public function main() {
 		$unicode = new Unicode();
 		var_dump($unicode->unicon("ИфйжБЦ"));
 	}
 
 }
-
-new Main();

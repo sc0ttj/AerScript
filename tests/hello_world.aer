@@ -1,9 +1,7 @@
-class Main {
+class Program {
 
-	public function __construct() {
+	public function main() {
 		print('Hello world!');
 	}
 
 }
-
-new Main();

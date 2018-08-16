@@ -1,4 +1,4 @@
-class Main {
+class Program {
 
 	private function num2Roman($num) {
 		$n = intval($num);
@@ -15,7 +15,7 @@ class Main {
 		return $result;
 	}
 
-	public function __construct() {
+	public function main() {
 		print('   7 => ' + $this->num2Roman(7) + "\n");	
 		print('   9 => ' + $this->num2Roman(9) + "\n");	
 		print('  11 => ' + $this->num2Roman(11) + "\n");	
@@ -28,5 +28,3 @@ class Main {
 	 }
 
 }
-
-new Main();

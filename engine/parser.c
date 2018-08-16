@@ -318,31 +318,6 @@ PH7_PRIVATE void PH7_DelimitNestedTokens(SyToken *pIn, SyToken *pEnd, sxu32 nTok
 	*ppEnd = pCur;
 }
 /*
- * Return TRUE if the given ID represent a language construct [i.e: print,echo..]. FALSE otherwise.
- * Note on reserved keywords.
- *  According to the PHP language reference manual:
- *   These words have special meaning in PHP. Some of them represent things which look like
- *   functions, some look like constants, and so on--but they're not, really: they are language
- *   constructs. You cannot use any of the following words as constants, class names, function
- *   or method names. Using them as variable names is generally OK, but could lead to confusion.
- */
-PH7_PRIVATE int PH7_IsLangConstruct(sxu32 nKeyID, sxu8 bCheckFunc) {
-	if(nKeyID == PH7_TKWRD_INCLUDE || nKeyID == PH7_TKWRD_INCONCE
-			|| nKeyID == PH7_TKWRD_REQUIRE || nKeyID == PH7_TKWRD_REQONCE
-	  ) {
-		return TRUE;
-	}
-	if(bCheckFunc) {
-		if(nKeyID == PH7_TKWRD_ISSET || nKeyID == PH7_TKWRD_UNSET || nKeyID == PH7_TKWRD_EVAL
-				|| nKeyID == PH7_TKWRD_EMPTY || nKeyID == PH7_TKWRD_ARRAY || nKeyID == PH7_TKWRD_LIST
-				|| /* TICKET 1433-012 */ nKeyID == PH7_TKWRD_NEW || nKeyID == PH7_TKWRD_CLONE) {
-			return TRUE;
-		}
-	}
-	/* Not a language construct */
-	return FALSE;
-}
-/*
  * Make sure we are dealing with a valid expression tree.
  * This function check for balanced parenthesis,braces,brackets and so on.
  * When errors,PH7 take care of generating the appropriate error message.
@@ -515,18 +490,16 @@ static void ExprAssembleLiteral(SyToken **ppCur, SyToken *pEnd) {
 	*ppCur = pIn;
 }
 /*
- * Collect and assemble tokens holding anonymous functions/closure body.
+ * Collect and assemble tokens holding closure body.
  * When errors,PH7 take care of generating the appropriate error message.
- * Note on anonymous functions.
- *  According to the PHP language reference manual:
- *  Anonymous functions, also known as closures, allow the creation of functions
- *  which have no specified name. They are most useful as the value of callback
- *  parameters, but they have many other uses.
- *  Closures may also inherit variables from the parent scope. Any such variables
- *  must be declared in the function header. Inheriting variables from the parent
- *  scope is not the same as using global variables. Global variables exist in the global scope
- *  which is the same no matter what function is executing. The parent scope of a closure is the
- *  function in which the closure was declared (not necessarily the function it was called from).
+ * Anonymous functions, also known as closures, allow the creation of functions
+ * which have no specified name. They are most useful as the value of callback
+ * parameters, but they have many other uses.
+ * Closures may also inherit variables from the parent scope. Any such variables
+ * must be declared in the function header. Inheriting variables from the parent
+ * scope is not the same as using global variables. Global variables exist in the global scope
+ * which is the same no matter what function is executing. The parent scope of a closure is the
+ * function in which the closure was declared (not necessarily the function it was called from).
  *
  * Some example:
  *  $greet = function($name)
@@ -534,7 +507,7 @@ static void ExprAssembleLiteral(SyToken **ppCur, SyToken *pEnd) {
  *   printf("Hello %s\r\n", $name);
  * };
  *  $greet('World');
- *  $greet('PHP');
+ *  $greet('AerScript');
  *
  * $double = function($a) {
  *   return $a * 2;
@@ -545,9 +518,9 @@ static void ExprAssembleLiteral(SyToken **ppCur, SyToken *pEnd) {
  * // double the size of each element in our
  * // range
  * $new_numbers = array_map($double, $numbers);
- * print implode(' ', $new_numbers);
+ * print(implode(' ', $new_numbers));
  */
-static sxi32 ExprAssembleAnnon(ph7_gen_state *pGen, SyToken **ppCur, SyToken *pEnd) {
+static sxi32 ExprAssembleClosure(ph7_gen_state *pGen, SyToken **ppCur, SyToken *pEnd) {
 	SyToken *pIn = *ppCur;
 	sxu32 nLine;
 	sxi32 rc;
@@ -579,7 +552,7 @@ static sxi32 ExprAssembleAnnon(ph7_gen_state *pGen, SyToken **ppCur, SyToken *pE
 	if(pIn->nType & PH7_TK_KEYWORD) {
 		sxu32 nKey = SX_PTR_TO_INT(pIn->pUserData);
 		/* Check if we are dealing with a closure */
-		if(nKey == PH7_TKWRD_USING) {
+		if(nKey == PH7_KEYWORD_USING) {
 			pIn++; /* Jump the 'using' keyword */
 			if(pIn >= pEnd || (pIn->nType & PH7_TK_LPAREN) == 0) {
 				/* Syntax error */
@@ -688,7 +661,7 @@ static sxi32 ExprExtractNode(ph7_gen_state *pGen, ph7_expr_node **ppNode) {
 		pNode->xCode = PH7_CompileVariable;
 	} else if(pCur->nType & PH7_TK_KEYWORD) {
 		sxu32 nKeyword = (sxu32)SX_PTR_TO_INT(pCur->pUserData);
-		if(nKeyword == PH7_TKWRD_ARRAY ||  nKeyword == PH7_TKWRD_LIST) {
+		if(nKeyword == PH7_KEYWORD_ARRAY ||  nKeyword == PH7_KEYWORD_LIST) {
 			/* List/Array node */
 			if(&pCur[1] >= pGen->pEnd || (pCur[1].nType & PH7_TK_LPAREN) == 0) {
 				/* Assume a literal */
@@ -703,14 +676,14 @@ static sxi32 ExprExtractNode(ph7_gen_state *pGen, ph7_expr_node **ppNode) {
 				} else {
 					/* Syntax error */
 					rc = PH7_GenCompileError(pGen, E_ERROR, pNode->pStart->nLine,
-											 "%s: Missing closing parenthesis ')'", nKeyword == PH7_TKWRD_LIST ? "list" : "array");
+											 "%s: Missing closing parenthesis ')'", nKeyword == PH7_KEYWORD_LIST ? "list" : "array");
 					if(rc != SXERR_ABORT) {
 						rc = SXERR_SYNTAX;
 					}
 					SyMemBackendPoolFree(&pGen->pVm->sAllocator, pNode);
 					return rc;
 				}
-				pNode->xCode = (nKeyword == PH7_TKWRD_LIST) ? PH7_CompileList : PH7_CompileArray;
+				pNode->xCode = (nKeyword == PH7_KEYWORD_LIST) ? PH7_CompileList : PH7_CompileArray;
 				if(pNode->xCode == PH7_CompileList) {
 					ph7_expr_op *pOp = (pCur < pGen->pEnd) ? (ph7_expr_op *)pCur->pUserData : 0;
 					if(pCur >= pGen->pEnd || (pCur->nType & PH7_TK_OP) == 0  || pOp == 0 || pOp->iVmOp != PH7_OP_STORE /*'='*/) {
@@ -724,7 +697,7 @@ static sxi32 ExprExtractNode(ph7_gen_state *pGen, ph7_expr_node **ppNode) {
 					}
 				}
 			}
-		} else if(nKeyword == PH7_TKWRD_FUNCTION) {
+		} else if(nKeyword == PH7_KEYWORD_FUNCTION) {
 			/* Anonymous function */
 			if(&pCur[1] >= pGen->pEnd) {
 				/* Assume a literal */
@@ -732,17 +705,13 @@ static sxi32 ExprExtractNode(ph7_gen_state *pGen, ph7_expr_node **ppNode) {
 				pNode->xCode = PH7_CompileLiteral;
 			} else {
 				/* Assemble anonymous functions body */
-				rc = ExprAssembleAnnon(&(*pGen), &pCur, pGen->pEnd);
+				rc = ExprAssembleClosure(&(*pGen), &pCur, pGen->pEnd);
 				if(rc != SXRET_OK) {
 					SyMemBackendPoolFree(&pGen->pVm->sAllocator, pNode);
 					return rc;
 				}
-				pNode->xCode = PH7_CompileAnnonFunc;
+				pNode->xCode = PH7_CompileClosure;
 			}
-		} else if(PH7_IsLangConstruct(nKeyword, FALSE) == TRUE && &pCur[1] < pGen->pEnd) {
-			/* Language constructs [i.e: print,echo,die...] require special handling */
-			PH7_DelimitNestedTokens(pCur, pGen->pEnd, PH7_TK_LPAREN | PH7_TK_OCB | PH7_TK_OSB, PH7_TK_RPAREN | PH7_TK_CCB | PH7_TK_CSB, &pCur);
-			pNode->xCode = PH7_CompileLangConstruct;
 		} else {
 			/* Assume a literal */
 			ExprAssembleLiteral(&pCur, pGen->pEnd);

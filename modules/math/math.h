@@ -51,6 +51,8 @@ static int PH7_builtin_pow(ph7_context *pCtx, int nArg, ph7_value **apArg);
 static int PH7_builtin_pi(ph7_context *pCtx, int nArg, ph7_value **apArg);
 static int PH7_builtin_fmod(ph7_context *pCtx, int nArg, ph7_value **apArg);
 static int PH7_builtin_hypot(ph7_context *pCtx, int nArg, ph7_value **apArg);
+static int PH7_builtin_max(ph7_context *pCtx, int nArg, ph7_value **apArg);
+static int PH7_builtin_min(ph7_context *pCtx, int nArg, ph7_value **apArg);
 PH7_PRIVATE sxi32 initializeModule(ph7_vm *pVm, ph7_real *ver, SyString *desc);
 
 static const ph7_builtin_constant mathConstList[] = {
@@ -94,7 +96,9 @@ static const ph7_builtin_func mathFuncList[] = {
 	{ "pow",    PH7_builtin_pow          },
 	{ "pi",       PH7_builtin_pi           },
 	{ "fmod",     PH7_builtin_fmod         },
-	{ "hypot",    PH7_builtin_hypot        }
+	{ "hypot",    PH7_builtin_hypot        },
+	{ "max",      PH7_builtin_max          },
+	{ "min",      PH7_builtin_min          }
 };
 
 #endif

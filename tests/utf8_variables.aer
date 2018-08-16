@@ -1,7 +1,7 @@
-class Main {
+class Program {
 	private $概要 = "AerScript Interpreter";
 
-	public function __construct() {
+	public function main() {
 		$this->ダウンロード();
 		var_dump($this->概要);
 		var_dump($this->isUTF8('hello'));
@@ -39,5 +39,3 @@ class Main {
 		return true;
 	}
 }
-
-new Main();

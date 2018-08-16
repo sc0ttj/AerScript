@@ -1,6 +1,6 @@
-class Main {
+class Program {
 
-	function __construct() {
+	function main() {
 		$this->b($this->a('First A'), $this->a('Second A'), $this->a('Third A'));
 	}
 
@@ -19,5 +19,3 @@ class Main {
 	}
 
 }
-
-new Main();

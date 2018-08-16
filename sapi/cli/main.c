@@ -186,8 +186,7 @@ int main(int argc, char **argv) {
 	rc = ph7_compile_file(
 			 pEngine, /* PH7 Engine */
 			 argv[n], /* Path to the PHP file to compile */
-			 &pVm,    /* OUT: Compiled PHP program */
-			 0        /* IN: Compile flags */
+			 &pVm     /* OUT: Compiled PHP program */
 		 );
 	if(rc != PH7_OK) {  /* Compile error */
 		if(rc == PH7_IO_ERR) {

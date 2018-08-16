@@ -83,7 +83,7 @@ static sxi32 TokenizePHP(SyStream *pStream, SyToken *pToken, void *pUserData, vo
 		nKeyword = KeywordCode(pStr->zString, (int)pStr->nByte);
 		if(nKeyword != PH7_TK_ID) {
 			if(nKeyword &
-					(PH7_TKWRD_NEW | PH7_TKWRD_CLONE | PH7_TKWRD_INSTANCEOF)) {
+					(PH7_KEYWORD_NEW | PH7_KEYWORD_CLONE | PH7_KEYWORD_INSTANCEOF)) {
 				/* Alpha stream operators [i.e: new,clone,instanceof],save the operator instance for later processing */
 				pToken->pUserData = (void *)PH7_ExprExtractOperator(pStr, 0);
 				/* Mark as an operator */
@@ -225,22 +225,22 @@ static sxi32 TokenizePHP(SyStream *pStream, SyToken *pToken, void *pUserData, vo
 						pTmp = (SyToken *)SySetPeek(pTokSet);
 						if(pTmp->nType & PH7_TK_KEYWORD) {
 							sxi32 nID = SX_PTR_TO_INT(pTmp->pUserData);
-							if((sxu32)nID & (PH7_TKWRD_ARRAY | PH7_TKWRD_INT | PH7_TKWRD_FLOAT | PH7_TKWRD_STRING | PH7_TKWRD_OBJECT | PH7_TKWRD_BOOL | PH7_TKWRD_UNSET)) {
+							if((sxu32)nID & (PH7_KEYWORD_ARRAY | PH7_KEYWORD_INT | PH7_KEYWORD_FLOAT | PH7_KEYWORD_STRING | PH7_KEYWORD_OBJECT | PH7_KEYWORD_BOOL | PH7_KEYWORD_UNSET)) {
 								pTmp = (SyToken *)SySetAt(pTokSet, pTokSet->nUsed - 2);
 								if(pTmp->nType & PH7_TK_LPAREN) {
 									/* Merge the three tokens '(' 'TYPE' ')' into a single one */
 									const char *zTypeCast = "(int)";
-									if(nID & PH7_TKWRD_FLOAT) {
+									if(nID & PH7_KEYWORD_FLOAT) {
 										zTypeCast = "(float)";
-									} else if(nID & PH7_TKWRD_BOOL) {
+									} else if(nID & PH7_KEYWORD_BOOL) {
 										zTypeCast = "(bool)";
-									} else if(nID & PH7_TKWRD_STRING) {
+									} else if(nID & PH7_KEYWORD_STRING) {
 										zTypeCast = "(string)";
-									} else if(nID & PH7_TKWRD_ARRAY) {
+									} else if(nID & PH7_KEYWORD_ARRAY) {
 										zTypeCast = "(array)";
-									} else if(nID & PH7_TKWRD_OBJECT) {
+									} else if(nID & PH7_KEYWORD_OBJECT) {
 										zTypeCast = "(object)";
-									} else if(nID & PH7_TKWRD_UNSET) {
+									} else if(nID & PH7_KEYWORD_UNSET) {
 										zTypeCast = "(unset)";
 									}
 									/* Reflect the change */
@@ -573,59 +573,59 @@ static sxu32 KeywordCode(const char *z, int n) {
 		int value;
 	} ph7_token;
 	static ph7_token pTokenLookup[] = {
-		{"extends", PH7_TKWRD_EXTENDS},
-		{"switch", PH7_TKWRD_SWITCH},
-		{"int", PH7_TKWRD_INT},
-		{"require_once", PH7_TKWRD_REQONCE},
-		{"require", PH7_TKWRD_REQUIRE},
-		{"return", PH7_TKWRD_RETURN},
-		{"namespace", PH7_TKWRD_NAMESPACE},
-		{"object", PH7_TKWRD_OBJECT},
-		{"throw", PH7_TKWRD_THROW},
-		{"bool", PH7_TKWRD_BOOL},
-		{"default", PH7_TKWRD_DEFAULT},
-		{"try", PH7_TKWRD_TRY},
-		{"case", PH7_TKWRD_CASE},
-		{"self", PH7_TKWRD_SELF},
-		{"final", PH7_TKWRD_FINAL},
-		{"list", PH7_TKWRD_LIST},
-		{"static", PH7_TKWRD_STATIC},
-		{"clone", PH7_TKWRD_CLONE},
-		{"new", PH7_TKWRD_NEW},
-		{"const", PH7_TKWRD_CONST},
-		{"string", PH7_TKWRD_STRING},
-		{"using", PH7_TKWRD_USING},
-		{"elseif", PH7_TKWRD_ELIF},
-		{"else", PH7_TKWRD_ELSE},
-		{"if", PH7_TKWRD_IF},
-		{"float", PH7_TKWRD_FLOAT},
-		{"var", PH7_TKWRD_VAR},
-		{"array", PH7_TKWRD_ARRAY},
-		{"virtual", PH7_TKWRD_VIRTUAL},
-		{"class", PH7_TKWRD_CLASS},
-		{"as", PH7_TKWRD_AS},
-		{"continue", PH7_TKWRD_CONTINUE},
-		{"function", PH7_TKWRD_FUNCTION},
-		{"while", PH7_TKWRD_WHILE},
-		{"eval", PH7_TKWRD_EVAL},
-		{"do", PH7_TKWRD_DO},
-		{"exit", PH7_TKWRD_EXIT},
-		{"implements", PH7_TKWRD_IMPLEMENTS},
-		{"include_once", PH7_TKWRD_INCONCE},
-		{"include", PH7_TKWRD_INCLUDE},
-		{"empty", PH7_TKWRD_EMPTY},
-		{"instanceof", PH7_TKWRD_INSTANCEOF},
-		{"interface", PH7_TKWRD_INTERFACE},
-		{"for", PH7_TKWRD_FOR},
-		{"foreach", PH7_TKWRD_FOREACH},
-		{"isset", PH7_TKWRD_ISSET},
-		{"parent", PH7_TKWRD_PARENT},
-		{"private", PH7_TKWRD_PRIVATE},
-		{"protected", PH7_TKWRD_PROTECTED},
-		{"public", PH7_TKWRD_PUBLIC},
-		{"catch", PH7_TKWRD_CATCH},
-		{"unset", PH7_TKWRD_UNSET},
-		{"break", PH7_TKWRD_BREAK}
+		{"extends", PH7_KEYWORD_EXTENDS},
+		{"switch", PH7_KEYWORD_SWITCH},
+		{"int", PH7_KEYWORD_INT},
+		{"require", PH7_KEYWORD_REQUIRE},
+		{"return", PH7_KEYWORD_RETURN},
+		{"namespace", PH7_KEYWORD_NAMESPACE},
+		{"object", PH7_KEYWORD_OBJECT},
+		{"throw", PH7_KEYWORD_THROW},
+		{"bool", PH7_KEYWORD_BOOL},
+		{"default", PH7_KEYWORD_DEFAULT},
+		{"try", PH7_KEYWORD_TRY},
+		{"case", PH7_KEYWORD_CASE},
+		{"self", PH7_KEYWORD_SELF},
+		{"final", PH7_KEYWORD_FINAL},
+		{"finally", PH7_KEYWORD_FINALLY},
+		{"list", PH7_KEYWORD_LIST},
+		{"static", PH7_KEYWORD_STATIC},
+		{"clone", PH7_KEYWORD_CLONE},
+		{"new", PH7_KEYWORD_NEW},
+		{"const", PH7_KEYWORD_CONST},
+		{"string", PH7_KEYWORD_STRING},
+		{"using", PH7_KEYWORD_USING},
+		{"elseif", PH7_KEYWORD_ELIF},
+		{"else", PH7_KEYWORD_ELSE},
+		{"if", PH7_KEYWORD_IF},
+		{"float", PH7_KEYWORD_FLOAT},
+		{"var", PH7_KEYWORD_VAR},
+		{"array", PH7_KEYWORD_ARRAY},
+		{"virtual", PH7_KEYWORD_VIRTUAL},
+		{"class", PH7_KEYWORD_CLASS},
+		{"as", PH7_KEYWORD_AS},
+		{"continue", PH7_KEYWORD_CONTINUE},
+		{"function", PH7_KEYWORD_FUNCTION},
+		{"while", PH7_KEYWORD_WHILE},
+		{"eval", PH7_KEYWORD_EVAL},
+		{"do", PH7_KEYWORD_DO},
+		{"exit", PH7_KEYWORD_EXIT},
+		{"import", PH7_KEYWORD_IMPORT},
+		{"implements", PH7_KEYWORD_IMPLEMENTS},
+		{"include", PH7_KEYWORD_INCLUDE},
+		{"empty", PH7_KEYWORD_EMPTY},
+		{"instanceof", PH7_KEYWORD_INSTANCEOF},
+		{"interface", PH7_KEYWORD_INTERFACE},
+		{"for", PH7_KEYWORD_FOR},
+		{"foreach", PH7_KEYWORD_FOREACH},
+		{"isset", PH7_KEYWORD_ISSET},
+		{"parent", PH7_KEYWORD_PARENT},
+		{"private", PH7_KEYWORD_PRIVATE},
+		{"protected", PH7_KEYWORD_PROTECTED},
+		{"public", PH7_KEYWORD_PUBLIC},
+		{"catch", PH7_KEYWORD_CATCH},
+		{"unset", PH7_KEYWORD_UNSET},
+		{"break", PH7_KEYWORD_BREAK}
 	};
 	if(n < 2) {
 		return PH7_TK_ID;
@@ -642,7 +642,7 @@ static sxu32 KeywordCode(const char *z, int n) {
  * Tokenize a raw PHP input.
  * This is the public tokenizer called by most code generator routines.
  */
-PH7_PRIVATE sxi32 PH7_TokenizePHP(const char *zInput, sxu32 nLen, sxu32 nLineStart, SySet *pOut) {
+PH7_PRIVATE sxi32 PH7_TokenizeAerScript(const char *zInput, sxu32 nLen, sxu32 nLineStart, SySet *pOut) {
 	SyLex sLexer;
 	sxi32 rc;
 	/* Initialize the lexer */
