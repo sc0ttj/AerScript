@@ -2647,7 +2647,7 @@ static sxi32 PH7_CompileNamespace(ph7_gen_state *pGen) {
 	PH7_DelimitNestedTokens(pGen->pIn, pGen->pEnd, PH7_TK_OCB/*'{'*/, PH7_TK_CCB/*'}'*/, &pEnd);
 	if(pEnd >= pGen->pEnd) {
 		/* Syntax error */
-		rc = PH7_GenCompileError(pGen, E_ERROR, nLine, "Missing '}' after namespace definition");
+		rc = PH7_GenCompileError(pGen, E_ERROR, nLine, "Namespace: Missing '}' after namespace definition");
 		if(rc == SXERR_ABORT) {
 			/* Error count limit reached,abort immediately */
 			return SXERR_ABORT;
