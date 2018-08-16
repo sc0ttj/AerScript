@@ -2423,6 +2423,14 @@ static int PH7_vfs_ph7_uname(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 				default:
 					break;
 			}
+		} else if(sVer.dwMajorVersion == 10) {
+			switch(sVer.dwMinorVersion) {
+				case 0:
+					zName = "Microsoft Windows 10";
+					break;
+				default:
+					break;
+			}
 		}
 	}
 	switch(zMode[0]) {
