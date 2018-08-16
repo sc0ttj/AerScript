@@ -1606,7 +1606,6 @@ PH7_PRIVATE int PH7_Utf8Read(
 	const unsigned char **pzNext    /* Write first byte past UTF-8 char here */
 );
 /* parse.c function prototypes */
-PH7_PRIVATE int PH7_IsLangConstruct(sxu32 nKeyID, sxu8 bCheckFunc);
 PH7_PRIVATE sxi32 PH7_ExprMakeTree(ph7_gen_state *pGen, SySet *pExprNode, ph7_expr_node **ppRoot);
 PH7_PRIVATE sxi32 PH7_GetNextExpr(SyToken *pStart, SyToken *pEnd, SyToken **ppNext);
 PH7_PRIVATE void PH7_DelimitNestedTokens(SyToken *pIn, SyToken *pEnd, sxu32 nTokStart, sxu32 nTokEnd, SyToken **ppEnd);

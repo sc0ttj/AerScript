@@ -146,7 +146,7 @@ static sxi32 PH7_GenStateEmitExprCode(ph7_gen_state *pGen, ph7_expr_node *pNode,
 static sxi32 PH7_CompileExpr(ph7_gen_state *pGen, sxi32 iFlags, sxi32(*xTreeValidator)(ph7_gen_state *, ph7_expr_node *));
 PH7_PRIVATE ProcNodeConstruct PH7_GetNodeHandler(sxu32 nNodeType);
 static ProcLangConstruct PH7_GenStateGetStatementHandler(sxu32 nKeywordID, SyToken *pLookahead);
-static int PH7_GenStateIsLangConstruct(sxu32 nKeyword);
+static int PH7_IsLangConstruct(sxu32 nKeywordID);
 static sxi32 PH7_GenStateCompileChunk(ph7_gen_state *pGen, sxi32 iFlags);
 static sxi32 PH7_GenStateCompileGlobalScope(ph7_gen_state *pGen);
 static sxi32 PH7_CompileScript(ph7_gen_state *pGen, SySet *pTokenSet, sxi32 iFlags);

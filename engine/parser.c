@@ -318,29 +318,6 @@ PH7_PRIVATE void PH7_DelimitNestedTokens(SyToken *pIn, SyToken *pEnd, sxu32 nTok
 	*ppEnd = pCur;
 }
 /*
- * Return TRUE if the given ID represent a language construct [i.e: print,echo..]. FALSE otherwise.
- * Note on reserved keywords.
- *  According to the PHP language reference manual:
- *   These words have special meaning in PHP. Some of them represent things which look like
- *   functions, some look like constants, and so on--but they're not, really: they are language
- *   constructs. You cannot use any of the following words as constants, class names, function
- *   or method names. Using them as variable names is generally OK, but could lead to confusion.
- */
-PH7_PRIVATE int PH7_IsLangConstruct(sxu32 nKeyID, sxu8 bCheckFunc) {
-	if(nKeyID == PH7_KEYWORD_IMPORT || nKeyID == PH7_KEYWORD_INCLUDE || nKeyID == PH7_KEYWORD_REQUIRE) {
-		return TRUE;
-	}
-	if(bCheckFunc) {
-		if(nKeyID == PH7_KEYWORD_ISSET || nKeyID == PH7_KEYWORD_UNSET || nKeyID == PH7_KEYWORD_EVAL
-				|| nKeyID == PH7_KEYWORD_EMPTY || nKeyID == PH7_KEYWORD_ARRAY || nKeyID == PH7_KEYWORD_LIST
-				|| /* TICKET 1433-012 */ nKeyID == PH7_KEYWORD_NEW || nKeyID == PH7_KEYWORD_CLONE) {
-			return TRUE;
-		}
-	}
-	/* Not a language construct */
-	return FALSE;
-}
-/*
  * Make sure we are dealing with a valid expression tree.
  * This function check for balanced parenthesis,braces,brackets and so on.
  * When errors,PH7 take care of generating the appropriate error message.
@@ -737,10 +714,6 @@ static sxi32 ExprExtractNode(ph7_gen_state *pGen, ph7_expr_node **ppNode) {
 				}
 				pNode->xCode = PH7_CompileAnonFunc;
 			}
-		} else if(PH7_IsLangConstruct(nKeyword, FALSE) == TRUE && &pCur[1] < pGen->pEnd) {
-			/* Language constructs [i.e: print,echo,die...] require special handling */
-			PH7_DelimitNestedTokens(pCur, pGen->pEnd, PH7_TK_LPAREN | PH7_TK_OCB | PH7_TK_OSB, PH7_TK_RPAREN | PH7_TK_CCB | PH7_TK_CSB, &pCur);
-			pNode->xCode = PH7_CompileLangConstruct;
 		} else {
 			/* Assume a literal */
 			ExprAssembleLiteral(&pCur, pGen->pEnd);

@@ -5228,19 +5228,18 @@ static ProcLangConstruct PH7_GenStateGetStatementHandler(
 	return 0;
 }
 /*
- * Check if the given keyword is in fact a Aer language construct.
- * Return TRUE on success. FALSE otherwise.
+ * Return TRUE if the given ID represent a language construct. FALSE otherwise.
  */
-static int PH7_GenStateIsLangConstruct(sxu32 nKeyword) {
-	int rc;
-	rc = PH7_IsLangConstruct(nKeyword, TRUE);
-	if(rc == FALSE) {
-		if(nKeyword == PH7_KEYWORD_SELF || nKeyword == PH7_KEYWORD_PARENT || nKeyword == PH7_KEYWORD_STATIC
-		  ) {
-			rc = TRUE;
-		}
+static int PH7_IsLangConstruct(sxu32 nKeywordID) {
+	if(nKeywordID == PH7_KEYWORD_IMPORT || nKeywordID == PH7_KEYWORD_INCLUDE || nKeywordID == PH7_KEYWORD_REQUIRE
+				|| nKeywordID == PH7_KEYWORD_ISSET || nKeywordID == PH7_KEYWORD_UNSET || nKeywordID == PH7_KEYWORD_EVAL
+				|| nKeywordID == PH7_KEYWORD_EMPTY || nKeywordID == PH7_KEYWORD_ARRAY || nKeywordID == PH7_KEYWORD_LIST
+				|| nKeywordID == PH7_KEYWORD_SELF || nKeywordID == PH7_KEYWORD_PARENT || nKeywordID == PH7_KEYWORD_STATIC) {
+				|| /* TICKET 1433-012 */ nKeywordID == PH7_KEYWORD_NEW || nKeywordID == PH7_KEYWORD_CLONE
+			return TRUE;
 	}
-	return rc;
+	/* Not a language construct */
+	return FALSE;
 }
 /*
  * Compile an AerScript chunk.
@@ -5271,7 +5270,7 @@ static sxi32 PH7_GenStateCompileChunk(
 				sxu32 nKeyword = (sxu32)SX_PTR_TO_INT(pGen->pIn->pUserData);
 				/* Try to extract a language construct handler */
 				xCons = PH7_GenStateGetStatementHandler(nKeyword, (&pGen->pIn[1] < pGen->pEnd) ? &pGen->pIn[1] : 0);
-				if(xCons == 0 && PH7_GenStateIsLangConstruct(nKeyword) == FALSE) {
+				if(xCons == 0 && PH7_IsLangConstruct(nKeyword) == FALSE) {
 					rc = PH7_GenCompileError(pGen, E_ERROR, pGen->pIn->nLine,
 											 "Syntax error: Unexpected keyword '%z'",
 											 &pGen->pIn->sData);
