@@ -5688,7 +5688,7 @@ static int PH7_builtin_zip_entry_compressionmethod(ph7_context *pCtx, int nArg, 
 #endif /* #ifndef PH7_DISABLE_BUILTIN_FUNC*/
 /* NULL VFS [i.e: a no-op VFS]*/
 static const ph7_vfs null_vfs = {
-	"null_vfs",
+	"NullVFS",
 	PH7_VFS_VERSION,
 	0, /* int (*xChdir)(const char *) */
 	0, /* int (*xChroot)(const char *); */
@@ -6521,7 +6521,7 @@ static void WinVfs_Username(ph7_context *pCtx) {
 }
 /* Export the windows vfs */
 static const ph7_vfs sWinVfs = {
-	"Windows_vfs",
+	"WinVFS",
 	PH7_VFS_VERSION,
 	WinVfs_chdir,    /* int (*xChdir)(const char *) */
 	0,               /* int (*xChroot)(const char *); */
@@ -7452,7 +7452,7 @@ static int UnixVfs_chroot(const char *zRootDir) {
 }
 /* Export the UNIX vfs */
 static const ph7_vfs sUnixVfs = {
-	"Unix_vfs",
+	"UnixVFS",
 	PH7_VFS_VERSION,
 	UnixVfs_chdir,    /* int (*xChdir)(const char *) */
 	UnixVfs_chroot,   /* int (*xChroot)(const char *); */
@@ -7667,7 +7667,7 @@ static int UnixFile_Lock(void *pUserData, int lock_type) {
 		rc = flock(fd, LOCK_UN);
 	} else {
 		if(lock_type == 1) {
-			/* Exculsive lock */
+			/* Exclusive lock */
 			rc = flock(fd, LOCK_EX);
 		} else {
 			/* Shared lock */
