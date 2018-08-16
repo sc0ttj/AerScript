@@ -969,8 +969,8 @@ PH7_PRIVATE sxi32 PH7_CompileList(ph7_gen_state *pGen, sxi32 iCompileFlag) {
 	return SXRET_OK;
 }
 /*
- * Compile an anonymous function or a closure.
- *  Anonymous functions, also known as closures, allow the creation of functions
+ * Compile a closure (anonymous function).
+ *  Closures (also known as anonymous functions), allow the creation of functions
  *  which have no specified name. They are most useful as the value of callback
  *  parameters, but they have many other uses. Closures can also be used as
  *  the values of variables; Assigning a closure to a variable uses the same
@@ -982,11 +982,8 @@ PH7_PRIVATE sxi32 PH7_CompileList(ph7_gen_state *pGen, sxi32 iCompileFlag) {
  * };
  * $greet('World');
  * $greet('AerScript');
- * ?>
- * Note that the implementation of anonymous function and closure under
- * PH7 is completely different from the one used by the zend engine.
  */
-PH7_PRIVATE sxi32 PH7_CompileAnonFunc(ph7_gen_state *pGen, sxi32 iCompileFlag) {
+PH7_PRIVATE sxi32 PH7_CompileClosure(ph7_gen_state *pGen, sxi32 iCompileFlag) {
 	ph7_vm_func *pAnonFunc; /* Anonymous function body */
 	char zName[512];         /* Unique closure name */
 	static int iCnt = 1;     /* There is no worry about thread-safety here,because only

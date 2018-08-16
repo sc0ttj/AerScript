@@ -712,7 +712,7 @@ static sxi32 ExprExtractNode(ph7_gen_state *pGen, ph7_expr_node **ppNode) {
 					SyMemBackendPoolFree(&pGen->pVm->sAllocator, pNode);
 					return rc;
 				}
-				pNode->xCode = PH7_CompileAnonFunc;
+				pNode->xCode = PH7_CompileClosure;
 			}
 		} else {
 			/* Assume a literal */
