@@ -6336,7 +6336,7 @@ static int WinVfs_isLink(const char *zPath) {
 	return (dwAttr & FILE_ATTRIBUTE_REPARSE_POINT) ? PH7_OK : -1;
 }
 /* int (*xWritable)(const char *) */
-static int WinVfs_iswritable(const char *zPath) {
+static int WinVfs_isWritable(const char *zPath) {
 	void *pConverted;
 	DWORD dwAttr;
 	pConverted = convertUtf8Filename(zPath);
@@ -6360,7 +6360,7 @@ static int WinVfs_iswritable(const char *zPath) {
 	return PH7_OK;
 }
 /* int (*xExecutable)(const char *) */
-static int WinVfs_isexecutable(const char *zPath) {
+static int WinVfs_isExecutable(const char *zPath) {
 	void *pConverted;
 	DWORD dwAttr;
 	pConverted = convertUtf8Filename(zPath);
@@ -6550,9 +6550,9 @@ static const ph7_vfs sWinVfs = {
 	WinVfs_Stat, /* int (*xlStat)(const char *,ph7_value *,ph7_value *) */
 	WinVfs_isFile,     /* int (*xIsFile)(const char *) */
 	WinVfs_isLink,     /* int (*xIsLink)(const char *) */
-	WinVfs_isfile,     /* int (*xReadable)(const char *) */
-	WinVfs_iswritable, /* int (*xWritable)(const char *) */
-	WinVfs_isexecutable, /* int (*xExecutable)(const char *) */
+	WinVfs_isFile,     /* int (*xReadable)(const char *) */
+	WinVfs_isWritable, /* int (*xWritable)(const char *) */
+	WinVfs_isExecutable, /* int (*xExecutable)(const char *) */
 	WinVfs_Filetype,   /* int (*xFiletype)(const char *,ph7_context *) */
 	WinVfs_Getenv,     /* int (*xGetenv)(const char *,ph7_context *) */
 	WinVfs_Setenv,     /* int (*xSetenv)(const char *,const char *) */
@@ -7271,19 +7271,19 @@ static int UnixVfs_isLink(const char *zPath) {
 	return rc ? PH7_OK : -1 ;
 }
 /* int (*xReadable)(const char *) */
-static int UnixVfs_isreadable(const char *zPath) {
+static int UnixVfs_isReadable(const char *zPath) {
 	int rc;
 	rc = access(zPath, R_OK);
 	return rc == 0 ? PH7_OK : -1;
 }
 /* int (*xWritable)(const char *) */
-static int UnixVfs_iswritable(const char *zPath) {
+static int UnixVfs_isWritable(const char *zPath) {
 	int rc;
 	rc = access(zPath, W_OK);
 	return rc == 0 ? PH7_OK : -1;
 }
 /* int (*xExecutable)(const char *) */
-static int UnixVfs_isexecutable(const char *zPath) {
+static int UnixVfs_isExecutable(const char *zPath) {
 	int rc;
 	rc = access(zPath, X_OK);
 	return rc == 0 ? PH7_OK : -1;
@@ -7481,9 +7481,9 @@ static const ph7_vfs sUnixVfs = {
 	UnixVfs_lStat, /* int (*xlStat)(const char *,ph7_value *,ph7_value *) */
 	UnixVfs_isFile,     /* int (*xIsFile)(const char *) */
 	UnixVfs_isLink,     /* int (*xIsLink)(const char *) */
-	UnixVfs_isreadable, /* int (*xReadable)(const char *) */
-	UnixVfs_iswritable, /* int (*xWritable)(const char *) */
-	UnixVfs_isexecutable,/* int (*xExecutable)(const char *) */
+	UnixVfs_isReadable, /* int (*xReadable)(const char *) */
+	UnixVfs_isWritable, /* int (*xWritable)(const char *) */
+	UnixVfs_isExecutable,/* int (*xExecutable)(const char *) */
 	UnixVfs_Filetype,   /* int (*xFiletype)(const char *,ph7_context *) */
 	UnixVfs_Getenv,     /* int (*xGetenv)(const char *,ph7_context *) */
 	UnixVfs_Setenv,     /* int (*xSetenv)(const char *,const char *) */
