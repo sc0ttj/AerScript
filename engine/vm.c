@@ -10597,7 +10597,7 @@ static int vm_builtin_get_include_path(ph7_context *pCtx, int nArg, ph7_value **
  *  Included paths as a string
  */
 static int vm_builtin_get_included_files(ph7_context *pCtx, int nArg, ph7_value **apArg) {
-	SySet *pFiles = &pCtx->pVm->aFiles;
+	SySet *pFiles = &pCtx->pVm->aIncluded;
 	ph7_value *pArray, *pWorker;
 	SyString *pEntry;
 	int c, d;
