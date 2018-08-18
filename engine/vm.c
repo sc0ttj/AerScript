@@ -8705,12 +8705,12 @@ static int vm_builtin_var_export(ph7_context *pCtx, int nArg, ph7_value **apArg)
 	return SXRET_OK;
 }
 /*
- * int get_memory_peak_usage()
- *  Returns the peak of memory, in bytes, that's been allocated.
+ * int get_memory_limit()
+ *  Returns the amount of bytes that can be allocated from system.
  * Parameters
  *  None
  * Return
- *  The real size of memory allocated from system.
+ *  The upper memory limit set for script processing.
  */
 static int vm_builtin_get_memory_limit(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	if(nArg != 0) {
