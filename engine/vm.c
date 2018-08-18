@@ -10610,7 +10610,7 @@ static int vm_builtin_get_included_files(ph7_context *pCtx, int nArg, ph7_value 
 		SXUNUSED(apArg);
 		return PH7_OK;
 	}
-	/* Iterate throw entries */
+	/* Iterate through entries */
 	SySetResetCursor(pFiles);
 	while(SXRET_OK == SySetGetNextEntry(pFiles, (void **)&pEntry)) {
 		/* reset the string cursor */
