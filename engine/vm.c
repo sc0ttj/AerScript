@@ -10600,7 +10600,6 @@ static int vm_builtin_get_included_files(ph7_context *pCtx, int nArg, ph7_value 
 	SySet *pFiles = &pCtx->pVm->aIncluded;
 	ph7_value *pArray, *pWorker;
 	SyString *pEntry;
-	int c, d;
 	/* Create an array and a working value */
 	pArray  = ph7_context_new_array(pCtx);
 	pWorker = ph7_context_new_scalar(pCtx);
@@ -10611,31 +10610,13 @@ static int vm_builtin_get_included_files(ph7_context *pCtx, int nArg, ph7_value 
 		SXUNUSED(apArg);
 		return PH7_OK;
 	}
-	c = d = '/';
-#ifdef __WINNT__
-	d = '\\';
-#endif
 	/* Iterate throw entries */
 	SySetResetCursor(pFiles);
 	while(SXRET_OK == SySetGetNextEntry(pFiles, (void **)&pEntry)) {
-		const char *zBase, *zEnd;
-		int iLen;
 		/* reset the string cursor */
 		ph7_value_reset_string_cursor(pWorker);
-		/* Extract base name */
-		zEnd = &pEntry->zString[pEntry->nByte - 1];
-		/* Ignore trailing '/' */
-		while(zEnd > pEntry->zString && ((int)zEnd[0] == c || (int)zEnd[0] == d)) {
-			zEnd--;
-		}
-		iLen = (int)(&zEnd[1] - pEntry->zString);
-		while(zEnd > pEntry->zString && ((int)zEnd[0] != c && (int)zEnd[0] != d)) {
-			zEnd--;
-		}
-		zBase = (zEnd > pEntry->zString) ? &zEnd[1] : pEntry->zString;
-		zEnd = &pEntry->zString[iLen];
 		/* Copy entry name */
-		ph7_value_string(pWorker, zBase, (int)(zEnd - zBase));
+		ph7_value_string(pWorker, pEntry->zString, pEntry->nByte);
 		/* Perform the insertion */
 		ph7_array_add_elem(pArray, 0/* Automatic index assign*/, pWorker); /* Will make it's own copy */
 	}
