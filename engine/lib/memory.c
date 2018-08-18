@@ -46,21 +46,6 @@ PH7_PRIVATE void SyZero(void *pSrc, sxu32 nSize) {
 		}
 		zSrc[0] = 0;
 		zSrc++;
-		if(zSrc >= zEnd) {
-			break;
-		}
-		zSrc[0] = 0;
-		zSrc++;
-		if(zSrc >= zEnd) {
-			break;
-		}
-		zSrc[0] = 0;
-		zSrc++;
-		if(zSrc >= zEnd) {
-			break;
-		}
-		zSrc[0] = 0;
-		zSrc++;
 	}
 }
 PH7_PRIVATE sxi32 SyMemcmp(const void *pB1, const void *pB2, sxu32 nSize) {
