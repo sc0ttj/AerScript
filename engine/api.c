@@ -120,6 +120,36 @@ static sxi32 EngineConfig(ph7 *pEngine, sxi32 nOp, va_list ap) {
 				}
 				break;
 			}
+		case PH7_CONFIG_MEM_LIMIT: {
+				char *sMemLimit = va_arg(ap, char *);
+				if(!sMemLimit) {
+					break;
+				}
+				char *sLimitRem;
+				sxu64 nMemLimit;
+				SyStrToInt64(sMemLimit, SyStrlen(sMemLimit), (void *)&nMemLimit, &sLimitRem);
+				if(sLimitRem) {
+					switch(*sLimitRem) {
+						case 'G':
+						case 'g':
+							nMemLimit *= 1024;
+						case 'M':
+						case 'm':
+							nMemLimit *= 1024;
+						case 'K':
+						case 'k':
+							nMemLimit *= 1024;
+					}
+				}
+				if(nMemLimit >= 1048576) {
+					/* At least 1MB of heap */
+					pEngine->sAllocator.pHeap->nLimit = nMemLimit;
+				} else {
+					/* Fallback to no limit */
+					pEngine->sAllocator.pHeap->nLimit = 0;
+				}
+				break;
+			}
 		case PH7_CONFIG_ERR_ABORT:
 			/* Reserved for future use */
 			break;

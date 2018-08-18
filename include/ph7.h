@@ -249,7 +249,7 @@ struct SyMemMethods {
 	void *(*xAlloc)(unsigned int);           /* [Required:] Allocate a memory chunk */
 	void *(*xRealloc)(void *, unsigned int); /* [Required:] Re-allocate a memory chunk */
 	void (*xFree)(void *);                   /* [Required:] Release a memory chunk */
-	unsigned int (*xChunkSize)(void *);      /* [Optional:] Return chunk size */
+	unsigned int (*xChunkSize)(void *);      /* [Required:] Return chunk size */
 	int (*xInit)(void *);                    /* [Optional:] Initialization callback */
 	void (*xRelease)(void *);                /* [Optional:] Release callback */
 	void  *pUserData;                        /* [Optional:] First argument to xInit() and xRelease() */
@@ -351,6 +351,7 @@ typedef sxi64 ph7_int64;
 #define PH7_CONFIG_ERR_OUTPUT    1  /* TWO ARGUMENTS: int (*xConsumer)(const void *pOut,unsigned int nLen,void *pUserData),void *pUserData */
 #define PH7_CONFIG_ERR_ABORT     2  /* RESERVED FOR FUTURE USE */
 #define PH7_CONFIG_ERR_LOG       3  /* TWO ARGUMENTS: const char **pzBuf,int *pLen */
+#define PH7_CONFIG_MEM_LIMIT	 4  /* ONE ARGUMENT: char *nMemLimit */
 /*
  * Virtual Machine Configuration Commands.
  *

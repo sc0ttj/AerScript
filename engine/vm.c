@@ -8705,6 +8705,53 @@ static int vm_builtin_var_export(ph7_context *pCtx, int nArg, ph7_value **apArg)
 	return SXRET_OK;
 }
 /*
+ * int get_memory_peak_usage()
+ *  Returns the peak of memory, in bytes, that's been allocated.
+ * Parameters
+ *  None
+ * Return
+ *  The real size of memory allocated from system.
+ */
+static int vm_builtin_get_memory_limit(ph7_context *pCtx, int nArg, ph7_value **apArg) {
+	if(nArg != 0) {
+		ph7_result_bool(pCtx, 0);
+	} else {
+		ph7_result_int64(pCtx, pCtx->pVm->sAllocator.pHeap->nLimit);
+	}
+	return PH7_OK;
+}
+/*
+ * int get_memory_peak_usage()
+ *  Returns the limit of memory set in Interpreter.
+ * Parameters
+ *  None
+ * Return
+ *  The maximum amount of memory that can be allocated from system.
+ */
+static int vm_builtin_get_memory_peak_usage(ph7_context *pCtx, int nArg, ph7_value **apArg) {
+	if(nArg != 0) {
+		ph7_result_bool(pCtx, 0);
+	} else {
+		ph7_result_int64(pCtx, pCtx->pVm->sAllocator.pHeap->nPeak);
+	}
+	return PH7_OK;
+}
+/*
+ * int get_memory_usage()
+ *  Returns the amount of memory, in bytes, that's currently being allocated.
+ * Parameters
+ *  None
+ * Return
+ *  Total memory allocated from system, including unused pages.
+ */
+static int vm_builtin_get_memory_usage(ph7_context *pCtx, int nArg, ph7_value **apArg) {
+	if(nArg != 0) {
+		ph7_result_bool(pCtx, 0);
+	} else {
+		ph7_result_int64(pCtx, pCtx->pVm->sAllocator.pHeap->nSize);
+	}
+	return PH7_OK;
+}/*
  * int/bool assert_options(int $what [, mixed $value ])
  *  Set/get the various assert flags.
  * Parameter
@@ -11251,6 +11298,10 @@ static const ph7_builtin_func aVmFunc[] = {
 	{ "ob_get_level",      vm_builtin_ob_get_level },
 	{ "ob_list_handlers",  vm_builtin_ob_list_handlers },
 	{ "ob_start",          vm_builtin_ob_start     },
+	/* Memory usage reporting */
+	{ "get_memory_limit",      vm_builtin_get_memory_limit },
+	{ "get_memory_peak_usage", vm_builtin_get_memory_peak_usage },
+	{ "get_memory_usage",      vm_builtin_get_memory_usage },
 	/* Assertion functions */
 	{ "assert_options",  vm_builtin_assert_options },
 	{ "assert",          vm_builtin_assert         },

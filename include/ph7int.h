@@ -239,9 +239,18 @@ union SyMemHeader {
 	SyMemHeader *pNext; /* Next chunk of size 1 << (nBucket + SXMEM_POOL_INCR) in the list */
 	sxu32 nBucket;      /* Bucket index in aPool[] */
 };
+/* Heap allocation control structure */
+typedef struct SyMemHeap SyMemHeap;
+struct SyMemHeap {
+       sxu64 nSize;      /* Current memory usage */
+       sxu64 nPeak;      /* Peak memory usage */
+       sxu64 nLimit;     /* Memory limit */
+};
+/* Memory allocation backend container */
 struct SyMemBackend {
 	const SyMutexMethods *pMutexMethods; /* Mutex methods */
 	const SyMemMethods *pMethods;  /* Memory allocation methods */
+	SyMemHeap *pHeap;              /* Heap allocation */
 	SyMemBlock *pBlocks;           /* List of valid memory blocks */
 	sxu32 nBlock;                  /* Total number of memory blocks allocated so far */
 	ProcMemError xMemError;        /* Out-of memory callback */
@@ -1799,10 +1808,10 @@ PH7_PRIVATE sxi32 SyMemBackendInitFromParent(SyMemBackend *pBackend, SyMemBacken
 	PH7_PRIVATE void *SyMemBackendPoolRealloc(SyMemBackend *pBackend, void *pOld, sxu32 nByte);
 #endif
 PH7_PRIVATE sxi32 SyMemBackendPoolFree(SyMemBackend *pBackend, void *pChunk);
-PH7_PRIVATE void *SyMemBackendPoolAlloc(SyMemBackend *pBackend, sxu32 nByte);
+PH7_PRIVATE void *SyMemBackendPoolAlloc(SyMemBackend *pBackend, sxu32 nBytes);
 PH7_PRIVATE sxi32 SyMemBackendFree(SyMemBackend *pBackend, void *pChunk);
-PH7_PRIVATE void *SyMemBackendRealloc(SyMemBackend *pBackend, void *pOld, sxu32 nByte);
-PH7_PRIVATE void *SyMemBackendAlloc(SyMemBackend *pBackend, sxu32 nByte);
+PH7_PRIVATE void *SyMemBackendRealloc(SyMemBackend *pBackend, void *pOld, sxu32 nBytes);
+PH7_PRIVATE void *SyMemBackendAlloc(SyMemBackend *pBackend, sxu32 nBytes);
 #if defined(PH7_ENABLE_THREADS)
 	PH7_PRIVATE sxi32 SyMemBackendMakeThreadSafe(SyMemBackend *pBackend, const SyMutexMethods *pMethods);
 	PH7_PRIVATE sxi32 SyMemBackendDisbaleMutexing(SyMemBackend *pBackend);
