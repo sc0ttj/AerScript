@@ -123,21 +123,6 @@ PH7_PRIVATE sxi32 SyRandomness(SyPRNGCtx *pCtx, void *pBuf, sxu32 nLen) {
 		}
 		zBuf[0] = randomByte(pCtx);
 		zBuf++;
-		if(zBuf >= zEnd) {
-			break;
-		}
-		zBuf[0] = randomByte(pCtx);
-		zBuf++;
-		if(zBuf >= zEnd) {
-			break;
-		}
-		zBuf[0] = randomByte(pCtx);
-		zBuf++;
-		if(zBuf >= zEnd) {
-			break;
-		}
-		zBuf[0] = randomByte(pCtx);
-		zBuf++;
 	}
 	return SXRET_OK;
 }

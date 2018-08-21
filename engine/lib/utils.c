@@ -24,18 +24,6 @@ PH7_PRIVATE sxi32 SyStrIsNumeric(const char *zSrc, sxu32 nLen, sxu8 *pReal, cons
 			break;
 		}
 		zSrc++;
-		if(zSrc >= zEnd || (unsigned char)zSrc[0] >= 0xc0 || !SyisDigit(zSrc[0])) {
-			break;
-		}
-		zSrc++;
-		if(zSrc >= zEnd || (unsigned char)zSrc[0] >= 0xc0 || !SyisDigit(zSrc[0])) {
-			break;
-		}
-		zSrc++;
-		if(zSrc >= zEnd || (unsigned char)zSrc[0] >= 0xc0 || !SyisDigit(zSrc[0])) {
-			break;
-		}
-		zSrc++;
 	};
 	if(zSrc < zEnd && zSrc > zCur) {
 		int c = zSrc[0];
@@ -120,24 +108,6 @@ PH7_PRIVATE sxi32 SyStrToInt32(const char *zSrc, sxu32 nLen, void *pOutVal, cons
 		nVal = nVal * 10 + (zSrc[0] - '0') ;
 		--i ;
 		zSrc++;
-		if(zSrc >= zEnd || !i || !SyisDigit(zSrc[0])) {
-			break;
-		}
-		nVal = nVal * 10 + (zSrc[0] - '0') ;
-		--i ;
-		zSrc++;
-		if(zSrc >= zEnd || !i || !SyisDigit(zSrc[0])) {
-			break;
-		}
-		nVal = nVal * 10 + (zSrc[0] - '0') ;
-		--i ;
-		zSrc++;
-		if(zSrc >= zEnd || !i || !SyisDigit(zSrc[0])) {
-			break;
-		}
-		nVal = nVal * 10 + (zSrc[0] - '0') ;
-		--i ;
-		zSrc++;
 	}
 	/* Skip trailing spaces */
 	while(zSrc < zEnd && SyisSpace(zSrc[0])) {
@@ -185,24 +155,6 @@ PH7_PRIVATE sxi32 SyStrToInt64(const char *zSrc, sxu32 nLen, void *pOutVal, cons
 	}
 	nVal = 0;
 	for(;;) {
-		if(zSrc >= zEnd || !i || !SyisDigit(zSrc[0])) {
-			break;
-		}
-		nVal = nVal * 10 + (zSrc[0] - '0') ;
-		--i ;
-		zSrc++;
-		if(zSrc >= zEnd || !i || !SyisDigit(zSrc[0])) {
-			break;
-		}
-		nVal = nVal * 10 + (zSrc[0] - '0') ;
-		--i ;
-		zSrc++;
-		if(zSrc >= zEnd || !i || !SyisDigit(zSrc[0])) {
-			break;
-		}
-		nVal = nVal * 10 + (zSrc[0] - '0') ;
-		--i ;
-		zSrc++;
 		if(zSrc >= zEnd || !i || !SyisDigit(zSrc[0])) {
 			break;
 		}
@@ -368,30 +320,6 @@ PH7_PRIVATE sxi32 SyOctalStrToInt64(const char *zSrc, sxu32 nLen, void *pOutVal,
 		}
 		nVal = nVal * 8 +  c;
 		zSrc++;
-		if(zSrc >= zEnd || !SyisDigit(zSrc[0])) {
-			break;
-		}
-		if((c = zSrc[0] - '0') > 7 || (int)(zSrc - zIn) > 20) {
-			break;
-		}
-		nVal = nVal * 8 +  c;
-		zSrc++;
-		if(zSrc >= zEnd || !SyisDigit(zSrc[0])) {
-			break;
-		}
-		if((c = zSrc[0] - '0') > 7 || (int)(zSrc - zIn) > 20) {
-			break;
-		}
-		nVal = nVal * 8 +  c;
-		zSrc++;
-		if(zSrc >= zEnd || !SyisDigit(zSrc[0])) {
-			break;
-		}
-		if((c = zSrc[0] - '0') > 7 || (int)(zSrc - zIn) > 20) {
-			break;
-		}
-		nVal = nVal * 8 +  c;
-		zSrc++;
 	}
 	/* Skip trailing spaces */
 	while(zSrc < zEnd && SyisSpace(zSrc[0])) {
@@ -439,24 +367,6 @@ PH7_PRIVATE sxi32 SyBinaryStrToInt64(const char *zSrc, sxu32 nLen, void *pOutVal
 	}
 	zIn = zSrc;
 	for(;;) {
-		if(zSrc >= zEnd || (zSrc[0] != '1' && zSrc[0] != '0') || (int)(zSrc - zIn) > 62) {
-			break;
-		}
-		c = zSrc[0] - '0';
-		nVal = (nVal << 1) + c;
-		zSrc++;
-		if(zSrc >= zEnd || (zSrc[0] != '1' && zSrc[0] != '0') || (int)(zSrc - zIn) > 62) {
-			break;
-		}
-		c = zSrc[0] - '0';
-		nVal = (nVal << 1) + c;
-		zSrc++;
-		if(zSrc >= zEnd || (zSrc[0] != '1' && zSrc[0] != '0') || (int)(zSrc - zIn) > 62) {
-			break;
-		}
-		c = zSrc[0] - '0';
-		nVal = (nVal << 1) + c;
-		zSrc++;
 		if(zSrc >= zEnd || (zSrc[0] != '1' && zSrc[0] != '0') || (int)(zSrc - zIn) > 62) {
 			break;
 		}
@@ -523,50 +433,11 @@ PH7_PRIVATE sxi32 SyStrToReal(const char *zSrc, sxu32 nLen, void *pOutVal, const
 		Val = Val * 10.0 + (zSrc[0] - '0') ;
 		zSrc++ ;
 		--Lim;
-		if(zSrc >= zEnd || !Lim || !SyisDigit(zSrc[0])) {
-			break ;
-		}
-		Val = Val * 10.0 + (zSrc[0] - '0') ;
-		zSrc++ ;
-		--Lim;
-		if(zSrc >= zEnd || !Lim || !SyisDigit(zSrc[0])) {
-			break ;
-		}
-		Val = Val * 10.0 + (zSrc[0] - '0') ;
-		zSrc++ ;
-		--Lim;
-		if(zSrc >= zEnd || !Lim || !SyisDigit(zSrc[0])) {
-			break ;
-		}
-		Val = Val * 10.0 + (zSrc[0] - '0') ;
-		zSrc++ ;
-		--Lim;
 	}
 	if(zSrc < zEnd && (zSrc[0] == '.' || zSrc[0] == ',')) {
 		sxreal dec = 1.0;
 		zSrc++;
 		for(;;) {
-			if(zSrc >= zEnd || !Lim || !SyisDigit(zSrc[0])) {
-				break ;
-			}
-			Val = Val * 10.0 + (zSrc[0] - '0') ;
-			dec *= 10.0;
-			zSrc++ ;
-			--Lim;
-			if(zSrc >= zEnd || !Lim || !SyisDigit(zSrc[0])) {
-				break ;
-			}
-			Val = Val * 10.0 + (zSrc[0] - '0') ;
-			dec *= 10.0;
-			zSrc++ ;
-			--Lim;
-			if(zSrc >= zEnd || !Lim || !SyisDigit(zSrc[0])) {
-				break ;
-			}
-			Val = Val * 10.0 + (zSrc[0] - '0') ;
-			dec *= 10.0;
-			zSrc++ ;
-			--Lim;
 			if(zSrc >= zEnd || !Lim || !SyisDigit(zSrc[0])) {
 				break ;
 			}

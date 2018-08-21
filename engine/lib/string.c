@@ -12,18 +12,6 @@ PH7_PRIVATE sxu32 SyStrlen(const char *zSrc) {
 			break;
 		}
 		zIn++;
-		if(!zIn[0]) {
-			break;
-		}
-		zIn++;
-		if(!zIn[0]) {
-			break;
-		}
-		zIn++;
-		if(!zIn[0]) {
-			break;
-		}
-		zIn++;
 	}
 	return (sxu32)(zIn - zSrc);
 }
@@ -32,36 +20,6 @@ PH7_PRIVATE sxi32 SyByteFind(const char *zStr, sxu32 nLen, sxi32 c, sxu32 *pPos)
 	const char *zEnd;
 	zEnd = &zIn[nLen];
 	for(;;) {
-		if(zIn >= zEnd) {
-			break;
-		}
-		if(zIn[0] == c) {
-			if(pPos) {
-				*pPos = (sxu32)(zIn - zStr);
-			}
-			return SXRET_OK;
-		}
-		zIn++;
-		if(zIn >= zEnd) {
-			break;
-		}
-		if(zIn[0] == c) {
-			if(pPos) {
-				*pPos = (sxu32)(zIn - zStr);
-			}
-			return SXRET_OK;
-		}
-		zIn++;
-		if(zIn >= zEnd) {
-			break;
-		}
-		if(zIn[0] == c) {
-			if(pPos) {
-				*pPos = (sxu32)(zIn - zStr);
-			}
-			return SXRET_OK;
-		}
-		zIn++;
 		if(zIn >= zEnd) {
 			break;
 		}
@@ -90,36 +48,6 @@ PH7_PRIVATE sxi32 SyByteFind2(const char *zStr, sxu32 nLen, sxi32 c, sxu32 *pPos
 			return SXRET_OK;
 		}
 		zEnd--;
-		if(zEnd < zIn) {
-			break;
-		}
-		if(zEnd[0] == c) {
-			if(pPos) {
-				*pPos = (sxu32)(zEnd - zIn);
-			}
-			return SXRET_OK;
-		}
-		zEnd--;
-		if(zEnd < zIn) {
-			break;
-		}
-		if(zEnd[0] == c) {
-			if(pPos) {
-				*pPos = (sxu32)(zEnd - zIn);
-			}
-			return SXRET_OK;
-		}
-		zEnd--;
-		if(zEnd < zIn) {
-			break;
-		}
-		if(zEnd[0] == c) {
-			if(pPos) {
-				*pPos = (sxu32)(zEnd - zIn);
-			}
-			return SXRET_OK;
-		}
-		zEnd--;
 	}
 	return SXERR_NOTFOUND;
 }
@@ -130,42 +58,6 @@ PH7_PRIVATE sxi32 SyByteListFind(const char *zSrc, sxu32 nLen, const char *zList
 	sxi32 c;
 	zEnd = &zSrc[nLen];
 	for(;;) {
-		if(zIn >= zEnd) {
-			break;
-		}
-		for(zPtr = zList ; (c = zPtr[0]) != 0 ; zPtr++) {
-			if(zIn[0] == c) {
-				if(pFirstPos) {
-					*pFirstPos = (sxu32)(zIn - zSrc);
-				}
-				return SXRET_OK;
-			}
-		}
-		zIn++;
-		if(zIn >= zEnd) {
-			break;
-		}
-		for(zPtr = zList ; (c = zPtr[0]) != 0 ; zPtr++) {
-			if(zIn[0] == c) {
-				if(pFirstPos) {
-					*pFirstPos = (sxu32)(zIn - zSrc);
-				}
-				return SXRET_OK;
-			}
-		}
-		zIn++;
-		if(zIn >= zEnd) {
-			break;
-		}
-		for(zPtr = zList ; (c = zPtr[0]) != 0 ; zPtr++) {
-			if(zIn[0] == c) {
-				if(pFirstPos) {
-					*pFirstPos = (sxu32)(zIn - zSrc);
-				}
-				return SXRET_OK;
-			}
-		}
-		zIn++;
 		if(zIn >= zEnd) {
 			break;
 		}
@@ -200,33 +92,6 @@ PH7_PRIVATE sxi32 SyStrncmp(const char *zLeft, const char *zRight, sxu32 nLen) {
 		zP++;
 		zQ++;
 		nLen--;
-		if(nLen <= 0) {
-			return 0;
-		}
-		if(zP[0] == 0 || zQ[0] == 0 || zP[0] != zQ[0]) {
-			break;
-		}
-		zP++;
-		zQ++;
-		nLen--;
-		if(nLen <= 0) {
-			return 0;
-		}
-		if(zP[0] == 0 || zQ[0] == 0 || zP[0] != zQ[0]) {
-			break;
-		}
-		zP++;
-		zQ++;
-		nLen--;
-		if(nLen <= 0) {
-			return 0;
-		}
-		if(zP[0] == 0 || zQ[0] == 0 || zP[0] != zQ[0]) {
-			break;
-		}
-		zP++;
-		zQ++;
-		nLen--;
 	}
 	return (sxi32)(zP[0] - zQ[0]);
 }
@@ -237,33 +102,6 @@ PH7_PRIVATE sxi32 SyStrnicmp(const char *zLeft, const char *zRight, sxu32 SLen) 
 		return SX_EMPTY_STR(p) ? SX_EMPTY_STR(q) ? 0 : -1 : 1;
 	}
 	for(;;) {
-		if(!SLen) {
-			return 0;
-		}
-		if(!*p || !*q || SyCharToLower(*p) != SyCharToLower(*q)) {
-			break;
-		}
-		p++;
-		q++;
-		--SLen;
-		if(!SLen) {
-			return 0;
-		}
-		if(!*p || !*q || SyCharToLower(*p) != SyCharToLower(*q)) {
-			break;
-		}
-		p++;
-		q++;
-		--SLen;
-		if(!SLen) {
-			return 0;
-		}
-		if(!*p || !*q || SyCharToLower(*p) != SyCharToLower(*q)) {
-			break;
-		}
-		p++;
-		q++;
-		--SLen;
 		if(!SLen) {
 			return 0;
 		}
@@ -293,27 +131,6 @@ sxu32 Systrcpy(char *zDest, sxu32 nDestLen, const char *zSrc, sxu32 nLen) {
 	}
 	zEnd = &zBuf[nDestLen - 1]; /* reserve a room for the null terminator */
 	for(;;) {
-		if(zBuf >= zEnd || nLen == 0) {
-			break;
-		}
-		zBuf[0] = zIn[0];
-		zIn++;
-		zBuf++;
-		nLen--;
-		if(zBuf >= zEnd || nLen == 0) {
-			break;
-		}
-		zBuf[0] = zIn[0];
-		zIn++;
-		zBuf++;
-		nLen--;
-		if(zBuf >= zEnd || nLen == 0) {
-			break;
-		}
-		zBuf[0] = zIn[0];
-		zIn++;
-		zBuf++;
-		nLen--;
 		if(zBuf >= zEnd || nLen == 0) {
 			break;
 		}

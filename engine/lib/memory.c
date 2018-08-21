@@ -595,31 +595,6 @@ static sxi32 MemBackendRelease(SyMemBackend *pBackend) {
 		pBackend->pMethods->xFree(pBlock);
 		pBlock = pNext;
 		pBackend->nBlock--;
-		/* LOOP ONE */
-		if(pBackend->nBlock == 0) {
-			break;
-		}
-		pNext  = pBlock->pNext;
-		pBackend->pMethods->xFree(pBlock);
-		pBlock = pNext;
-		pBackend->nBlock--;
-		/* LOOP TWO */
-		if(pBackend->nBlock == 0) {
-			break;
-		}
-		pNext  = pBlock->pNext;
-		pBackend->pMethods->xFree(pBlock);
-		pBlock = pNext;
-		pBackend->nBlock--;
-		/* LOOP THREE */
-		if(pBackend->nBlock == 0) {
-			break;
-		}
-		pNext  = pBlock->pNext;
-		pBackend->pMethods->xFree(pBlock);
-		pBlock = pNext;
-		pBackend->nBlock--;
-		/* LOOP FOUR */
 	}
 	if(pBackend->pMethods->xRelease) {
 		pBackend->pMethods->xRelease(pBackend->pMethods->pUserData);
@@ -839,39 +814,6 @@ PH7_PRIVATE sxi32 SyBlobSearch(const void *pBlob, sxu32 nLen, const void *pPatte
 	}
 	zEnd = &zIn[nLen - pLen];
 	for(;;) {
-		if(zIn > zEnd) {
-			break;
-		}
-		SX_MACRO_FAST_CMP(zIn, pPattern, pLen, rc);
-		if(rc == 0) {
-			if(pOfft) {
-				*pOfft = (sxu32)(zIn - (const char *)pBlob);
-			}
-			return SXRET_OK;
-		}
-		zIn++;
-		if(zIn > zEnd) {
-			break;
-		}
-		SX_MACRO_FAST_CMP(zIn, pPattern, pLen, rc);
-		if(rc == 0) {
-			if(pOfft) {
-				*pOfft = (sxu32)(zIn - (const char *)pBlob);
-			}
-			return SXRET_OK;
-		}
-		zIn++;
-		if(zIn > zEnd) {
-			break;
-		}
-		SX_MACRO_FAST_CMP(zIn, pPattern, pLen, rc);
-		if(rc == 0) {
-			if(pOfft) {
-				*pOfft = (sxu32)(zIn - (const char *)pBlob);
-			}
-			return SXRET_OK;
-		}
-		zIn++;
 		if(zIn > zEnd) {
 			break;
 		}

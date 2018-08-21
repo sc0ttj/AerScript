@@ -11,21 +11,6 @@ sxu32 SyBinHash(const void *pSrc, sxu32 nLen) {
 		}
 		nH = nH * 33 + zIn[0] ;
 		zIn++;
-		if(zIn >= zEnd) {
-			break;
-		}
-		nH = nH * 33 + zIn[0] ;
-		zIn++;
-		if(zIn >= zEnd) {
-			break;
-		}
-		nH = nH * 33 + zIn[0] ;
-		zIn++;
-		if(zIn >= zEnd) {
-			break;
-		}
-		nH = nH * 33 + zIn[0] ;
-		zIn++;
 	}
 	return nH;
 }
@@ -35,21 +20,6 @@ PH7_PRIVATE sxu32 SyStrHash(const void *pSrc, sxu32 nLen) {
 	sxu32 nH = 5381;
 	zEnd = &zIn[nLen];
 	for(;;) {
-		if(zIn >= zEnd) {
-			break;
-		}
-		nH = nH * 33 + SyToLower(zIn[0]);
-		zIn++;
-		if(zIn >= zEnd) {
-			break;
-		}
-		nH = nH * 33 + SyToLower(zIn[0]);
-		zIn++;
-		if(zIn >= zEnd) {
-			break;
-		}
-		nH = nH * 33 + SyToLower(zIn[0]);
-		zIn++;
 		if(zIn >= zEnd) {
 			break;
 		}
@@ -700,21 +670,6 @@ static sxu32 SyCrc32Update(sxu32 crc32, const void *pSrc, sxu32 nLen) {
 	}
 	zEnd = &zIn[nLen];
 	for(;;) {
-		if(zIn >= zEnd) {
-			break;
-		}
-		CRC32C(crc32, zIn[0]);
-		zIn++;
-		if(zIn >= zEnd) {
-			break;
-		}
-		CRC32C(crc32, zIn[0]);
-		zIn++;
-		if(zIn >= zEnd) {
-			break;
-		}
-		CRC32C(crc32, zIn[0]);
-		zIn++;
 		if(zIn >= zEnd) {
 			break;
 		}
