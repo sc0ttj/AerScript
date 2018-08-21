@@ -4000,6 +4000,11 @@ static sxi32 PH7_GenStateCompileClass(ph7_gen_state *pGen, sxi32 iFlags) {
 	pGen->pEnd = pEnd;
 	/* Set the inherited flags */
 	pClass->iFlags = iFlags;
+	/* Create the class block */
+	rc = PH7_GenStateEnterBlock(&(*pGen), GEN_BLOCK_CLASS, PH7_VmInstrLength(pGen->pVm), pClassInfo, 0);
+	if(rc != SXRET_OK) {
+		return SXERR_ABORT;
+	}
 	/* Start the parse process */
 	for(;;) {
 		/* Jump leading/trailing semi-colons */
@@ -4215,6 +4220,8 @@ static sxi32 PH7_GenStateCompileClass(ph7_gen_state *pGen, sxi32 iFlags) {
 		return SXERR_ABORT;
 	}
 done:
+	/* Leave the class block */
+	PH7_GenStateLeaveBlock(&(*pGen), 0);
 	/* Point beyond the class body */
 	pGen->pIn = &pEnd[1];
 	pGen->pEnd = pTmp;
