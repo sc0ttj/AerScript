@@ -145,22 +145,6 @@ static void PH7_DATE_Const(ph7_value *pVal, void *pUnused) {
 	ph7_value_string_format(pVal, "%04d-%02d-%02d", sTm.tm_year, sTm.tm_mon + 1, sTm.tm_mday);
 }
 /*
- * __FILE__
- *  Path of the processed script.
- */
-static void PH7_FILE_Const(ph7_value *pVal, void *pUserData) {
-	ph7_vm *pVm = (ph7_vm *)pUserData;
-	SyString *pFile;
-	/* Peek the top entry */
-	pFile = (SyString *)SySetPeek(&pVm->aFiles);
-	if(pFile == 0) {
-		/* Expand the magic word: ":MEMORY:" */
-		ph7_value_string(pVal, ":MEMORY:", (int)sizeof(":MEMORY:") - 1);
-	} else {
-		ph7_value_string(pVal, pFile->zString, pFile->nByte);
-	}
-}
-/*
  * __DIR__
  *  Directory holding the processed script.
  */
@@ -1191,7 +1175,6 @@ static const ph7_builtin_constant aBuiltIn[] = {
 	{"DIR_SEP",              PH7_DIRSEP_Const   },
 	{"__TIME__",             PH7_TIME_Const     },
 	{"__DATE__",             PH7_DATE_Const     },
-	{"__FILE__",             PH7_FILE_Const     },
 	{"__DIR__",              PH7_DIR_Const      },
 	{"PHP_SHLIB_SUFFIX",     PH7_PHP_SHLIB_SUFFIX_Const },
 	{"E_ERROR",              PH7_E_ERROR_Const  },

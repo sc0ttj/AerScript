@@ -1203,6 +1203,24 @@ static sxi32 PH7_GenStateLoadLiteral(ph7_gen_state *pGen) {
 		/* Emit the load constant instruction */
 		PH7_VmEmitInstr(pGen->pVm, PH7_OP_LOADC, 0, nIdx, 0, 0);
 		return SXRET_OK;
+	} else if(pStr->nByte == sizeof("__FILE__") - 1 &&
+			  SyMemcmp(pStr->zString, "__FILE__", sizeof("__FILE__") - 1) == 0) {
+		pObj = PH7_ReserveConstObj(pGen->pVm, &nIdx);
+		if(pObj == 0) {
+			PH7_GenCompileError(pGen, E_ERROR, pToken->nLine, "Fatal, PH7 engine is running out of memory");
+			return SXERR_ABORT;
+		}
+		SyString *pFile = (SyString *)SySetPeek(&pGen->pVm->aFiles);
+		if(pFile == 0) {
+			SyString pMemory;
+			SyStringInitFromBuf(&pMemory, ":MEMORY:", (int)sizeof(":MEMORY:") - 1);
+			PH7_MemObjInitFromString(pGen->pVm, pObj, &pMemory);
+		} else {
+			PH7_MemObjInitFromString(pGen->pVm, pObj, pFile);
+		}
+		/* Emit the load constant instruction */
+		PH7_VmEmitInstr(pGen->pVm, PH7_OP_LOADC, 0, nIdx, 0, 0);
+		return SXRET_OK;
 	} else if((pStr->nByte == sizeof("__FUNCTION__") - 1 &&
 			   SyMemcmp(pStr->zString, "__FUNCTION__", sizeof("__FUNCTION__") - 1) == 0) ||
 			  (pStr->nByte == sizeof("__METHOD__") - 1 &&
