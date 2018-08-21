@@ -18,6 +18,8 @@ typedef struct JumpFixup     JumpFixup;
 #define GEN_BLOCK_STD         0x080    /* Standard block */
 #define GEN_BLOCK_EXCEPTION   0x100    /* Exception block [i.e: try{ } }*/
 #define GEN_BLOCK_SWITCH      0x200    /* Switch statement */
+#define GEN_BLOCK_CLASS       0x400    /* Class definition */
+#define GEN_BLOCK_NAMESPACE   0x800    /* Namespace body */
 
 /*
  * Compilation of some Aer constructs such as if, for, while, the logical or
