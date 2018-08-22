@@ -6331,19 +6331,19 @@ static int vm_builtin_register_shutdown_function(ph7_context *pCtx, int nArg, ph
  *    Stable.
  */
 /*
- * Extract the top active class. NULL is returned
+ * Extract the one of active class. NULL is returned
  * if the class stack is empty.
  */
-PH7_PRIVATE ph7_class *PH7_VmPeekTopClass(ph7_vm *pVm) {
+PH7_PRIVATE ph7_class *PH7_VmExtractActiveClass(ph7_vm *pVm, sxi32 iDepth) {
 	SySet *pSet = &pVm->aSelf;
 	ph7_class **apClass;
 	if(SySetUsed(pSet) <= 0) {
 		/* Empty stack,return NULL */
 		return 0;
 	}
-	/* Peek the last entry */
+	/* Extract the class entry from specified depth */
 	apClass = (ph7_class **)SySetBasePtr(pSet);
-	return apClass[pSet->nUsed - 1];
+	return apClass[pSet->nUsed - (iDepth + 1)];
 }
 /*
  * string get_class ([ object $object = NULL ] )
@@ -6361,7 +6361,7 @@ static int vm_builtin_get_class(ph7_context *pCtx, int nArg, ph7_value **apArg) 
 	SyString *pName;
 	if(nArg < 1) {
 		/* Check if we are inside a class */
-		pClass = PH7_VmPeekTopClass(pCtx->pVm);
+		pClass = PH7_VmExtractActiveClass(pCtx->pVm, 0);
 		if(pClass) {
 			/* Point to the class name */
 			pName = &pClass->sName;
@@ -6401,7 +6401,7 @@ static int vm_builtin_get_parent_class(ph7_context *pCtx, int nArg, ph7_value **
 	SyString *pName;
 	if(nArg < 1) {
 		/* Check if we are inside a class [i.e: a method call]*/
-		pClass = PH7_VmPeekTopClass(pCtx->pVm);
+		pClass = PH7_VmExtractActiveClass(pCtx->pVm, 0);
 		if(pClass && pClass->pBase) {
 			/* Point to the class name */
 			pName = &pClass->pBase->sName;
@@ -6440,7 +6440,7 @@ static int vm_builtin_get_parent_class(ph7_context *pCtx, int nArg, ph7_value **
 static int vm_builtin_get_called_class(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	ph7_class *pClass;
 	/* Check if we are inside a class [i.e: a method call] */
-	pClass = PH7_VmPeekTopClass(pCtx->pVm);
+	pClass = PH7_VmExtractActiveClass(pCtx->pVm, 0);
 	if(pClass) {
 		SyString *pName;
 		/* Point to the class name */
@@ -9306,7 +9306,7 @@ static int vm_builtin_debug_backtrace(ph7_context *pCtx, int nArg, ph7_value **a
 			ph7_value_reset_string_cursor(pValue);
 		}
 		/* Top class */
-		pClass = PH7_VmPeekTopClass(pVm);
+		pClass = PH7_VmExtractActiveClass(pVm, 0);
 		if(pClass) {
 			ph7_value_reset_string_cursor(pValue);
 			ph7_value_string(pValue, pClass->sName.zString, (int)pClass->sName.nByte);

@@ -1087,7 +1087,7 @@ static void PH7_static_Const(ph7_value *pVal, void *pUserData) {
 	ph7_vm *pVm = (ph7_vm *)pUserData;
 	ph7_class *pClass;
 	/* Extract the target class if available */
-	pClass = PH7_VmPeekTopClass(pVm);
+	pClass = PH7_VmExtractActiveClass(pVm, 0);
 	if(pClass) {
 		SyString *pName = &pClass->sName;
 		/* Expand class name */
@@ -1105,7 +1105,7 @@ static void PH7_self_Const(ph7_value *pVal, void *pUserData) {
 	ph7_vm *pVm = (ph7_vm *)pUserData;
 	ph7_class *pClass;
 	/* Extract the target class if available */
-	pClass = PH7_VmPeekTopClass(pVm);
+	pClass = PH7_VmExtractActiveClass(pVm, 0);
 	if(pClass) {
 		SyString *pName = &pClass->sName;
 		/* Expand class name */
@@ -1122,7 +1122,7 @@ static void PH7_parent_Const(ph7_value *pVal, void *pUserData) {
 	ph7_vm *pVm = (ph7_vm *)pUserData;
 	ph7_class *pClass;
 	/* Extract the target class if available */
-	pClass = PH7_VmPeekTopClass(pVm);
+	pClass = PH7_VmExtractActiveClass(pVm, 0);
 	if(pClass && pClass->pBase) {
 		SyString *pName = &pClass->pBase->sName;
 		/* Expand class name */

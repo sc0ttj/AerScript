@@ -1604,7 +1604,7 @@ PH7_PRIVATE sxi32 PH7_VmCallUserFunction(ph7_vm *pVm, ph7_value *pFunc, int nArg
 PH7_PRIVATE sxi32 PH7_VmCallUserFunctionAp(ph7_vm *pVm, ph7_value *pFunc, ph7_value *pResult, ...);
 PH7_PRIVATE sxi32 PH7_VmUnsetMemObj(ph7_vm *pVm, sxu32 nObjIdx, int bForce);
 PH7_PRIVATE void PH7_VmRandomString(ph7_vm *pVm, char *zBuf, int nLen);
-PH7_PRIVATE ph7_class *PH7_VmPeekTopClass(ph7_vm *pVm);
+PH7_PRIVATE ph7_class *PH7_VmExtractActiveClass(ph7_vm *pVm, sxi32 iDepth);
 PH7_PRIVATE int PH7_VmIsCallable(ph7_vm *pVm, ph7_value *pValue, int CallInvoke);
 #ifndef PH7_DISABLE_BUILTIN_FUNC
 	PH7_PRIVATE const ph7_io_stream *PH7_VmGetStreamDevice(ph7_vm *pVm, const char **pzDevice, int nByte);
