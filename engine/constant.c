@@ -15,8 +15,7 @@
 /* This file implement built-in constants for the PH7 engine. */
 /*
  * PH7_VERSION
- * __PH7__
- *   Expand the current version of the PH7 engine.
+ *   Expand the current version of the PH7 Engine.
  */
 static void PH7_VER_Const(ph7_value *pVal, void *pUnused) {
 	SXUNUSED(pUnused);
@@ -1138,8 +1137,6 @@ static void PH7_parent_Const(ph7_value *pVal, void *pUserData) {
  */
 static const ph7_builtin_constant aBuiltIn[] = {
 	{"PH7_VERSION",          PH7_VER_Const      },
-	{"PH7_ENGINE",           PH7_VER_Const      },
-	{"__PH7__",              PH7_VER_Const      },
 	{"PHP_OS",               PH7_OS_Const       },
 	{"PHP_EOL",              PH7_EOL_Const      },
 	{"PHP_INT_MAX",          PH7_INTMAX_Const   },
