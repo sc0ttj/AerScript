@@ -1236,6 +1236,28 @@ static sxi32 PH7_GenStateLoadLiteral(ph7_gen_state *pGen) {
 		/* Emit the load constant instruction */
 		PH7_VmEmitInstr(pGen->pVm, PH7_OP_LOADC, 0, nIdx, 0, 0);
 		return SXRET_OK;
+	} else if(pStr->nByte == sizeof("__CLASS__") - 1 && SyMemcmp(pStr->zString, "__CLASS__", sizeof("__CLASS__") - 1) == 0) {
+		GenBlock *pBlock = pGen->pCurrent;
+		while(pBlock && (pBlock->iFlags & GEN_BLOCK_CLASS) == 0) {
+			/* Point to the upper block */
+			pBlock = pBlock->pParent;
+		}
+		if(pBlock == 0) {
+			/* Called in the global scope,load NULL */
+			PH7_VmEmitInstr(pGen->pVm, PH7_OP_LOADC, 0, 0, 0, 0);
+		} else {
+			/* Extract the target class */
+			ph7_class_info *pClassInfo = (ph7_class_info *)pBlock->pUserData;
+			pObj = PH7_ReserveConstObj(pGen->pVm, &nIdx);
+			if(pObj == 0) {
+				PH7_GenCompileError(pGen, E_ERROR, pToken->nLine, "Fatal, PH7 engine is running out of memory");
+				return SXERR_ABORT;
+			}
+			PH7_MemObjInitFromString(pGen->pVm, pObj, &pClassInfo->sName);
+			/* Emit the load constant instruction */
+			PH7_VmEmitInstr(pGen->pVm, PH7_OP_LOADC, 0, nIdx, 0, 0);
+		}
+		return SXRET_OK;
 	} else if((pStr->nByte == sizeof("__FUNCTION__") - 1 &&
 			   SyMemcmp(pStr->zString, "__FUNCTION__", sizeof("__FUNCTION__") - 1) == 0) ||
 			  (pStr->nByte == sizeof("__METHOD__") - 1 &&

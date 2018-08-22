@@ -1100,7 +1100,6 @@ static void PH7_static_Const(ph7_value *pVal, void *pUserData) {
 }
 /*
  * self
- * __CLASS__
  *  Expand the name of the current class. NULL otherwise.
  */
 static void PH7_self_Const(ph7_value *pVal, void *pUserData) {
@@ -1274,7 +1273,6 @@ static const ph7_builtin_constant aBuiltIn[] = {
 	{"EXTR_PREFIX_IF_EXISTS", PH7_EXTR_PREFIX_IF_EXISTS_Const},
 	{"static",               PH7_static_Const       },
 	{"self",                 PH7_self_Const         },
-	{"__CLASS__",            PH7_self_Const         },
 	{"parent",               PH7_parent_Const       }
 };
 /*
