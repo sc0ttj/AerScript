@@ -1359,8 +1359,8 @@ PH7_PRIVATE sxi32 PH7_HashmapCreateSuper(ph7_vm *pVm) {
 	 */
 	ph7_vm_config(pVm, PH7_VM_CONFIG_SERVER_ATTR,
 				  "SCRIPT_FILENAME",
-				  pFile ? pFile->zString : ":Memory:",
-				  pFile ? pFile->nByte : sizeof(":Memory:") - 1
+				  pFile ? pFile->zString : "[MEMORY]",
+				  pFile ? pFile->nByte : sizeof("[MEMORY]") - 1
 				 );
 	/* All done,all super-global are installed now */
 	return SXRET_OK;

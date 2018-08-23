@@ -1215,7 +1215,7 @@ static sxi32 PH7_GenStateLoadLiteral(ph7_gen_state *pGen) {
 		SyString *pFile = (SyString *)SySetPeek(&pGen->pVm->aFiles);
 		if(pFile == 0) {
 			SyString pMemory;
-			SyStringInitFromBuf(&pMemory, ":MEMORY:", (int)sizeof(":MEMORY:") - 1);
+			SyStringInitFromBuf(&pMemory, "[MEMORY]", (int)sizeof("[MEMORY]") - 1);
 			PH7_MemObjInitFromString(pGen->pVm, pObj, &pMemory);
 		} else {
 			if(pStr->zString[2] == 'F' /* FILE */) {
