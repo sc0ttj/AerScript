@@ -1258,6 +1258,103 @@ struct ph7_vm {
 	sxu32 nMagic;              /* Sanity check against misuse */
 };
 /*
+ * Each active virtual machine frame is represented by an instance of the following
+ * structure. VM Frame hold local variables and other stuff related to function call.
+ */
+struct VmFrame {
+	VmFrame *pParent; /* Parent frame or NULL if global scope */
+	void *pUserData;  /* Upper layer private data associated with this frame */
+	ph7_class_instance *pThis; /* Current class instance [i.e: the '$this' variable].NULL otherwise */
+	SySet sLocal;     /* Local variables container (VmSlot instance) */
+	ph7_vm *pVm;      /* VM that own this frame */
+	SyHash hVar;      /* Variable hashtable for fast lookup */
+	SySet sArg;       /* Function arguments container */
+	SySet sRef;       /* Local reference table (VmSlot instance) */
+	sxi32 iFlags;     /* Frame configuration flags (See below)*/
+	sxu32 iExceptionJump; /* Exception jump destination */
+};
+#define VM_FRAME_EXCEPTION  0x01 /* Special Exception frame */
+#define VM_FRAME_THROW      0x02 /* An exception was thrown */
+#define VM_FRAME_CATCH      0x04 /* Catch frame */
+/*
+ * When a user defined variable is released (via manual unset($x) or garbage collected)
+ * memory object index is stored in an instance of the following structure and put
+ * in the free object table so that it can be reused again without allocating
+ * a new memory object.
+ */
+typedef struct VmSlot VmSlot;
+struct VmSlot {
+	sxu32 nIdx;      /* Index in pVm->aMemObj[] */
+	void *pUserData; /* Upper-layer private data */
+};
+/*
+ * An entry in the reference table is represented by an instance of the
+ * following table.
+ * The implementation of the reference mechanism in the PH7 engine
+ * differ greatly from the one used by the zend engine. That is,
+ * the reference implementation is consistent,solid and it's
+ * behavior resemble the C++ reference mechanism.
+ * Refer to the official for more information on this powerful
+ * extension.
+ */
+struct VmRefObj {
+	SySet aReference;  /* Table of references to this memory object */
+	SySet aArrEntries; /* Foreign hashmap entries [i.e: array(&$a) ] */
+	sxu32 nIdx;        /* Referenced object index */
+	sxi32 iFlags;      /* Configuration flags */
+	VmRefObj *pNextCollide, *pPrevCollide; /* Collision link */
+	VmRefObj *pNext, *pPrev;              /* List of all referenced objects */
+};
+#define VM_REF_IDX_KEEP  0x001 /* Do not restore the memory object to the free list */
+/*
+ * Output control buffer entry.
+ * Refer to the implementation of [ob_start()] for more information.
+ */
+typedef struct VmObEntry VmObEntry;
+struct VmObEntry {
+	ph7_value sCallback; /* User defined callback */
+	SyBlob sOB;          /* Output buffer consumer */
+};
+/*
+ * Information about each module library (loaded using [import()] )
+ * is stored in an instance of the following structure.
+ */
+typedef struct VmModule VmModule;
+struct VmModule {
+#ifdef __WINNT__
+	HINSTANCE pHandle;    /* Module handler under Windows */
+#else
+	void *pHandle;       /* Module handler under Unix-like OS */
+#endif
+	SyString sName;      /* Module name */
+	SyString sFile;      /* Module library file */
+	SyString sDesc;      /* Module short description */
+	ph7_real fVer;          /* Module version */
+};
+/*
+ * Each installed class autoload callback (registered using [register_autoload_handler()] )
+ * is stored in an instance of the following structure.
+ */
+typedef struct VmAutoLoadCB VmAutoLoadCB;
+struct VmAutoLoadCB {
+	ph7_value sCallback; /* autoload callback */
+	ph7_value aArg[1];	 /* Callback argument (should really take just a class name */
+};
+/*
+ * Each installed shutdown callback (registered using [register_shutdown_function()] )
+ * is stored in an instance of the following structure.
+ * Refer to the implementation of [register_shutdown_function(()] for more information.
+ */
+typedef struct VmShutdownCB VmShutdownCB;
+struct VmShutdownCB {
+	ph7_value sCallback; /* Shutdown callback */
+	ph7_value aArg[10];   /* Callback arguments (10 maximum arguments) */
+	int nArg;             /* Total number of given arguments */
+};
+/* Uncaught exception code value */
+#define PH7_EXCEPTION -255
+
+/*
  * Allowed value for ph7_vm.nMagic
  */
 #define PH7_VM_INIT   0xFADE9512  /* VM correctly initialized */
