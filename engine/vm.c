@@ -10472,8 +10472,6 @@ static sxi32 VmExecIncludedFile(
 			VmEvalChunk(pCtx->pVm, &(*pCtx), &sScript, PH7_AERSCRIPT_CODE);
 		}
 	}
-	/* Pop from the set of included file */
-	(void)SySetPop(&pVm->aFiles);
 	/* Close the handle */
 	PH7_StreamCloseHandle(pStream, pHandle);
 	/* Release the working buffer */
