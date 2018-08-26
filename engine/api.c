@@ -820,10 +820,10 @@ int ph7_compile_file(ph7 *pEngine, const char *zFilePath, ph7_vm **ppOutVm) {
 	return rc;
 }
 /*
- * [CAPIREF: ph7_vm_dump_v2()]
+ * [CAPIREF: ph7_vm_dump()]
  * Please refer to the official documentation for function purpose and expected parameters.
  */
-int ph7_vm_dump_v2(ph7_vm *pVm, int (*xConsumer)(const void *, unsigned int, void *), void *pUserData) {
+int ph7_vm_dump(ph7_vm *pVm, int (*xConsumer)(const void *, unsigned int, void *), void *pUserData) {
 	int rc;
 	/* Ticket 1433-002: NULL VM is harmless operation */
 	if(PH7_VM_MISUSE(pVm)) {

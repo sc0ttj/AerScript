@@ -207,7 +207,7 @@ int main(int argc, char **argv) {
 	}
 	if(dump_vm) {
 		/* Dump PH7 byte-code instructions */
-		ph7_vm_dump_v2(pVm,
+		ph7_vm_dump(pVm,
 					   Output_Consumer, /* Dump consumer callback */
 					   0
 					  );
