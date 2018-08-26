@@ -986,6 +986,7 @@ PH7_PRIVATE sxi32 PH7_VmInit(
 	/* Precompile the built-in library */
 	VmEvalChunk(&(*pVm), 0, &sBuiltin, PH7_AERSCRIPT_CODE);
 	/* Initialize instructions debug container */
+	pVm->bDebug = TRUE;
 	if(pVm->bDebug) {
 		SySetInit(&pVm->aInstrSet, &pVm->sAllocator, sizeof(VmInstr));
 	}
