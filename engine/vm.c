@@ -5495,7 +5495,7 @@ PH7_PRIVATE sxi32 PH7_VmOutputConsumeAp(
  * to a null terminated string.
  */
 static const char *VmInstrToString(sxi32 nOp) {
-	const char *zOp = "Unknown     ";
+	const char *zOp = "UNKNOWN    ";
 	switch(nOp) {
 		case PH7_OP_DONE:
 			zOp = "DONE       ";
