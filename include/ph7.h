@@ -597,7 +597,7 @@ PH7_APIEXPORT int ph7_vm_config(ph7_vm *pVm, int iConfigOp, ...);
 PH7_APIEXPORT int ph7_vm_exec(ph7_vm *pVm, int *pExitStatus);
 PH7_APIEXPORT int ph7_vm_reset(ph7_vm *pVm);
 PH7_APIEXPORT int ph7_vm_release(ph7_vm *pVm);
-PH7_APIEXPORT int ph7_vm_dump_v2(ph7_vm *pVm, int (*xConsumer)(const void *, unsigned int, void *), void *pUserData);
+PH7_APIEXPORT int ph7_vm_dump(ph7_vm *pVm, int (*xConsumer)(const void *, unsigned int, void *), void *pUserData);
 /* In-process Extending Interfaces */
 PH7_APIEXPORT int ph7_create_function(ph7_vm *pVm, const char *zName, int (*xFunc)(ph7_context *, int, ph7_value **), void *pUserData);
 PH7_APIEXPORT int ph7_delete_function(ph7_vm *pVm, const char *zName);
