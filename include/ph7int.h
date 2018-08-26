@@ -1199,6 +1199,7 @@ struct ph7_vm {
 	SyMutex *pMutex;           /* Recursive mutex associated with VM. */
 #endif
 	ph7 *pEngine;               /* Interpreter that own this VM */
+	SySet aInstrSet;            /* Instructions debug container */
 	SySet aByteCode;            /* Default bytecode container */
 	SySet *pByteContainer;      /* Current bytecode container */
 	VmFrame *pFrame;            /* Stack of active frames */
@@ -1232,7 +1233,8 @@ struct ph7_vm {
 	void *pStdin;              /* STDIN IO stream */
 	void *pStdout;             /* STDOUT IO stream */
 	void *pStderr;             /* STDERR IO stream */
-	int bErrReport;            /* TRUE to report all runtime Error/Warning/Notice */
+	sxbool bDebug;             /* TRUE to enable debugging */
+	sxbool bErrReport;         /* TRUE to report all runtime Error/Warning/Notice */
 	int nRecursionDepth;       /* Current recursion depth */
 	int nMaxDepth;             /* Maximum allowed recursion depth */
 	int nObDepth;              /* OB depth */

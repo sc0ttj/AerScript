@@ -319,6 +319,10 @@ PH7_PRIVATE sxi32 PH7_VmEmitInstr(
 		/* Instruction index in the bytecode array */
 		*pIndex = SySetUsed(pVm->pByteContainer);
 	}
+	if(pVm->bDebug) {
+		/* Record instruction in debug container */
+		SySetPut(&pVm->aInstrSet, (void *)&sInstr);
+	}
 	/* Finally,record the instruction */
 	rc = SySetPut(pVm->pByteContainer, (const void *)&sInstr);
 	if(rc != SXRET_OK) {
@@ -981,6 +985,10 @@ PH7_PRIVATE sxi32 PH7_VmInit(
 	SyStringInitFromBuf(&sBuiltin, PH7_BUILTIN_LIB, sizeof(PH7_BUILTIN_LIB) - 1);
 	/* Precompile the built-in library */
 	VmEvalChunk(&(*pVm), 0, &sBuiltin, PH7_AERSCRIPT_CODE);
+	/* Initialize instructions debug container */
+	if(pVm->bDebug) {
+		SySetInit(&pVm->aInstrSet, &pVm->sAllocator, sizeof(VmInstr));
+	}
 	/* Reset the code generator */
 	PH7_ResetCodeGenerator(&(*pVm), pEngine->xConf.xErr, pEngine->xConf.pErrData);
 	return SXRET_OK;
@@ -5756,7 +5764,10 @@ PH7_PRIVATE sxi32 PH7_VmDump(
 	void *pUserData         /* Last argument to xConsumer() */
 ) {
 	sxi32 rc;
-	rc = VmByteCodeDump(pVm->pByteContainer, xConsumer, pUserData);
+	if(!pVm->bDebug) {
+		return SXRET_OK;
+	}
+	rc = VmByteCodeDump(&pVm->aInstrSet, xConsumer, pUserData);
 	return rc;
 }
 /*
