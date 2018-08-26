@@ -1796,7 +1796,7 @@ static sxi32 VmByteCodeDump(
 			break;
 		}
 		/* Format and call the consumer callback */
-		rc = SyProcFormat(xConsumer, pUserData, "%s %8d %8u %#8x [%u]\n",
+		rc = SyProcFormat(xConsumer, pUserData, "%s %8d %8u %#10x [%u]\n",
 						  VmInstrToString(pInstr->iOp), pInstr->iP1, pInstr->iP2,
 						  SX_PTR_TO_INT(pInstr->p3), n);
 		if(rc != SXRET_OK) {
