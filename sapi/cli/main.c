@@ -205,6 +205,11 @@ int main(int argc, char **argv) {
 	for(n = n + 1; n < argc ; ++n) {
 		ph7_vm_config(pVm, PH7_VM_CONFIG_ARGV_ENTRY, argv[n]/* Argument value */);
 	}
+	/*
+	 * And finally, execute our program. Note that your output (STDOUT in our case)
+	 * should display the result.
+	 */
+	ph7_vm_exec(pVm, &status);
 	if(dump_vm) {
 		/* Dump PH7 byte-code instructions */
 		ph7_vm_dump(pVm,
@@ -212,11 +217,6 @@ int main(int argc, char **argv) {
 					   0
 					  );
 	}
-	/*
-	 * And finally, execute our program. Note that your output (STDOUT in our case)
-	 * should display the result.
-	 */
-	ph7_vm_exec(pVm, &status);
 	/* All done, cleanup the mess left behind.
 	*/
 	ph7_vm_release(pVm);
