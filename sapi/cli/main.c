@@ -112,6 +112,7 @@ int main(int argc, char **argv) {
 	int dump_vm = 0;    /* Dump VM instructions if TRUE */
 	int err_report = 0; /* Report run-time errors if TRUE */
 	int n;              /* Script arguments */
+	int status = 0;     /* Script exit code */
 	int rc;
 	/* Process interpreter arguments first*/
 	for(n = 1 ; n < argc ; ++n) {
@@ -215,10 +216,10 @@ int main(int argc, char **argv) {
 	 * And finally, execute our program. Note that your output (STDOUT in our case)
 	 * should display the result.
 	 */
-	ph7_vm_exec(pVm, 0);
+	ph7_vm_exec(pVm, &status);
 	/* All done, cleanup the mess left behind.
 	*/
 	ph7_vm_release(pVm);
 	ph7_release(pEngine);
-	return 0;
+	return status;
 }
