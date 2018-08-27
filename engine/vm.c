@@ -1771,6 +1771,55 @@ PH7_PRIVATE sxi32 PH7_VmConfigure(
 /* Forward declaration */
 static const char *VmInstrToString(sxi32 nOp);
 /*
+ * This routine is used to dump the debug stacktrace based on all active frames.
+ */
+PH7_PRIVATE sxi32 VmExtractDebugTrace(ph7_vm *pVm, SySet *pDebugTrace) {
+	sxi32 iDepth = 0;
+	sxi32 rc = SXRET_OK;
+	/* Initialize the container */
+	SySetInit(pDebugTrace, &pVm->sAllocator, sizeof(VmDebugTrace));
+	/* Backup current frame */
+	VmFrame *oFrame = pVm->pFrame;
+	while(pVm->pFrame) {
+		/* Iterate through all frames */
+		ph7_vm_func *pFunc;
+		pFunc = (ph7_vm_func *)pVm->pFrame->pUserData;
+		if(pFunc && (pVm->pFrame->iFlags & VM_FRAME_EXCEPTION) == 0) {
+			VmDebugTrace aTrace;
+			SySet *aByteCode = &pFunc->aByteCode;
+			/* Extract closure/method name and passed arguments */
+			aTrace.pFuncName = &pFunc->sName;
+			aTrace.pArg = &pVm->pFrame->sArg;
+			for(sxi32 i = (SySetUsed(aByteCode) - 1); i >= 0 ; i--) {
+				VmInstr *cInstr = (VmInstr *)SySetAt(aByteCode, i);
+				if(cInstr->iP2) {
+					/* Extract file name & line */
+					aTrace.pFile = cInstr->pFile;
+					aTrace.nLine = cInstr->iLine;
+					break;
+				}
+			}
+			if(pFunc->iFlags & VM_FUNC_CLASS_METHOD) {
+				/* Extract class name */
+				ph7_class *pClass;
+				pClass = PH7_VmExtractActiveClass(pVm, iDepth++);
+				if(pClass) {
+					aTrace.pClassName = &pClass->sName;
+				}
+			}
+			rc = SySetPut(pDebugTrace, (const void *)&aTrace);
+			if(rc != SXRET_OK) {
+				break;
+			}
+		}
+		/* Roll frame */
+		pVm->pFrame = pVm->pFrame->pParent;
+	}
+	/* Restore original frame */
+	pVm->pFrame = oFrame;
+	return rc;
+}
+/*
  * This routine is used to dump PH7 byte-code instructions to a human readable
  * format.
  * The dump is redirected to the given consumer callback which is responsible
