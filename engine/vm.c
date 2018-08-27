@@ -1823,6 +1823,17 @@ PH7_PRIVATE sxi32 VmExtractDebugTrace(ph7_vm *pVm, SySet *pDebugTrace, sxbool bA
 	return rc;
 }
 /*
+ * This routine is used to dump the peek frame from debug stacktrace.
+ */
+PH7_PRIVATE sxi32 VmExtractPeekDebugTrace(ph7_vm *pVm, VmDebugTrace *pDebug) {
+	SySet *pTrace;
+	/* Populate debug stacktrace */
+	if(VmExtractDebugTrace(&(*pVm), &pTrace, FALSE) != SXRET_OK || SySetGetNextEntry(&pTrace, (void **)&pDebug) != SXRET_OK) {
+		return SXERR_MEM;
+	}
+	return SXRET_OK;
+}
+/*
  * This routine is used to dump PH7 byte-code instructions to a human readable
  * format.
  * The dump is redirected to the given consumer callback which is responsible
