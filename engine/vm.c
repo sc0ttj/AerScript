@@ -9211,96 +9211,60 @@ static int vm_builtin_set_error_handler(ph7_context *pCtx, int nArg, ph7_value *
  */
 static int vm_builtin_debug_backtrace(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	ph7_vm *pVm = pCtx->pVm;
+	SySet pDebug;
+	VmDebugTrace *pTrace;
 	ph7_value *pArray;
-	ph7_class *pClass;
-	ph7_value *pValue;
-	SyString *pFile;
-	sxi32 iLine;
-	/* Create a new array */
-	pArray = ph7_context_new_array(pCtx);
-	pValue = ph7_context_new_scalar(pCtx);
-	VmFrame *oFrame = pVm->pFrame;
-	iLine = -1;
-	if(pArray == 0 || pValue == 0) {
-		/* Out of memory,return NULL */
-		ph7_context_throw_error(pCtx, PH7_CTX_ERR, "PH7 is running out of memory");
+	/* Extract debug information */
+	if(VmExtractDebugTrace(&(*pVm), &pDebug, TRUE) != SXRET_OK) {
 		ph7_result_null(pCtx);
-		SXUNUSED(nArg); /* cc warning */
-		SXUNUSED(apArg);
 		return PH7_OK;
 	}
-	/* Dump running function name and it's arguments  */
-	while(pVm->pFrame) {
-		ph7_value *pArraySub;
-		VmFrame *pFrame = pVm->pFrame;
-		ph7_vm_func *pFunc;
-		ph7_value *pArg;
-		pFunc = (ph7_vm_func *)pFrame->pUserData;
-		if(!pFunc || (pFrame->iFlags & VM_FRAME_EXCEPTION)) {
-			goto rollFrame;
-		}
-		pArraySub = ph7_context_new_array(pCtx);
-		if(!pArraySub) {
-			break;
-		}
-		if(pFrame->pParent) {
-			ph7_value_string(pValue, pFunc->sName.zString, (int)pFunc->sName.nByte);
-			ph7_array_add_strkey_elem(pArraySub, "function", pValue);
-			ph7_value_reset_string_cursor(pValue);
-		}
-		/* Function arguments */
-		pArg = ph7_context_new_array(pCtx);
-		if(pArg) {
-			ph7_value *pObj;
-			VmSlot *aSlot;
-			sxu32 n;
-			/* Start filling the array with the given arguments */
-			aSlot = (VmSlot *)SySetBasePtr(&pFrame->sArg);
-			for(n = 0;  n < SySetUsed(&pFrame->sArg) ; n++) {
-				pObj = (ph7_value *)SySetAt(&pCtx->pVm->aMemObj, aSlot[n].nIdx);
-				if(pObj) {
-					ph7_array_add_elem(pArg, 0/* Automatic index assign*/, pObj);
-				}
-			}
-			/* Save the array */
-			ph7_array_add_strkey_elem(pArraySub, "args", pArg);
-		}
-		if(pFunc) {
-			SySet *aByteCode = &pFunc->aByteCode;
-			for(sxi32 i = (SySetUsed(aByteCode) - 1); i >= 0 ; i--) {
-				VmInstr *cInstr = (VmInstr *)SySetAt(aByteCode, i);
-				if(cInstr->iP2) {
-					iLine = cInstr->iLine;
-					break;
-				}
-			}
-		}
-		if(iLine != -1) {
-			ph7_value_int(pValue, iLine);
-			/* Append the current line (which is always 1 since PH7 does not track
-			 * line numbers at run-time. )
-			 */
-			ph7_array_add_strkey_elem(pArraySub, "line", pValue);
-		}
-		/* Current processed script */
-		pFile = (SyString *)SySetPeek(&pVm->aFiles);
-		if(pFile) {
-			ph7_value_string(pValue, pFile->zString, (int)pFile->nByte);
-			ph7_array_add_strkey_elem(pArraySub, "file", pValue);
-			ph7_value_reset_string_cursor(pValue);
-		}
-		/* Top class */
-		pClass = PH7_VmExtractActiveClass(pVm, 0);
-		if(pClass) {
-			ph7_value_reset_string_cursor(pValue);
-			ph7_value_string(pValue, pClass->sName.zString, (int)pClass->sName.nByte);
-			ph7_array_add_strkey_elem(pArraySub, "class", pValue);
-		}
-		ph7_array_add_elem(pArray, 0, pArraySub);
-rollFrame:
-		pVm->pFrame = pVm->pFrame->pParent;
+	pArray = ph7_context_new_array(pCtx);
+	if(!pArray) {
+		ph7_context_throw_error(pCtx, PH7_CTX_ERR, "PH7 is running out of memory");
+		ph7_result_null(pCtx);
+		return PH7_OK;
 	}
-	pVm->pFrame = oFrame;
+	/* Iterate through debug frames */
+	while(SySetGetNextEntry(&pDebug, (void **)&pTrace) == SXRET_OK) {
+		VmSlot *aSlot;
+		ph7_value *pArg, *pSubArray, *pValue;
+		pArg = ph7_context_new_array(pCtx);
+		pSubArray = ph7_context_new_array(pCtx);
+		pValue = ph7_context_new_scalar(pCtx);
+		if(pArg == 0 || pSubArray == 0 || pValue == 0) {
+			ph7_context_throw_error(pCtx, PH7_CTX_ERR, "PH7 is running out of memory");
+			ph7_result_null(pCtx);
+			return PH7_OK;
+		}
+		/* Extract file name and line */
+		ph7_value_int(pValue, pTrace->nLine);
+		ph7_array_add_strkey_elem(pSubArray, "line", pValue);
+		ph7_value_string(pValue, pTrace->pFile->zString, pTrace->pFile->nByte);
+		ph7_array_add_strkey_elem(pSubArray, "file", pValue);
+		ph7_value_reset_string_cursor(pValue);
+		/* Extract called closure/method name */
+		ph7_value_string(pValue, pTrace->pFuncName->zString, (int)pTrace->pFuncName->nByte);
+		ph7_array_add_strkey_elem(pSubArray, "function", pValue);
+		ph7_value_reset_string_cursor(pValue);
+		/* Extract closure/method arguments */
+		aSlot = (VmSlot *)SySetBasePtr(pTrace->pArg);
+		for(int n = 0;  n < SySetUsed(pTrace->pArg) ; n++) {
+			ph7_value *pObj = (ph7_value *)SySetAt(&pCtx->pVm->aMemObj, aSlot[n].nIdx);
+			if(pObj) {
+				ph7_array_add_elem(pArg, 0, pObj);
+			}
+		}
+		ph7_array_add_strkey_elem(pSubArray, "args", pArg);
+		if(pTrace->pClassName) {
+			/* Extract class name */
+			ph7_value_string(pValue, pTrace->pClassName->zString, (int)pTrace->pClassName->nByte);
+			ph7_array_add_strkey_elem(pSubArray, "class", pValue);
+			ph7_value_reset_string_cursor(pValue);
+		}
+		/* Install debug frame in an array */
+		ph7_array_add_elem(pArray, 0, pSubArray);
+	}
 	/* Return the freshly created array */
 	ph7_result_value(pCtx, pArray);
 	/*
