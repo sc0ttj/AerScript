@@ -1773,7 +1773,7 @@ static const char *VmInstrToString(sxi32 nOp);
 /*
  * This routine is used to dump the debug stacktrace based on all active frames.
  */
-PH7_PRIVATE sxi32 VmExtractDebugTrace(ph7_vm *pVm, SySet *pDebugTrace) {
+PH7_PRIVATE sxi32 VmExtractDebugTrace(ph7_vm *pVm, SySet *pDebugTrace, sxbool bAllFrames) {
 	sxi32 iDepth = 0;
 	sxi32 rc = SXRET_OK;
 	/* Initialize the container */
@@ -1811,6 +1811,9 @@ PH7_PRIVATE sxi32 VmExtractDebugTrace(ph7_vm *pVm, SySet *pDebugTrace) {
 			if(rc != SXRET_OK) {
 				break;
 			}
+		}
+		if(!bAllFrames) {
+			break;
 		}
 		/* Roll frame */
 		pVm->pFrame = pVm->pFrame->pParent;
