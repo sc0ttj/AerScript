@@ -5493,6 +5493,7 @@ PH7_PRIVATE sxi32 PH7_VmByteCodeExec(ph7_vm *pVm) {
 	if(!pMethod) {
 		VmErrorFormat(&(*pVm), PH7_CTX_ERR, "Cannot find a program entry point 'Program::main()'");
 	}
+	PH7_MemObjInit(pVm, &pResult);
 	PH7_VmCallClassMethod(&(*pVm), pInstance, pMethod, &pResult, 0, 0);
 	if(!pVm->iExitStatus) {
 		pVm->iExitStatus = ph7_value_to_int(&pResult);
