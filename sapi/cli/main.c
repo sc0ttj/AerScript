@@ -154,7 +154,7 @@ int main(int argc, char **argv) {
 			   0 /* NULL: Callback Private data */
 			  );
 	/* Initialize the VM */
-	rc = ph7_vm_init(pEngine, &pVm);
+	rc = ph7_vm_init(pEngine, &pVm, dump_vm);
 	if(rc != PH7_OK) {
 		if(rc == PH7_NOMEM) {
 			Fatal("Out of memory");

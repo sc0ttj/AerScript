@@ -1694,7 +1694,7 @@ PH7_PRIVATE sxi32 PH7_VmThrowErrorAp(ph7_vm *pVm, SyString *pFuncName, sxi32 iEr
 PH7_PRIVATE sxi32 PH7_VmThrowError(ph7_vm *pVm, SyString *pFuncName, sxi32 iErr, const char *zMessage);
 PH7_PRIVATE void  PH7_VmExpandConstantValue(ph7_value *pVal, void *pUserData);
 PH7_PRIVATE sxi32 PH7_VmDump(ph7_vm *pVm, ProcConsumer xConsumer, void *pUserData);
-PH7_PRIVATE sxi32 PH7_VmInit(ph7_vm *pVm, ph7 *pEngine);
+PH7_PRIVATE sxi32 PH7_VmInit(ph7_vm *pVm, ph7 *pEngine, sxbool bDebug);
 PH7_PRIVATE sxi32 PH7_VmConfigure(ph7_vm *pVm, sxi32 nOp, va_list ap);
 PH7_PRIVATE sxi32 PH7_VmByteCodeExec(ph7_vm *pVm);
 PH7_PRIVATE sxi32 PH7_VmRelease(ph7_vm *pVm);

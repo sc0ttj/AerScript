@@ -896,8 +896,9 @@ static sxi32 VmEvalChunk(ph7_vm *pVm, ph7_context *pCtx, SyString *pChunk, int i
  * start compiling the target PHP program.
  */
 PH7_PRIVATE sxi32 PH7_VmInit(
-	ph7_vm *pVm, /* Initialize this */
-	ph7 *pEngine /* Master engine */
+	ph7_vm *pVm,  /* Initialize this */
+	ph7 *pEngine, /* Master engine */
+	sxbool bDebug /* Debugging */
 ) {
 	SyString sBuiltin;
 	ph7_value *pObj;
@@ -993,8 +994,8 @@ PH7_PRIVATE sxi32 PH7_VmInit(
 	/* Precompile the built-in library */
 	VmEvalChunk(&(*pVm), 0, &sBuiltin, PH7_AERSCRIPT_CODE);
 	/* Initialize instructions debug container */
-	pVm->bDebug = TRUE;
-	if(pVm->bDebug) {
+	if(bDebug) {
+		pVm->bDebug = TRUE;
 		SySetInit(&pVm->aInstrSet, &pVm->sAllocator, sizeof(VmInstr));
 	}
 	/* Reset the code generator */

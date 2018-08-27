@@ -628,8 +628,9 @@ int ph7_release(ph7 *pEngine) {
 	return rc;
 }
 int ph7_vm_init(
-	ph7 *pEngine,          /* Running PH7 engine */
-	ph7_vm **ppOutVm          /* OUT: A pointer to the virtual machine */
+	ph7 *pEngine,      /* Running PH7 engine */
+	ph7_vm **ppOutVm,  /* OUT: A pointer to the virtual machine */
+	sxbool bDebug      /* VM Debugging */
 ) {
 	ph7_vm *pVm;
 	int rc;
@@ -647,7 +648,7 @@ int ph7_vm_init(
 		return PH7_NOMEM;
 	}
 	/* Initialize the Virtual Machine */
-	rc = PH7_VmInit(pVm, &(*pEngine));
+	rc = PH7_VmInit(pVm, &(*pEngine), bDebug);
 	if(rc != PH7_OK) {
 		SyMemBackendPoolFree(&pEngine->sAllocator, pVm);
 		if(ppOutVm) {
