@@ -306,11 +306,18 @@ PH7_PRIVATE sxi32 PH7_VmEmitInstr(
 ) {
 	VmInstr sInstr;
 	sxi32 rc;
+	/* Extract the processed script */
+	SyString *pFile = (SyString *)SySetPeek(&pVm->aFiles);
+	static const SyString sFileName = { "[MEMORY]", sizeof("[MEMORY]") - 1};
+	if(pFile == 0) {
+		pFile = (SyString *)&sFileName;
+	}
 	/* Fill the VM instruction */
 	sInstr.iOp = (sxu8)iOp;
 	sInstr.iP1 = iP1;
 	sInstr.iP2 = iP2;
 	sInstr.p3  = p3;
+	sInstr.pFile = pFile;
 	sInstr.iLine = 1;
 	if(pVm->sCodeGen.pEnd && pVm->sCodeGen.pEnd->nLine > 0) {
 		sInstr.iLine = pVm->sCodeGen.pEnd->nLine;

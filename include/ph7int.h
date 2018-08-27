@@ -1119,11 +1119,12 @@ struct ph7_class_instance {
  */
 typedef struct VmInstr VmInstr;
 struct VmInstr {
-	sxu8  iOp; /* Operation to preform */
-	sxi32 iP1; /* First operand */
-	sxu32 iP2; /* Second operand (Often the jump destination) */
-	sxu32 iLine; /* Line number */
-	void *p3;  /* Third operand (Often Upper layer private data) */
+	sxu8  iOp;       /* Operation to preform */
+	sxi32 iP1;       /* First operand */
+	sxu32 iP2;       /* Second operand (Often the jump destination) */
+	void *p3;        /* Third operand (Often Upper layer private data) */
+	SyString *pFile; /* File name */
+	sxu32 iLine;     /* Line number */
 };
 /* Each active class instance attribute is represented by an instance
  * of the following structure.
