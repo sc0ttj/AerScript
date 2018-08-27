@@ -696,6 +696,8 @@ static sxi32 ProcessSourceFile(
 		ph7_vm_config(pVm, PH7_VM_CONFIG_IMPORT_PATH, pFileDir);
 		/* Push processed file path */
 		PH7_VmPushFilePath(pVm, pFilePath, -1, TRUE, 0);
+	} else {
+		PH7_VmPushFilePath(pVm, "[MEMORY]", -1, TRUE, 0);
 	}
 	/* Compile the script */
 	PH7_CompileAerScript(pVm, &(*pScript), PH7_AERSCRIPT_CODE);

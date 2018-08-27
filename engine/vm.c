@@ -10226,6 +10226,10 @@ static sxi32 VmEvalChunk(
 	/* Swap bytecode container */
 	pByteCode = pVm->pByteContainer;
 	pVm->pByteContainer = &aByteCode;
+	/* Push memory as a processed file path */
+	if((iFlags & PH7_AERSCRIPT_CODE) == 0) {
+		PH7_VmPushFilePath(pVm, "[MEMORY]", -1, TRUE, 0);
+	}
 	/* Compile the chunk */
 	PH7_CompileAerScript(pVm, pChunk, iFlags);
 	if(pVm->sCodeGen.nErr > 0) {
