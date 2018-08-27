@@ -1280,6 +1280,18 @@ struct VmFrame {
 #define VM_FRAME_THROW      0x02 /* An exception was thrown */
 #define VM_FRAME_CATCH      0x04 /* Catch frame */
 /*
+ * When a debug stacktrace is extracted from Virtual Machine, all information about
+ * calls (file, line, class, method, arguments) are stored in this structure.
+ */
+typedef struct VmDebugTrace VmDebugTrace;
+struct VmDebugTrace {
+	SyString *pFile;      /* AerScript file name */
+	sxu32 nLine;          /* Line in Aer source file */
+	SyString *pClassName; /* Class name */
+	SyString *pFuncName;  /* Closure/method name */
+	SySet *pArg;          /* List of arguments passed to closure/method */
+};
+/*
  * When a user defined variable is released (via manual unset($x) or garbage collected)
  * memory object index is stored in an instance of the following structure and put
  * in the free object table so that it can be reused again without allocating
