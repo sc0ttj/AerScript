@@ -384,7 +384,6 @@ typedef sxi64 ph7_int64;
 #define PH7_VM_CONFIG_GET_ATTR        14  /* THREE ARGUMENTS: const char *zKey,const char *zValue,int nLen */
 #define PH7_VM_CONFIG_COOKIE_ATTR     15  /* THREE ARGUMENTS: const char *zKey,const char *zValue,int nLen */
 #define PH7_VM_CONFIG_HEADER_ATTR     16  /* THREE ARGUMENTS: const char *zKey,const char *zValue,int nLen */
-#define PH7_VM_CONFIG_EXEC_VALUE      17  /* ONE ARGUMENT: ph7_value **ppValue */
 #define PH7_VM_CONFIG_IO_STREAM       18  /* ONE ARGUMENT: const ph7_io_stream *pStream */
 #define PH7_VM_CONFIG_ARGV_ENTRY      19  /* ONE ARGUMENT: const char *zValue */
 #define PH7_VM_CONFIG_EXTRACT_OUTPUT  20  /* TWO ARGUMENTS: const void **ppOut,unsigned int *pOutputLen */
