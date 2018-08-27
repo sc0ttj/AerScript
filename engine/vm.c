@@ -8782,7 +8782,7 @@ static int vm_builtin_assert(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	if(!iResult) {
 		/* Assertion failed */
 		if(iFlags & PH7_ASSERT_CALLBACK) {
-			static const SyString sFileName = { ":Memory", sizeof(":Memory") - 1};
+			static const SyString sFileName = { "[MEMORY]", sizeof("[MEMORY]") - 1};
 			ph7_value sFile, sLine;
 			ph7_value *apCbArg[3];
 			SyString *pFile;
