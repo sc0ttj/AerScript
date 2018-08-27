@@ -1803,9 +1803,9 @@ static sxi32 VmByteCodeDump(
 			break;
 		}
 		/* Format and call the consumer callback */
-		rc = SyProcFormat(xConsumer, pUserData, "%s %8d %8u %#10x [%u]\n",
-						  VmInstrToString(pInstr->iOp), pInstr->iP1, pInstr->iP2,
-						  SX_PTR_TO_INT(pInstr->p3), n);
+		rc = SyProcFormat(xConsumer, pUserData, "[%05u] %s %8d %8u %#10x %5u %z\n",
+						  n, VmInstrToString(pInstr->iOp), pInstr->iP1, pInstr->iP2,
+						  SX_PTR_TO_INT(pInstr->p3), pInstr->iLine, pInstr->pFile);
 		if(rc != SXRET_OK) {
 			/* Consumer routine request an operation abort */
 			return rc;
