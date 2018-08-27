@@ -199,7 +199,7 @@ int main(int argc, char **argv) {
 			Fatal("Compile error");
 		}
 	}
-	/* Register script agruments so we can access them later using the $argv[]
+	/* Register script arguments so we can access them later using the $argv[]
 	 * array from the compiled PHP program.
 	 */
 	for(n = n + 1; n < argc ; ++n) {
