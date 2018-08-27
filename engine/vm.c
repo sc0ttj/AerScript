@@ -1084,8 +1084,6 @@ PH7_PRIVATE sxi32 PH7_VmMakeReady(
 	if(rc != SXRET_OK) {
 		return SXERR_MEM;
 	}
-	/* Script return value */
-	PH7_MemObjInit(&(*pVm), &pVm->sExec); /* Assume a NULL return value */
 	/* Allocate a new operand stack */
 	pVm->aOps = VmNewOperandStack(&(*pVm), SySetUsed(pVm->pByteContainer));
 	if(pVm->aOps == 0) {
@@ -1138,7 +1136,6 @@ PH7_PRIVATE sxi32 PH7_VmReset(ph7_vm *pVm) {
 	}
 	/* TICKET 1433-003: As of this version, the VM is automatically reset */
 	SyBlobReset(&pVm->sConsumer);
-	PH7_MemObjRelease(&pVm->sExec);
 	/* Set the ready flag */
 	pVm->nMagic = PH7_VM_RUN;
 	return SXRET_OK;
@@ -1699,18 +1696,6 @@ PH7_PRIVATE sxi32 PH7_VmConfigure(
 				/* error_log() consumer */
 				ProcErrLog xErrLog = va_arg(ap, ProcErrLog);
 				pVm->xErrLog = xErrLog;
-				break;
-			}
-		case PH7_VM_CONFIG_EXEC_VALUE: {
-				/* Script return value */
-				ph7_value **ppValue = va_arg(ap, ph7_value **);
-#ifdef UNTRUST
-				if(ppValue == 0) {
-					rc = SXERR_CORRUPT;
-					break;
-				}
-#endif
-				*ppValue = &pVm->sExec;
 				break;
 			}
 		case PH7_VM_CONFIG_IO_STREAM: {
@@ -5478,6 +5463,7 @@ PH7_PRIVATE sxi32 PH7_VmByteCodeExec(ph7_vm *pVm) {
 	ph7_class *pClass;
 	ph7_class_instance *pInstance;
 	ph7_class_method *pMethod;
+	ph7_value pResult;
 	/* Make sure we are ready to execute this program */
 	if(pVm->nMagic != PH7_VM_RUN) {
 		return pVm->nMagic == PH7_VM_EXEC ? SXERR_LOCKED /* Locked VM */ : SXERR_CORRUPT; /* Stale VM */
@@ -5485,7 +5471,7 @@ PH7_PRIVATE sxi32 PH7_VmByteCodeExec(ph7_vm *pVm) {
 	/* Set the execution magic number  */
 	pVm->nMagic = PH7_VM_EXEC;
 	/* Execute the byte code */
-	VmByteCodeExec(&(*pVm), (VmInstr *)SySetBasePtr(pVm->pByteContainer), pVm->aOps, -1, &pVm->sExec, 0, FALSE);
+	VmByteCodeExec(&(*pVm), (VmInstr *)SySetBasePtr(pVm->pByteContainer), pVm->aOps, -1, 0, 0, FALSE);
 	/* Extract and instantiate the entry point */
 	pClass = PH7_VmExtractClass(&(*pVm), "Program", 7, TRUE /* Only loadable class but not 'interface' or 'virtual' class*/, 0);
 	if(!pClass) {
@@ -5506,7 +5492,10 @@ PH7_PRIVATE sxi32 PH7_VmByteCodeExec(ph7_vm *pVm) {
 	if(!pMethod) {
 		VmErrorFormat(&(*pVm), PH7_CTX_ERR, "Cannot find a program entry point 'Program::main()'");
 	}
-	PH7_VmCallClassMethod(&(*pVm), pInstance, pMethod, 0, 0, 0);
+	PH7_VmCallClassMethod(&(*pVm), pInstance, pMethod, &pResult, 0, 0);
+	if(!pVm->iExitStatus) {
+		pVm->iExitStatus = ph7_value_to_int(&pResult);
+	}
 	/* Invoke any shutdown callbacks */
 	VmInvokeShutdownCallbacks(&(*pVm));
 	/*

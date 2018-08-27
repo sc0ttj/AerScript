@@ -1228,7 +1228,6 @@ struct ph7_vm {
 	SySet aException;           /* Stack of loaded exception */
 	SySet aIOstream;            /* Installed IO stream container */
 	const ph7_io_stream *pDefStream; /* Default IO stream [i.e: typically this is the 'file://' stream] */
-	ph7_value sExec;           /* Compiled script return value [Can be extracted via the PH7_VM_CONFIG_EXEC_VALUE directive]*/
 	ph7_value aExceptionCB[2]; /* Installed exception handler callbacks via [set_exception_handler()] */
 	ph7_value aErrCB[2];       /* Installed error handler callback via [set_error_handler()] */
 	void *pStdin;              /* STDIN IO stream */
