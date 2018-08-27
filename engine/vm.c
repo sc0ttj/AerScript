@@ -1794,7 +1794,7 @@ static sxi32 VmByteCodeDump(
 	/* Point to the PH7 instructions */
 	pInstr = (VmInstr *)SySetBasePtr(pByteCode);
 	pEnd   = &pInstr[SySetUsed(pByteCode)];
-	n = 0;
+	n = 1;
 	xConsumer((const void *)zDump, sizeof(zDump) - 1, pUserData);
 	/* Dump instructions */
 	for(;;) {
