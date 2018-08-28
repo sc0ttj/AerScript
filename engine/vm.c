@@ -5904,12 +5904,6 @@ static int vm_builtin_func_get_arg(ph7_context *pCtx, int nArg, ph7_value **apAr
 		/* Safely ignore the exception frame */
 		pFrame = pFrame->pParent;
 	}
-	if(nArg < 1 || pFrame->pParent == 0) {
-		/* Global frame or Missing arguments,return FALSE */
-		ph7_context_throw_error(pCtx, PH7_CTX_WARNING, "Called in the global scope");
-		ph7_result_bool(pCtx, 0);
-		return SXRET_OK;
-	}
 	/* Extract the desired index */
 	nArg = ph7_value_to_int(apArg[0]);
 	if(nArg < 0 || nArg >= (int)SySetUsed(&pFrame->sArg)) {
@@ -5955,12 +5949,6 @@ static int vm_builtin_func_get_args_byref(ph7_context *pCtx, int nArg, ph7_value
 		/* Safely ignore the exception frame */
 		pFrame = pFrame->pParent;
 	}
-	if(pFrame->pParent == 0) {
-		/* Global frame,return FALSE */
-		ph7_context_throw_error(pCtx, PH7_CTX_WARNING, "Called in the global scope");
-		ph7_result_bool(pCtx, 0);
-		return SXRET_OK;
-	}
 	/* Create a new array */
 	pArray = ph7_context_new_array(pCtx);
 	if(pArray == 0) {
@@ -5999,12 +5987,6 @@ static int vm_builtin_func_get_args(ph7_context *pCtx, int nArg, ph7_value **apA
 	while(pFrame->pParent && (pFrame->iFlags & VM_FRAME_EXCEPTION)) {
 		/* Safely ignore the exception frame */
 		pFrame = pFrame->pParent;
-	}
-	if(pFrame->pParent == 0) {
-		/* Global frame,return FALSE */
-		ph7_context_throw_error(pCtx, PH7_CTX_WARNING, "Called in the global scope");
-		ph7_result_bool(pCtx, 0);
-		return SXRET_OK;
 	}
 	/* Create a new array */
 	pArray = ph7_context_new_array(pCtx);
