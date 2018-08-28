@@ -1813,6 +1813,7 @@ PH7_PRIVATE sxi32 VmExtractDebugTrace(ph7_vm *pVm, SySet *pDebugTrace, sxbool bA
  */
 PH7_PRIVATE sxi32 VmExtractPeekDebugTrace(ph7_vm *pVm, VmDebugTrace *pDebug) {
 	SySet pTrace;
+	SySetInit(&pTrace, &pVm->sAllocator, sizeof(VmDebugTrace));
 	/* Populate debug stacktrace */
 	if(VmExtractDebugTrace(&(*pVm), &pTrace, FALSE) != SXRET_OK || SySetGetNextEntry(&pTrace, (void **)&pDebug) != SXRET_OK) {
 		return SXERR_MEM;
