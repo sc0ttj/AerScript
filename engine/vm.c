@@ -7145,16 +7145,26 @@ PH7_PRIVATE sxi32 PH7_VmCallClassMethod(
 	SyBlobAppend(&aStack[i].sBlob, (const void *)SyStringData(&pMethod->sVmName), SyStringLength(&pMethod->sVmName));
 	aStack[i].iFlags = MEMOBJ_STRING;
 	aStack[i].nIdx = SXU32_HIGH;
+	static const SyString sFileName = { "[MEMORY]", sizeof("[MEMORY]") - 1};
 	/* Emit the CALL instruction */
 	aInstr[0].iOp = PH7_OP_CALL;
 	aInstr[0].iP1 = nArg; /* Total number of given arguments */
 	aInstr[0].iP2 = iEntry;
 	aInstr[0].p3  = 0;
+	aInstr[0].iLine = 1;
+	aInstr[0].pFile = (SyString *)&sFileName;
 	/* Emit the DONE instruction */
 	aInstr[1].iOp = PH7_OP_DONE;
 	aInstr[1].iP1 = 1;   /* Extract method return value */
 	aInstr[1].iP2 = 0;
 	aInstr[1].p3  = 0;
+	aInstr[1].iLine = 1;
+	aInstr[1].pFile = (SyString *)&sFileName;
+	if(pVm->bDebug) {
+		/* Record instruction in debug container */
+		SySetPut(&pVm->aInstrSet, (void *)&aInstr[0]);
+		SySetPut(&pVm->aInstrSet, (void *)&aInstr[1]);
+	}
 	/* Execute the method body (if available) */
 	VmByteCodeExec(&(*pVm), aInstr, aStack, iCursor, pResult, 0, TRUE);
 	/* Clean up the mess left behind */
@@ -7260,16 +7270,26 @@ PH7_PRIVATE sxi32 PH7_VmCallUserFunction(
 	/* Push the function name */
 	PH7_MemObjLoad(pFunc, &aStack[i]);
 	aStack[i].nIdx = SXU32_HIGH; /* Mark as constant */
+	static const SyString sFileName = { "[MEMORY]", sizeof("[MEMORY]") - 1};
 	/* Emit the CALL instruction */
 	aInstr[0].iOp = PH7_OP_CALL;
 	aInstr[0].iP1 = nArg; /* Total number of given arguments */
 	aInstr[0].iP2 = 0;
 	aInstr[0].p3  = 0;
+	aInstr[0].iLine = 1;
+	aInstr[0].pFile = (SyString *)&sFileName;
 	/* Emit the DONE instruction */
 	aInstr[1].iOp = PH7_OP_DONE;
 	aInstr[1].iP1 = 1;   /* Extract function return value if available */
 	aInstr[1].iP2 = 0;
 	aInstr[1].p3  = 0;
+	aInstr[1].iLine = 1;
+	aInstr[1].pFile = (SyString *)&sFileName;
+	if(pVm->bDebug) {
+		/* Record instruction in debug container */
+		SySetPut(&pVm->aInstrSet, (const void *)&aInstr[0]);
+		SySetPut(&pVm->aInstrSet, (const void *)&aInstr[1]);
+	}
 	/* Execute the function body (if available) */
 	VmByteCodeExec(&(*pVm), aInstr, aStack, nArg, pResult, 0, TRUE);
 	/* Clean up the mess left behind */
