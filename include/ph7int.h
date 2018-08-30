@@ -1200,7 +1200,7 @@ struct ph7_vm {
 	SyMutex *pMutex;           /* Recursive mutex associated with VM. */
 #endif
 	ph7 *pEngine;               /* Interpreter that own this VM */
-	SySet aInstrSet;            /* Instructions debug container */
+	SySet aInstrSet;            /* Instructions debugging container */
 	SySet aByteCode;            /* Default bytecode container */
 	SySet *pByteContainer;      /* Current bytecode container */
 	VmFrame *pFrame;            /* Stack of active frames */
