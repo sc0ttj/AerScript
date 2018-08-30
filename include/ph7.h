@@ -438,9 +438,10 @@ typedef sxi64 ph7_int64;
  * [ph7_context_throw_error_format()] interfaces.
  * Refer to the official documentation for additional information.
  */
-#define PH7_CTX_ERR      1 /* Call context error such as unexpected number of arguments,invalid types and so on. */
-#define PH7_CTX_WARNING  2 /* Call context Warning */
-#define PH7_CTX_NOTICE   3 /* Call context Notice */
+#define PH7_CTX_ERR        1 /* Call context Error such as unexpected number of arguments,invalid types and so on. */
+#define PH7_CTX_WARNING    2 /* Call context Warning */
+#define PH7_CTX_NOTICE     3 /* Call context Notice */
+#define PH7_CTX_DEPRECATED 4 /* Call context Deprecated notice */
 /* Current VFS structure version*/
 #define PH7_VFS_VERSION 2
 /*

@@ -1234,7 +1234,7 @@ struct ph7_vm {
 	void *pStdout;             /* STDOUT IO stream */
 	void *pStderr;             /* STDERR IO stream */
 	sxbool bDebug;             /* TRUE to enable debugging */
-	sxbool bErrReport;         /* TRUE to report all runtime Error/Warning/Notice */
+	sxbool bErrReport;         /* TRUE to report all runtime Error/Warning/Notice/Deprecated */
 	int nRecursionDepth;       /* Current recursion depth */
 	int nMaxDepth;             /* Maximum allowed recursion depth */
 	int nObDepth;              /* OB depth */
