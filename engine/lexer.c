@@ -23,7 +23,7 @@ static sxu32 KeywordCode(const char *z, int n);
  * Get a single low-level token from the input file. Update the stream pointer so that
  * it points to the first character beyond the extracted token.
  */
-static sxi32 TokenizePHP(SyStream *pStream, SyToken *pToken, void *pUserData, void *pCtxData) {
+static sxi32 TokenizeAerScript(SyStream *pStream, SyToken *pToken, void *pUserData, void *pCtxData) {
 	SyString *pStr;
 	sxi32 rc;
 	/* Ignore leading white spaces */
@@ -646,7 +646,7 @@ PH7_PRIVATE sxi32 PH7_TokenizeAerScript(const char *zInput, sxu32 nLen, sxu32 nL
 	SyLex sLexer;
 	sxi32 rc;
 	/* Initialize the lexer */
-	rc = SyLexInit(&sLexer, &(*pOut), TokenizePHP, 0);
+	rc = SyLexInit(&sLexer, &(*pOut), TokenizeAerScript, 0);
 	if(rc != SXRET_OK) {
 		return rc;
 	}
