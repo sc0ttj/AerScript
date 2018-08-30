@@ -326,10 +326,6 @@ PH7_PRIVATE sxi32 PH7_VmEmitInstr(
 		/* Instruction index in the bytecode array */
 		*pIndex = SySetUsed(pVm->pByteContainer);
 	}
-	if(pVm->bDebug) {
-		/* Record instruction in debug container */
-		SySetPut(&pVm->aInstrSet, (void *)&sInstr);
-	}
 	/* Finally,record the instruction */
 	rc = SySetPut(pVm->pByteContainer, (const void *)&sInstr);
 	if(rc != SXRET_OK) {
@@ -2060,6 +2056,10 @@ static sxi32 VmByteCodeExec(
 	for(;;) {
 		/* Fetch the instruction to execute */
 		pInstr = &aInstr[pc];
+		if(pVm->bDebug) {
+			/* Record executed instruction in debug container */
+			SySetPut(&pVm->aInstrSet, (void *)pInstr);
+		}
 		rc = SXRET_OK;
 		/*
 		 * What follows here is a massive switch statement where each case implements a
@@ -7160,11 +7160,6 @@ PH7_PRIVATE sxi32 PH7_VmCallClassMethod(
 	aInstr[1].p3  = 0;
 	aInstr[1].iLine = 1;
 	aInstr[1].pFile = (SyString *)&sFileName;
-	if(pVm->bDebug) {
-		/* Record instruction in debug container */
-		SySetPut(&pVm->aInstrSet, (void *)&aInstr[0]);
-		SySetPut(&pVm->aInstrSet, (void *)&aInstr[1]);
-	}
 	/* Execute the method body (if available) */
 	VmByteCodeExec(&(*pVm), aInstr, aStack, iCursor, pResult, 0, TRUE);
 	/* Clean up the mess left behind */
@@ -7285,11 +7280,6 @@ PH7_PRIVATE sxi32 PH7_VmCallUserFunction(
 	aInstr[1].p3  = 0;
 	aInstr[1].iLine = 1;
 	aInstr[1].pFile = (SyString *)&sFileName;
-	if(pVm->bDebug) {
-		/* Record instruction in debug container */
-		SySetPut(&pVm->aInstrSet, (const void *)&aInstr[0]);
-		SySetPut(&pVm->aInstrSet, (const void *)&aInstr[1]);
-	}
 	/* Execute the function body (if available) */
 	VmByteCodeExec(&(*pVm), aInstr, aStack, nArg, pResult, 0, TRUE);
 	/* Clean up the mess left behind */
