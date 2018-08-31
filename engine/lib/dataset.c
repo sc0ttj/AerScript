@@ -55,9 +55,6 @@ PH7_PRIVATE sxi32 SySetResetCursor(SySet *pSet) {
 	pSet->nCursor = 0;
 	return SXRET_OK;
 }
-PH7_PRIVATE sxi32 SySetGetUsed(SySet *pSet) {
-	return pSet->nUsed;
-}
 PH7_PRIVATE sxi32 SySetGetNextEntry(SySet *pSet, void **ppEntry) {
 	register unsigned char *zSrc;
 	if(pSet->nCursor >= pSet->nUsed) {
