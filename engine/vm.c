@@ -317,6 +317,7 @@ PH7_PRIVATE sxi32 PH7_VmEmitInstr(
 	sInstr.iP1 = iP1;
 	sInstr.iP2 = iP2;
 	sInstr.p3  = p3;
+	sInstr.bExec = FALSE;
 	sInstr.pFile = pFile;
 	sInstr.iLine = 1;
 	if(pVm->sCodeGen.pEnd && pVm->sCodeGen.pEnd->nLine > 0) {
@@ -2056,6 +2057,7 @@ static sxi32 VmByteCodeExec(
 	for(;;) {
 		/* Fetch the instruction to execute */
 		pInstr = &aInstr[pc];
+		pInstr->bExec = TRUE;
 		if(pVm->bDebug) {
 			/* Record executed instruction in debug container */
 			SySetPut(&pVm->aInstrSet, (void *)pInstr);
@@ -7151,6 +7153,7 @@ PH7_PRIVATE sxi32 PH7_VmCallClassMethod(
 	aInstr[0].iP1 = nArg; /* Total number of given arguments */
 	aInstr[0].iP2 = iEntry;
 	aInstr[0].p3  = 0;
+	aInstr[0].bExec = FALSE;
 	aInstr[0].iLine = 1;
 	aInstr[0].pFile = (SyString *)&sFileName;
 	/* Emit the DONE instruction */
@@ -7158,6 +7161,7 @@ PH7_PRIVATE sxi32 PH7_VmCallClassMethod(
 	aInstr[1].iP1 = 1;   /* Extract method return value */
 	aInstr[1].iP2 = 0;
 	aInstr[1].p3  = 0;
+	aInstr[1].bExec = FALSE;
 	aInstr[1].iLine = 1;
 	aInstr[1].pFile = (SyString *)&sFileName;
 	/* Execute the method body (if available) */
@@ -7271,6 +7275,7 @@ PH7_PRIVATE sxi32 PH7_VmCallUserFunction(
 	aInstr[0].iP1 = nArg; /* Total number of given arguments */
 	aInstr[0].iP2 = 0;
 	aInstr[0].p3  = 0;
+	aInstr[0].bExec = FALSE;
 	aInstr[0].iLine = 1;
 	aInstr[0].pFile = (SyString *)&sFileName;
 	/* Emit the DONE instruction */
@@ -7278,6 +7283,7 @@ PH7_PRIVATE sxi32 PH7_VmCallUserFunction(
 	aInstr[1].iP1 = 1;   /* Extract function return value if available */
 	aInstr[1].iP2 = 0;
 	aInstr[1].p3  = 0;
+	aInstr[1].bExec = FALSE;
 	aInstr[1].iLine = 1;
 	aInstr[1].pFile = (SyString *)&sFileName;
 	/* Execute the function body (if available) */

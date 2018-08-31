@@ -1123,6 +1123,7 @@ struct VmInstr {
 	sxi32 iP1;       /* First operand */
 	sxu32 iP2;       /* Second operand (Often the jump destination) */
 	void *p3;        /* Third operand (Often Upper layer private data) */
+	sxbool bExec;    /* Whether the instruction has been already executed or not */
 	SyString *pFile; /* File name */
 	sxu32 iLine;     /* Line number */
 };
