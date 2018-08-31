@@ -914,7 +914,6 @@ PH7_PRIVATE sxi32 PH7_VmInit(
 	SySetAlloc(&pVm->aMemObj, 0xFF);
 	/* Virtual machine internal containers */
 	SyBlobInit(&pVm->sConsumer, &pVm->sAllocator);
-	SyBlobInit(&pVm->sWorker, &pVm->sAllocator);
 	SyBlobInit(&pVm->sArgv, &pVm->sAllocator);
 	SySetInit(&pVm->aLitObj, &pVm->sAllocator, sizeof(ph7_value));
 	SySetAlloc(&pVm->aLitObj, 0xFF);
@@ -1897,7 +1896,7 @@ PH7_PRIVATE sxi32 PH7_VmThrowError(
 	sxi32 iErr,          /* Severity level: [i.e: Error,Warning or Notice]*/
 	const char *zMessage /* Null terminated error message */
 ) {
-	SyBlob *pWorker = &pVm->sWorker;
+	SyBlob sWorker;
 	SyString *pFile;
 	const char *zErr;
 	sxi32 rc;
@@ -1905,8 +1904,8 @@ PH7_PRIVATE sxi32 PH7_VmThrowError(
 		/* Don't bother reporting errors */
 		return SXRET_OK;
 	}
-	/* Reset the working buffer */
-	SyBlobReset(pWorker);
+	/* Initialize the working buffer */
+	SyBlobInit(&sWorker, &pVm->sAllocator);
 	/* Peek the processed file if available */
 	pFile = (SyString *)SySetPeek(&pVm->aFiles);
 	switch(iErr) {
@@ -1921,15 +1920,15 @@ PH7_PRIVATE sxi32 PH7_VmThrowError(
 			zErr = "Error: ";
 			break;
 	}
-	SyBlobAppend(pWorker, zErr, SyStrlen(zErr));
-	SyBlobAppend(pWorker, zMessage, SyStrlen(zMessage));
+	SyBlobAppend(&sWorker, zErr, SyStrlen(zErr));
+	SyBlobAppend(&sWorker, zMessage, SyStrlen(zMessage));
 	if(pFile) {
 		/* Append file name */
-		SyBlobAppend(pWorker, " in ", sizeof(" in ") - 1);
-		SyBlobAppend(pWorker, pFile->zString, pFile->nByte);
+		SyBlobAppend(&sWorker, " in ", sizeof(" in ") - 1);
+		SyBlobAppend(&sWorker, pFile->zString, pFile->nByte);
 	}
 	/* Consume the error message */
-	rc = VmCallErrorHandler(&(*pVm), pWorker);
+	rc = VmCallErrorHandler(&(*pVm), &sWorker);
 	if(iErr == PH7_CTX_ERR) {
 		/* Error ocurred, release at least VM gracefully and exit */
 		PH7_VmRelease(pVm);
@@ -1949,7 +1948,7 @@ static sxi32 VmThrowErrorAp(
 	const char *zFormat, /* Format message */
 	va_list ap           /* Variable list of arguments */
 ) {
-	SyBlob *pWorker = &pVm->sWorker;
+	SyBlob sWorker;
 	SyString *pFile;
 	const char *zErr;
 	sxi32 rc;
@@ -1957,8 +1956,8 @@ static sxi32 VmThrowErrorAp(
 		/* Don't bother reporting errors */
 		return SXRET_OK;
 	}
-	/* Reset the working buffer */
-	SyBlobReset(pWorker);
+	/* Initialize the working buffer */
+	SyBlobInit(&sWorker, &pVm->sAllocator);
 	/* Peek the processed file if available */
 	pFile = (SyString *)SySetPeek(&pVm->aFiles);
 	switch(iErr) {
@@ -1973,15 +1972,15 @@ static sxi32 VmThrowErrorAp(
 			zErr = "Error: ";
 			break;
 	}
-	SyBlobAppend(pWorker, zErr, SyStrlen(zErr));
-	SyBlobFormatAp(pWorker, zFormat, ap);
+	SyBlobAppend(&sWorker, zErr, SyStrlen(zErr));
+	SyBlobFormatAp(&sWorker, zFormat, ap);
 	if(pFile) {
 		/* Append file name */
-		SyBlobAppend(pWorker, " in ", sizeof(" in ") - 1);
-		SyBlobAppend(pWorker, pFile->zString, pFile->nByte);
+		SyBlobAppend(&sWorker, " in ", sizeof(" in ") - 1);
+		SyBlobAppend(&sWorker, pFile->zString, pFile->nByte);
 	}
 	/* Consume the error message */
-	rc = VmCallErrorHandler(&(*pVm), pWorker);
+	rc = VmCallErrorHandler(&(*pVm), &sWorker);
 	if(iErr == PH7_CTX_ERR) {
 		/* Error ocurred, release at least VM gracefully and exit */
 		PH7_VmRelease(pVm);
