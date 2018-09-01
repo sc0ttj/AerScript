@@ -115,7 +115,7 @@ static const SyMemMethods sOSAllocMethods = {
 	0
 };
 static sxi32 MemBackendCalculate(SyMemBackend *pBackend, sxi32 nBytes) {
-	if(pBackend->pHeap->nLimit && (pBackend->pHeap->nSize + nBytes > pBackend->pHeap->nLimit)) {
+	if(pBackend->pHeap->nLimit && (pBackend->pHeap->nSize + nBytes > pBackend->pHeap->nLimit - 10240)) {
 		if(pBackend->xMemError) {
 			pBackend->xMemError(pBackend->pUserData);
 		}
