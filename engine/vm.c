@@ -906,6 +906,7 @@ PH7_PRIVATE sxi32 PH7_VmInit(
 	pVm->pEngine = &(*pEngine);
 	SyMemBackendInitFromParent(&pVm->sAllocator, &pEngine->sAllocator);
 	/* Instructions containers */
+	SySetInit(&pVm->aInstrSet, &pVm->sAllocator, sizeof(VmInstr));
 	SySetInit(&pVm->aByteCode, &pVm->sAllocator, sizeof(VmInstr));
 	SySetAlloc(&pVm->aByteCode, 0xFF);
 	pVm->pByteContainer = &pVm->aByteCode;
@@ -989,10 +990,9 @@ PH7_PRIVATE sxi32 PH7_VmInit(
 	SyStringInitFromBuf(&sBuiltin, PH7_BUILTIN_LIB, sizeof(PH7_BUILTIN_LIB) - 1);
 	/* Precompile the built-in library */
 	VmEvalChunk(&(*pVm), 0, &sBuiltin, PH7_AERSCRIPT_CODE);
-	/* Initialize instructions debug container */
 	if(bDebug) {
+		/* Enable debugging */
 		pVm->bDebug = TRUE;
-		SySetInit(&pVm->aInstrSet, &pVm->sAllocator, sizeof(VmInstr));
 	}
 	/* Reset the code generator */
 	PH7_ResetCodeGenerator(&(*pVm), pEngine->xConf.xErr, pEngine->xConf.pErrData);
@@ -2054,13 +2054,15 @@ static sxi32 VmByteCodeExec(
 	pc = 0;
 	/* Execute as much as we can */
 	for(;;) {
+		if(!pVm->bDebug) {
+			/* Reset instructions set container */
+			SySetReset(&pVm->aInstrSet);
+		}
 		/* Fetch the instruction to execute */
 		pInstr = &aInstr[pc];
 		pInstr->bExec = TRUE;
-		if(pVm->bDebug) {
-			/* Record executed instruction in debug container */
-			SySetPut(&pVm->aInstrSet, (void *)pInstr);
-		}
+		/* Record executed instruction in global container */
+		SySetPut(&pVm->aInstrSet, (void *)pInstr);
 		rc = SXRET_OK;
 		/*
 		 * What follows here is a massive switch statement where each case implements a
