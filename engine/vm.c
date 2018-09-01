@@ -145,7 +145,7 @@ PH7_PRIVATE sxi32 PH7_VmRegisterConstant(
 static sxi32 PH7_NewForeignFunction(
 	ph7_vm *pVm,              /* Target VM */
 	const SyString *pName,    /* Foreign function name */
-	ProchHostFunction xFunc,  /* Foreign function implementation */
+	ProcHostFunction xFunc,  /* Foreign function implementation */
 	void *pUserData,          /* Foreign function private data */
 	ph7_user_func **ppOut     /* OUT: VM image of the foreign function */
 ) {
@@ -185,7 +185,7 @@ static sxi32 PH7_NewForeignFunction(
 PH7_PRIVATE sxi32 PH7_VmInstallForeignFunction(
 	ph7_vm *pVm,              /* Target VM */
 	const SyString *pName,    /* Foreign function name */
-	ProchHostFunction xFunc,  /* Foreign function implementation */
+	ProcHostFunction xFunc,  /* Foreign function implementation */
 	void *pUserData           /* Foreign function private data */
 ) {
 	ph7_user_func *pFunc;

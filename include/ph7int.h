@@ -716,7 +716,7 @@ struct ph7_aux_data {
 	void *pAuxData; /* Aux data */
 };
 /* Foreign functions signature */
-typedef int (*ProchHostFunction)(ph7_context *, int, ph7_value **);
+typedef int (*ProcHostFunction)(ph7_context *, int, ph7_value **);
 /*
  * Each installed foreign function is recored in an instance of the following
  * structure.
@@ -726,7 +726,7 @@ typedef int (*ProchHostFunction)(ph7_context *, int, ph7_value **);
 struct ph7_user_func {
 	ph7_vm *pVm;              /* VM that own this instance */
 	SyString sName;           /* Foreign function name */
-	ProchHostFunction xFunc;  /* Implementation of the foreign function */
+	ProcHostFunction xFunc;  /* Implementation of the foreign function */
 	void *pUserData;          /* User private data [Refer to the official documentation for more information]*/
 	SySet aAux;               /* Stack of auxiliary data [Refer to the official documentation for more information]*/
 };
@@ -1018,7 +1018,7 @@ typedef struct ph7_builtin_func ph7_builtin_func;
  */
 struct ph7_builtin_func {
 	const char *zName;        /* Function name [i.e: strlen(), rand(), array_merge(), etc.]*/
-	ProchHostFunction xFunc;  /* C routine performing the computation */
+	ProcHostFunction xFunc;  /* C routine performing the computation */
 };
 /*
  * Each built-in foreign constant is stored in an instance
@@ -1683,7 +1683,7 @@ PH7_PRIVATE sxi32 PH7_VmRefObjInstall(ph7_vm *pVm, sxu32 nIdx, SyHashEntry *pEnt
 PH7_PRIVATE sxi32 PH7_VmPushFilePath(ph7_vm *pVm, const char *zPath, int nLen, sxu8 bMain, sxi32 *pNew);
 PH7_PRIVATE ph7_class *PH7_VmExtractClass(ph7_vm *pVm, const char *zName, sxu32 nByte, sxi32 iLoadable, sxi32 iNest);
 PH7_PRIVATE sxi32 PH7_VmRegisterConstant(ph7_vm *pVm, const SyString *pName, ProcConstant xExpand, void *pUserData);
-PH7_PRIVATE sxi32 PH7_VmInstallForeignFunction(ph7_vm *pVm, const SyString *pName, ProchHostFunction xFunc, void *pUserData);
+PH7_PRIVATE sxi32 PH7_VmInstallForeignFunction(ph7_vm *pVm, const SyString *pName, ProcHostFunction xFunc, void *pUserData);
 PH7_PRIVATE sxi32 PH7_VmInstallClass(ph7_vm *pVm, ph7_class *pClass);
 PH7_PRIVATE sxi32 PH7_VmBlobConsumer(const void *pSrc, unsigned int nLen, void *pUserData);
 PH7_PRIVATE ph7_value *PH7_ReserveMemObj(ph7_vm *pVm);
