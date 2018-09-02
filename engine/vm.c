@@ -1787,7 +1787,11 @@ PH7_PRIVATE sxi32 VmExtractDebugTrace(ph7_vm *pVm, SySet *pDebugTrace, sxbool bA
 				pClass = PH7_VmExtractActiveClass(pVm, iDepth++);
 				if(pClass) {
 					aTrace.pClassName = &pClass->sName;
+				} else {
+					aTrace.pClassName = NULL;
 				}
+			} else {
+				aTrace.pClassName = NULL;
 			}
 			rc = SySetPut(pDebugTrace, (const void *)&aTrace);
 			if(rc != SXRET_OK) {
