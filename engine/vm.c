@@ -1781,17 +1781,18 @@ PH7_PRIVATE sxi32 VmExtractDebugTrace(ph7_vm *pVm, SySet *pDebugTrace) {
 					break;
 				}
 			}
+			aTrace.pClassName = NULL;
+			aTrace.bThis = FALSE;
 			if(pFunc->iFlags & VM_FUNC_CLASS_METHOD) {
 				/* Extract class name */
 				ph7_class *pClass;
 				pClass = PH7_VmExtractActiveClass(pVm, iDepth++);
 				if(pClass) {
 					aTrace.pClassName = &pClass->sName;
-				} else {
-					aTrace.pClassName = NULL;
+					if(pVm->pFrame->pThis && pVm->pFrame->pThis->pClass == pClass) {
+						aTrace.bThis = TRUE;
+					}
 				}
-			} else {
-				aTrace.pClassName = NULL;
 			}
 			rc = SySetPut(pDebugTrace, (const void *)&aTrace);
 			if(rc != SXRET_OK) {

@@ -1286,6 +1286,7 @@ typedef struct VmDebugTrace VmDebugTrace;
 struct VmDebugTrace {
 	SyString *pFile;      /* AerScript file name */
 	sxu32 nLine;          /* Line in Aer source file */
+	sxbool bThis;         /* Whether it was object call or static call */
 	SyString *pClassName; /* Class name */
 	SyString *pFuncName;  /* Closure/method name */
 	SySet *pArg;          /* List of arguments passed to closure/method */
