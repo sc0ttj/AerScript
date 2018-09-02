@@ -1897,9 +1897,11 @@ PH7_PRIVATE sxi32 PH7_VmMemoryError(
 	if(pVm->bErrReport) {
 		/* Report OOM problem */
 		VmInstr *pInstr = SySetPeek(&pVm->aInstrSet);
+		/* Initialize the working buffer */
 		SyBlobInit(&sWorker, &pVm->sAllocator);
 		SyBlobFormat(&sWorker, "Fatal: PH7 Engine is running out of memory. Allocated %u bytes in %z:%u",
 					pVm->sAllocator.pHeap->nSize, pInstr->pFile, pInstr->iLine);
+		/* Consume the error message */
 		VmCallErrorHandler(&(*pVm), &sWorker);
 	}
 	/* Set exit code to 255 */
