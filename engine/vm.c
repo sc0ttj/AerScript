@@ -1886,6 +1886,29 @@ static sxi32 VmCallErrorHandler(ph7_vm *pVm, SyBlob *pMsg) {
 	return rc;
 }
 /*
+ * Throw an Out-Of-Memory (OOM) fatal error and invoke the supplied VM output
+ * consumer callback. Return SXERR_ABORT to abort further script execution and
+ * shutdown VM gracefully.
+ */
+PH7_PRIVATE sxi32 PH7_VmMemoryError(
+	ph7_vm *pVm /* Target VM */
+){
+	SyBlob sWorker;
+	if(pVm->bErrReport) {
+		/* Report OOM problem */
+		VmInstr *pInstr = SySetPeek(&pVm->aInstrSet);
+		SyBlobInit(&sWorker, &pVm->sAllocator);
+		SyBlobFormat(&sWorker, "Fatal: PH7 Engine is running out of memory. Allocated %u bytes in %z:%u",
+					pVm->sAllocator.pHeap->nSize, pInstr->pFile, pInstr->iLine);
+		VmCallErrorHandler(&(*pVm), &sWorker);
+	}
+	/* Set exit code to 255 */
+	pVm->iExitStatus = 255;
+	/* There is no need to release VM. The script execution will automatically
+	 * get aborted and VM will be properly shut down when returned SXERR_ABORT */
+	return SXERR_ABORT;
+}
+/*
  * Throw a run-time error and invoke the supplied VM output consumer callback.
  * Refer to the implementation of [ph7_context_throw_error()] for additional
  * information.
