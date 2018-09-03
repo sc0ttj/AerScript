@@ -936,8 +936,6 @@ PH7_PRIVATE sxi32 PH7_VmInit(
 	/* Error callbacks containers */
 	PH7_MemObjInit(&(*pVm), &pVm->aExceptionCB[0]);
 	PH7_MemObjInit(&(*pVm), &pVm->aExceptionCB[1]);
-	PH7_MemObjInit(&(*pVm), &pVm->aErrCB[0]);
-	PH7_MemObjInit(&(*pVm), &pVm->aErrCB[1]);
 	PH7_MemObjInit(&(*pVm), &pVm->sAssertCallback);
 	/* Set a default recursion limit */
 #if defined(__WINNT__) || defined(__UNIXES__)
@@ -9172,92 +9170,6 @@ static int vm_builtin_set_exception_handler(ph7_context *pCtx, int nArg, ph7_val
 	return PH7_OK;
 }
 /*
- * bool restore_error_handler(void)
- *  THIS FUNCTION IS A NO-OP IN THE CURRENT RELEASE OF THE PH7 ENGINE.
- * Parameters:
- *  None.
- * Return
- *  Always TRUE.
- */
-static int vm_builtin_restore_error_handler(ph7_context *pCtx, int nArg, ph7_value **apArg) {
-	ph7_vm *pVm = pCtx->pVm;
-	ph7_value *pOld, *pNew;
-	/* Point to the old and the new handler */
-	pOld = &pVm->aErrCB[0];
-	pNew = &pVm->aErrCB[1];
-	if(pOld->iFlags & MEMOBJ_NULL) {
-		SXUNUSED(nArg); /* cc warning */
-		SXUNUSED(apArg);
-		/* No installed callback,return FALSE */
-		ph7_result_bool(pCtx, 0);
-		return PH7_OK;
-	}
-	/* Copy the old callback */
-	PH7_MemObjStore(pOld, pNew);
-	PH7_MemObjRelease(pOld);
-	/* Return TRUE */
-	ph7_result_bool(pCtx, 1);
-	return PH7_OK;
-}
-/*
- * value set_error_handler(callable $error_handler)
- *  +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
- *   THIS FUNCTION IS DISABLED IN THE CURRENT RELEASE OF THE PH7 ENGINE.
- *  +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
- *  Sets a user-defined error handler function.
- *  This function can be used for defining your own way of handling errors during
- *  runtime, for example in applications in which you need to do cleanup of data/files
- *  when a critical error happens, or when you need to trigger an error under certain
- *  conditions (using trigger_error()).
- * Parameters
- *  $error_handler
- *   The user function needs to accept two parameters: the error code, and a string
- *   describing the error.
- *   Then there are three optional parameters that may be supplied: the filename in which
- *   the error occurred, the line number in which the error occurred, and the context in which
- *   the error occurred (an array that points to the active symbol table at the point the error occurred).
- *   The function can be shown as:
- *    handler ( int $errno , string $errstr [, string $errfile])
- *     errno
- *       The first parameter, errno, contains the level of the error raised, as an integer.
- *   errstr
- *      The second parameter, errstr, contains the error message, as a string.
- *   errfile
- *      The third parameter is optional, errfile, which contains the filename that the error
- *     was raised in, as a string.
- *  Note:
- *   NULL may be passed instead, to reset this handler to its default state.
- * Return
- *  Returns the name of the previously defined error handler, or NULL on error.
- *  If no previous handler was defined, NULL is also returned. If NULL is passed
- *  resetting the handler to its default state, TRUE is returned.
- */
-static int vm_builtin_set_error_handler(ph7_context *pCtx, int nArg, ph7_value **apArg) {
-	ph7_vm *pVm = pCtx->pVm;
-	ph7_value *pOld, *pNew;
-	/* Point to the old and the new handler */
-	pOld = &pVm->aErrCB[0];
-	pNew = &pVm->aErrCB[1];
-	/* Return the old handler */
-	ph7_result_value(pCtx, pOld); /* Will make it's own copy */
-	if(nArg > 0) {
-		if(!ph7_value_is_callable(apArg[0])) {
-			/* Not callable,return TRUE (As requested by the PHP specification) */
-			PH7_MemObjRelease(pNew);
-			ph7_result_bool(pCtx, 1);
-		} else {
-			PH7_MemObjStore(pNew, pOld);
-			/* Install the new handler */
-			PH7_MemObjStore(apArg[0], pNew);
-		}
-	}
-	ph7_context_throw_error_format(pCtx, PH7_CTX_WARNING,
-								   "This function is disabled in the current release of the PH7(%s) engine",
-								   ph7_lib_version()
-								  );
-	return PH7_OK;
-}
-/*
  * array debug_backtrace([ int $options = DEBUG_BACKTRACE_PROVIDE_OBJECT [, int $limit = 0 ]] )
  *  Generates a backtrace.
  * Parameter
@@ -11313,8 +11225,6 @@ static const ph7_builtin_func aVmFunc[] = {
 	{ "error_log",       vm_builtin_error_log      },
 	{ "restore_exception_handler", vm_builtin_restore_exception_handler },
 	{ "set_exception_handler",     vm_builtin_set_exception_handler     },
-	{ "restore_error_handler", vm_builtin_restore_error_handler },
-	{ "set_error_handler", vm_builtin_set_error_handler },
 	{ "debug_backtrace",  vm_builtin_debug_backtrace},
 	/* Release info */
 	{"ph7version",       vm_builtin_ph7_version  },
