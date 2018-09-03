@@ -9398,7 +9398,7 @@ static sxi32 VmUncaughtException(
 		}
 		/* Generate a listing */
 		PH7_VmGenericError(&(*pVm), PH7_CTX_ERR,
-					  "Uncaught exception '%z' in the '%z' frame context",
+					  "Uncaught exception '%z' in the '%z()' function/method",
 					  &sName, &sFuncName);
 		/* Tell the upper layer to stop VM execution immediately */
 		rc = SXERR_ABORT;
