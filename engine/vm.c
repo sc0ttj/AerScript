@@ -9003,42 +9003,6 @@ static int vm_builtin_trigger_error(ph7_context *pCtx, int nArg, ph7_value **apA
 	return rc;
 }
 /*
- * int error_reporting([int $level])
- *  Sets which PHP errors are reported.
- * Parameters
- *  $level
- *   The new error_reporting level. It takes on either a bitmask, or named constants.
- *   Using named constants is strongly encouraged to ensure compatibility for future versions.
- *   As error levels are added, the range of integers increases, so older integer-based error
- *   levels will not always behave as expected.
- *   The available error level constants and the actual meanings of these error levels are described
- *   in the predefined constants.
- * Return
- *   Returns the old error_reporting level or the current level if no level
- *   parameter is given.
- */
-static int vm_builtin_error_reporting(ph7_context *pCtx, int nArg, ph7_value **apArg) {
-	ph7_vm *pVm = pCtx->pVm;
-	int nOld;
-	/* Extract the old reporting level */
-	nOld = pVm->bErrReport ? 32767 /* E_ALL */ : 0;
-	if(nArg > 0) {
-		int nNew;
-		/* Extract the desired error reporting level */
-		nNew = ph7_value_to_int(apArg[0]);
-		if(!nNew) {
-			/* Do not report errors at all */
-			pVm->bErrReport = 0;
-		} else {
-			/* Report all errors */
-			pVm->bErrReport = 1;
-		}
-	}
-	/* Return the old level */
-	ph7_result_int(pCtx, nOld);
-	return PH7_OK;
-}
-/*
  * bool restore_exception_handler(void)
  *  Restores the previously defined exception handler function.
  * Parameter
@@ -11158,7 +11122,6 @@ static const ph7_builtin_func aVmFunc[] = {
 	{ "assert",          vm_builtin_assert         },
 	/* Error reporting functions */
 	{ "trigger_error", vm_builtin_trigger_error     },
-	{ "error_reporting", vm_builtin_error_reporting },
 	{ "restore_exception_handler", vm_builtin_restore_exception_handler },
 	{ "set_exception_handler",     vm_builtin_set_exception_handler     },
 	{ "debug_backtrace",  vm_builtin_debug_backtrace},
