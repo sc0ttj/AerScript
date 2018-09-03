@@ -284,7 +284,7 @@ static int vm_builtin_xml_parser_create(ph7_context *pCtx, int nArg, ph7_value *
 	/* Allocate a new instance */
 	pEngine = VmCreateXMLEngine(&(*pCtx), 0, ':');
 	if(pEngine == 0) {
-		ph7_context_throw_error(pCtx, PH7_CTX_ERR, "PH7 is running out of memory");
+		PH7_VmMemoryError(pCtx->pVm);
 		/* Return null */
 		ph7_result_null(pCtx);
 		SXUNUSED(nArg); /* cc warning */
@@ -318,7 +318,7 @@ static int vm_builtin_xml_parser_create_ns(ph7_context *pCtx, int nArg, ph7_valu
 	/* Allocate a new instance */
 	pEngine = VmCreateXMLEngine(&(*pCtx), TRUE, ns_sep);
 	if(pEngine == 0) {
-		ph7_context_throw_error(pCtx, PH7_CTX_ERR, "PH7 is running out of memory");
+		PH7_VmMemoryError(pCtx->pVm);
 		/* Return null */
 		ph7_result_null(pCtx);
 		return PH7_OK;
@@ -877,7 +877,7 @@ static int vm_builtin_xml_set_object(ph7_context *pCtx, int nArg, ph7_value **ap
 		return PH7_OK;
 	}
 	/*  Throw a notice and return */
-	ph7_context_throw_error(pCtx, PH7_CTX_NOTICE, "This function is depreceated and is a no-op."
+	PH7_VmGenericError(pCtx->pVm, PH7_CTX_DEPRECATED, "This function is deprecated and is a no-op."
 							"In order to mimic this behaviour,you can supply instead of a function name an array "
 							"containing an object reference and a method name."
 						   );
@@ -969,7 +969,7 @@ static ph7_value *VmXMLValue(ph7_xml_engine *pEngine, SyXMLRawStr *pXML, SyXMLRa
 	/* Allocate a new scalar variable */
 	pValue = ph7_context_new_scalar(pEngine->pCtx);
 	if(pValue == 0) {
-		ph7_context_throw_error(pEngine->pCtx, PH7_CTX_ERR, "PH7 is running out of memory");
+		PH7_VmMemoryError(pEngine->pCtx->pVm);
 		return 0;
 	}
 	if(pNsUri && pNsUri->nByte > 0) {
@@ -989,7 +989,7 @@ static ph7_value *VmXMLAttrValue(ph7_xml_engine *pEngine, SyXMLRawStr *aAttr, sx
 	/* Create an empty array */
 	pArray = ph7_context_new_array(pEngine->pCtx);
 	if(pArray == 0) {
-		ph7_context_throw_error(pEngine->pCtx, PH7_CTX_ERR, "PH7 is running out of memory");
+		PH7_VmMemoryError(pEngine->pCtx->pVm);
 		return 0;
 	}
 	if(nAttr > 0) {
@@ -999,7 +999,7 @@ static ph7_value *VmXMLAttrValue(ph7_xml_engine *pEngine, SyXMLRawStr *aAttr, sx
 		pKey = ph7_context_new_scalar(pEngine->pCtx);
 		pValue = ph7_context_new_scalar(pEngine->pCtx);
 		if(pKey == 0 || pValue == 0) {
-			ph7_context_throw_error(pEngine->pCtx, PH7_CTX_ERR, "PH7 is running out of memory");
+			PH7_VmMemoryError(pEngine->pCtx->pVm);
 			return 0;
 		}
 		/* Copy attributes */
@@ -1295,8 +1295,8 @@ static int vm_builtin_xml_parse(ph7_context *pCtx, int nArg, ph7_value **apArg) 
 		/* This can happen when the user callback call xml_parse() again
 		 * in it's body which is forbidden.
 		 */
-		ph7_context_throw_error_format(pCtx, PH7_CTX_ERR,
-									   "Recursive call to %s,PH7 is returning false",
+		PH7_VmGenericError(pCtx->pVm, PH7_CTX_WARNING,
+									   "Recursive call to %s, PH7 is returning false",
 									   ph7_function_name(pCtx)
 									  );
 		/* Return FALSE */

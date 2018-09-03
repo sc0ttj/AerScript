@@ -613,7 +613,7 @@ static sxi32 VmJsonDecode(
 		/* Scalar value */
 		pWorker = ph7_context_new_scalar(pDecoder->pCtx);
 		if(pWorker == 0) {
-			ph7_context_throw_error(pDecoder->pCtx, PH7_CTX_ERR, "PH7 is running out of memory");
+			PH7_VmMemoryError(pDecoder->pCtx->pVm);
 			/* Abort the decoding operation immediately */
 			return SXERR_ABORT;
 		}
@@ -653,7 +653,7 @@ static sxi32 VmJsonDecode(
 		/* Create a working array */
 		pWorker = ph7_context_new_array(pDecoder->pCtx);
 		if(pWorker == 0) {
-			ph7_context_throw_error(pDecoder->pCtx, PH7_CTX_ERR, "PH7 is running out of memory");
+			PH7_VmMemoryError(pDecoder->pCtx->pVm);
 			/* Abort the decoding operation immediately */
 			return SXERR_ABORT;
 		}
@@ -706,7 +706,7 @@ static sxi32 VmJsonDecode(
 		pDecoder->pIn++;
 		/* Return the object as an associative array */
 		if((pDecoder->iFlags & JSON_DECODE_ASSOC) == 0) {
-			ph7_context_throw_error(pDecoder->pCtx, PH7_CTX_WARNING,
+			PH7_VmGenericError(pDecoder->pCtx->pVm, PH7_CTX_WARNING,
 									"JSON Objects are always returned as an associative array"
 								   );
 		}
@@ -714,7 +714,7 @@ static sxi32 VmJsonDecode(
 		pWorker = ph7_context_new_array(pDecoder->pCtx);
 		pKey = ph7_context_new_scalar(pDecoder->pCtx);
 		if(pWorker == 0 || pKey == 0) {
-			ph7_context_throw_error(pDecoder->pCtx, PH7_CTX_ERR, "PH7 is running out of memory");
+			PH7_VmMemoryError(pDecoder->pCtx->pVm);
 			/* Abort the decoding operation immediately */
 			return SXERR_ABORT;
 		}
