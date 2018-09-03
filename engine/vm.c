@@ -1819,9 +1819,9 @@ static sxi32 VmByteCodeDump(
 	void *pUserData         /* Last argument to xConsumer() */
 ) {
 	static const char zDump[] = {
-		"======================================================================================================\n"
-		"   SEQ   |  OP  | INSTRUCTION |    P1    |    P2    |     P3     |  LINE  |        SOURCE FILE        \n"
-		"======================================================================================================\n"
+		"========================================================================================================\n"
+		"    SEQ    |  OP  | INSTRUCTION |    P1    |    P2    |     P3     |  LINE  |        SOURCE FILE        \n"
+		"========================================================================================================\n"
 	};
 	VmInstr *pInstr, *pEnd;
 	sxi32 rc = SXRET_OK;
@@ -1838,7 +1838,7 @@ static sxi32 VmByteCodeDump(
 			break;
 		}
 		/* Format and call the consumer callback */
-		rc = SyProcFormat(xConsumer, pUserData, " #%06u | %4d | %-11s | %8d | %8u | %#10x | %6u | %z\n",
+		rc = SyProcFormat(xConsumer, pUserData, " #%08u | %4d | %-11s | %8d | %8u | %#10x | %6u | %z\n",
 						  n, pInstr->iOp, VmInstrToString(pInstr->iOp), pInstr->iP1, pInstr->iP2,
 						  SX_PTR_TO_INT(pInstr->p3), pInstr->iLine, pInstr->pFile);
 		if(rc != SXRET_OK) {
