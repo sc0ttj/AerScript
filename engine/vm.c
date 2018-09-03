@@ -1902,6 +1902,86 @@ PH7_PRIVATE sxi32 PH7_VmMemoryError(
 }
 /*
  * Throw a run-time error and invoke the supplied VM output consumer callback.
+ */
+PH7_PRIVATE sxi32 PH7_VmGenericError(
+	ph7_vm *pVm,          /* Target VM */
+	sxi32 iErr,           /* Severity level: [i.e: Error, Warning, Notice or Deprecated] */
+	const char *zMessage  /* Null terminated error message */
+) {
+	const char *zErr;
+	sxi32 rc = SXRET_OK;
+	switch(iErr) {
+		case PH7_CTX_WARNING:
+			zErr = "Warning: ";
+			break;
+		case PH7_CTX_NOTICE:
+			zErr = "Notice: ";
+			break;
+		case PH7_CTX_DEPRECATED:
+			zErr = "Deprecated: ";
+			break;
+		default:
+			iErr = PH7_CTX_ERR;
+			zErr = "Error: ";
+			break;
+	}
+	if(pVm->bErrReport) {
+		SyBlob sWorker;
+		SySet pDebug;
+		VmDebugTrace *pTrace;
+		sxu32 nLine;
+		SyString sFileName;
+		SyString *pFile;
+		if((VmExtractDebugTrace(&(*pVm), &pDebug) == SXRET_OK) && (SySetUsed(&pDebug) > 0)) {
+			/* Extract file name and line number from debug trace */
+			SySetGetNextEntry(&pDebug, (void **)&pTrace);
+			pFile = pTrace->pFile;
+			nLine = pTrace->nLine;
+		} else if(SySetUsed(&pVm->aInstrSet) > 0) {
+			/* Extract file name and line number from instructions set */
+			VmInstr *pInstr = SySetPeek(&pVm->aInstrSet);
+			pFile = pInstr->pFile;
+			nLine = pInstr->iLine;
+		} else {
+			/* Failover to some location in memory */
+			SyStringInitFromBuf(&sFileName, "[MEMORY]", 8);
+			pFile = &sFileName;
+			nLine = 1;
+		}
+		/* Initialize the working buffer */
+		SyBlobInit(&sWorker, &pVm->sAllocator);
+		SyBlobAppend(&sWorker, zErr, SyStrlen(zErr));
+		SyBlobAppend(&sWorker, zMessage, SyStrlen(zMessage));
+		/* Append file name and line number */
+		SyBlobFormat(&sWorker, " in %z:%u", pFile, nLine);
+		if(SySetUsed(&pDebug) > 0) {
+			/* Append stack trace */
+			do {
+				if(pTrace->pClassName) {
+					const char *sOperator;
+					if(pTrace->bThis) {
+						sOperator = "->";
+					} else {
+						sOperator = "::";
+					}
+					SyBlobFormat(&sWorker, "\n    at %z%s%z() [%z:%u]", pTrace->pClassName, sOperator, pTrace->pFuncName, pTrace->pFile, pTrace->nLine);
+				} else {
+					SyBlobFormat(&sWorker, "\n    at %z() [%z:%u]", pTrace->pFuncName, pTrace->pFile, pTrace->nLine);
+				}
+			} while(SySetGetNextEntry(&pDebug, (void **)&pTrace) == SXRET_OK);
+		}
+		/* Consume the error message */
+		rc = VmCallErrorHandler(&(*pVm), &sWorker);
+	}
+	if(iErr == PH7_CTX_ERR) {
+		/* Set exit code to 255 and abort script execution */
+		pVm->iExitStatus = 255;
+		rc = SXERR_ABORT;
+	}
+	return rc;
+}
+/*
+ * Throw a run-time error and invoke the supplied VM output consumer callback.
  * Refer to the implementation of [ph7_context_throw_error()] for additional
  * information.
  */
