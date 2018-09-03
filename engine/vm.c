@@ -1894,11 +1894,9 @@ PH7_PRIVATE sxi32 PH7_VmMemoryError(
 		/* Consume the error message */
 		VmCallErrorHandler(&(*pVm), &sWorker);
 	}
-	/* Set exit code to 255 */
-	pVm->iExitStatus = 255;
-	/* There is no need to release VM. The script execution will automatically
-	 * get aborted and VM will be properly shut down when returned SXERR_ABORT */
-	return SXERR_ABORT;
+	/* Release the VM gracefully and abort script execution */
+	PH7_VmRelease(pVm);
+	exit(255);
 }
 /*
  * Throw a run-time error and invoke the supplied VM output consumer callback.
@@ -1974,9 +1972,9 @@ PH7_PRIVATE sxi32 PH7_VmGenericError(
 		rc = VmCallErrorHandler(&(*pVm), &sWorker);
 	}
 	if(iErr == PH7_CTX_ERR) {
-		/* Set exit code to 255 and abort script execution */
-		pVm->iExitStatus = 255;
-		rc = SXERR_ABORT;
+		/* Release the VM gracefully and abort script execution */
+		PH7_VmRelease(pVm);
+		exit(255);
 	}
 	return rc;
 }
