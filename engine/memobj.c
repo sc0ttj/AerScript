@@ -1125,7 +1125,7 @@ PH7_PRIVATE sxi32 PH7_MemObjAdd(ph7_value *pObj1, ph7_value *pObj2, int bAddStor
 					/* Force a hashmap cast */
 					rc = PH7_MemObjToHashmap(pObj1);
 					if(rc != SXRET_OK) {
-						PH7_VmThrowError(pObj1->pVm, 0, PH7_CTX_ERR, "PH7 is running out of memory while creating array");
+						PH7_VmMemoryError(pObj1->pVm);
 						return rc;
 					}
 				}
@@ -1135,7 +1135,7 @@ PH7_PRIVATE sxi32 PH7_MemObjAdd(ph7_value *pObj1, ph7_value *pObj2, int bAddStor
 				/* Create a new hashmap */
 				pMap = PH7_NewHashmap(pObj1->pVm, 0, 0);
 				if(pMap == 0) {
-					PH7_VmThrowError(pObj1->pVm, 0, PH7_CTX_ERR, "PH7 is running out of memory while creating array");
+					PH7_VmMemoryError(pObj1->pVm);
 					return SXERR_MEM;
 				}
 			}
