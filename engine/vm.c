@@ -1904,7 +1904,8 @@ PH7_PRIVATE sxi32 PH7_VmMemoryError(
 PH7_PRIVATE sxi32 PH7_VmGenericError(
 	ph7_vm *pVm,          /* Target VM */
 	sxi32 iErr,           /* Severity level: [i.e: Error, Warning, Notice or Deprecated] */
-	const char *zMessage  /* Null terminated error message */
+	const char *zMessage, /* Null terminated error message */
+	...                   /* Variable list of arguments */
 ) {
 	const char *zErr;
 	sxi32 rc = SXRET_OK;
@@ -1924,6 +1925,7 @@ PH7_PRIVATE sxi32 PH7_VmGenericError(
 			break;
 	}
 	if(pVm->bErrReport) {
+		va_list ap;
 		SyBlob sWorker;
 		SySet pDebug;
 		VmDebugTrace *pTrace;
@@ -1949,7 +1951,9 @@ PH7_PRIVATE sxi32 PH7_VmGenericError(
 		/* Initialize the working buffer */
 		SyBlobInit(&sWorker, &pVm->sAllocator);
 		SyBlobAppend(&sWorker, zErr, SyStrlen(zErr));
-		SyBlobAppend(&sWorker, zMessage, SyStrlen(zMessage));
+		va_start(ap, zMessage);
+		SyBlobFormatAp(&sWorker, zMessage, ap);
+		va_end(ap);
 		/* Append file name and line number */
 		SyBlobFormat(&sWorker, " in %z:%u", pFile, nLine);
 		if(SySetUsed(&pDebug) > 0) {
