@@ -1684,12 +1684,6 @@ PH7_PRIVATE sxi32 PH7_VmConfigure(
 				}
 				break;
 			}
-		case PH7_VM_CONFIG_ERR_LOG_HANDLER: {
-				/* error_log() consumer */
-				ProcErrLog xErrLog = va_arg(ap, ProcErrLog);
-				pVm->xErrLog = xErrLog;
-				break;
-			}
 		case PH7_VM_CONFIG_IO_STREAM: {
 				/* Register an IO stream device */
 				const ph7_io_stream *pStream = va_arg(ap, const ph7_io_stream *);
@@ -9045,63 +9039,6 @@ static int vm_builtin_error_reporting(ph7_context *pCtx, int nArg, ph7_value **a
 	return PH7_OK;
 }
 /*
- * bool error_log(string $message[,int $message_type = 0 [,string $destination[,string $extra_headers]]])
- *  Send an error message somewhere.
- * Parameter
- *  $message
- *   The error message that should be logged.
- *  $message_type
- *   Says where the error should go. The possible message types are as follows:
- *    0  message is sent to PHP's system logger, using the Operating System's system logging mechanism
- *       or a file, depending on what the error_log configuration directive is set to.
- *       This is the default option.
- *    1 message is sent by email to the address in the destination parameter.
- *      This is the only message type where the fourth parameter, extra_headers is used.
- *    2  No longer an option.
- *    3  message is appended to the file destination. A newline is not automatically added
- *       to the end of the message string.
- *    4  message is sent directly to the SAPI logging handler.
- *  $destination
- *   The destination. Its meaning depends on the message_type parameter as described above.
- *  $extra_headers
- *   The extra headers. It's used when the message_type parameter is set to 1
- * Return
- *  TRUE on success or FALSE on failure.
- * NOTE:
- *  Actually,PH7 does not care about the given parameters,all this function does
- *  is to invoke any user callback registered using the PH7_VM_CONFIG_ERR_LOG_HANDLER
- *  configuration directive (refer to the official documentation for more information).
- *  Otherwise this function is no-op.
- */
-static int vm_builtin_error_log(ph7_context *pCtx, int nArg, ph7_value **apArg) {
-	const char *zMessage, *zDest, *zHeader;
-	ph7_vm *pVm = pCtx->pVm;
-	int iType = 0;
-	if(nArg < 1) {
-		/* Missing log message,return FALSE */
-		ph7_result_bool(pCtx, 0);
-		return PH7_OK;
-	}
-	if(pVm->xErrLog) {
-		/* Invoke the user callback */
-		zMessage = ph7_value_to_string(apArg[0], 0);
-		zDest = zHeader = ""; /* Empty string */
-		if(nArg > 1) {
-			iType = ph7_value_to_int(apArg[1]);
-			if(nArg > 2) {
-				zDest = ph7_value_to_string(apArg[2], 0);
-				if(nArg > 3) {
-					zHeader = ph7_value_to_string(apArg[3], 0);
-				}
-			}
-		}
-		pVm->xErrLog(zMessage, iType, zDest, zHeader);
-	}
-	/* Return TRUE */
-	ph7_result_bool(pCtx, 1);
-	return PH7_OK;
-}
-/*
  * bool restore_exception_handler(void)
  *  Restores the previously defined exception handler function.
  * Parameter
@@ -11222,7 +11159,6 @@ static const ph7_builtin_func aVmFunc[] = {
 	/* Error reporting functions */
 	{ "trigger_error", vm_builtin_trigger_error     },
 	{ "error_reporting", vm_builtin_error_reporting },
-	{ "error_log",       vm_builtin_error_log      },
 	{ "restore_exception_handler", vm_builtin_restore_exception_handler },
 	{ "set_exception_handler",     vm_builtin_set_exception_handler     },
 	{ "debug_backtrace",  vm_builtin_debug_backtrace},

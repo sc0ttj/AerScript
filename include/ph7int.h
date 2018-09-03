@@ -1185,12 +1185,6 @@ struct ph7_switch {
 #define PH7_ASSERT_QUIET_EVAL 0x08  /* Not used */
 #define PH7_ASSERT_CALLBACK   0x10  /* Callback to call on failed assertions */
 /*
- * error_log() consumer function signature.
- * Refer to the [PH7_VM_CONFIG_ERR_LOG_HANDLER] configuration directive
- * for more information on how to register an error_log consumer().
- */
-typedef void (*ProcErrLog)(const char *, int, const char *, const char *);
-/*
  * An instance of the following structure hold the bytecode instructions
  * resulting from compiling a PHP script.
  * This structure contains the complete state of the virtual machine.
@@ -1241,7 +1235,6 @@ struct ph7_vm {
 	int closure_cnt;           /* Loaded closures counter */
 	int json_rc;               /* JSON return status [refer to json_encode()/json_decode()]*/
 	sxu32 unique_id;           /* Random number used to generate unique ID [refer to uniqid() for more info]*/
-	ProcErrLog xErrLog;        /* error_log() consumer [refer to PH7_VM_CONFIG_ERR_LOG_HANDLER] */
 	sxu32 nOutputLen;          /* Total number of generated output */
 	ph7_output_consumer sVmConsumer; /* Registered output consumer callback */
 	int iAssertFlags;          /* Assertion flags */
