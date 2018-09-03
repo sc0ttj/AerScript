@@ -8974,18 +8974,15 @@ static int vm_builtin_trigger_error(ph7_context *pCtx, int nArg, ph7_value **apA
 			/* Extract the error type */
 			nErr = ph7_value_to_int(apArg[1]);
 			switch(nErr) {
-				case 1:   /* E_ERROR */
-				case 16:  /* E_CORE_ERROR */
-				case 64:  /* E_COMPILE_ERROR */
-				case 256: /* E_USER_ERROR */
+				case E_ERROR:
 					nErr = PH7_CTX_ERR;
-					rc = PH7_ABORT; /* Abort processing immediately */
+					rc = PH7_ABORT;
 					break;
-				case 2:   /* E_WARNING */
-				case 32:  /* E_CORE_WARNING */
-				case 123: /* E_COMPILE_WARNING */
-				case 512: /* E_USER_WARNING */
+				case E_WARNING:
 					nErr = PH7_CTX_WARNING;
+					break;
+				case E_DEPRECATED:
+					nErr = PH7_CTX_DEPRECATED;
 					break;
 				default:
 					nErr = PH7_CTX_NOTICE;
@@ -8993,7 +8990,7 @@ static int vm_builtin_trigger_error(ph7_context *pCtx, int nArg, ph7_value **apA
 			}
 		}
 		/* Report error */
-		ph7_context_throw_error_format(pCtx, nErr, "%.*s", nLen, zErr);
+		PH7_VmGenericError(pCtx->pVm, nErr, "%.*s", nLen, zErr);
 		/* Return true */
 		ph7_result_bool(pCtx, 1);
 	} else {
