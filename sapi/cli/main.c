@@ -58,6 +58,7 @@ static void Help(void) {
 	puts("ph7 [-h|-r|-d] path/to/php_file [script args]");
 	puts("\t-d: Dump PH7 byte-code instructions");
 	puts("\t-r: Report run-time errors");
+	puts("\t-m: Set memory limit");
 	puts("\t-h: Display this message an exit");
 	/* Exit immediately */
 	exit(0);
@@ -109,6 +110,7 @@ static int Output_Consumer(const void *pOutput, unsigned int nOutputLen, void *p
 int main(int argc, char **argv) {
 	ph7 *pEngine; /* PH7 engine */
 	ph7_vm *pVm;  /* Compiled PHP program */
+	char *sLimitArg = NULL; /* Memory limit */
 	int dump_vm = 0;    /* Dump VM instructions if TRUE */
 	int err_report = 0; /* Report run-time errors if TRUE */
 	int n;              /* Script arguments */
@@ -128,6 +130,8 @@ int main(int argc, char **argv) {
 		} else if(c == 'r' || c == 'R') {
 			/* Report run-time errors */
 			err_report = 1;
+		} else if(c == 'm' || c == 'M' && SyStrlen(argv[n]) > 2) {
+			sLimitArg = argv[n] + 2;
 		} else {
 			/* Display a help message and exit */
 			Help();
@@ -145,6 +149,10 @@ int main(int argc, char **argv) {
 		 * to allocate a tiny chunk of memory,there is no much we can do here.
 		 */
 		Fatal("Error while allocating a new PH7 engine instance");
+	}
+	rc = ph7_config(pEngine, PH7_CONFIG_MEM_LIMIT, sLimitArg, 0);
+	if(rc != PH7_OK) {
+		Fatal("Error while setting memory limit");
 	}
 	/* Set an error log consumer callback. This callback [Output_Consumer()] will
 	 * redirect all compile-time error messages to STDOUT.
