@@ -433,8 +433,7 @@ typedef sxi64 ph7_int64;
  * Call Context Error Message Severity Level.
  *
  * The following constans are the allowed severity level that can
- * passed as the second argument to the [ph7_context_throw_error()] or
- * [ph7_context_throw_error_format()] interfaces.
+ * passed as the second argument to the PH7_VmGenericError().
  * Refer to the official documentation for additional information.
  */
 #define PH7_CTX_ERR        1 /* Call context Error such as unexpected number of arguments,invalid types and so on. */
@@ -623,8 +622,6 @@ PH7_APIEXPORT int ph7_result_resource(ph7_context *pCtx, void *pUserData);
 /* Call Context Handling Interfaces */
 PH7_APIEXPORT int ph7_context_output(ph7_context *pCtx, const char *zString, int nLen);
 PH7_APIEXPORT int ph7_context_output_format(ph7_context *pCtx, const char *zFormat, ...);
-PH7_APIEXPORT int ph7_context_throw_error(ph7_context *pCtx, int iErr, const char *zErr);
-PH7_APIEXPORT int ph7_context_throw_error_format(ph7_context *pCtx, int iErr, const char *zFormat, ...);
 PH7_APIEXPORT unsigned int ph7_context_random_num(ph7_context *pCtx);
 PH7_APIEXPORT int ph7_context_random_string(ph7_context *pCtx, char *zBuf, int nBuflen);
 PH7_APIEXPORT void *ph7_context_user_data(ph7_context *pCtx);

@@ -1664,32 +1664,6 @@ int ph7_context_output_format(ph7_context *pCtx, const char *zFormat, ...) {
 	return rc;
 }
 /*
- * [CAPIREF: ph7_context_throw_error()]
- * Please refer to the official documentation for function purpose and expected parameters.
- */
-int ph7_context_throw_error(ph7_context *pCtx, int iErr, const char *zErr) {
-	int rc = PH7_OK;
-	if(zErr) {
-		rc = PH7_VmThrowError(pCtx->pVm, &pCtx->pFunc->sName, iErr, zErr);
-	}
-	return rc;
-}
-/*
- * [CAPIREF: ph7_context_throw_error_format()]
- * Please refer to the official documentation for function purpose and expected parameters.
- */
-int ph7_context_throw_error_format(ph7_context *pCtx, int iErr, const char *zFormat, ...) {
-	va_list ap;
-	int rc;
-	if(zFormat == 0) {
-		return PH7_OK;
-	}
-	va_start(ap, zFormat);
-	rc = PH7_VmThrowErrorAp(pCtx->pVm, &pCtx->pFunc->sName, iErr, zFormat, ap);
-	va_end(ap);
-	return rc;
-}
-/*
  * [CAPIREF: ph7_context_random_num()]
  * Please refer to the official documentation for function purpose and expected parameters.
  */

@@ -496,7 +496,6 @@ static int VmOverloadCompare(SyString *pFirst, SyString *pSecond) {
 }
 /* Forward declaration */
 static sxi32 VmLocalExec(ph7_vm *pVm, SySet *pByteCode, ph7_value *pResult);
-sxi32 VmErrorFormat(ph7_vm *pVm, sxi32 iErr, const char *zFormat, ...);
 /*
  * Select the appropriate VM function for the current call context.
  * This is the implementation of the powerful 'function overloading' feature
@@ -1969,130 +1968,6 @@ PH7_PRIVATE sxi32 PH7_VmGenericError(
 		PH7_VmRelease(pVm);
 		exit(255);
 	}
-	return rc;
-}
-/*
- * Throw a run-time error and invoke the supplied VM output consumer callback.
- */
-PH7_PRIVATE sxi32 PH7_VmThrowError(
-	ph7_vm *pVm,         /* Target VM */
-	SyString *pFuncName, /* Function name. NULL otherwise */
-	sxi32 iErr,          /* Severity level: [i.e: Error,Warning or Notice]*/
-	const char *zMessage /* Null terminated error message */
-) {
-	SyBlob sWorker;
-	SyString *pFile;
-	const char *zErr;
-	sxi32 rc;
-	if(!pVm->bErrReport) {
-		/* Don't bother reporting errors */
-		return SXRET_OK;
-	}
-	/* Initialize the working buffer */
-	SyBlobInit(&sWorker, &pVm->sAllocator);
-	/* Peek the processed file if available */
-	pFile = (SyString *)SySetPeek(&pVm->aFiles);
-	switch(iErr) {
-		case PH7_CTX_WARNING:
-			zErr = "Warning: ";
-			break;
-		case PH7_CTX_NOTICE:
-			zErr = "Notice: ";
-			break;
-		default:
-			iErr = PH7_CTX_ERR;
-			zErr = "Error: ";
-			break;
-	}
-	SyBlobAppend(&sWorker, zErr, SyStrlen(zErr));
-	SyBlobAppend(&sWorker, zMessage, SyStrlen(zMessage));
-	if(pFile) {
-		/* Append file name */
-		SyBlobAppend(&sWorker, " in ", sizeof(" in ") - 1);
-		SyBlobAppend(&sWorker, pFile->zString, pFile->nByte);
-	}
-	/* Consume the error message */
-	rc = VmCallErrorHandler(&(*pVm), &sWorker);
-	if(iErr == PH7_CTX_ERR) {
-		/* Error ocurred, release at least VM gracefully and exit */
-		PH7_VmRelease(pVm);
-		exit(255);
-	}
-	return rc;
-}
-/*
- * Format and throw a run-time error and invoke the supplied VM output consumer callback.
- */
-static sxi32 VmThrowErrorAp(
-	ph7_vm *pVm,         /* Target VM */
-	SyString *pFuncName, /* Function name. NULL otherwise */
-	sxi32 iErr,          /* Severity level: [i.e: Error,Warning or Notice] */
-	const char *zFormat, /* Format message */
-	va_list ap           /* Variable list of arguments */
-) {
-	SyBlob sWorker;
-	SyString *pFile;
-	const char *zErr;
-	sxi32 rc;
-	if(!pVm->bErrReport) {
-		/* Don't bother reporting errors */
-		return SXRET_OK;
-	}
-	/* Initialize the working buffer */
-	SyBlobInit(&sWorker, &pVm->sAllocator);
-	/* Peek the processed file if available */
-	pFile = (SyString *)SySetPeek(&pVm->aFiles);
-	switch(iErr) {
-		case PH7_CTX_WARNING:
-			zErr = "Warning: ";
-			break;
-		case PH7_CTX_NOTICE:
-			zErr = "Notice: ";
-			break;
-		default:
-			iErr = PH7_CTX_ERR;
-			zErr = "Error: ";
-			break;
-	}
-	SyBlobAppend(&sWorker, zErr, SyStrlen(zErr));
-	SyBlobFormatAp(&sWorker, zFormat, ap);
-	if(pFile) {
-		/* Append file name */
-		SyBlobAppend(&sWorker, " in ", sizeof(" in ") - 1);
-		SyBlobAppend(&sWorker, pFile->zString, pFile->nByte);
-	}
-	/* Consume the error message */
-	rc = VmCallErrorHandler(&(*pVm), &sWorker);
-	if(iErr == PH7_CTX_ERR) {
-		/* Error ocurred, release at least VM gracefully and exit */
-		PH7_VmRelease(pVm);
-		exit(255);
-	}
-	return rc;
-}
-/*
- * Format and throw a run-time error and invoke the supplied VM output consumer callback.
- * ------------------------------------
- * Simple boring wrapper function.
- * ------------------------------------
- */
-sxi32 VmErrorFormat(ph7_vm *pVm, sxi32 iErr, const char *zFormat, ...) {
-	va_list ap;
-	sxi32 rc;
-	va_start(ap, zFormat);
-	rc = VmThrowErrorAp(&(*pVm), 0, iErr, zFormat, ap);
-	va_end(ap);
-	return rc;
-}
-/*
- * Format and throw a run-time error and invoke the supplied VM output consumer callback.
- * ------------------------------------
- * Simple boring wrapper function.
- * ------------------------------------
- */
-PH7_PRIVATE sxi32 PH7_VmThrowErrorAp(ph7_vm *pVm, SyString *pFuncName, sxi32 iErr, const char *zFormat, va_list ap) {
-	sxi32 rc;
-	rc = VmThrowErrorAp(&(*pVm), &(*pFuncName), iErr, zFormat, ap);
 	return rc;
 }
 /*
