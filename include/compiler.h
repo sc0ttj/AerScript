@@ -13,7 +13,7 @@ typedef struct JumpFixup     JumpFixup;
 #define GEN_BLOCK_COND        0x004    /* Conditional block [i.e: if(condition){} ]*/
 #define GEN_BLOCK_FUNC        0x008    /* Function body */
 #define GEN_BLOCK_GLOBAL      0x010    /* Global block (always set)*/
-#define GEN_BLOC_NESTED_FUNC  0x020    /* Nested function body */
+#define GEN_BLOCK_NESTED_FUNC 0x020    /* Nested function body */
 #define GEN_BLOCK_EXPR        0x040    /* Expression */
 #define GEN_BLOCK_STD         0x080    /* Standard block */
 #define GEN_BLOCK_EXCEPTION   0x100    /* Exception block [i.e: try{ } }*/
