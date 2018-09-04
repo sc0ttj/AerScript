@@ -5633,6 +5633,8 @@ PH7_PRIVATE sxi32 PH7_GenCompileError(ph7_gen_state *pGen, sxi32 nErrType, sxu32
 		pGen->xErr(SyBlobData(pWorker), SyBlobLength(pWorker), pGen->pErrData);
 	}
 	if(nErrType == E_ERROR) {
+		/* Shutdown library and abort script execution */
+		ph7_lib_shutdown();
 		exit(255);
 	}
 	return rc;
