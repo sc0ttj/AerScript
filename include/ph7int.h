@@ -1634,18 +1634,12 @@ PH7_PRIVATE sxi32 PH7_MemObjAdd(ph7_value *pObj1, ph7_value *pObj2, int bAddStor
 PH7_PRIVATE sxi32 PH7_MemObjCmp(ph7_value *pObj1, ph7_value *pObj2, int bStrict, int iNest);
 PH7_PRIVATE sxi32 PH7_MemObjInitFromString(ph7_vm *pVm, ph7_value *pObj, const SyString *pVal);
 PH7_PRIVATE sxi32 PH7_MemObjInitFromArray(ph7_vm *pVm, ph7_value *pObj, ph7_hashmap *pArray);
-#if 0
-	/* Not used in the current release of the PH7 engine */
-	PH7_PRIVATE sxi32 PH7_MemObjInitFromReal(ph7_vm *pVm, ph7_value *pObj, ph7_real rVal);
-#endif
+PH7_PRIVATE sxi32 PH7_MemObjInitFromReal(ph7_vm *pVm, ph7_value *pObj, ph7_real rVal);
 PH7_PRIVATE sxi32 PH7_MemObjInitFromInt(ph7_vm *pVm, ph7_value *pObj, sxi64 iVal);
 PH7_PRIVATE sxi32 PH7_MemObjInitFromBool(ph7_vm *pVm, ph7_value *pObj, sxi32 iVal);
 PH7_PRIVATE sxi32 PH7_MemObjInit(ph7_vm *pVm, ph7_value *pObj);
 PH7_PRIVATE sxi32 PH7_MemObjStringAppend(ph7_value *pObj, const char *zData, sxu32 nLen);
-#if 0
-	/* Not used in the current release of the PH7 engine */
-	PH7_PRIVATE sxi32 PH7_MemObjStringFormat(ph7_value *pObj, const char *zFormat, va_list ap);
-#endif
+PH7_PRIVATE sxi32 PH7_MemObjStringFormat(ph7_value *pObj, const char *zFormat, va_list ap);
 PH7_PRIVATE sxi32 PH7_MemObjStore(ph7_value *pSrc, ph7_value *pDest);
 PH7_PRIVATE sxi32 PH7_MemObjLoad(ph7_value *pSrc, ph7_value *pDest);
 PH7_PRIVATE sxi32 PH7_MemObjRelease(ph7_value *pObj);
@@ -1907,10 +1901,7 @@ PH7_PRIVATE sxi32 SyMemBackendRelease(SyMemBackend *pBackend);
 PH7_PRIVATE sxi32 SyMemBackendInitFromOthers(SyMemBackend *pBackend, const SyMemMethods *pMethods, ProcMemError xMemErr, void *pUserData);
 PH7_PRIVATE sxi32 SyMemBackendInit(SyMemBackend *pBackend, ProcMemError xMemErr, void *pUserData);
 PH7_PRIVATE sxi32 SyMemBackendInitFromParent(SyMemBackend *pBackend, SyMemBackend *pParent);
-#if 0
-	/* Not used in the current release of the PH7 engine */
-	PH7_PRIVATE void *SyMemBackendPoolRealloc(SyMemBackend *pBackend, void *pOld, sxu32 nByte);
-#endif
+PH7_PRIVATE void *SyMemBackendPoolRealloc(SyMemBackend *pBackend, void *pOld, sxu32 nByte);
 PH7_PRIVATE sxi32 SyMemBackendPoolFree(SyMemBackend *pBackend, void *pChunk);
 PH7_PRIVATE void *SyMemBackendPoolAlloc(SyMemBackend *pBackend, sxu32 nBytes);
 PH7_PRIVATE sxi32 SyMemBackendFree(SyMemBackend *pBackend, void *pChunk);

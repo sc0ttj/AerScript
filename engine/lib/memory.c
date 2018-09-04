@@ -438,7 +438,6 @@ PH7_PRIVATE sxi32 SyMemBackendPoolFree(SyMemBackend *pBackend, void *pChunk) {
 	}
 	return rc;
 }
-#if 0
 static void *MemBackendPoolRealloc(SyMemBackend *pBackend, void *pOld, sxu32 nByte) {
 	sxu32 nBucket, nBucketSize;
 	SyMemHeader *pHeader;
@@ -491,7 +490,6 @@ PH7_PRIVATE void *SyMemBackendPoolRealloc(SyMemBackend *pBackend, void *pOld, sx
 	}
 	return pChunk;
 }
-#endif
 PH7_PRIVATE sxi32 SyMemBackendInit(SyMemBackend *pBackend, ProcMemError xMemErr, void *pUserData) {
 #if defined(UNTRUST)
 	if(pBackend == 0) {

@@ -730,7 +730,6 @@ PH7_PRIVATE sxi32 PH7_MemObjInitFromBool(ph7_vm *pVm, ph7_value *pObj, sxi32 iVa
 	pObj->iFlags = MEMOBJ_BOOL;
 	return SXRET_OK;
 }
-#if 0
 /*
  * Initialize a ph7_value to the real type.
  */
@@ -745,7 +744,6 @@ PH7_PRIVATE sxi32 PH7_MemObjInitFromReal(ph7_vm *pVm, ph7_value *pObj, ph7_real 
 	pObj->iFlags = MEMOBJ_REAL;
 	return SXRET_OK;
 }
-#endif
 /*
  * Initialize a ph7_value to the array type.
  */
@@ -794,7 +792,6 @@ PH7_PRIVATE sxi32 PH7_MemObjStringAppend(ph7_value *pObj, const char *zData, sxu
 	rc = SyBlobAppend(&pObj->sBlob, zData, nLen);
 	return rc;
 }
-#if 0
 /*
  * Format and append some contents to the internal buffer of a given ph7_value.
  * If the given ph7_value is not of type string,this function invalidate
@@ -812,7 +809,6 @@ PH7_PRIVATE sxi32 PH7_MemObjStringFormat(ph7_value *pObj, const char *zFormat, v
 	rc = SyBlobFormatAp(&pObj->sBlob, zFormat, ap);
 	return rc;
 }
-#endif
 /*
  * Duplicate the contents of a ph7_value.
  */
