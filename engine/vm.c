@@ -1882,8 +1882,8 @@ PH7_PRIVATE sxi32 PH7_VmMemoryError(
 		/* Consume the error message */
 		VmCallErrorHandler(&(*pVm), &sWorker);
 	}
-	/* Release the VM gracefully and abort script execution */
-	PH7_VmRelease(pVm);
+	/* Shutdown library and abort script execution */
+	ph7_lib_shutdown();
 	exit(255);
 }
 /*
@@ -1964,8 +1964,8 @@ PH7_PRIVATE sxi32 PH7_VmGenericError(
 		rc = VmCallErrorHandler(&(*pVm), &sWorker);
 	}
 	if(iErr == PH7_CTX_ERR) {
-		/* Release the VM gracefully and abort script execution */
-		PH7_VmRelease(pVm);
+		/* Shutdown library and abort script execution */
+		ph7_lib_shutdown();
 		exit(255);
 	}
 	return rc;
