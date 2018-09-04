@@ -3658,13 +3658,9 @@ PH7_PRIVATE sxi32 PH7_InputFormat(
 						precision--;
 					}
 					rounder = 0.0;
-#if 0
-					/* Rounding works like BSD when the constant 0.4999 is used.Wierd! */
-					for(idx = precision, rounder = 0.4999; idx > 0; idx--, rounder *= 0.1);
-#else
-					/* It makes more sense to use 0.5 */
+					/* Rounding works like BSD when the constant 0.4999 is used. Wierd!
+					 * It makes more sense to use 0.5 instead. */
 					for(idx = precision, rounder = 0.5; idx > 0; idx--, rounder *= 0.1);
-#endif
 					if(pInfo->type == PH7_FMT_FLOAT) {
 						realvalue += rounder;
 					}
