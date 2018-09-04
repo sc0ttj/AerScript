@@ -877,7 +877,7 @@ static int vm_builtin_xml_set_object(ph7_context *pCtx, int nArg, ph7_value **ap
 		return PH7_OK;
 	}
 	/*  Throw a notice and return */
-	PH7_VmGenericError(pCtx->pVm, PH7_CTX_DEPRECATED, "This function is deprecated and is a no-op."
+	PH7_VmThrowError(pCtx->pVm, PH7_CTX_DEPRECATED, "This function is deprecated and is a no-op."
 							"In order to mimic this behaviour,you can supply instead of a function name an array "
 							"containing an object reference and a method name."
 						   );
@@ -1295,7 +1295,7 @@ static int vm_builtin_xml_parse(ph7_context *pCtx, int nArg, ph7_value **apArg) 
 		/* This can happen when the user callback call xml_parse() again
 		 * in it's body which is forbidden.
 		 */
-		PH7_VmGenericError(pCtx->pVm, PH7_CTX_WARNING,
+		PH7_VmThrowError(pCtx->pVm, PH7_CTX_WARNING,
 									   "Recursive call to %s, PH7 is returning false",
 									   ph7_function_name(pCtx)
 									  );

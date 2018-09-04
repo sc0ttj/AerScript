@@ -7240,7 +7240,7 @@ static int PH7_builtin_idate(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 			break;
 		default:
 			/* unknown format,throw a warning */
-			PH7_VmGenericError(pCtx->pVm, PH7_CTX_WARNING, "Unknown date format token");
+			PH7_VmThrowError(pCtx->pVm, PH7_CTX_WARNING, "Unknown date format token");
 			break;
 	}
 	/* Return the time value */

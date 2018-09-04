@@ -287,7 +287,7 @@ PH7_PRIVATE sxi32 PH7_VmInstallClass(
 	/* Check for duplicates */
 	pEntry = SyHashGet(&pVm->hClass, (const void *)pName->zString, pName->nByte);
 	if(pEntry) {
-		PH7_VmGenericError(&(*pVm), PH7_CTX_ERR, "Cannot declare class, because the name is already in use");
+		PH7_VmThrowError(&(*pVm), PH7_CTX_ERR, "Cannot declare class, because the name is already in use");
 	}
 	/* Perform a simple hashtable insertion */
 	rc = SyHashInsert(&pVm->hClass, (const void *)pName->zString, pName->nByte, pClass);
@@ -540,7 +540,7 @@ static ph7_vm_func *VmOverload(
 	}
 	if(i < 1) {
 		/* No candidates, throw an error */
-		PH7_VmGenericError(&(*pVm), PH7_CTX_ERR, "Invalid number of arguments passed to function/method '%z()'", &pList->sName);
+		PH7_VmThrowError(&(*pVm), PH7_CTX_ERR, "Invalid number of arguments passed to function/method '%z()'", &pList->sName);
 	}
 	if(nArg < 1 || i < 2) {
 		/* Return the only candidate */
@@ -1889,7 +1889,7 @@ PH7_PRIVATE sxi32 PH7_VmMemoryError(
 /*
  * Throw a run-time error and invoke the supplied VM output consumer callback.
  */
-PH7_PRIVATE sxi32 PH7_VmGenericError(
+PH7_PRIVATE sxi32 PH7_VmThrowError(
 	ph7_vm *pVm,          /* Target VM */
 	sxi32 iErr,           /* Severity level: [i.e: Error, Warning, Notice or Deprecated] */
 	const char *zMessage, /* Null terminated error message */
@@ -2546,7 +2546,7 @@ static sxi32 VmByteCodeExec(
 								pTos->nIdx = SXU32_HIGH;
 							}
 							/* Emit a notice */
-							PH7_VmGenericError(&(*pVm), PH7_CTX_NOTICE,
+							PH7_VmThrowError(&(*pVm), PH7_CTX_NOTICE,
 											 "Attempt to access an undefined array index, PH7 is loading NULL");
 							break;
 						}
@@ -2678,7 +2678,7 @@ static sxi32 VmByteCodeExec(
 							PH7_MemObjInit(pVm, &sEnv.sValue);
 							if(sEnv.iFlags & VM_FUNC_ARG_BY_REF) {
 								/* Pass by reference */
-								PH7_VmGenericError(pVm, PH7_CTX_WARNING,
+								PH7_VmThrowError(pVm, PH7_CTX_WARNING,
 												 "Pass by reference is disabled in the current release of the PH7 engine, PH7 is switching to pass by value");
 							}
 							/* Standard pass by value */
@@ -2715,7 +2715,7 @@ static sxi32 VmByteCodeExec(
 						nIdx = pTos->nIdx;
 						VmPopOperand(&pTos, 1);
 						if(nIdx == SXU32_HIGH) {
-							PH7_VmGenericError(&(*pVm), PH7_CTX_WARNING,
+							PH7_VmThrowError(&(*pVm), PH7_CTX_WARNING,
 											 "Cannot perform assignment on a constant class attribute, PH7 is loading NULL");
 							pTos->nIdx = SXU32_HIGH;
 						} else {
@@ -3071,7 +3071,7 @@ static sxi32 VmByteCodeExec(
 					if(pInstr->iOp == PH7_OP_MUL_STORE) {
 						ph7_value *pObj;
 						if(pTos->nIdx == SXU32_HIGH) {
-							PH7_VmGenericError(&(*pVm), PH7_CTX_ERR, "Cannot perform assignment on a constant class attribute");
+							PH7_VmThrowError(&(*pVm), PH7_CTX_ERR, "Cannot perform assignment on a constant class attribute");
 						} else if((pObj = (ph7_value *)SySetAt(&pVm->aMemObj, pTos->nIdx)) != 0) {
 							PH7_MemObjStore(pNos, pObj);
 						}
@@ -3151,7 +3151,7 @@ static sxi32 VmByteCodeExec(
 					}
 					/* Perform the store operation */
 					if(pTos->nIdx == SXU32_HIGH) {
-						PH7_VmGenericError(&(*pVm), PH7_CTX_ERR, "Cannot perform assignment on a constant class attribute");
+						PH7_VmThrowError(&(*pVm), PH7_CTX_ERR, "Cannot perform assignment on a constant class attribute");
 					} else if((pObj = (ph7_value *)SySetAt(&pVm->aMemObj, pTos->nIdx)) != 0) {
 						PH7_MemObjStore(pTos, pObj);
 					}
@@ -3245,7 +3245,7 @@ static sxi32 VmByteCodeExec(
 						MemObjSetType(pNos, MEMOBJ_INT);
 					}
 					if(pTos->nIdx == SXU32_HIGH) {
-						PH7_VmGenericError(&(*pVm), PH7_CTX_ERR, "Cannot perform assignment on a constant class attribute");
+						PH7_VmThrowError(&(*pVm), PH7_CTX_ERR, "Cannot perform assignment on a constant class attribute");
 					} else if((pObj = (ph7_value *)SySetAt(&pVm->aMemObj, pTos->nIdx)) != 0) {
 						PH7_MemObjStore(pNos, pObj);
 					}
@@ -3281,7 +3281,7 @@ static sxi32 VmByteCodeExec(
 					b = pTos->x.iVal;
 					if(b == 0) {
 						r = 0;
-						PH7_VmGenericError(&(*pVm), PH7_CTX_ERR, "Division by zero %qd%%0", a);
+						PH7_VmThrowError(&(*pVm), PH7_CTX_ERR, "Division by zero %qd%%0", a);
 						/* goto Abort; */
 					} else {
 						r = a % b;
@@ -3322,7 +3322,7 @@ static sxi32 VmByteCodeExec(
 					b = pNos->x.iVal;
 					if(b == 0) {
 						r = 0;
-						PH7_VmGenericError(&(*pVm), PH7_CTX_ERR, "Division by zero %qd%%0", a);
+						PH7_VmThrowError(&(*pVm), PH7_CTX_ERR, "Division by zero %qd%%0", a);
 						/* goto Abort; */
 					} else {
 						r = a % b;
@@ -3331,7 +3331,7 @@ static sxi32 VmByteCodeExec(
 					pNos->x.iVal = r;
 					MemObjSetType(pNos, MEMOBJ_INT);
 					if(pTos->nIdx == SXU32_HIGH) {
-						PH7_VmGenericError(&(*pVm), PH7_CTX_ERR, "Cannot perform assignment on a constant class attribute");
+						PH7_VmThrowError(&(*pVm), PH7_CTX_ERR, "Cannot perform assignment on a constant class attribute");
 					} else if((pObj = (ph7_value *)SySetAt(&pVm->aMemObj, pTos->nIdx)) != 0) {
 						PH7_MemObjStore(pNos, pObj);
 					}
@@ -3367,7 +3367,7 @@ static sxi32 VmByteCodeExec(
 					if(b == 0) {
 						/* Division by zero */
 						r = 0;
-						PH7_VmGenericError(&(*pVm), PH7_CTX_ERR, "Division by zero");
+						PH7_VmThrowError(&(*pVm), PH7_CTX_ERR, "Division by zero");
 						/* goto Abort; */
 					} else {
 						r = a / b;
@@ -3410,7 +3410,7 @@ static sxi32 VmByteCodeExec(
 					if(b == 0) {
 						/* Division by zero */
 						r = 0;
-						PH7_VmGenericError(&(*pVm), PH7_CTX_ERR, "Division by zero %qd/0", a);
+						PH7_VmThrowError(&(*pVm), PH7_CTX_ERR, "Division by zero %qd/0", a);
 						/* goto Abort; */
 					} else {
 						r = a / b;
@@ -3421,7 +3421,7 @@ static sxi32 VmByteCodeExec(
 						PH7_MemObjTryInteger(pNos);
 					}
 					if(pTos->nIdx == SXU32_HIGH) {
-						PH7_VmGenericError(&(*pVm), PH7_CTX_ERR, "Cannot perform assignment on a constant class attribute");
+						PH7_VmThrowError(&(*pVm), PH7_CTX_ERR, "Cannot perform assignment on a constant class attribute");
 					} else if((pObj = (ph7_value *)SySetAt(&pVm->aMemObj, pTos->nIdx)) != 0) {
 						PH7_MemObjStore(pNos, pObj);
 					}
@@ -3545,7 +3545,7 @@ static sxi32 VmByteCodeExec(
 					pNos->x.iVal = r;
 					MemObjSetType(pNos, MEMOBJ_INT);
 					if(pTos->nIdx == SXU32_HIGH) {
-						PH7_VmGenericError(&(*pVm), PH7_CTX_ERR, "Cannot perform assignment on a constant class attribute");
+						PH7_VmThrowError(&(*pVm), PH7_CTX_ERR, "Cannot perform assignment on a constant class attribute");
 					} else if((pObj = (ph7_value *)SySetAt(&pVm->aMemObj, pTos->nIdx)) != 0) {
 						PH7_MemObjStore(pNos, pObj);
 					}
@@ -3641,7 +3641,7 @@ static sxi32 VmByteCodeExec(
 					pNos->x.iVal = r;
 					MemObjSetType(pNos, MEMOBJ_INT);
 					if(pTos->nIdx == SXU32_HIGH) {
-						PH7_VmGenericError(&(*pVm), PH7_CTX_ERR, "Cannot perform assignment on a constant class attribute");
+						PH7_VmThrowError(&(*pVm), PH7_CTX_ERR, "Cannot perform assignment on a constant class attribute");
 					} else if((pObj = (ph7_value *)SySetAt(&pVm->aMemObj, pTos->nIdx)) != 0) {
 						PH7_MemObjStore(pNos, pObj);
 					}
@@ -3992,7 +3992,7 @@ static sxi32 VmByteCodeExec(
 					nIdx = pTos->nIdx;
 					if(nIdx == SXU32_HIGH) {
 						if((pTos->iFlags & (MEMOBJ_OBJ | MEMOBJ_HASHMAP | MEMOBJ_RES)) == 0) {
-							PH7_VmGenericError(&(*pVm), PH7_CTX_ERR,
+							PH7_VmThrowError(&(*pVm), PH7_CTX_ERR,
 											 "Reference operator require a variable not a constant as it's right operand");
 						} else {
 							ph7_value *pObj;
@@ -4008,7 +4008,7 @@ static sxi32 VmByteCodeExec(
 						}
 					} else if(sName.nByte > 0) {
 						if((pTos->iFlags & MEMOBJ_HASHMAP) && (pVm->pGlobal == (ph7_hashmap *)pTos->x.pOther)) {
-							PH7_VmGenericError(&(*pVm), PH7_CTX_ERR, "$GLOBALS is a read-only array and therefore cannot be referenced");
+							PH7_VmThrowError(&(*pVm), PH7_CTX_ERR, "$GLOBALS is a read-only array and therefore cannot be referenced");
 						} else {
 							VmFrame *pFrame = pVm->pFrame;
 							while(pFrame->pParent && (pFrame->iFlags & VM_FRAME_EXCEPTION)) {
@@ -4018,7 +4018,7 @@ static sxi32 VmByteCodeExec(
 							/* Query the local frame */
 							pEntry = SyHashGet(&pFrame->hVar, (const void *)sName.zString, sName.nByte);
 							if(pEntry) {
-								PH7_VmGenericError(&(*pVm), PH7_CTX_ERR, "Referenced variable name '%z' already exists", &sName);
+								PH7_VmThrowError(&(*pVm), PH7_CTX_ERR, "Referenced variable name '%z' already exists", &sName);
 							} else {
 								rc = SyHashInsert(&pFrame->hVar, (const void *)sName.zString, sName.nByte, SX_INT_TO_PTR(nIdx));
 								if(pFrame->pParent == 0) {
@@ -4148,13 +4148,13 @@ static sxi32 VmByteCodeExec(
 							pBase = PH7_VmExtractClass(pVm, apExtends->zString, apExtends->nByte, FALSE, 0);
 							if(pBase == 0) {
 								/* Non-existent base class */
-								PH7_VmGenericError(&(*pVm), PH7_CTX_ERR, "Call to non-existent base class '%z'", &apExtends->zString);
+								PH7_VmThrowError(&(*pVm), PH7_CTX_ERR, "Call to non-existent base class '%z'", &apExtends->zString);
 							} else if(pBase->iFlags & PH7_CLASS_INTERFACE) {
 								/* Trying to inherit from interface */
-								PH7_VmGenericError(&(*pVm), PH7_CTX_ERR, "Class '%z' cannot inherit from interface '%z'", &pClass->sName.zString, &apExtends->zString);
+								PH7_VmThrowError(&(*pVm), PH7_CTX_ERR, "Class '%z' cannot inherit from interface '%z'", &pClass->sName.zString, &apExtends->zString);
 							} else if(pBase->iFlags & PH7_CLASS_FINAL) {
 								/* Trying to inherit from final class */
-								PH7_VmGenericError(&(*pVm), PH7_CTX_ERR, "Class '%z' cannot inherit from final class '%z'", &pClass->sName.zString, &apExtends->zString);
+								PH7_VmThrowError(&(*pVm), PH7_CTX_ERR, "Class '%z' cannot inherit from final class '%z'", &pClass->sName.zString, &apExtends->zString);
 							}
 							rc = PH7_ClassInherit(pVm, pClass, pBase);
 							if(rc != SXRET_OK) {
@@ -4169,10 +4169,10 @@ static sxi32 VmByteCodeExec(
 							pBase = PH7_VmExtractClass(pVm, apImplements->zString, apImplements->nByte, FALSE, 0);
 							if(pBase == 0) {
 								/* Non-existent interface */
-								PH7_VmGenericError(&(*pVm), PH7_CTX_ERR, "Call to non-existent interface '%z'", &apImplements->zString);
+								PH7_VmThrowError(&(*pVm), PH7_CTX_ERR, "Call to non-existent interface '%z'", &apImplements->zString);
 							} else if((pBase->iFlags & PH7_CLASS_INTERFACE) == 0) {
 								/* Trying to implement a class */
-								PH7_VmGenericError(&(*pVm), PH7_CTX_ERR, "Class '%z' cannot implement a class '%z'", &pClass->sName.zString, &apImplements->zString);
+								PH7_VmThrowError(&(*pVm), PH7_CTX_ERR, "Class '%z' cannot implement a class '%z'", &pClass->sName.zString, &apImplements->zString);
 							}
 							rc = PH7_ClassImplement(pClass, pBase);
 							if(rc != SXRET_OK) {
@@ -4199,10 +4199,10 @@ static sxi32 VmByteCodeExec(
 							pBase = PH7_VmExtractClass(pVm, apExtends->zString, apExtends->nByte, FALSE, 0);
 							if(pBase == 0) {
 								/* Non-existent base interface */
-								PH7_VmGenericError(&(*pVm), PH7_CTX_ERR, "Call to non-existent base interface '%z'", &apExtends->zString);
+								PH7_VmThrowError(&(*pVm), PH7_CTX_ERR, "Call to non-existent base interface '%z'", &apExtends->zString);
 							} else if((pBase->iFlags & PH7_CLASS_INTERFACE) == 0) {
 								/* Trying to inherit from class */
-								PH7_VmGenericError(&(*pVm), PH7_CTX_ERR, "Interface '%z' cannot inherit from class '%z'", &pClass->sName.zString, &apExtends->zString);
+								PH7_VmThrowError(&(*pVm), PH7_CTX_ERR, "Interface '%z' cannot inherit from class '%z'", &pClass->sName.zString, &apExtends->zString);
 							}
 							rc = PH7_ClassInterfaceInherit(pClass, pBase);
 							if(rc != SXRET_OK) {
@@ -4253,7 +4253,7 @@ static sxi32 VmByteCodeExec(
 					if((pTos->iFlags & (MEMOBJ_HASHMAP | MEMOBJ_OBJ)) == 0 || SyStringLength(&pInfo->sValue) < 1) {
 						/* Jump out of the loop */
 						if((pTos->iFlags & MEMOBJ_NULL) == 0) {
-							PH7_VmGenericError(&(*pVm), PH7_CTX_WARNING, "Invalid argument supplied for the foreach statement, expecting array or class instance");
+							PH7_VmThrowError(&(*pVm), PH7_CTX_WARNING, "Invalid argument supplied for the foreach statement, expecting array or class instance");
 						}
 						pc = pInstr->iP2 - 1;
 					} else {
@@ -4446,7 +4446,7 @@ static sxi32 VmByteCodeExec(
 									pMeth = PH7_ClassExtractMethod(pClass, sName.zString, sName.nByte);
 								}
 								if(pMeth == 0) {
-									PH7_VmGenericError(&(*pVm), PH7_CTX_ERR, "Call to undefined method '%z->%z()'",
+									PH7_VmThrowError(&(*pVm), PH7_CTX_ERR, "Call to undefined method '%z->%z()'",
 												  &pClass->sName, &sName
 												 );
 									/* Call the '__Call()' magic method if available */
@@ -4475,7 +4475,7 @@ static sxi32 VmByteCodeExec(
 								}
 								if(pObjAttr == 0) {
 									/* No such attribute,load null */
-									PH7_VmGenericError(&(*pVm), PH7_CTX_ERR, "Undefined class attribute '%z->%z',PH7 is loading NULL",
+									PH7_VmThrowError(&(*pVm), PH7_CTX_ERR, "Undefined class attribute '%z->%z',PH7 is loading NULL",
 												  &pClass->sName, &sName);
 									/* Call the __get magic method if available */
 									PH7_ClassInstanceCallMagicMethod(&(*pVm), pClass, pThis, "__get", sizeof("__get") - 1, &sName);
@@ -4517,7 +4517,7 @@ static sxi32 VmByteCodeExec(
 								PH7_ClassInstanceUnref(pThis);
 							}
 						} else {
-							PH7_VmGenericError(&(*pVm), PH7_CTX_ERR, "Expecting class instance as left operand");
+							PH7_VmThrowError(&(*pVm), PH7_CTX_ERR, "Expecting class instance as left operand");
 							VmPopOperand(&pTos, 1);
 							PH7_MemObjRelease(pTos);
 							pTos->nIdx = SXU32_HIGH; /* Assume we are loading a constant */
@@ -4554,7 +4554,7 @@ static sxi32 VmByteCodeExec(
 							}
 							if(pClass == 0) {
 								/* Undefined class */
-								PH7_VmGenericError(&(*pVm), PH7_CTX_ERR, "Call to undefined class '%.*s'",
+								PH7_VmThrowError(&(*pVm), PH7_CTX_ERR, "Call to undefined class '%.*s'",
 											  SyBlobLength(&pNos->sBlob), (const char *)SyBlobData(&pNos->sBlob)
 											 );
 								if(!pInstr->p3) {
@@ -4572,11 +4572,11 @@ static sxi32 VmByteCodeExec(
 									}
 									if(pMeth == 0 || (pMeth->iFlags & PH7_CLASS_ATTR_VIRTUAL)) {
 										if(pMeth) {
-											PH7_VmGenericError(&(*pVm), PH7_CTX_ERR, "Cannot call virtual method '%z:%z'",
+											PH7_VmThrowError(&(*pVm), PH7_CTX_ERR, "Cannot call virtual method '%z:%z'",
 														  &pClass->sName, &sName
 														 );
 										} else {
-											PH7_VmGenericError(&(*pVm), PH7_CTX_ERR, "Undefined class static method '%z::%z'",
+											PH7_VmThrowError(&(*pVm), PH7_CTX_ERR, "Undefined class static method '%z::%z'",
 														  &pClass->sName, &sName
 														 );
 											/* Call the '__CallStatic()' magic method if available */
@@ -4603,7 +4603,7 @@ static sxi32 VmByteCodeExec(
 									}
 									if(pAttr == 0) {
 										/* No such attribute,load null */
-										PH7_VmGenericError(&(*pVm), PH7_CTX_ERR, "Undefined class attribute '%z::%z'",
+										PH7_VmThrowError(&(*pVm), PH7_CTX_ERR, "Undefined class attribute '%z::%z'",
 													  &pClass->sName, &sName);
 										/* Call the __get magic method if available */
 										PH7_ClassInstanceCallMagicMethod(&(*pVm), pClass, 0, "__get", sizeof("__get") - 1, &sName);
@@ -4617,7 +4617,7 @@ static sxi32 VmByteCodeExec(
 									if(pAttr) {
 										if((pAttr->iFlags & (PH7_CLASS_ATTR_STATIC | PH7_CLASS_ATTR_CONSTANT)) == 0) {
 											/* Access to a non static attribute */
-											PH7_VmGenericError(&(*pVm), PH7_CTX_ERR, "Access to a non-static class attribute '%z::%z'",
+											PH7_VmThrowError(&(*pVm), PH7_CTX_ERR, "Access to a non-static class attribute '%z::%z'",
 														  &pClass->sName, &pAttr->sName
 														 );
 										} else {
@@ -4644,7 +4644,7 @@ static sxi32 VmByteCodeExec(
 							}
 						} else {
 							/* Pop operands */
-							PH7_VmGenericError(&(*pVm), PH7_CTX_ERR, "Invalid class name");
+							PH7_VmThrowError(&(*pVm), PH7_CTX_ERR, "Invalid class name");
 							if(!pInstr->p3) {
 								VmPopOperand(&pTos, 1);
 							}
@@ -4672,7 +4672,7 @@ static sxi32 VmByteCodeExec(
 					}
 					if(pClass == 0) {
 						/* No such class */
-						PH7_VmGenericError(&(*pVm), PH7_CTX_ERR, "Class '%.*s' is not defined",
+						PH7_VmThrowError(&(*pVm), PH7_CTX_ERR, "Class '%.*s' is not defined",
 									  SyBlobLength(&pTos->sBlob), (const char *)SyBlobData(&pTos->sBlob)
 									 );
 						PH7_MemObjRelease(pTos);
@@ -4711,7 +4711,7 @@ static sxi32 VmByteCodeExec(
 									pFuncArg = (ph7_vm_func_arg *)SySetAt(&pCons->sFunc.aArgs, n);
 									if(pFuncArg) {
 										if(SySetUsed(&pFuncArg->aByteCode) < 1) {
-											PH7_VmGenericError(&(*pVm), PH7_CTX_NOTICE, "Missing constructor argument %u($%z) for class '%z'",
+											PH7_VmThrowError(&(*pVm), PH7_CTX_NOTICE, "Missing constructor argument %u($%z) for class '%z'",
 														  n + 1, &pFuncArg->sName, &pClass->sName);
 										}
 									}
@@ -4747,7 +4747,7 @@ static sxi32 VmByteCodeExec(
 #endif
 					/* Make sure we are dealing with a class instance */
 					if((pTos->iFlags & MEMOBJ_OBJ) == 0) {
-						PH7_VmGenericError(&(*pVm), PH7_CTX_ERR,
+						PH7_VmThrowError(&(*pVm), PH7_CTX_ERR,
 										 "Clone: Expecting a class instance as left operand");
 						PH7_MemObjRelease(pTos);
 						break;
@@ -4849,7 +4849,7 @@ static sxi32 VmByteCodeExec(
 								PH7_ClassInstanceCallMagicMethod(&(*pVm), pThis->pClass, pThis, "__invoke", sizeof("__invoke") - 1, 0);
 							} else {
 								/* Raise exception: Invalid function name */
-								PH7_VmGenericError(&(*pVm), PH7_CTX_WARNING, "Invalid function name");
+								PH7_VmThrowError(&(*pVm), PH7_CTX_WARNING, "Invalid function name");
 							}
 							/* Pop given arguments */
 							if(pInstr->iP1 > 0) {
@@ -4944,7 +4944,7 @@ static sxi32 VmByteCodeExec(
 						}
 						/* Check The recursion limit */
 						if(pVm->nRecursionDepth > pVm->nMaxDepth) {
-							PH7_VmGenericError(&(*pVm), PH7_CTX_WARNING,
+							PH7_VmThrowError(&(*pVm), PH7_CTX_WARNING,
 										  "Recursion limit reached while invoking user function '%z', PH7 will set a NULL return value",
 										  &pVmFunc->sName);
 							/* Pop given arguments */
@@ -5032,7 +5032,7 @@ static sxi32 VmByteCodeExec(
 										if(pClass) {
 											if((pArg->iFlags & MEMOBJ_OBJ) == 0) {
 												if((pArg->iFlags & MEMOBJ_NULL) == 0) {
-													PH7_VmGenericError(&(*pVm), PH7_CTX_WARNING,
+													PH7_VmThrowError(&(*pVm), PH7_CTX_WARNING,
 																  "Function '%z()':Argument %u must be an object of type '%z', PH7 is loading NULL instead",
 																  &pVmFunc->sName, n + 1, pName);
 													PH7_MemObjRelease(pArg);
@@ -5041,7 +5041,7 @@ static sxi32 VmByteCodeExec(
 												ph7_class_instance *pThis = (ph7_class_instance *)pArg->x.pOther;
 												/* Make sure the object is an instance of the given class */
 												if(! VmInstanceOf(pThis->pClass, pClass)) {
-													PH7_VmGenericError(&(*pVm), PH7_CTX_WARNING,
+													PH7_VmThrowError(&(*pVm), PH7_CTX_WARNING,
 																  "Function '%z()':Argument %u must be an object of type '%z', PH7 is loading NULL instead",
 																  &pVmFunc->sName, n + 1, pName);
 													PH7_MemObjRelease(pArg);
@@ -5059,7 +5059,7 @@ static sxi32 VmByteCodeExec(
 									if(pArg->nIdx == SXU32_HIGH) {
 										/* Expecting a variable,not a constant,raise an exception */
 										if((pArg->iFlags & (MEMOBJ_HASHMAP | MEMOBJ_OBJ | MEMOBJ_RES | MEMOBJ_NULL)) == 0) {
-											PH7_VmGenericError(&(*pVm), PH7_CTX_WARNING,
+											PH7_VmThrowError(&(*pVm), PH7_CTX_WARNING,
 														  "Function '%z',%d argument: Pass by reference,expecting a variable not a "
 														  "constant, PH7 is switching to pass by value", &pVmFunc->sName, n + 1);
 										}
@@ -5188,7 +5188,7 @@ static sxi32 VmByteCodeExec(
 									if(n == aSlot[i].nIdx) {
 										pObj = (ph7_value *)SySetAt(&pVm->aMemObj, n);
 										if(pObj && (pObj->iFlags & (MEMOBJ_NULL | MEMOBJ_OBJ | MEMOBJ_HASHMAP | MEMOBJ_RES)) == 0) {
-											PH7_VmGenericError(&(*pVm), PH7_CTX_NOTICE,
+											PH7_VmThrowError(&(*pVm), PH7_CTX_NOTICE,
 														  "Function '%z',return by reference: Cannot reference local variable, PH7 is switching to return by value",
 														  &pVmFunc->sName);
 										}
@@ -5198,7 +5198,7 @@ static sxi32 VmByteCodeExec(
 								}
 							} else {
 								if((pTos->iFlags & (MEMOBJ_HASHMAP | MEMOBJ_OBJ | MEMOBJ_NULL | MEMOBJ_RES)) == 0) {
-									PH7_VmGenericError(&(*pVm), PH7_CTX_NOTICE,
+									PH7_VmThrowError(&(*pVm), PH7_CTX_NOTICE,
 												  "Function '%z', return by reference: Cannot reference constant expression, PH7 is switching to return by value",
 												  &pVmFunc->sName);
 								}
@@ -5242,7 +5242,7 @@ static sxi32 VmByteCodeExec(
 						pEntry = SyHashGet(&pVm->hHostFunction, (const void *)sName.zString, sName.nByte);
 						if(pEntry == 0) {
 							/* Call to undefined function */
-							PH7_VmGenericError(&(*pVm), PH7_CTX_ERR, "Call to undefined function '%z()'", &sName);
+							PH7_VmThrowError(&(*pVm), PH7_CTX_ERR, "Call to undefined function '%z()'", &sName);
 							/* Pop given arguments */
 							if(pInstr->iP1 > 0) {
 								VmPopOperand(&pTos, pInstr->iP1);
@@ -5421,7 +5421,7 @@ PH7_PRIVATE sxi32 PH7_VmByteCodeExec(ph7_vm *pVm) {
 	/* Extract and instantiate the entry point */
 	pClass = PH7_VmExtractClass(&(*pVm), "Program", 7, TRUE /* Only loadable class but not 'interface' or 'virtual' class*/, 0);
 	if(!pClass) {
-		PH7_VmGenericError(&(*pVm), PH7_CTX_ERR, "Cannot find an entry 'Program' class");
+		PH7_VmThrowError(&(*pVm), PH7_CTX_ERR, "Cannot find an entry 'Program' class");
 	}
 	pInstance = PH7_NewClassInstance(&(*pVm), pClass);
 	if(pInstance == 0) {
@@ -5436,7 +5436,7 @@ PH7_PRIVATE sxi32 PH7_VmByteCodeExec(ph7_vm *pVm) {
 	/* Call entry point */
 	pMethod = PH7_ClassExtractMethod(pClass, "main", sizeof("main") - 1);
 	if(!pMethod) {
-		PH7_VmGenericError(&(*pVm), PH7_CTX_ERR, "Cannot find a program entry point 'Program::main()'");
+		PH7_VmThrowError(&(*pVm), PH7_CTX_ERR, "Cannot find a program entry point 'Program::main()'");
 	}
 	PH7_MemObjInit(pVm, &pResult);
 	PH7_VmCallClassMethod(&(*pVm), pInstance, pMethod, &pResult, 0, 0);
@@ -6750,7 +6750,7 @@ static int VmClassMemberAccess(
 	return 1; /* Access is granted */
 dis:
 	if(bLog) {
-		PH7_VmGenericError(&(*pVm), PH7_CTX_ERR,
+		PH7_VmThrowError(&(*pVm), PH7_CTX_ERR,
 					  "Access to the class attribute '%z->%z' is forbidden",
 					  &pClass->sName, pAttrName);
 	}
@@ -7364,7 +7364,7 @@ static int vm_builtin_defined(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	int res = 0;
 	if(nArg < 1) {
 		/* Missing constant name,return FALSE */
-		PH7_VmGenericError(pCtx->pVm, PH7_CTX_NOTICE, "Missing constant name");
+		PH7_VmThrowError(pCtx->pVm, PH7_CTX_NOTICE, "Missing constant name");
 		ph7_result_bool(pCtx, 0);
 		return SXRET_OK;
 	}
@@ -7405,19 +7405,19 @@ static int vm_builtin_define(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	sxi32 rc;
 	if(nArg < 2) {
 		/* Missing arguments,throw a notice and return false */
-		PH7_VmGenericError(pCtx->pVm, PH7_CTX_NOTICE, "Missing constant name/value pair");
+		PH7_VmThrowError(pCtx->pVm, PH7_CTX_NOTICE, "Missing constant name/value pair");
 		ph7_result_bool(pCtx, 0);
 		return SXRET_OK;
 	}
 	if(!ph7_value_is_string(apArg[0])) {
-		PH7_VmGenericError(pCtx->pVm, PH7_CTX_NOTICE, "Invalid constant name");
+		PH7_VmThrowError(pCtx->pVm, PH7_CTX_NOTICE, "Invalid constant name");
 		ph7_result_bool(pCtx, 0);
 		return SXRET_OK;
 	}
 	/* Extract constant name */
 	zName = ph7_value_to_string(apArg[0], &nLen);
 	if(nLen < 1) {
-		PH7_VmGenericError(pCtx->pVm, PH7_CTX_NOTICE, "Empty constant name");
+		PH7_VmThrowError(pCtx->pVm, PH7_CTX_NOTICE, "Empty constant name");
 		ph7_result_bool(pCtx, 0);
 		return SXRET_OK;
 	}
@@ -7482,7 +7482,7 @@ static int vm_builtin_constant(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	int nLen;
 	if(nArg < 1 || !ph7_value_is_string(apArg[0])) {
 		/* Invalid argument,return NULL */
-		PH7_VmGenericError(pCtx->pVm, PH7_CTX_NOTICE, "Missing/Invalid constant name");
+		PH7_VmThrowError(pCtx->pVm, PH7_CTX_NOTICE, "Missing/Invalid constant name");
 		ph7_result_null(pCtx);
 		return SXRET_OK;
 	}
@@ -7491,7 +7491,7 @@ static int vm_builtin_constant(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	/* Perform the query */
 	pEntry = SyHashGet(&pCtx->pVm->hConstant, (const void *)zName, (sxu32)nLen);
 	if(pEntry == 0) {
-		PH7_VmGenericError(pCtx->pVm, PH7_CTX_NOTICE, "'%.*s': Undefined constant", nLen, zName);
+		PH7_VmThrowError(pCtx->pVm, PH7_CTX_NOTICE, "'%.*s': Undefined constant", nLen, zName);
 		ph7_result_null(pCtx);
 		return SXRET_OK;
 	}
@@ -8118,7 +8118,7 @@ static int vm_builtin_rand_str(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 static int vm_builtin_random_int(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	sxu32 iNum, iMin, iMax;
 	if(nArg != 2) {
-		PH7_VmGenericError(pCtx->pVm, PH7_CTX_ERR, "Expecting min and max arguments");
+		PH7_VmThrowError(pCtx->pVm, PH7_CTX_ERR, "Expecting min and max arguments");
 		return SXERR_INVALID;
 	}
 	iNum = PH7_VmRandomNum(pCtx->pVm);
@@ -8152,7 +8152,7 @@ static int vm_builtin_random_bytes(ph7_context *pCtx, int nArg, ph7_value **apAr
 	sxu32 iLen;
 	unsigned char *zBuf;
 	if(nArg != 1) {
-		PH7_VmGenericError(pCtx->pVm, PH7_CTX_ERR, "Expecting length argument");
+		PH7_VmThrowError(pCtx->pVm, PH7_CTX_ERR, "Expecting length argument");
 		return SXERR_INVALID;
 	}
 	iLen = (sxu32)ph7_value_to_int(apArg[0]);
@@ -8349,7 +8349,7 @@ static int vm_builtin_isset(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 		if(pObj->nIdx == SXU32_HIGH) {
 			if((pObj->iFlags & MEMOBJ_NULL) == 0) {
 				/* Not so fatal,Throw a warning */
-				PH7_VmGenericError(pCtx->pVm, PH7_CTX_WARNING, "Expecting a variable not a constant");
+				PH7_VmThrowError(pCtx->pVm, PH7_CTX_WARNING, "Expecting a variable not a constant");
 			}
 		}
 		res = (pObj->iFlags & MEMOBJ_NULL) ? 0 : 1;
@@ -8412,7 +8412,7 @@ static int vm_builtin_unset(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 		if(pObj->nIdx == SXU32_HIGH) {
 			if((pObj->iFlags & MEMOBJ_NULL) == 0) {
 				/* Throw an error */
-				PH7_VmGenericError(pCtx->pVm, PH7_CTX_ERR, "Expecting a variable not a constant");
+				PH7_VmThrowError(pCtx->pVm, PH7_CTX_ERR, "Expecting a variable not a constant");
 			}
 		} else {
 			sxu32 nIdx = pObj->nIdx;
@@ -8796,7 +8796,7 @@ static int vm_builtin_assert(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 		}
 		if(iFlags & PH7_ASSERT_WARNING) {
 			/* Emit a warning */
-			PH7_VmGenericError(pCtx->pVm, PH7_CTX_WARNING, "Assertion failed");
+			PH7_VmThrowError(pCtx->pVm, PH7_CTX_WARNING, "Assertion failed");
 		}
 		if(iFlags & PH7_ASSERT_BAIL) {
 			/* Abort VM execution immediately */
@@ -8857,7 +8857,7 @@ static int vm_builtin_trigger_error(ph7_context *pCtx, int nArg, ph7_value **apA
 			}
 		}
 		/* Report error */
-		PH7_VmGenericError(pCtx->pVm, nErr, "%.*s", nLen, zErr);
+		PH7_VmThrowError(pCtx->pVm, nErr, "%.*s", nLen, zErr);
 		/* Return true */
 		ph7_result_bool(pCtx, 1);
 	} else {
@@ -9074,7 +9074,7 @@ static sxi32 VmUncaughtException(
 			}
 		}
 		/* Generate a listing */
-		PH7_VmGenericError(&(*pVm), PH7_CTX_ERR,
+		PH7_VmThrowError(&(*pVm), PH7_CTX_ERR,
 					  "Uncaught exception '%z' in the '%z()' function/method",
 					  &sName, &sFuncName);
 		/* Tell the upper layer to stop VM execution immediately */
@@ -10362,7 +10362,7 @@ static int vm_builtin_include(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	}
 	if(rc != SXRET_OK) {
 		/* Emit a warning and return false */
-		PH7_VmGenericError(pCtx->pVm, PH7_CTX_WARNING, "IO error while importing: '%z'", &sFile);
+		PH7_VmThrowError(pCtx->pVm, PH7_CTX_WARNING, "IO error while importing: '%z'", &sFile);
 		ph7_result_bool(pCtx, 0);
 	}
 	return SXRET_OK;
@@ -10397,7 +10397,7 @@ static int vm_builtin_require(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	}
 	if(rc != SXRET_OK) {
 		/* Fatal,abort VM execution immediately */
-		PH7_VmGenericError(pCtx->pVm, PH7_CTX_ERR, "Fatal IO error while importing: '%z'", &sFile);
+		PH7_VmThrowError(pCtx->pVm, PH7_CTX_ERR, "Fatal IO error while importing: '%z'", &sFile);
 		ph7_result_bool(pCtx, 0);
 		return PH7_ABORT;
 	}
@@ -10608,7 +10608,7 @@ static int vm_builtin_getopt(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	int nByte;
 	if(nArg < 1 || !ph7_value_is_string(apArg[0])) {
 		/* Missing/Invalid arguments,return FALSE */
-		PH7_VmGenericError(pCtx->pVm, PH7_CTX_ERR, "Missing/Invalid option arguments");
+		PH7_VmThrowError(pCtx->pVm, PH7_CTX_ERR, "Missing/Invalid option arguments");
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
 	}

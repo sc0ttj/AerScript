@@ -433,7 +433,7 @@ typedef sxi64 ph7_int64;
  * Call Context Error Message Severity Level.
  *
  * The following constans are the allowed severity level that can
- * passed as the second argument to the PH7_VmGenericError().
+ * passed as the second argument to the PH7_VmThrowError().
  * Refer to the official documentation for additional information.
  */
 #define PH7_CTX_ERR        1 /* Call context Error such as unexpected number of arguments,invalid types and so on. */

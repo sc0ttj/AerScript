@@ -554,7 +554,7 @@ static sxi32 HashmapInsert(
 		}
 		if(pMap == pMap->pVm->pGlobal) {
 			/* Forbidden */
-			PH7_VmGenericError(pMap->pVm, PH7_CTX_NOTICE, "$GLOBALS is a read-only array, insertion is forbidden");
+			PH7_VmThrowError(pMap->pVm, PH7_CTX_NOTICE, "$GLOBALS is a read-only array, insertion is forbidden");
 			return SXRET_OK;
 		}
 		/* Perform a blob-key insertion */
@@ -583,7 +583,7 @@ IntKey:
 		}
 		if(pMap == pMap->pVm->pGlobal) {
 			/* Forbidden */
-			PH7_VmGenericError(pMap->pVm, PH7_CTX_NOTICE, "$GLOBALS is a read-only array, insertion is forbidden");
+			PH7_VmThrowError(pMap->pVm, PH7_CTX_NOTICE, "$GLOBALS is a read-only array, insertion is forbidden");
 			return SXRET_OK;
 		}
 		/* Perform a 64-bit-int-key insertion */
@@ -601,7 +601,7 @@ IntKey:
 	} else {
 		if(pMap == pMap->pVm->pGlobal) {
 			/* Forbidden */
-			PH7_VmGenericError(pMap->pVm, PH7_CTX_NOTICE, "$GLOBALS is a read-only array, insertion is forbidden");
+			PH7_VmThrowError(pMap->pVm, PH7_CTX_NOTICE, "$GLOBALS is a read-only array, insertion is forbidden");
 			return SXRET_OK;
 		}
 		/* Assign an automatic index */
@@ -1374,7 +1374,7 @@ PH7_PRIVATE sxi32 PH7_HashmapRelease(ph7_hashmap *pMap, int FreeDS) {
 	sxu32 n;
 	if(pMap == pVm->pGlobal) {
 		/* Cannot delete the $GLOBALS array */
-		PH7_VmGenericError(pMap->pVm, PH7_CTX_NOTICE, "$GLOBALS is a read-only array, deletion is forbidden");
+		PH7_VmThrowError(pMap->pVm, PH7_CTX_NOTICE, "$GLOBALS is a read-only array, deletion is forbidden");
 		return SXRET_OK;
 	}
 	/* Start the release process */
@@ -1464,7 +1464,7 @@ PH7_PRIVATE sxi32 PH7_HashmapInsert(
 		/*
 		 * TICKET 1433-35: Insertion in the $GLOBALS array is forbidden.
 		 */
-		PH7_VmGenericError(pMap->pVm, PH7_CTX_ERR, "$GLOBALS is a read-only array, insertion is forbidden");
+		PH7_VmThrowError(pMap->pVm, PH7_CTX_ERR, "$GLOBALS is a read-only array, insertion is forbidden");
 		return SXRET_OK;
 	}
 	rc = HashmapInsert(&(*pMap), &(*pKey), &(*pVal));
@@ -1507,7 +1507,7 @@ PH7_PRIVATE sxi32 PH7_HashmapInsertByRef(
 		/*
 		 * TICKET 1433-35: Insertion in the $GLOBALS array is forbidden.
 		 */
-		PH7_VmGenericError(pMap->pVm, PH7_CTX_ERR, "$GLOBALS is a read-only array, insertion is forbidden");
+		PH7_VmThrowError(pMap->pVm, PH7_CTX_ERR, "$GLOBALS is a read-only array, insertion is forbidden");
 		return SXRET_OK;
 	}
 	rc = HashmapInsertByRef(&(*pMap), &(*pKey), nRefIdx);

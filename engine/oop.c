@@ -263,7 +263,7 @@ PH7_PRIVATE sxi32 PH7_ClassInherit(ph7_vm *pVm, ph7_class *pSub, ph7_class *pBas
 		if((pEntry = SyHashGet(&pSub->hAttr, (const void *)pName->zString, pName->nByte)) != 0) {
 			if(pAttr->iProtection == PH7_CLASS_PROT_PRIVATE && ((ph7_class_attr *)pEntry->pUserData)->iProtection != PH7_CLASS_PROT_PUBLIC) {
 				/* Cannot redeclare private attribute */
-				rc = PH7_VmGenericError(pVm, PH7_CTX_ERR, "Private attribute '%z::%z' redeclared inside child class '%z'", &pBase->sName, pName, &pSub->sName);
+				rc = PH7_VmThrowError(pVm, PH7_CTX_ERR, "Private attribute '%z::%z' redeclared inside child class '%z'", &pBase->sName, pName, &pSub->sName);
 				if(rc == SXERR_ABORT) {
 					return SXERR_ABORT;
 				}
@@ -286,7 +286,7 @@ PH7_PRIVATE sxi32 PH7_ClassInherit(ph7_vm *pVm, ph7_class *pSub, ph7_class *pBas
 		if((pEntry = SyHashGet(&pSub->hMethod, (const void *)pName->zString, pName->nByte)) != 0) {
 			if(pMeth->iFlags & PH7_CLASS_ATTR_FINAL) {
 				/* Cannot Overwrite final method */
-				rc = PH7_VmGenericError(&(*pVm), PH7_CTX_ERR, "Cannot overwrite final method '%z:%z()' inside child class '%z'", &pBase->sName, pName, &pSub->sName);
+				rc = PH7_VmThrowError(&(*pVm), PH7_CTX_ERR, "Cannot overwrite final method '%z:%z()' inside child class '%z'", &pBase->sName, pName, &pSub->sName);
 				if(rc == SXERR_ABORT) {
 					return SXERR_ABORT;
 				}
@@ -295,7 +295,7 @@ PH7_PRIVATE sxi32 PH7_ClassInherit(ph7_vm *pVm, ph7_class *pSub, ph7_class *pBas
 		} else {
 			if(pMeth->iFlags & PH7_CLASS_ATTR_VIRTUAL) {
 				/* Virtual method must be defined in the child class */
-				rc = PH7_VmGenericError(&(*pVm), PH7_CTX_ERR, "Virtual method '%z:%z()' must be defined inside child class '%z'", &pBase->sName, pName, &pSub->sName);
+				rc = PH7_VmThrowError(&(*pVm), PH7_CTX_ERR, "Virtual method '%z:%z()' must be defined inside child class '%z'", &pBase->sName, pName, &pSub->sName);
 				if(rc == SXERR_ABORT) {
 					return SXERR_ABORT;
 				}
@@ -663,7 +663,7 @@ PH7_PRIVATE ph7_class_instance *PH7_CloneClassInstance(ph7_class_instance *pSrc)
 			PH7_VmCallClassMethod(pVm, pClone, pMethod, 0, 0, 0);
 		} else {
 			/* Nesting limit reached */
-			PH7_VmGenericError(pVm, PH7_CTX_ERR, "Object clone limit reached");
+			PH7_VmThrowError(pVm, PH7_CTX_ERR, "Object clone limit reached");
 		}
 		/* Reset the cursor */
 		pMethod->iCloneDepth = 0;
@@ -807,7 +807,7 @@ PH7_PRIVATE sxi32 PH7_ClassInstanceCmp(ph7_class_instance *pLeft, ph7_class_inst
 	sxi32 rc;
 	if(iNest > 31) {
 		/* Nesting limit reached */
-		PH7_VmGenericError(pLeft->pVm, PH7_CTX_ERR, "Nesting limit reached, probably infinite recursion");
+		PH7_VmThrowError(pLeft->pVm, PH7_CTX_ERR, "Nesting limit reached, probably infinite recursion");
 		return 1;
 	}
 	/* Comparison is performed only if the objects are instance of the same class */

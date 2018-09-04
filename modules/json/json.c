@@ -706,7 +706,7 @@ static sxi32 VmJsonDecode(
 		pDecoder->pIn++;
 		/* Return the object as an associative array */
 		if((pDecoder->iFlags & JSON_DECODE_ASSOC) == 0) {
-			PH7_VmGenericError(pDecoder->pCtx->pVm, PH7_CTX_WARNING,
+			PH7_VmThrowError(pDecoder->pCtx->pVm, PH7_CTX_WARNING,
 									"JSON Objects are always returned as an associative array"
 								   );
 		}
