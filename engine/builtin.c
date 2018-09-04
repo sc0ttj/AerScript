@@ -4343,7 +4343,7 @@ static int PH7_builtin_str_getcsv(ph7_context *pCtx, int nArg, ph7_value **apArg
 	/* Create our array */
 	pArray = ph7_context_new_array(pCtx);
 	if(pArray == 0) {
-		ph7_context_throw_error(pCtx, PH7_CTX_ERR, "PH7 is running out of memory");
+		PH7_VmMemoryError(pCtx->pVm);
 		ph7_result_null(pCtx);
 		return PH7_OK;
 	}
@@ -5512,11 +5512,11 @@ static int StrReplaceWalker(ph7_value *pKey, ph7_value *pData, void *pUserData) 
 		char *zDup;
 		/* Duplicate the chunk */
 		zDup = (char *)ph7_context_alloc_chunk(pRep->pCtx, (unsigned int)nByte, FALSE,
-											   TRUE /* Release the chunk automatically,upon this context is destroyd */
+											   TRUE /* Release the chunk automatically,upon this context is destroyed */
 											  );
 		if(zDup == 0) {
 			/* Ignore any memory failure problem */
-			ph7_context_throw_error(pRep->pCtx, PH7_CTX_ERR, "PH7 is running out of memory");
+			PH7_VmMemoryError(pRep->pCtx->pVm);
 			return PH7_OK;
 		}
 		SyMemcpy(zIn, zDup, (sxu32)nByte);
@@ -5790,7 +5790,7 @@ PH7_PRIVATE sxi32 PH7_ParseIniString(ph7_context *pCtx, const char *zIn, sxu32 n
 	pValue = ph7_context_new_scalar(pCtx);
 	if(pArray == 0 || pWorker == 0 || pValue == 0) {
 		/* Out of memory */
-		ph7_context_throw_error(pCtx, PH7_CTX_ERR, "PH7 is running out of memory");
+		PH7_VmMemoryError(pCtx->pVm);
 		/* Return FALSE */
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
@@ -7240,7 +7240,7 @@ static int PH7_builtin_idate(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 			break;
 		default:
 			/* unknown format,throw a warning */
-			ph7_context_throw_error(pCtx, PH7_CTX_WARNING, "Unknown date format token");
+			PH7_VmGenericError(pCtx->pVm, PH7_CTX_WARNING, "Unknown date format token");
 			break;
 	}
 	/* Return the time value */

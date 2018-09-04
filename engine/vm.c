@@ -1162,8 +1162,8 @@ PH7_PRIVATE sxi32 PH7_VmRelease(ph7_vm *pVm) {
  * functions.
  * The application-defined foreign function implementation will pass this pointer through into
  * calls to dozens of interfaces,these includes ph7_result_int(), ph7_result_string(), ph7_result_value(),
- * ph7_context_new_scalar(), ph7_context_alloc_chunk(), ph7_context_output(), ph7_context_throw_error()
- * and many more. Refer to the C/C++ Interfaces documentation for additional information.
+ * ph7_context_new_scalar(), ph7_context_alloc_chunk(), ph7_context_output() and many more.
+ * Refer to the C/C++ Interfaces documentation for additional information.
  */
 static sxi32 VmInitCallContext(
 	ph7_context *pOut,    /* Call Context */
@@ -1973,8 +1973,6 @@ PH7_PRIVATE sxi32 PH7_VmGenericError(
 }
 /*
  * Throw a run-time error and invoke the supplied VM output consumer callback.
- * Refer to the implementation of [ph7_context_throw_error()] for additional
- * information.
  */
 PH7_PRIVATE sxi32 PH7_VmThrowError(
 	ph7_vm *pVm,         /* Target VM */
@@ -2024,8 +2022,6 @@ PH7_PRIVATE sxi32 PH7_VmThrowError(
 }
 /*
  * Format and throw a run-time error and invoke the supplied VM output consumer callback.
- * Refer to the implementation of [ph7_context_throw_error_format()] for additional
- * information.
  */
 static sxi32 VmThrowErrorAp(
 	ph7_vm *pVm,         /* Target VM */
@@ -2076,8 +2072,6 @@ static sxi32 VmThrowErrorAp(
 }
 /*
  * Format and throw a run-time error and invoke the supplied VM output consumer callback.
- * Refer to the implementation of [ph7_context_throw_error_format()] for additional
- * information.
  * ------------------------------------
  * Simple boring wrapper function.
  * ------------------------------------
@@ -2092,8 +2086,6 @@ sxi32 VmErrorFormat(ph7_vm *pVm, sxi32 iErr, const char *zFormat, ...) {
 }
 /*
  * Format and throw a run-time error and invoke the supplied VM output consumer callback.
- * Refer to the implementation of [ph7_context_throw_error_format()] for additional
- * information.
  * ------------------------------------
  * Simple boring wrapper function.
  * ------------------------------------
@@ -7497,7 +7489,7 @@ static int vm_builtin_defined(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	int res = 0;
 	if(nArg < 1) {
 		/* Missing constant name,return FALSE */
-		ph7_context_throw_error(pCtx, PH7_CTX_NOTICE, "Missing constant name");
+		PH7_VmGenericError(pCtx->pVm, PH7_CTX_NOTICE, "Missing constant name");
 		ph7_result_bool(pCtx, 0);
 		return SXRET_OK;
 	}
@@ -7538,26 +7530,26 @@ static int vm_builtin_define(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	sxi32 rc;
 	if(nArg < 2) {
 		/* Missing arguments,throw a notice and return false */
-		ph7_context_throw_error(pCtx, PH7_CTX_NOTICE, "Missing constant name/value pair");
+		PH7_VmGenericError(pCtx->pVm, PH7_CTX_NOTICE, "Missing constant name/value pair");
 		ph7_result_bool(pCtx, 0);
 		return SXRET_OK;
 	}
 	if(!ph7_value_is_string(apArg[0])) {
-		ph7_context_throw_error(pCtx, PH7_CTX_NOTICE, "Invalid constant name");
+		PH7_VmGenericError(pCtx->pVm, PH7_CTX_NOTICE, "Invalid constant name");
 		ph7_result_bool(pCtx, 0);
 		return SXRET_OK;
 	}
 	/* Extract constant name */
 	zName = ph7_value_to_string(apArg[0], &nLen);
 	if(nLen < 1) {
-		ph7_context_throw_error(pCtx, PH7_CTX_NOTICE, "Empty constant name");
+		PH7_VmGenericError(pCtx->pVm, PH7_CTX_NOTICE, "Empty constant name");
 		ph7_result_bool(pCtx, 0);
 		return SXRET_OK;
 	}
 	/* Duplicate constant value */
 	pValue = (ph7_value *)SyMemBackendPoolAlloc(&pCtx->pVm->sAllocator, sizeof(ph7_value));
 	if(pValue == 0) {
-		ph7_context_throw_error(pCtx, PH7_CTX_NOTICE, "Cannot register constant due to a memory failure");
+		PH7_VmMemoryError(pCtx->pVm);
 		ph7_result_bool(pCtx, 0);
 		return SXRET_OK;
 	}
@@ -7567,7 +7559,7 @@ static int vm_builtin_define(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	rc = ph7_create_constant(pCtx->pVm, zName, VmExpandUserConstant, pValue);
 	if(rc != SXRET_OK) {
 		SyMemBackendPoolFree(&pCtx->pVm->sAllocator, pValue);
-		ph7_context_throw_error(pCtx, PH7_CTX_NOTICE, "Cannot register constant due to a memory failure");
+		PH7_VmMemoryError(pCtx->pVm);
 		ph7_result_bool(pCtx, 0);
 		return SXRET_OK;
 	}
@@ -7615,7 +7607,7 @@ static int vm_builtin_constant(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	int nLen;
 	if(nArg < 1 || !ph7_value_is_string(apArg[0])) {
 		/* Invalid argument,return NULL */
-		ph7_context_throw_error(pCtx, PH7_CTX_NOTICE, "Missing/Invalid constant name");
+		PH7_VmGenericError(pCtx->pVm, PH7_CTX_NOTICE, "Missing/Invalid constant name");
 		ph7_result_null(pCtx);
 		return SXRET_OK;
 	}
@@ -7624,7 +7616,7 @@ static int vm_builtin_constant(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	/* Perform the query */
 	pEntry = SyHashGet(&pCtx->pVm->hConstant, (const void *)zName, (sxu32)nLen);
 	if(pEntry == 0) {
-		ph7_context_throw_error_format(pCtx, PH7_CTX_NOTICE, "'%.*s': Undefined constant", nLen, zName);
+		PH7_VmGenericError(pCtx->pVm, PH7_CTX_NOTICE, "'%.*s': Undefined constant", nLen, zName);
 		ph7_result_null(pCtx);
 		return SXRET_OK;
 	}
@@ -8251,7 +8243,7 @@ static int vm_builtin_rand_str(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 static int vm_builtin_random_int(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	sxu32 iNum, iMin, iMax;
 	if(nArg != 2) {
-		ph7_context_throw_error(pCtx, PH7_CTX_ERR, "Expecting min and max arguments");
+		PH7_VmGenericError(pCtx->pVm, PH7_CTX_ERR, "Expecting min and max arguments");
 		return SXERR_INVALID;
 	}
 	iNum = PH7_VmRandomNum(pCtx->pVm);
@@ -8285,13 +8277,13 @@ static int vm_builtin_random_bytes(ph7_context *pCtx, int nArg, ph7_value **apAr
 	sxu32 iLen;
 	unsigned char *zBuf;
 	if(nArg != 1) {
-		ph7_context_throw_error(pCtx, PH7_CTX_ERR, "Expecting length argument");
+		PH7_VmGenericError(pCtx->pVm, PH7_CTX_ERR, "Expecting length argument");
 		return SXERR_INVALID;
 	}
 	iLen = (sxu32)ph7_value_to_int(apArg[0]);
 	zBuf = SyMemBackendPoolAlloc(&pCtx->pVm->sAllocator, iLen);
 	if(zBuf == 0) {
-		ph7_context_throw_error(pCtx, PH7_CTX_ERR, "PH7 is running out of memory while creating buffer");
+		PH7_VmMemoryError(pCtx->pVm);
 		return SXERR_MEM;
 	}
 	PH7_VmRandomBytes(pCtx->pVm, zBuf, iLen);
@@ -8482,7 +8474,7 @@ static int vm_builtin_isset(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 		if(pObj->nIdx == SXU32_HIGH) {
 			if((pObj->iFlags & MEMOBJ_NULL) == 0) {
 				/* Not so fatal,Throw a warning */
-				ph7_context_throw_error(pCtx, PH7_CTX_WARNING, "Expecting a variable not a constant");
+				PH7_VmGenericError(pCtx->pVm, PH7_CTX_WARNING, "Expecting a variable not a constant");
 			}
 		}
 		res = (pObj->iFlags & MEMOBJ_NULL) ? 0 : 1;
@@ -8545,7 +8537,7 @@ static int vm_builtin_unset(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 		if(pObj->nIdx == SXU32_HIGH) {
 			if((pObj->iFlags & MEMOBJ_NULL) == 0) {
 				/* Throw an error */
-				ph7_context_throw_error(pCtx, PH7_CTX_ERR, "Expecting a variable not a constant");
+				PH7_VmGenericError(pCtx->pVm, PH7_CTX_ERR, "Expecting a variable not a constant");
 			}
 		} else {
 			sxu32 nIdx = pObj->nIdx;
@@ -8929,7 +8921,7 @@ static int vm_builtin_assert(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 		}
 		if(iFlags & PH7_ASSERT_WARNING) {
 			/* Emit a warning */
-			ph7_context_throw_error(pCtx, PH7_CTX_WARNING, "Assertion failed");
+			PH7_VmGenericError(pCtx->pVm, PH7_CTX_WARNING, "Assertion failed");
 		}
 		if(iFlags & PH7_ASSERT_BAIL) {
 			/* Abort VM execution immediately */
@@ -9102,7 +9094,7 @@ static int vm_builtin_debug_backtrace(ph7_context *pCtx, int nArg, ph7_value **a
 	}
 	pArray = ph7_context_new_array(pCtx);
 	if(!pArray) {
-		ph7_context_throw_error(pCtx, PH7_CTX_ERR, "PH7 is running out of memory");
+		PH7_VmMemoryError(pCtx->pVm);
 		ph7_result_null(pCtx);
 		return PH7_OK;
 	}
@@ -9114,7 +9106,7 @@ static int vm_builtin_debug_backtrace(ph7_context *pCtx, int nArg, ph7_value **a
 		pSubArray = ph7_context_new_array(pCtx);
 		pValue = ph7_context_new_scalar(pCtx);
 		if(pArg == 0 || pSubArray == 0 || pValue == 0) {
-			ph7_context_throw_error(pCtx, PH7_CTX_ERR, "PH7 is running out of memory");
+			PH7_VmMemoryError(pCtx->pVm);
 			ph7_result_null(pCtx);
 			return PH7_OK;
 		}
@@ -9645,7 +9637,7 @@ static int vm_builtin_parse_url(ph7_context *pCtx, int nArg, ph7_value **apArg) 
 		pValue = ph7_context_new_scalar(pCtx); /* Array value */
 		if(pArray == 0 || pValue == 0) {
 			/* Out of memory */
-			ph7_context_throw_error(pCtx, PH7_CTX_ERR, "PH7 engine is running out of memory");
+			PH7_VmMemoryError(pCtx->pVm);
 			/* Return false */
 			ph7_result_bool(pCtx, 0);
 			return PH7_OK;
@@ -9802,7 +9794,7 @@ static int vm_builtin_compact(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	pArray = ph7_context_new_array(pCtx);
 	if(pArray == 0) {
 		/* Out of memory */
-		ph7_context_throw_error(pCtx, PH7_CTX_ERR, "PH7 engine is running out of memory");
+		PH7_VmMemoryError(pCtx->pVm);
 		/* Return NULL */
 		ph7_result_null(pCtx);
 		return PH7_OK;
@@ -10495,7 +10487,7 @@ static int vm_builtin_include(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	}
 	if(rc != SXRET_OK) {
 		/* Emit a warning and return false */
-		ph7_context_throw_error_format(pCtx, PH7_CTX_WARNING, "IO error while importing: '%z'", &sFile);
+		PH7_VmGenericError(pCtx->pVm, PH7_CTX_WARNING, "IO error while importing: '%z'", &sFile);
 		ph7_result_bool(pCtx, 0);
 	}
 	return SXRET_OK;
@@ -10530,7 +10522,7 @@ static int vm_builtin_require(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	}
 	if(rc != SXRET_OK) {
 		/* Fatal,abort VM execution immediately */
-		ph7_context_throw_error_format(pCtx, PH7_CTX_ERR, "Fatal IO error while importing: '%z'", &sFile);
+		PH7_VmGenericError(pCtx->pVm, PH7_CTX_ERR, "Fatal IO error while importing: '%z'", &sFile);
 		ph7_result_bool(pCtx, 0);
 		return PH7_ABORT;
 	}
@@ -10675,7 +10667,7 @@ static void VmExtractOptArgValue(
 			ph7_value *pOptArg; /* Array of option arguments */
 			pOptArg = ph7_context_new_array(pCtx);
 			if(pOptArg == 0) {
-				ph7_context_throw_error(pCtx, PH7_CTX_ERR, "PH7 is running out of memory");
+				PH7_VmMemoryError(pCtx->pVm);
 			} else {
 				/* Insert the first value */
 				ph7_array_add_elem(pOptArg, 0, pWorker); /* Will make it's own copy */
@@ -10741,7 +10733,7 @@ static int vm_builtin_getopt(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	int nByte;
 	if(nArg < 1 || !ph7_value_is_string(apArg[0])) {
 		/* Missing/Invalid arguments,return FALSE */
-		ph7_context_throw_error(pCtx, PH7_CTX_ERR, "Missing/Invalid option arguments");
+		PH7_VmGenericError(pCtx->pVm, PH7_CTX_ERR, "Missing/Invalid option arguments");
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
 	}
@@ -10754,7 +10746,7 @@ static int vm_builtin_getopt(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	pArray = ph7_context_new_array(pCtx);
 	pWorker = ph7_context_new_scalar(pCtx);
 	if(pArray == 0 || pWorker == 0) {
-		ph7_context_throw_error(pCtx, PH7_CTX_ERR, "PH7 is running out of memory");
+		PH7_VmMemoryError(pCtx->pVm);
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
 	}

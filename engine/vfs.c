@@ -77,7 +77,7 @@ static int PH7_vfs_chdir(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	pVfs = (ph7_vfs *)ph7_context_user_data(pCtx);
 	if(pVfs == 0 || pVfs->xChdir == 0) {
 		/* IO routine not implemented,return NULL */
-		ph7_context_throw_error_format(pCtx, PH7_CTX_WARNING,
+		PH7_VmGenericError(pCtx->pVm, PH7_CTX_WARNING,
 									   "IO routine(%s) not implemented in the underlying VFS",
 									   ph7_function_name(pCtx)
 									  );
@@ -114,7 +114,7 @@ static int PH7_vfs_chroot(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	pVfs = (ph7_vfs *)ph7_context_user_data(pCtx);
 	if(pVfs == 0 || pVfs->xChroot == 0) {
 		/* IO routine not implemented,return NULL */
-		ph7_context_throw_error_format(pCtx, PH7_CTX_WARNING,
+		PH7_VmGenericError(pCtx->pVm, PH7_CTX_WARNING,
 									   "IO routine(%s) not implemented in the underlying VFS",
 									   ph7_function_name(pCtx)
 									  );
@@ -146,7 +146,7 @@ static int PH7_vfs_getcwd(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 		SXUNUSED(nArg); /* cc warning */
 		SXUNUSED(apArg);
 		/* IO routine not implemented,return NULL */
-		ph7_context_throw_error_format(pCtx, PH7_CTX_WARNING,
+		PH7_VmGenericError(pCtx->pVm, PH7_CTX_WARNING,
 									   "IO routine(%s) not implemented in the underlying VFS",
 									   ph7_function_name(pCtx)
 									  );
@@ -184,7 +184,7 @@ static int PH7_vfs_rmdir(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	pVfs = (ph7_vfs *)ph7_context_user_data(pCtx);
 	if(pVfs == 0 || pVfs->xRmdir == 0) {
 		/* IO routine not implemented,return NULL */
-		ph7_context_throw_error_format(pCtx, PH7_CTX_WARNING,
+		PH7_VmGenericError(pCtx->pVm, PH7_CTX_WARNING,
 									   "IO routine(%s) not implemented in the underlying VFS",
 									   ph7_function_name(pCtx)
 									  );
@@ -221,7 +221,7 @@ static int PH7_vfs_is_dir(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	pVfs = (ph7_vfs *)ph7_context_user_data(pCtx);
 	if(pVfs == 0 || pVfs->xIsdir == 0) {
 		/* IO routine not implemented,return NULL */
-		ph7_context_throw_error_format(pCtx, PH7_CTX_WARNING,
+		PH7_VmGenericError(pCtx->pVm, PH7_CTX_WARNING,
 									   "IO routine(%s) not implemented in the underlying VFS",
 									   ph7_function_name(pCtx)
 									  );
@@ -269,7 +269,7 @@ static int PH7_vfs_mkdir(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	pVfs = (ph7_vfs *)ph7_context_user_data(pCtx);
 	if(pVfs == 0 || pVfs->xMkdir == 0) {
 		/* IO routine not implemented,return NULL */
-		ph7_context_throw_error_format(pCtx, PH7_CTX_WARNING,
+		PH7_VmGenericError(pCtx->pVm, PH7_CTX_WARNING,
 									   "IO routine(%s) not implemented in the underlying VFS",
 									   ph7_function_name(pCtx)
 									  );
@@ -320,7 +320,7 @@ static int PH7_vfs_rename(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	pVfs = (ph7_vfs *)ph7_context_user_data(pCtx);
 	if(pVfs == 0 || pVfs->xRename == 0) {
 		/* IO routine not implemented,return NULL */
-		ph7_context_throw_error_format(pCtx, PH7_CTX_WARNING,
+		PH7_VmGenericError(pCtx->pVm, PH7_CTX_WARNING,
 									   "IO routine(%s) not implemented in the underlying VFS",
 									   ph7_function_name(pCtx)
 									  );
@@ -357,7 +357,7 @@ static int PH7_vfs_realpath(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	pVfs = (ph7_vfs *)ph7_context_user_data(pCtx);
 	if(pVfs == 0 || pVfs->xRealpath == 0) {
 		/* IO routine not implemented,return NULL */
-		ph7_context_throw_error_format(pCtx, PH7_CTX_WARNING,
+		PH7_VmGenericError(pCtx->pVm, PH7_CTX_WARNING,
 									   "IO routine(%s) not implemented in the underlying VFS",
 									   ph7_function_name(pCtx)
 									  );
@@ -395,7 +395,7 @@ static int PH7_vfs_sleep(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	pVfs = (ph7_vfs *)ph7_context_user_data(pCtx);
 	if(pVfs == 0 || pVfs->xSleep == 0) {
 		/* IO routine not implemented,return NULL */
-		ph7_context_throw_error_format(pCtx, PH7_CTX_WARNING,
+		PH7_VmGenericError(pCtx->pVm, PH7_CTX_WARNING,
 									   "IO routine(%s) not implemented in the underlying VFS",
 									   ph7_function_name(pCtx)
 									  );
@@ -440,7 +440,7 @@ static int PH7_vfs_usleep(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	pVfs = (ph7_vfs *)ph7_context_user_data(pCtx);
 	if(pVfs == 0 || pVfs->xSleep == 0) {
 		/* IO routine not implemented,return NULL */
-		ph7_context_throw_error_format(pCtx, PH7_CTX_WARNING,
+		PH7_VmGenericError(pCtx->pVm, PH7_CTX_WARNING,
 									   "IO routine(%s) not implemented in the underlying VFS",
 									   ph7_function_name(pCtx)
 									  );
@@ -478,7 +478,7 @@ static int PH7_vfs_unlink(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	pVfs = (ph7_vfs *)ph7_context_user_data(pCtx);
 	if(pVfs == 0 || pVfs->xUnlink == 0) {
 		/* IO routine not implemented,return NULL */
-		ph7_context_throw_error_format(pCtx, PH7_CTX_WARNING,
+		PH7_VmGenericError(pCtx->pVm, PH7_CTX_WARNING,
 									   "IO routine(%s) not implemented in the underlying VFS",
 									   ph7_function_name(pCtx)
 									  );
@@ -518,7 +518,7 @@ static int PH7_vfs_chmod(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	pVfs = (ph7_vfs *)ph7_context_user_data(pCtx);
 	if(pVfs == 0 || pVfs->xChmod == 0) {
 		/* IO routine not implemented,return NULL */
-		ph7_context_throw_error_format(pCtx, PH7_CTX_WARNING,
+		PH7_VmGenericError(pCtx->pVm, PH7_CTX_WARNING,
 									   "IO routine(%s) not implemented in the underlying VFS",
 									   ph7_function_name(pCtx)
 									  );
@@ -559,7 +559,7 @@ static int PH7_vfs_chown(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	pVfs = (ph7_vfs *)ph7_context_user_data(pCtx);
 	if(pVfs == 0 || pVfs->xChown == 0) {
 		/* IO routine not implemented,return NULL */
-		ph7_context_throw_error_format(pCtx, PH7_CTX_WARNING,
+		PH7_VmGenericError(pCtx->pVm, PH7_CTX_WARNING,
 									   "IO routine(%s) not implemented in the underlying VFS",
 									   ph7_function_name(pCtx)
 									  );
@@ -600,7 +600,7 @@ static int PH7_vfs_chgrp(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	pVfs = (ph7_vfs *)ph7_context_user_data(pCtx);
 	if(pVfs == 0 || pVfs->xChgrp == 0) {
 		/* IO routine not implemented,return NULL */
-		ph7_context_throw_error_format(pCtx, PH7_CTX_WARNING,
+		PH7_VmGenericError(pCtx->pVm, PH7_CTX_WARNING,
 									   "IO routine(%s) not implemented in the underlying VFS",
 									   ph7_function_name(pCtx)
 									  );
@@ -639,7 +639,7 @@ static int PH7_vfs_disk_free_space(ph7_context *pCtx, int nArg, ph7_value **apAr
 	pVfs = (ph7_vfs *)ph7_context_user_data(pCtx);
 	if(pVfs == 0 || pVfs->xFreeSpace == 0) {
 		/* IO routine not implemented,return NULL */
-		ph7_context_throw_error_format(pCtx, PH7_CTX_WARNING,
+		PH7_VmGenericError(pCtx->pVm, PH7_CTX_WARNING,
 									   "IO routine(%s) not implemented in the underlying VFS",
 									   ph7_function_name(pCtx)
 									  );
@@ -676,7 +676,7 @@ static int PH7_vfs_disk_total_space(ph7_context *pCtx, int nArg, ph7_value **apA
 	pVfs = (ph7_vfs *)ph7_context_user_data(pCtx);
 	if(pVfs == 0 || pVfs->xTotalSpace == 0) {
 		/* IO routine not implemented,return NULL */
-		ph7_context_throw_error_format(pCtx, PH7_CTX_WARNING,
+		PH7_VmGenericError(pCtx->pVm, PH7_CTX_WARNING,
 									   "IO routine(%s) not implemented in the underlying VFS",
 									   ph7_function_name(pCtx)
 									  );
@@ -713,7 +713,7 @@ static int PH7_vfs_file_exists(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	pVfs = (ph7_vfs *)ph7_context_user_data(pCtx);
 	if(pVfs == 0 || pVfs->xFileExists == 0) {
 		/* IO routine not implemented,return NULL */
-		ph7_context_throw_error_format(pCtx, PH7_CTX_WARNING,
+		PH7_VmGenericError(pCtx->pVm, PH7_CTX_WARNING,
 									   "IO routine(%s) not implemented in the underlying VFS",
 									   ph7_function_name(pCtx)
 									  );
@@ -750,7 +750,7 @@ static int PH7_vfs_file_size(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	pVfs = (ph7_vfs *)ph7_context_user_data(pCtx);
 	if(pVfs == 0 || pVfs->xFileSize == 0) {
 		/* IO routine not implemented,return NULL */
-		ph7_context_throw_error_format(pCtx, PH7_CTX_WARNING,
+		PH7_VmGenericError(pCtx->pVm, PH7_CTX_WARNING,
 									   "IO routine(%s) not implemented in the underlying VFS",
 									   ph7_function_name(pCtx)
 									  );
@@ -787,7 +787,7 @@ static int PH7_vfs_file_atime(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	pVfs = (ph7_vfs *)ph7_context_user_data(pCtx);
 	if(pVfs == 0 || pVfs->xFileAtime == 0) {
 		/* IO routine not implemented,return NULL */
-		ph7_context_throw_error_format(pCtx, PH7_CTX_WARNING,
+		PH7_VmGenericError(pCtx->pVm, PH7_CTX_WARNING,
 									   "IO routine(%s) not implemented in the underlying VFS",
 									   ph7_function_name(pCtx)
 									  );
@@ -824,7 +824,7 @@ static int PH7_vfs_file_mtime(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	pVfs = (ph7_vfs *)ph7_context_user_data(pCtx);
 	if(pVfs == 0 || pVfs->xFileMtime == 0) {
 		/* IO routine not implemented,return NULL */
-		ph7_context_throw_error_format(pCtx, PH7_CTX_WARNING,
+		PH7_VmGenericError(pCtx->pVm, PH7_CTX_WARNING,
 									   "IO routine(%s) not implemented in the underlying VFS",
 									   ph7_function_name(pCtx)
 									  );
@@ -861,7 +861,7 @@ static int PH7_vfs_file_ctime(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	pVfs = (ph7_vfs *)ph7_context_user_data(pCtx);
 	if(pVfs == 0 || pVfs->xFileCtime == 0) {
 		/* IO routine not implemented,return NULL */
-		ph7_context_throw_error_format(pCtx, PH7_CTX_WARNING,
+		PH7_VmGenericError(pCtx->pVm, PH7_CTX_WARNING,
 									   "IO routine(%s) not implemented in the underlying VFS",
 									   ph7_function_name(pCtx)
 									  );
@@ -898,7 +898,7 @@ static int PH7_vfs_file_group(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	pVfs = (ph7_vfs *)ph7_context_user_data(pCtx);
 	if(pVfs == 0 || pVfs->xFileCtime == 0) {
 		/* IO routine not implemented,return NULL */
-		ph7_context_throw_error_format(pCtx, PH7_CTX_WARNING,
+		PH7_VmGenericError(pCtx->pVm, PH7_CTX_WARNING,
 									   "IO routine(%s) not implemented in the underlying VFS",
 									   ph7_function_name(pCtx)
 									  );
@@ -935,7 +935,7 @@ static int PH7_vfs_file_inode(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	pVfs = (ph7_vfs *)ph7_context_user_data(pCtx);
 	if(pVfs == 0 || pVfs->xFileCtime == 0) {
 		/* IO routine not implemented,return NULL */
-		ph7_context_throw_error_format(pCtx, PH7_CTX_WARNING,
+		PH7_VmGenericError(pCtx->pVm, PH7_CTX_WARNING,
 									   "IO routine(%s) not implemented in the underlying VFS",
 									   ph7_function_name(pCtx)
 									  );
@@ -972,7 +972,7 @@ static int PH7_vfs_file_owner(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	pVfs = (ph7_vfs *)ph7_context_user_data(pCtx);
 	if(pVfs == 0 || pVfs->xFileCtime == 0) {
 		/* IO routine not implemented,return NULL */
-		ph7_context_throw_error_format(pCtx, PH7_CTX_WARNING,
+		PH7_VmGenericError(pCtx->pVm, PH7_CTX_WARNING,
 									   "IO routine(%s) not implemented in the underlying VFS",
 									   ph7_function_name(pCtx)
 									  );
@@ -1009,7 +1009,7 @@ static int PH7_vfs_is_file(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	pVfs = (ph7_vfs *)ph7_context_user_data(pCtx);
 	if(pVfs == 0 || pVfs->xIsFile == 0) {
 		/* IO routine not implemented,return NULL */
-		ph7_context_throw_error_format(pCtx, PH7_CTX_WARNING,
+		PH7_VmGenericError(pCtx->pVm, PH7_CTX_WARNING,
 									   "IO routine(%s) not implemented in the underlying VFS",
 									   ph7_function_name(pCtx)
 									  );
@@ -1046,7 +1046,7 @@ static int PH7_vfs_is_link(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	pVfs = (ph7_vfs *)ph7_context_user_data(pCtx);
 	if(pVfs == 0 || pVfs->xIsLink == 0) {
 		/* IO routine not implemented,return NULL */
-		ph7_context_throw_error_format(pCtx, PH7_CTX_WARNING,
+		PH7_VmGenericError(pCtx->pVm, PH7_CTX_WARNING,
 									   "IO routine(%s) not implemented in the underlying VFS",
 									   ph7_function_name(pCtx)
 									  );
@@ -1083,7 +1083,7 @@ static int PH7_vfs_is_readable(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	pVfs = (ph7_vfs *)ph7_context_user_data(pCtx);
 	if(pVfs == 0 || pVfs->xReadable == 0) {
 		/* IO routine not implemented,return NULL */
-		ph7_context_throw_error_format(pCtx, PH7_CTX_WARNING,
+		PH7_VmGenericError(pCtx->pVm, PH7_CTX_WARNING,
 									   "IO routine(%s) not implemented in the underlying VFS",
 									   ph7_function_name(pCtx)
 									  );
@@ -1120,7 +1120,7 @@ static int PH7_vfs_is_writable(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	pVfs = (ph7_vfs *)ph7_context_user_data(pCtx);
 	if(pVfs == 0 || pVfs->xWritable == 0) {
 		/* IO routine not implemented,return NULL */
-		ph7_context_throw_error_format(pCtx, PH7_CTX_WARNING,
+		PH7_VmGenericError(pCtx->pVm, PH7_CTX_WARNING,
 									   "IO routine(%s) not implemented in the underlying VFS",
 									   ph7_function_name(pCtx)
 									  );
@@ -1157,7 +1157,7 @@ static int PH7_vfs_is_executable(ph7_context *pCtx, int nArg, ph7_value **apArg)
 	pVfs = (ph7_vfs *)ph7_context_user_data(pCtx);
 	if(pVfs == 0 || pVfs->xExecutable == 0) {
 		/* IO routine not implemented,return NULL */
-		ph7_context_throw_error_format(pCtx, PH7_CTX_WARNING,
+		PH7_VmGenericError(pCtx->pVm, PH7_CTX_WARNING,
 									   "IO routine(%s) not implemented in the underlying VFS",
 									   ph7_function_name(pCtx)
 									  );
@@ -1194,7 +1194,7 @@ static int PH7_vfs_filetype(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	pVfs = (ph7_vfs *)ph7_context_user_data(pCtx);
 	if(pVfs == 0 || pVfs->xFiletype == 0) {
 		/* IO routine not implemented,return NULL */
-		ph7_context_throw_error_format(pCtx, PH7_CTX_WARNING,
+		PH7_VmGenericError(pCtx->pVm, PH7_CTX_WARNING,
 									   "IO routine(%s) not implemented in the underlying VFS",
 									   ph7_function_name(pCtx)
 									  );
@@ -1247,7 +1247,7 @@ static int PH7_vfs_stat(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	pVfs = (ph7_vfs *)ph7_context_user_data(pCtx);
 	if(pVfs == 0 || pVfs->xStat == 0) {
 		/* IO routine not implemented,return NULL */
-		ph7_context_throw_error_format(pCtx, PH7_CTX_WARNING,
+		PH7_VmGenericError(pCtx->pVm, PH7_CTX_WARNING,
 									   "IO routine(%s) not implemented in the underlying VFS",
 									   ph7_function_name(pCtx)
 									  );
@@ -1258,7 +1258,7 @@ static int PH7_vfs_stat(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	pArray = ph7_context_new_array(pCtx);
 	pValue = ph7_context_new_scalar(pCtx);
 	if(pArray == 0 || pValue == 0) {
-		ph7_context_throw_error(pCtx, PH7_CTX_ERR, "PH7 is running out of memory");
+		PH7_VmMemoryError(pCtx->pVm);
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
 	}
@@ -1315,7 +1315,7 @@ static int PH7_vfs_lstat(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	pVfs = (ph7_vfs *)ph7_context_user_data(pCtx);
 	if(pVfs == 0 || pVfs->xlStat == 0) {
 		/* IO routine not implemented,return NULL */
-		ph7_context_throw_error_format(pCtx, PH7_CTX_WARNING,
+		PH7_VmGenericError(pCtx->pVm, PH7_CTX_WARNING,
 									   "IO routine(%s) not implemented in the underlying VFS",
 									   ph7_function_name(pCtx)
 									  );
@@ -1326,7 +1326,7 @@ static int PH7_vfs_lstat(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	pArray = ph7_context_new_array(pCtx);
 	pValue = ph7_context_new_scalar(pCtx);
 	if(pArray == 0 || pValue == 0) {
-		ph7_context_throw_error(pCtx, PH7_CTX_ERR, "PH7 is running out of memory");
+		PH7_VmMemoryError(pCtx->pVm);
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
 	}
@@ -1368,7 +1368,7 @@ static int PH7_vfs_getenv(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	pVfs = (ph7_vfs *)ph7_context_user_data(pCtx);
 	if(pVfs == 0 || pVfs->xGetenv == 0) {
 		/* IO routine not implemented,return NULL */
-		ph7_context_throw_error_format(pCtx, PH7_CTX_WARNING,
+		PH7_VmGenericError(pCtx->pVm, PH7_CTX_WARNING,
 									   "IO routine(%s) not implemented in the underlying VFS",
 									   ph7_function_name(pCtx)
 									  );
@@ -1440,7 +1440,7 @@ static int PH7_vfs_putenv(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	pVfs = (ph7_vfs *)ph7_context_user_data(pCtx);
 	if(pVfs == 0 || pVfs->xSetenv == 0) {
 		/* IO routine not implemented,return NULL */
-		ph7_context_throw_error_format(pCtx, PH7_CTX_WARNING,
+		PH7_VmGenericError(pCtx->pVm, PH7_CTX_WARNING,
 									   "IO routine(%s) not implemented in the underlying VFS",
 									   ph7_function_name(pCtx)
 									  );
@@ -1485,7 +1485,7 @@ static int PH7_vfs_touch(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	pVfs = (ph7_vfs *)ph7_context_user_data(pCtx);
 	if(pVfs == 0 || pVfs->xTouch == 0) {
 		/* IO routine not implemented,return NULL */
-		ph7_context_throw_error_format(pCtx, PH7_CTX_WARNING,
+		PH7_VmGenericError(pCtx->pVm, PH7_CTX_WARNING,
 									   "IO routine(%s) not implemented in the underlying VFS",
 									   ph7_function_name(pCtx)
 									  );
@@ -2117,7 +2117,7 @@ static int PH7_vfs_link(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	pVfs = (ph7_vfs *)ph7_context_user_data(pCtx);
 	if(pVfs == 0 || pVfs->xLink == 0) {
 		/* IO routine not implemented,return NULL */
-		ph7_context_throw_error_format(pCtx, PH7_CTX_WARNING,
+		PH7_VmGenericError(pCtx->pVm, PH7_CTX_WARNING,
 									   "IO routine(%s) not implemented in the underlying VFS",
 									   ph7_function_name(pCtx)
 									  );
@@ -2157,7 +2157,7 @@ static int PH7_vfs_symlink(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	pVfs = (ph7_vfs *)ph7_context_user_data(pCtx);
 	if(pVfs == 0 || pVfs->xLink == 0) {
 		/* IO routine not implemented,return NULL */
-		ph7_context_throw_error_format(pCtx, PH7_CTX_WARNING,
+		PH7_VmGenericError(pCtx->pVm, PH7_CTX_WARNING,
 									   "IO routine(%s) not implemented in the underlying VFS",
 									   ph7_function_name(pCtx)
 									  );
@@ -2190,7 +2190,7 @@ static int PH7_vfs_umask(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	pVfs = (ph7_vfs *)ph7_context_user_data(pCtx);
 	if(pVfs == 0 || pVfs->xUmask == 0) {
 		/* IO routine not implemented,return -1 */
-		ph7_context_throw_error_format(pCtx, PH7_CTX_WARNING,
+		PH7_VmGenericError(pCtx->pVm, PH7_CTX_WARNING,
 									   "IO routine(%s) not implemented in the underlying VFS",
 									   ph7_function_name(pCtx)
 									  );
@@ -2225,7 +2225,7 @@ static int PH7_vfs_sys_get_temp_dir(ph7_context *pCtx, int nArg, ph7_value **apA
 		SXUNUSED(nArg); /* cc warning */
 		SXUNUSED(apArg);
 		/* IO routine not implemented,return "" */
-		ph7_context_throw_error_format(pCtx, PH7_CTX_WARNING,
+		PH7_VmGenericError(pCtx->pVm, PH7_CTX_WARNING,
 									   "IO routine(%s) not implemented in the underlying VFS",
 									   ph7_function_name(pCtx)
 									  );
@@ -2251,7 +2251,7 @@ static int PH7_vfs_get_current_user(ph7_context *pCtx, int nArg, ph7_value **apA
 		SXUNUSED(nArg); /* cc warning */
 		SXUNUSED(apArg);
 		/* IO routine not implemented */
-		ph7_context_throw_error_format(pCtx, PH7_CTX_WARNING,
+		PH7_VmGenericError(pCtx->pVm, PH7_CTX_WARNING,
 									   "IO routine(%s) not implemented in the underlying VFS",
 									   ph7_function_name(pCtx)
 									  );
@@ -2280,7 +2280,7 @@ static int PH7_vfs_getmypid(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 		SXUNUSED(nArg); /* cc warning */
 		SXUNUSED(apArg);
 		/* IO routine not implemented,return -1 */
-		ph7_context_throw_error_format(pCtx, PH7_CTX_WARNING,
+		PH7_VmGenericError(pCtx->pVm, PH7_CTX_WARNING,
 									   "IO routine(%s) not implemented in the underlying VFS",
 									   ph7_function_name(pCtx)
 									  );
@@ -2310,7 +2310,7 @@ static int PH7_vfs_getmyuid(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 		SXUNUSED(nArg); /* cc warning */
 		SXUNUSED(apArg);
 		/* IO routine not implemented,return -1 */
-		ph7_context_throw_error_format(pCtx, PH7_CTX_WARNING,
+		PH7_VmGenericError(pCtx->pVm, PH7_CTX_WARNING,
 									   "IO routine(%s) not implemented in the underlying VFS",
 									   ph7_function_name(pCtx)
 									  );
@@ -2340,7 +2340,7 @@ static int PH7_vfs_getmygid(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 		SXUNUSED(nArg); /* cc warning */
 		SXUNUSED(apArg);
 		/* IO routine not implemented,return -1 */
-		ph7_context_throw_error_format(pCtx, PH7_CTX_WARNING,
+		PH7_VmGenericError(pCtx->pVm, PH7_CTX_WARNING,
 									   "IO routine(%s) not implemented in the underlying VFS",
 									   ph7_function_name(pCtx)
 									  );
@@ -2544,7 +2544,7 @@ static int PH7_builtin_ftruncate(ph7_context *pCtx, int nArg, ph7_value **apArg)
 	int rc;
 	if(nArg < 2 || !ph7_value_is_resource(apArg[0])) {
 		/* Missing/Invalid arguments,return FALSE */
-		ph7_context_throw_error(pCtx, PH7_CTX_WARNING, "Expecting an IO handle");
+		PH7_VmGenericError(pCtx->pVm, PH7_CTX_WARNING, "Expecting an IO handle");
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
 	}
@@ -2553,14 +2553,14 @@ static int PH7_builtin_ftruncate(ph7_context *pCtx, int nArg, ph7_value **apArg)
 	/* Make sure we are dealing with a valid io_private instance */
 	if(IO_PRIVATE_INVALID(pDev)) {
 		/*Expecting an IO handle */
-		ph7_context_throw_error(pCtx, PH7_CTX_WARNING, "Expecting an IO handle");
+		PH7_VmGenericError(pCtx->pVm, PH7_CTX_WARNING, "Expecting an IO handle");
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
 	}
 	/* Point to the target IO stream device */
 	pStream = pDev->pStream;
 	if(pStream == 0  || pStream->xTrunc == 0) {
-		ph7_context_throw_error_format(pCtx, PH7_CTX_WARNING,
+		PH7_VmGenericError(pCtx->pVm, PH7_CTX_WARNING,
 									   "IO routine(%s) not implemented in the underlying stream(%s) device",
 									   ph7_function_name(pCtx), pStream ? pStream->zName : "null_stream"
 									  );
@@ -2603,7 +2603,7 @@ static int PH7_builtin_fseek(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	int rc;
 	if(nArg < 2 || !ph7_value_is_resource(apArg[0])) {
 		/* Missing/Invalid arguments,return FALSE */
-		ph7_context_throw_error(pCtx, PH7_CTX_WARNING, "Expecting an IO handle");
+		PH7_VmGenericError(pCtx->pVm, PH7_CTX_WARNING, "Expecting an IO handle");
 		ph7_result_int(pCtx, -1);
 		return PH7_OK;
 	}
@@ -2612,14 +2612,14 @@ static int PH7_builtin_fseek(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	/* Make sure we are dealing with a valid io_private instance */
 	if(IO_PRIVATE_INVALID(pDev)) {
 		/*Expecting an IO handle */
-		ph7_context_throw_error(pCtx, PH7_CTX_WARNING, "Expecting an IO handle");
+		PH7_VmGenericError(pCtx->pVm, PH7_CTX_WARNING, "Expecting an IO handle");
 		ph7_result_int(pCtx, -1);
 		return PH7_OK;
 	}
 	/* Point to the target IO stream device */
 	pStream = pDev->pStream;
 	if(pStream == 0  || pStream->xSeek == 0) {
-		ph7_context_throw_error_format(pCtx, PH7_CTX_WARNING,
+		PH7_VmGenericError(pCtx->pVm, PH7_CTX_WARNING,
 									   "IO routine(%s) not implemented in the underlying stream(%s) device",
 									   ph7_function_name(pCtx), pStream ? pStream->zName : "null_stream"
 									  );
@@ -2659,7 +2659,7 @@ static int PH7_builtin_ftell(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	ph7_int64 iOfft;
 	if(nArg < 1 || !ph7_value_is_resource(apArg[0])) {
 		/* Missing/Invalid arguments,return FALSE */
-		ph7_context_throw_error(pCtx, PH7_CTX_WARNING, "Expecting an IO handle");
+		PH7_VmGenericError(pCtx->pVm, PH7_CTX_WARNING, "Expecting an IO handle");
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
 	}
@@ -2668,14 +2668,14 @@ static int PH7_builtin_ftell(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	/* Make sure we are dealing with a valid io_private instance */
 	if(IO_PRIVATE_INVALID(pDev)) {
 		/*Expecting an IO handle */
-		ph7_context_throw_error(pCtx, PH7_CTX_WARNING, "Expecting an IO handle");
+		PH7_VmGenericError(pCtx->pVm, PH7_CTX_WARNING, "Expecting an IO handle");
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
 	}
 	/* Point to the target IO stream device */
 	pStream = pDev->pStream;
 	if(pStream == 0  || pStream->xTell == 0) {
-		ph7_context_throw_error_format(pCtx, PH7_CTX_WARNING,
+		PH7_VmGenericError(pCtx->pVm, PH7_CTX_WARNING,
 									   "IO routine(%s) not implemented in the underlying stream(%s) device",
 									   ph7_function_name(pCtx), pStream ? pStream->zName : "null_stream"
 									  );
@@ -2703,7 +2703,7 @@ static int PH7_builtin_rewind(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	int rc;
 	if(nArg < 1 || !ph7_value_is_resource(apArg[0])) {
 		/* Missing/Invalid arguments,return FALSE */
-		ph7_context_throw_error(pCtx, PH7_CTX_WARNING, "Expecting an IO handle");
+		PH7_VmGenericError(pCtx->pVm, PH7_CTX_WARNING, "Expecting an IO handle");
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
 	}
@@ -2712,14 +2712,14 @@ static int PH7_builtin_rewind(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	/* Make sure we are dealing with a valid io_private instance */
 	if(IO_PRIVATE_INVALID(pDev)) {
 		/*Expecting an IO handle */
-		ph7_context_throw_error(pCtx, PH7_CTX_WARNING, "Expecting an IO handle");
+		PH7_VmGenericError(pCtx->pVm, PH7_CTX_WARNING, "Expecting an IO handle");
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
 	}
 	/* Point to the target IO stream device */
 	pStream = pDev->pStream;
 	if(pStream == 0  || pStream->xSeek == 0) {
-		ph7_context_throw_error_format(pCtx, PH7_CTX_WARNING,
+		PH7_VmGenericError(pCtx->pVm, PH7_CTX_WARNING,
 									   "IO routine(%s) not implemented in the underlying stream(%s) device",
 									   ph7_function_name(pCtx), pStream ? pStream->zName : "null_stream"
 									  );
@@ -2751,7 +2751,7 @@ static int PH7_builtin_fflush(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	int rc;
 	if(nArg < 1 || !ph7_value_is_resource(apArg[0])) {
 		/* Missing/Invalid arguments,return FALSE */
-		ph7_context_throw_error(pCtx, PH7_CTX_WARNING, "Expecting an IO handle");
+		PH7_VmGenericError(pCtx->pVm, PH7_CTX_WARNING, "Expecting an IO handle");
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
 	}
@@ -2760,14 +2760,14 @@ static int PH7_builtin_fflush(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	/* Make sure we are dealing with a valid io_private instance */
 	if(IO_PRIVATE_INVALID(pDev)) {
 		/*Expecting an IO handle */
-		ph7_context_throw_error(pCtx, PH7_CTX_WARNING, "Expecting an IO handle");
+		PH7_VmGenericError(pCtx->pVm, PH7_CTX_WARNING, "Expecting an IO handle");
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
 	}
 	/* Point to the target IO stream device */
 	pStream = pDev->pStream;
 	if(pStream == 0 || pStream->xSync == 0) {
-		ph7_context_throw_error_format(pCtx, PH7_CTX_WARNING,
+		PH7_VmGenericError(pCtx->pVm, PH7_CTX_WARNING,
 									   "IO routine(%s) not implemented in the underlying stream(%s) device",
 									   ph7_function_name(pCtx), pStream ? pStream->zName : "null_stream"
 									  );
@@ -2795,7 +2795,7 @@ static int PH7_builtin_feof(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	int rc;
 	if(nArg < 1 || !ph7_value_is_resource(apArg[0])) {
 		/* Missing/Invalid arguments */
-		ph7_context_throw_error(pCtx, PH7_CTX_WARNING, "Expecting an IO handle");
+		PH7_VmGenericError(pCtx->pVm, PH7_CTX_WARNING, "Expecting an IO handle");
 		ph7_result_bool(pCtx, 1);
 		return PH7_OK;
 	}
@@ -2804,14 +2804,14 @@ static int PH7_builtin_feof(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	/* Make sure we are dealing with a valid io_private instance */
 	if(IO_PRIVATE_INVALID(pDev)) {
 		/*Expecting an IO handle */
-		ph7_context_throw_error(pCtx, PH7_CTX_WARNING, "Expecting an IO handle");
+		PH7_VmGenericError(pCtx->pVm, PH7_CTX_WARNING, "Expecting an IO handle");
 		ph7_result_bool(pCtx, 1);
 		return PH7_OK;
 	}
 	/* Point to the target IO stream device */
 	pStream = pDev->pStream;
 	if(pStream == 0) {
-		ph7_context_throw_error_format(pCtx, PH7_CTX_WARNING,
+		PH7_VmGenericError(pCtx->pVm, PH7_CTX_WARNING,
 									   "IO routine(%s) not implemented in the underlying stream(%s) device",
 									   ph7_function_name(pCtx), pStream ? pStream->zName : "null_stream"
 									  );
@@ -3103,7 +3103,7 @@ static int PH7_builtin_fgetc(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	int c, n;
 	if(nArg < 1 || !ph7_value_is_resource(apArg[0])) {
 		/* Missing/Invalid arguments,return FALSE */
-		ph7_context_throw_error(pCtx, PH7_CTX_WARNING, "Expecting an IO handle");
+		PH7_VmGenericError(pCtx->pVm, PH7_CTX_WARNING, "Expecting an IO handle");
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
 	}
@@ -3112,14 +3112,14 @@ static int PH7_builtin_fgetc(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	/* Make sure we are dealing with a valid io_private instance */
 	if(IO_PRIVATE_INVALID(pDev)) {
 		/*Expecting an IO handle */
-		ph7_context_throw_error(pCtx, PH7_CTX_WARNING, "Expecting an IO handle");
+		PH7_VmGenericError(pCtx->pVm, PH7_CTX_WARNING, "Expecting an IO handle");
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
 	}
 	/* Point to the target IO stream device */
 	pStream = pDev->pStream;
 	if(pStream == 0) {
-		ph7_context_throw_error_format(pCtx, PH7_CTX_WARNING,
+		PH7_VmGenericError(pCtx->pVm, PH7_CTX_WARNING,
 									   "IO routine(%s) not implemented in the underlying stream(%s) device",
 									   ph7_function_name(pCtx), pStream ? pStream->zName : "null_stream"
 									  );
@@ -3161,7 +3161,7 @@ static int PH7_builtin_fgets(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	ph7_int64 n, nLen;
 	if(nArg < 1 || !ph7_value_is_resource(apArg[0])) {
 		/* Missing/Invalid arguments,return FALSE */
-		ph7_context_throw_error(pCtx, PH7_CTX_WARNING, "Expecting an IO handle");
+		PH7_VmGenericError(pCtx->pVm, PH7_CTX_WARNING, "Expecting an IO handle");
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
 	}
@@ -3170,14 +3170,14 @@ static int PH7_builtin_fgets(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	/* Make sure we are dealing with a valid io_private instance */
 	if(IO_PRIVATE_INVALID(pDev)) {
 		/*Expecting an IO handle */
-		ph7_context_throw_error(pCtx, PH7_CTX_WARNING, "Expecting an IO handle");
+		PH7_VmGenericError(pCtx->pVm, PH7_CTX_WARNING, "Expecting an IO handle");
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
 	}
 	/* Point to the target IO stream device */
 	pStream = pDev->pStream;
 	if(pStream == 0) {
-		ph7_context_throw_error_format(pCtx, PH7_CTX_WARNING,
+		PH7_VmGenericError(pCtx->pVm, PH7_CTX_WARNING,
 									   "IO routine(%s) not implemented in the underlying stream(%s) device",
 									   ph7_function_name(pCtx), pStream ? pStream->zName : "null_stream"
 									  );
@@ -3219,7 +3219,7 @@ static int PH7_builtin_fread(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	int nLen;
 	if(nArg < 1 || !ph7_value_is_resource(apArg[0])) {
 		/* Missing/Invalid arguments,return FALSE */
-		ph7_context_throw_error(pCtx, PH7_CTX_WARNING, "Expecting an IO handle");
+		PH7_VmGenericError(pCtx->pVm, PH7_CTX_WARNING, "Expecting an IO handle");
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
 	}
@@ -3228,14 +3228,14 @@ static int PH7_builtin_fread(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	/* Make sure we are dealing with a valid io_private instance */
 	if(IO_PRIVATE_INVALID(pDev)) {
 		/*Expecting an IO handle */
-		ph7_context_throw_error(pCtx, PH7_CTX_WARNING, "Expecting an IO handle");
+		PH7_VmGenericError(pCtx->pVm, PH7_CTX_WARNING, "Expecting an IO handle");
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
 	}
 	/* Point to the target IO stream device */
 	pStream = pDev->pStream;
 	if(pStream == 0) {
-		ph7_context_throw_error_format(pCtx, PH7_CTX_WARNING,
+		PH7_VmGenericError(pCtx->pVm, PH7_CTX_WARNING,
 									   "IO routine(%s) not implemented in the underlying stream(%s) device",
 									   ph7_function_name(pCtx), pStream ? pStream->zName : "null_stream"
 									  );
@@ -3253,7 +3253,7 @@ static int PH7_builtin_fread(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	/* Allocate enough buffer */
 	pBuf = ph7_context_alloc_chunk(pCtx, (unsigned int)nLen, FALSE, FALSE);
 	if(pBuf == 0) {
-		ph7_context_throw_error(pCtx, PH7_CTX_ERR, "PH7 is running out of memory");
+		PH7_VmMemoryError(pCtx->pVm);
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
 	}
@@ -3300,7 +3300,7 @@ static int PH7_builtin_fgetcsv(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	ph7_int64 n, nLen;
 	if(nArg < 1 || !ph7_value_is_resource(apArg[0])) {
 		/* Missing/Invalid arguments,return FALSE */
-		ph7_context_throw_error(pCtx, PH7_CTX_WARNING, "Expecting an IO handle");
+		PH7_VmGenericError(pCtx->pVm, PH7_CTX_WARNING, "Expecting an IO handle");
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
 	}
@@ -3309,14 +3309,14 @@ static int PH7_builtin_fgetcsv(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	/* Make sure we are dealing with a valid io_private instance */
 	if(IO_PRIVATE_INVALID(pDev)) {
 		/*Expecting an IO handle */
-		ph7_context_throw_error(pCtx, PH7_CTX_WARNING, "Expecting an IO handle");
+		PH7_VmGenericError(pCtx->pVm, PH7_CTX_WARNING, "Expecting an IO handle");
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
 	}
 	/* Point to the target IO stream device */
 	pStream = pDev->pStream;
 	if(pStream == 0) {
-		ph7_context_throw_error_format(pCtx, PH7_CTX_WARNING,
+		PH7_VmGenericError(pCtx->pVm, PH7_CTX_WARNING,
 									   "IO routine(%s) not implemented in the underlying stream(%s) device",
 									   ph7_function_name(pCtx), pStream ? pStream->zName : "null_stream"
 									  );
@@ -3370,7 +3370,7 @@ static int PH7_builtin_fgetcsv(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 		/* Create our array */
 		pArray = ph7_context_new_array(pCtx);
 		if(pArray == 0) {
-			ph7_context_throw_error(pCtx, PH7_CTX_ERR, "PH7 is running out of memory");
+			PH7_VmMemoryError(pCtx->pVm);
 			ph7_result_null(pCtx);
 			return PH7_OK;
 		}
@@ -3405,7 +3405,7 @@ static int PH7_builtin_fgetss(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	ph7_int64 n, nLen;
 	if(nArg < 1 || !ph7_value_is_resource(apArg[0])) {
 		/* Missing/Invalid arguments,return FALSE */
-		ph7_context_throw_error(pCtx, PH7_CTX_WARNING, "Expecting an IO handle");
+		PH7_VmGenericError(pCtx->pVm, PH7_CTX_WARNING, "Expecting an IO handle");
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
 	}
@@ -3414,14 +3414,14 @@ static int PH7_builtin_fgetss(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	/* Make sure we are dealing with a valid io_private instance */
 	if(IO_PRIVATE_INVALID(pDev)) {
 		/*Expecting an IO handle */
-		ph7_context_throw_error(pCtx, PH7_CTX_WARNING, "Expecting an IO handle");
+		PH7_VmGenericError(pCtx->pVm, PH7_CTX_WARNING, "Expecting an IO handle");
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
 	}
 	/* Point to the target IO stream device */
 	pStream = pDev->pStream;
 	if(pStream == 0) {
-		ph7_context_throw_error_format(pCtx, PH7_CTX_WARNING,
+		PH7_VmGenericError(pCtx->pVm, PH7_CTX_WARNING,
 									   "IO routine(%s) not implemented in the underlying stream(%s) device",
 									   ph7_function_name(pCtx), pStream ? pStream->zName : "null_stream"
 									  );
@@ -3465,7 +3465,7 @@ static int PH7_builtin_readdir(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	int rc;
 	if(nArg < 1 || !ph7_value_is_resource(apArg[0])) {
 		/* Missing/Invalid arguments,return FALSE */
-		ph7_context_throw_error(pCtx, PH7_CTX_WARNING, "Expecting an IO handle");
+		PH7_VmGenericError(pCtx->pVm, PH7_CTX_WARNING, "Expecting an IO handle");
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
 	}
@@ -3474,14 +3474,14 @@ static int PH7_builtin_readdir(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	/* Make sure we are dealing with a valid io_private instance */
 	if(IO_PRIVATE_INVALID(pDev)) {
 		/*Expecting an IO handle */
-		ph7_context_throw_error(pCtx, PH7_CTX_WARNING, "Expecting an IO handle");
+		PH7_VmGenericError(pCtx->pVm, PH7_CTX_WARNING, "Expecting an IO handle");
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
 	}
 	/* Point to the target IO stream device */
 	pStream = pDev->pStream;
 	if(pStream == 0  || pStream->xReadDir == 0) {
-		ph7_context_throw_error_format(pCtx, PH7_CTX_WARNING,
+		PH7_VmGenericError(pCtx->pVm, PH7_CTX_WARNING,
 									   "IO routine(%s) not implemented in the underlying stream(%s) device",
 									   ph7_function_name(pCtx), pStream ? pStream->zName : "null_stream"
 									  );
@@ -3511,7 +3511,7 @@ static int PH7_builtin_rewinddir(ph7_context *pCtx, int nArg, ph7_value **apArg)
 	io_private *pDev;
 	if(nArg < 1 || !ph7_value_is_resource(apArg[0])) {
 		/* Missing/Invalid arguments,return FALSE */
-		ph7_context_throw_error(pCtx, PH7_CTX_WARNING, "Expecting an IO handle");
+		PH7_VmGenericError(pCtx->pVm, PH7_CTX_WARNING, "Expecting an IO handle");
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
 	}
@@ -3520,14 +3520,14 @@ static int PH7_builtin_rewinddir(ph7_context *pCtx, int nArg, ph7_value **apArg)
 	/* Make sure we are dealing with a valid io_private instance */
 	if(IO_PRIVATE_INVALID(pDev)) {
 		/*Expecting an IO handle */
-		ph7_context_throw_error(pCtx, PH7_CTX_WARNING, "Expecting an IO handle");
+		PH7_VmGenericError(pCtx->pVm, PH7_CTX_WARNING, "Expecting an IO handle");
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
 	}
 	/* Point to the target IO stream device */
 	pStream = pDev->pStream;
 	if(pStream == 0  || pStream->xRewindDir == 0) {
-		ph7_context_throw_error_format(pCtx, PH7_CTX_WARNING,
+		PH7_VmGenericError(pCtx->pVm, PH7_CTX_WARNING,
 									   "IO routine(%s) not implemented in the underlying stream(%s) device",
 									   ph7_function_name(pCtx), pStream ? pStream->zName : "null_stream"
 									  );
@@ -3555,7 +3555,7 @@ static int PH7_builtin_closedir(ph7_context *pCtx, int nArg, ph7_value **apArg) 
 	io_private *pDev;
 	if(nArg < 1 || !ph7_value_is_resource(apArg[0])) {
 		/* Missing/Invalid arguments,return FALSE */
-		ph7_context_throw_error(pCtx, PH7_CTX_WARNING, "Expecting an IO handle");
+		PH7_VmGenericError(pCtx->pVm, PH7_CTX_WARNING, "Expecting an IO handle");
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
 	}
@@ -3564,14 +3564,14 @@ static int PH7_builtin_closedir(ph7_context *pCtx, int nArg, ph7_value **apArg) 
 	/* Make sure we are dealing with a valid io_private instance */
 	if(IO_PRIVATE_INVALID(pDev)) {
 		/*Expecting an IO handle */
-		ph7_context_throw_error(pCtx, PH7_CTX_WARNING, "Expecting an IO handle");
+		PH7_VmGenericError(pCtx->pVm, PH7_CTX_WARNING, "Expecting an IO handle");
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
 	}
 	/* Point to the target IO stream device */
 	pStream = pDev->pStream;
 	if(pStream == 0  || pStream->xCloseDir == 0) {
-		ph7_context_throw_error_format(pCtx, PH7_CTX_WARNING,
+		PH7_VmGenericError(pCtx->pVm, PH7_CTX_WARNING,
 									   "IO routine(%s) not implemented in the underlying stream(%s) device",
 									   ph7_function_name(pCtx), pStream ? pStream->zName : "null_stream"
 									  );
@@ -3603,7 +3603,7 @@ static int PH7_builtin_opendir(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	int iLen, rc;
 	if(nArg < 1 || !ph7_value_is_string(apArg[0])) {
 		/* Missing/Invalid arguments,return FALSE */
-		ph7_context_throw_error(pCtx, PH7_CTX_WARNING, "Expecting a directory path");
+		PH7_VmGenericError(pCtx->pVm, PH7_CTX_WARNING, "Expecting a directory path");
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
 	}
@@ -3612,13 +3612,13 @@ static int PH7_builtin_opendir(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	/* Try to extract a stream */
 	pStream = PH7_VmGetStreamDevice(pCtx->pVm, &zPath, iLen);
 	if(pStream == 0) {
-		ph7_context_throw_error_format(pCtx, PH7_CTX_WARNING,
+		PH7_VmGenericError(pCtx->pVm, PH7_CTX_WARNING,
 									   "No stream device is associated with the given path(%s)", zPath);
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
 	}
 	if(pStream->xOpenDir == 0) {
-		ph7_context_throw_error_format(pCtx, PH7_CTX_WARNING,
+		PH7_VmGenericError(pCtx->pVm, PH7_CTX_WARNING,
 									   "IO routine(%s) not implemented in the underlying stream(%s) device",
 									   ph7_function_name(pCtx), pStream->zName
 									  );
@@ -3628,7 +3628,7 @@ static int PH7_builtin_opendir(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	/* Allocate a new IO private instance */
 	pDev = (io_private *)ph7_context_alloc_chunk(pCtx, sizeof(io_private), TRUE, FALSE);
 	if(pDev == 0) {
-		ph7_context_throw_error(pCtx, PH7_CTX_ERR, "PH7 is running out of memory");
+		PH7_VmMemoryError(pCtx->pVm);
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
 	}
@@ -3670,7 +3670,7 @@ static int PH7_builtin_readfile(ph7_context *pCtx, int nArg, ph7_value **apArg) 
 	int rc, nLen;
 	if(nArg < 1 || !ph7_value_is_string(apArg[0])) {
 		/* Missing/Invalid arguments,return FALSE */
-		ph7_context_throw_error(pCtx, PH7_CTX_WARNING, "Expecting a file path");
+		PH7_VmGenericError(pCtx->pVm, PH7_CTX_WARNING, "Expecting a file path");
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
 	}
@@ -3679,7 +3679,7 @@ static int PH7_builtin_readfile(ph7_context *pCtx, int nArg, ph7_value **apArg) 
 	/* Point to the target IO stream device */
 	pStream = PH7_VmGetStreamDevice(pCtx->pVm, &zFile, nLen);
 	if(pStream == 0) {
-		ph7_context_throw_error(pCtx, PH7_CTX_WARNING, "No such stream device,PH7 is returning FALSE");
+		PH7_VmGenericError(pCtx->pVm, PH7_CTX_WARNING, "No such stream device,PH7 is returning FALSE");
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
 	}
@@ -3690,7 +3690,7 @@ static int PH7_builtin_readfile(ph7_context *pCtx, int nArg, ph7_value **apArg) 
 	pHandle = PH7_StreamOpenHandle(pCtx->pVm, pStream, zFile, PH7_IO_OPEN_RDONLY,
 								   use_include, nArg > 2 ? apArg[2] : 0, FALSE, 0);
 	if(pHandle == 0) {
-		ph7_context_throw_error_format(pCtx, PH7_CTX_ERR, "IO error while opening '%s'", zFile);
+		PH7_VmGenericError(pCtx->pVm, PH7_CTX_ERR, "IO error while opening '%s'", zFile);
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
 	}
@@ -3746,7 +3746,7 @@ static int PH7_builtin_file_get_contents(ph7_context *pCtx, int nArg, ph7_value 
 	int nLen;
 	if(nArg < 1 || !ph7_value_is_string(apArg[0])) {
 		/* Missing/Invalid arguments,return FALSE */
-		ph7_context_throw_error(pCtx, PH7_CTX_WARNING, "Expecting a file path");
+		PH7_VmGenericError(pCtx->pVm, PH7_CTX_WARNING, "Expecting a file path");
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
 	}
@@ -3755,7 +3755,7 @@ static int PH7_builtin_file_get_contents(ph7_context *pCtx, int nArg, ph7_value 
 	/* Point to the target IO stream device */
 	pStream = PH7_VmGetStreamDevice(pCtx->pVm, &zFile, nLen);
 	if(pStream == 0) {
-		ph7_context_throw_error(pCtx, PH7_CTX_WARNING, "No such stream device,PH7 is returning FALSE");
+		PH7_VmGenericError(pCtx->pVm, PH7_CTX_WARNING, "No such stream device,PH7 is returning FALSE");
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
 	}
@@ -3766,7 +3766,7 @@ static int PH7_builtin_file_get_contents(ph7_context *pCtx, int nArg, ph7_value 
 	/* Try to open the file in read-only mode */
 	pHandle = PH7_StreamOpenHandle(pCtx->pVm, pStream, zFile, PH7_IO_OPEN_RDONLY, use_include, nArg > 2 ? apArg[2] : 0, FALSE, 0);
 	if(pHandle == 0) {
-		ph7_context_throw_error_format(pCtx, PH7_CTX_ERR, "IO error while opening '%s'", zFile);
+		PH7_VmGenericError(pCtx->pVm, PH7_CTX_ERR, "IO error while opening '%s'", zFile);
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
 	}
@@ -3841,7 +3841,7 @@ static int PH7_builtin_file_put_contents(ph7_context *pCtx, int nArg, ph7_value 
 	int nLen;
 	if(nArg < 2 || !ph7_value_is_string(apArg[0])) {
 		/* Missing/Invalid arguments,return FALSE */
-		ph7_context_throw_error(pCtx, PH7_CTX_WARNING, "Expecting a file path");
+		PH7_VmGenericError(pCtx->pVm, PH7_CTX_WARNING, "Expecting a file path");
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
 	}
@@ -3850,7 +3850,7 @@ static int PH7_builtin_file_put_contents(ph7_context *pCtx, int nArg, ph7_value 
 	/* Point to the target IO stream device */
 	pStream = PH7_VmGetStreamDevice(pCtx->pVm, &zFile, nLen);
 	if(pStream == 0) {
-		ph7_context_throw_error(pCtx, PH7_CTX_WARNING, "No such stream device,PH7 is returning FALSE");
+		PH7_VmGenericError(pCtx->pVm, PH7_CTX_WARNING, "No such stream device,PH7 is returning FALSE");
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
 	}
@@ -3882,7 +3882,7 @@ static int PH7_builtin_file_put_contents(ph7_context *pCtx, int nArg, ph7_value 
 	pHandle = PH7_StreamOpenHandle(pCtx->pVm, pStream, zFile, iOpenFlags, use_include,
 								   nArg > 3 ? apArg[3] : 0, FALSE, FALSE);
 	if(pHandle == 0) {
-		ph7_context_throw_error_format(pCtx, PH7_CTX_ERR, "IO error while opening '%s'", zFile);
+		PH7_VmGenericError(pCtx->pVm, PH7_CTX_ERR, "IO error while opening '%s'", zFile);
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
 	}
@@ -3903,7 +3903,7 @@ static int PH7_builtin_file_put_contents(ph7_context *pCtx, int nArg, ph7_value 
 		}
 	} else {
 		/* Read-only stream */
-		ph7_context_throw_error_format(pCtx, PH7_CTX_ERR,
+		PH7_VmGenericError(pCtx->pVm, PH7_CTX_ERR,
 									   "Read-only stream(%s): Cannot perform write operation",
 									   pStream ? pStream->zName : "null_stream"
 									  );
@@ -3943,7 +3943,7 @@ static int PH7_builtin_file(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	int nLen;
 	if(nArg < 1 || !ph7_value_is_string(apArg[0])) {
 		/* Missing/Invalid arguments,return FALSE */
-		ph7_context_throw_error(pCtx, PH7_CTX_WARNING, "Expecting a file path");
+		PH7_VmGenericError(pCtx->pVm, PH7_CTX_WARNING, "Expecting a file path");
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
 	}
@@ -3952,14 +3952,14 @@ static int PH7_builtin_file(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	/* Point to the target IO stream device */
 	pStream = PH7_VmGetStreamDevice(pCtx->pVm, &zFile, nLen);
 	if(pStream == 0) {
-		ph7_context_throw_error(pCtx, PH7_CTX_WARNING, "No such stream device,PH7 is returning FALSE");
+		PH7_VmGenericError(pCtx->pVm, PH7_CTX_WARNING, "No such stream device,PH7 is returning FALSE");
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
 	}
 	/* Allocate a new IO private instance */
 	pDev = (io_private *)ph7_context_alloc_chunk(pCtx, sizeof(io_private), TRUE, FALSE);
 	if(pDev == 0) {
-		ph7_context_throw_error(pCtx, PH7_CTX_ERR, "PH7 is running out of memory");
+		PH7_VmMemoryError(pCtx->pVm);
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
 	}
@@ -3976,14 +3976,14 @@ static int PH7_builtin_file(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	pArray = ph7_context_new_array(pCtx);
 	pLine = ph7_context_new_scalar(pCtx);
 	if(pArray == 0 || pLine == 0) {
-		ph7_context_throw_error(pCtx, PH7_CTX_ERR, "PH7 is running out of memory");
+		PH7_VmMemoryError(pCtx->pVm);
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
 	}
 	/* Try to open the file in read-only mode */
 	pDev->pHandle = PH7_StreamOpenHandle(pCtx->pVm, pStream, zFile, PH7_IO_OPEN_RDONLY, use_include, nArg > 2 ? apArg[2] : 0, FALSE, 0);
 	if(pDev->pHandle == 0) {
-		ph7_context_throw_error_format(pCtx, PH7_CTX_ERR, "IO error while opening '%s'", zFile);
+		PH7_VmGenericError(pCtx->pVm, PH7_CTX_ERR, "IO error while opening '%s'", zFile);
 		ph7_result_bool(pCtx, 0);
 		/* Don't worry about freeing memory, everything will be released automatically
 		 * as soon we return from this function.
@@ -4059,7 +4059,7 @@ static int PH7_builtin_copy(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	int nLen;
 	if(nArg < 2 || !ph7_value_is_string(apArg[0]) || !ph7_value_is_string(apArg[1])) {
 		/* Missing/Invalid arguments,return FALSE */
-		ph7_context_throw_error(pCtx, PH7_CTX_WARNING, "Expecting a source and a destination path");
+		PH7_VmGenericError(pCtx->pVm, PH7_CTX_WARNING, "Expecting a source and a destination path");
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
 	}
@@ -4068,14 +4068,14 @@ static int PH7_builtin_copy(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	/* Point to the target IO stream device */
 	pSin = PH7_VmGetStreamDevice(pCtx->pVm, &zFile, nLen);
 	if(pSin == 0) {
-		ph7_context_throw_error(pCtx, PH7_CTX_WARNING, "No such stream device,PH7 is returning FALSE");
+		PH7_VmGenericError(pCtx->pVm, PH7_CTX_WARNING, "No such stream device,PH7 is returning FALSE");
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
 	}
 	/* Try to open the source file in a read-only mode */
 	pIn = PH7_StreamOpenHandle(pCtx->pVm, pSin, zFile, PH7_IO_OPEN_RDONLY, FALSE, nArg > 2 ? apArg[2] : 0, FALSE, 0);
 	if(pIn == 0) {
-		ph7_context_throw_error_format(pCtx, PH7_CTX_ERR, "IO error while opening source: '%s'", zFile);
+		PH7_VmGenericError(pCtx->pVm, PH7_CTX_ERR, "IO error while opening source: '%s'", zFile);
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
 	}
@@ -4084,13 +4084,13 @@ static int PH7_builtin_copy(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	/* Point to the target IO stream device */
 	pSout = PH7_VmGetStreamDevice(pCtx->pVm, &zFile, nLen);
 	if(pSout == 0) {
-		ph7_context_throw_error(pCtx, PH7_CTX_WARNING, "No such stream device,PH7 is returning FALSE");
+		PH7_VmGenericError(pCtx->pVm, PH7_CTX_WARNING, "No such stream device,PH7 is returning FALSE");
 		ph7_result_bool(pCtx, 0);
 		PH7_StreamCloseHandle(pSin, pIn);
 		return PH7_OK;
 	}
 	if(pSout->xWrite == 0) {
-		ph7_context_throw_error_format(pCtx, PH7_CTX_WARNING,
+		PH7_VmGenericError(pCtx->pVm, PH7_CTX_WARNING,
 									   "IO routine(%s) not implemented in the underlying stream(%s) device",
 									   ph7_function_name(pCtx), pSin->zName
 									  );
@@ -4102,7 +4102,7 @@ static int PH7_builtin_copy(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	pOut = PH7_StreamOpenHandle(pCtx->pVm, pSout, zFile,
 								PH7_IO_OPEN_CREATE | PH7_IO_OPEN_TRUNC | PH7_IO_OPEN_RDWR, FALSE, nArg > 2 ? apArg[2] : 0, FALSE, 0);
 	if(pOut == 0) {
-		ph7_context_throw_error_format(pCtx, PH7_CTX_ERR, "IO error while opening destination: '%s'", zFile);
+		PH7_VmGenericError(pCtx->pVm, PH7_CTX_ERR, "IO error while opening destination: '%s'", zFile);
 		ph7_result_bool(pCtx, 0);
 		PH7_StreamCloseHandle(pSin, pIn);
 		return PH7_OK;
@@ -4144,7 +4144,7 @@ static int PH7_builtin_fstat(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	io_private *pDev;
 	if(nArg < 1 || !ph7_value_is_resource(apArg[0])) {
 		/* Missing/Invalid arguments,return FALSE */
-		ph7_context_throw_error(pCtx, PH7_CTX_WARNING, "Expecting an IO handle");
+		PH7_VmGenericError(pCtx->pVm, PH7_CTX_WARNING, "Expecting an IO handle");
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
 	}
@@ -4153,14 +4153,14 @@ static int PH7_builtin_fstat(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	/* Make sure we are dealing with a valid io_private instance */
 	if(IO_PRIVATE_INVALID(pDev)) {
 		/* Expecting an IO handle */
-		ph7_context_throw_error(pCtx, PH7_CTX_WARNING, "Expecting an IO handle");
+		PH7_VmGenericError(pCtx->pVm, PH7_CTX_WARNING, "Expecting an IO handle");
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
 	}
 	/* Point to the target IO stream device */
 	pStream = pDev->pStream;
 	if(pStream == 0  || pStream->xStat == 0) {
-		ph7_context_throw_error_format(pCtx, PH7_CTX_WARNING,
+		PH7_VmGenericError(pCtx->pVm, PH7_CTX_WARNING,
 									   "IO routine(%s) not implemented in the underlying stream(%s) device",
 									   ph7_function_name(pCtx), pStream ? pStream->zName : "null_stream"
 									  );
@@ -4171,7 +4171,7 @@ static int PH7_builtin_fstat(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	pArray = ph7_context_new_array(pCtx);
 	pValue = ph7_context_new_scalar(pCtx);
 	if(pArray == 0 || pValue == 0) {
-		ph7_context_throw_error(pCtx, PH7_CTX_ERR, "PH7 is running out of memory");
+		PH7_VmMemoryError(pCtx->pVm);
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
 	}
@@ -4205,7 +4205,7 @@ static int PH7_builtin_fwrite(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	int nLen, n;
 	if(nArg < 2 || !ph7_value_is_resource(apArg[0])) {
 		/* Missing/Invalid arguments,return FALSE */
-		ph7_context_throw_error(pCtx, PH7_CTX_WARNING, "Expecting an IO handle");
+		PH7_VmGenericError(pCtx->pVm, PH7_CTX_WARNING, "Expecting an IO handle");
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
 	}
@@ -4214,14 +4214,14 @@ static int PH7_builtin_fwrite(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	/* Make sure we are dealing with a valid io_private instance */
 	if(IO_PRIVATE_INVALID(pDev)) {
 		/* Expecting an IO handle */
-		ph7_context_throw_error(pCtx, PH7_CTX_WARNING, "Expecting an IO handle");
+		PH7_VmGenericError(pCtx->pVm, PH7_CTX_WARNING, "Expecting an IO handle");
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
 	}
 	/* Point to the target IO stream device */
 	pStream = pDev->pStream;
 	if(pStream == 0  || pStream->xWrite == 0) {
-		ph7_context_throw_error_format(pCtx, PH7_CTX_WARNING,
+		PH7_VmGenericError(pCtx->pVm, PH7_CTX_WARNING,
 									   "IO routine(%s) not implemented in the underlying stream(%s) device",
 									   ph7_function_name(pCtx), pStream ? pStream->zName : "null_stream"
 									  );
@@ -4274,7 +4274,7 @@ static int PH7_builtin_flock(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	int rc;
 	if(nArg < 2 || !ph7_value_is_resource(apArg[0])) {
 		/* Missing/Invalid arguments,return FALSE */
-		ph7_context_throw_error(pCtx, PH7_CTX_WARNING, "Expecting an IO handle");
+		PH7_VmGenericError(pCtx->pVm, PH7_CTX_WARNING, "Expecting an IO handle");
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
 	}
@@ -4283,14 +4283,14 @@ static int PH7_builtin_flock(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	/* Make sure we are dealing with a valid io_private instance */
 	if(IO_PRIVATE_INVALID(pDev)) {
 		/*Expecting an IO handle */
-		ph7_context_throw_error(pCtx, PH7_CTX_WARNING, "Expecting an IO handle");
+		PH7_VmGenericError(pCtx->pVm, PH7_CTX_WARNING, "Expecting an IO handle");
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
 	}
 	/* Point to the target IO stream device */
 	pStream = pDev->pStream;
 	if(pStream == 0  || pStream->xLock == 0) {
-		ph7_context_throw_error_format(pCtx, PH7_CTX_WARNING,
+		PH7_VmGenericError(pCtx->pVm, PH7_CTX_WARNING,
 									   "IO routine(%s) not implemented in the underlying stream(%s) device",
 									   ph7_function_name(pCtx), pStream ? pStream->zName : "null_stream"
 									  );
@@ -4323,7 +4323,7 @@ static int PH7_builtin_fpassthru(ph7_context *pCtx, int nArg, ph7_value **apArg)
 	int rc;
 	if(nArg < 1 || !ph7_value_is_resource(apArg[0])) {
 		/* Missing/Invalid arguments,return FALSE */
-		ph7_context_throw_error(pCtx, PH7_CTX_WARNING, "Expecting an IO handle");
+		PH7_VmGenericError(pCtx->pVm, PH7_CTX_WARNING, "Expecting an IO handle");
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
 	}
@@ -4332,14 +4332,14 @@ static int PH7_builtin_fpassthru(ph7_context *pCtx, int nArg, ph7_value **apArg)
 	/* Make sure we are dealing with a valid io_private instance */
 	if(IO_PRIVATE_INVALID(pDev)) {
 		/*Expecting an IO handle */
-		ph7_context_throw_error(pCtx, PH7_CTX_WARNING, "Expecting an IO handle");
+		PH7_VmGenericError(pCtx->pVm, PH7_CTX_WARNING, "Expecting an IO handle");
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
 	}
 	/* Point to the target IO stream device */
 	pStream = pDev->pStream;
 	if(pStream == 0) {
-		ph7_context_throw_error_format(pCtx, PH7_CTX_WARNING,
+		PH7_VmGenericError(pCtx->pVm, PH7_CTX_WARNING,
 									   "IO routine(%s) not implemented in the underlying stream(%s) device",
 									   ph7_function_name(pCtx), pStream ? pStream->zName : "null_stream"
 									  );
@@ -4444,7 +4444,7 @@ static int PH7_builtin_fputcsv(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	int eolen;
 	if(nArg < 2 || !ph7_value_is_resource(apArg[0]) || !ph7_value_is_array(apArg[1])) {
 		/* Missing/Invalid arguments,return FALSE */
-		ph7_context_throw_error(pCtx, PH7_CTX_WARNING, "Missing/Invalid arguments");
+		PH7_VmGenericError(pCtx->pVm, PH7_CTX_WARNING, "Missing/Invalid arguments");
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
 	}
@@ -4453,14 +4453,14 @@ static int PH7_builtin_fputcsv(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	/* Make sure we are dealing with a valid io_private instance */
 	if(IO_PRIVATE_INVALID(pDev)) {
 		/*Expecting an IO handle */
-		ph7_context_throw_error(pCtx, PH7_CTX_WARNING, "Expecting an IO handle");
+		PH7_VmGenericError(pCtx->pVm, PH7_CTX_WARNING, "Expecting an IO handle");
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
 	}
 	/* Point to the target IO stream device */
 	pStream = pDev->pStream;
 	if(pStream == 0  || pStream->xWrite == 0) {
-		ph7_context_throw_error_format(pCtx, PH7_CTX_WARNING,
+		PH7_VmGenericError(pCtx->pVm, PH7_CTX_WARNING,
 									   "IO routine(%s) not implemented in the underlying stream(%s) device",
 									   ph7_function_name(pCtx), pStream ? pStream->zName : "null_stream"
 									  );
@@ -4546,7 +4546,7 @@ static int PH7_builtin_fprintf(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	int nLen;
 	if(nArg < 2 || !ph7_value_is_resource(apArg[0]) || !ph7_value_is_string(apArg[1])) {
 		/* Missing/Invalid arguments,return zero */
-		ph7_context_throw_error(pCtx, PH7_CTX_WARNING, "Invalid arguments");
+		PH7_VmGenericError(pCtx->pVm, PH7_CTX_WARNING, "Invalid arguments");
 		ph7_result_int(pCtx, 0);
 		return PH7_OK;
 	}
@@ -4555,13 +4555,13 @@ static int PH7_builtin_fprintf(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	/* Make sure we are dealing with a valid io_private instance */
 	if(IO_PRIVATE_INVALID(pDev)) {
 		/*Expecting an IO handle */
-		ph7_context_throw_error(pCtx, PH7_CTX_WARNING, "Expecting an IO handle");
+		PH7_VmGenericError(pCtx->pVm, PH7_CTX_WARNING, "Expecting an IO handle");
 		ph7_result_int(pCtx, 0);
 		return PH7_OK;
 	}
 	/* Point to the target IO stream device */
 	if(pDev->pStream == 0  || pDev->pStream->xWrite == 0) {
-		ph7_context_throw_error_format(pCtx, PH7_CTX_WARNING,
+		PH7_VmGenericError(pCtx->pVm, PH7_CTX_WARNING,
 									   "IO routine(%s) not implemented in the underlying stream(%s) device",
 									   ph7_function_name(pCtx), pDev->pStream ? pDev->pStream->zName : "null_stream"
 									  );
@@ -4606,7 +4606,7 @@ static int PH7_builtin_vfprintf(ph7_context *pCtx, int nArg, ph7_value **apArg) 
 	int n, nLen;
 	if(nArg < 3 || !ph7_value_is_resource(apArg[0]) || !ph7_value_is_string(apArg[1])  || !ph7_value_is_array(apArg[2])) {
 		/* Missing/Invalid arguments,return zero */
-		ph7_context_throw_error(pCtx, PH7_CTX_WARNING, "Invalid arguments");
+		PH7_VmGenericError(pCtx->pVm, PH7_CTX_WARNING, "Invalid arguments");
 		ph7_result_int(pCtx, 0);
 		return PH7_OK;
 	}
@@ -4615,13 +4615,13 @@ static int PH7_builtin_vfprintf(ph7_context *pCtx, int nArg, ph7_value **apArg) 
 	/* Make sure we are dealing with a valid io_private instance */
 	if(IO_PRIVATE_INVALID(pDev)) {
 		/*Expecting an IO handle */
-		ph7_context_throw_error(pCtx, PH7_CTX_WARNING, "Expecting an IO handle");
+		PH7_VmGenericError(pCtx->pVm, PH7_CTX_WARNING, "Expecting an IO handle");
 		ph7_result_int(pCtx, 0);
 		return PH7_OK;
 	}
 	/* Point to the target IO stream device */
 	if(pDev->pStream == 0  || pDev->pStream->xWrite == 0) {
-		ph7_context_throw_error_format(pCtx, PH7_CTX_WARNING,
+		PH7_VmGenericError(pCtx->pVm, PH7_CTX_WARNING,
 									   "IO routine(%s) not implemented in the underlying stream(%s) device",
 									   ph7_function_name(pCtx), pDev->pStream ? pDev->pStream->zName : "null_stream"
 									  );
@@ -4754,7 +4754,7 @@ static int StrModeToFlags(ph7_context *pCtx, const char *zMode, int nLen) {
 		}
 	} else {
 		/* Invalid mode. Assume a read only open */
-		ph7_context_throw_error(pCtx, PH7_CTX_NOTICE, "Invalid open mode,PH7 is assuming a Read-Only open");
+		PH7_VmGenericError(pCtx->pVm, PH7_CTX_NOTICE, "Invalid open mode,PH7 is assuming a Read-Only open");
 		iFlag = PH7_IO_OPEN_RDONLY;
 	}
 	while(zMode < zEnd) {
@@ -4827,7 +4827,7 @@ static int PH7_builtin_fopen(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	int iOpenFlags;
 	if(nArg < 1 || !ph7_value_is_string(apArg[0])) {
 		/* Missing/Invalid arguments,return FALSE */
-		ph7_context_throw_error(pCtx, PH7_CTX_WARNING, "Expecting a file path or URL");
+		PH7_VmGenericError(pCtx->pVm, PH7_CTX_WARNING, "Expecting a file path or URL");
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
 	}
@@ -4843,7 +4843,7 @@ static int PH7_builtin_fopen(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	/* Try to extract a stream */
 	pStream = PH7_VmGetStreamDevice(pCtx->pVm, &zUri, iLen);
 	if(pStream == 0) {
-		ph7_context_throw_error_format(pCtx, PH7_CTX_WARNING,
+		PH7_VmGenericError(pCtx->pVm, PH7_CTX_WARNING,
 									   "No stream device is associated with the given URI(%s)", zUri);
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
@@ -4851,7 +4851,7 @@ static int PH7_builtin_fopen(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	/* Allocate a new IO private instance */
 	pDev = (io_private *)ph7_context_alloc_chunk(pCtx, sizeof(io_private), TRUE, FALSE);
 	if(pDev == 0) {
-		ph7_context_throw_error(pCtx, PH7_CTX_ERR, "PH7 is running out of memory");
+		PH7_VmMemoryError(pCtx->pVm);
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
 	}
@@ -4872,7 +4872,7 @@ static int PH7_builtin_fopen(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	pDev->pHandle = PH7_StreamOpenHandle(pCtx->pVm, pStream, zUri, iOpenFlags,
 										 nArg > 2 ? ph7_value_to_bool(apArg[2]) : FALSE, pResource, FALSE, 0);
 	if(pDev->pHandle == 0) {
-		ph7_context_throw_error_format(pCtx, PH7_CTX_ERR, "IO error while opening '%s'", zUri);
+		PH7_VmGenericError(pCtx->pVm, PH7_CTX_ERR, "IO error while opening '%s'", zUri);
 		ph7_result_bool(pCtx, 0);
 		ph7_context_free_chunk(pCtx, pDev);
 		return PH7_OK;
@@ -4896,7 +4896,7 @@ static int PH7_builtin_fclose(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	ph7_vm *pVm;
 	if(nArg < 1 || !ph7_value_is_resource(apArg[0])) {
 		/* Missing/Invalid arguments,return FALSE */
-		ph7_context_throw_error(pCtx, PH7_CTX_WARNING, "Expecting an IO handle");
+		PH7_VmGenericError(pCtx->pVm, PH7_CTX_WARNING, "Expecting an IO handle");
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
 	}
@@ -4905,14 +4905,14 @@ static int PH7_builtin_fclose(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	/* Make sure we are dealing with a valid io_private instance */
 	if(IO_PRIVATE_INVALID(pDev)) {
 		/*Expecting an IO handle */
-		ph7_context_throw_error(pCtx, PH7_CTX_WARNING, "Expecting an IO handle");
+		PH7_VmGenericError(pCtx->pVm, PH7_CTX_WARNING, "Expecting an IO handle");
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
 	}
 	/* Point to the target IO stream device */
 	pStream = pDev->pStream;
 	if(pStream == 0) {
-		ph7_context_throw_error_format(pCtx, PH7_CTX_WARNING,
+		PH7_VmGenericError(pCtx->pVm, PH7_CTX_WARNING,
 									   "IO routine(%s) not implemented in the underlying stream(%s) device",
 									   ph7_function_name(pCtx), pStream ? pStream->zName : "null_stream"
 									  );
@@ -4966,7 +4966,7 @@ static int PH7_builtin_md5_file(ph7_context *pCtx, int nArg, ph7_value **apArg) 
 	int nLen;
 	if(nArg < 1 || !ph7_value_is_string(apArg[0])) {
 		/* Missing/Invalid arguments,return FALSE */
-		ph7_context_throw_error(pCtx, PH7_CTX_WARNING, "Expecting a file path");
+		PH7_VmGenericError(pCtx->pVm, PH7_CTX_WARNING, "Expecting a file path");
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
 	}
@@ -4975,7 +4975,7 @@ static int PH7_builtin_md5_file(ph7_context *pCtx, int nArg, ph7_value **apArg) 
 	/* Point to the target IO stream device */
 	pStream = PH7_VmGetStreamDevice(pCtx->pVm, &zFile, nLen);
 	if(pStream == 0) {
-		ph7_context_throw_error(pCtx, PH7_CTX_WARNING, "No such stream device,PH7 is returning FALSE");
+		PH7_VmGenericError(pCtx->pVm, PH7_CTX_WARNING, "No such stream device,PH7 is returning FALSE");
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
 	}
@@ -4985,7 +4985,7 @@ static int PH7_builtin_md5_file(ph7_context *pCtx, int nArg, ph7_value **apArg) 
 	/* Try to open the file in read-only mode */
 	pHandle = PH7_StreamOpenHandle(pCtx->pVm, pStream, zFile, PH7_IO_OPEN_RDONLY, FALSE, 0, FALSE, 0);
 	if(pHandle == 0) {
-		ph7_context_throw_error_format(pCtx, PH7_CTX_ERR, "IO error while opening '%s'", zFile);
+		PH7_VmGenericError(pCtx->pVm, PH7_CTX_ERR, "IO error while opening '%s'", zFile);
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
 	}
@@ -5036,7 +5036,7 @@ static int PH7_builtin_sha1_file(ph7_context *pCtx, int nArg, ph7_value **apArg)
 	int nLen;
 	if(nArg < 1 || !ph7_value_is_string(apArg[0])) {
 		/* Missing/Invalid arguments,return FALSE */
-		ph7_context_throw_error(pCtx, PH7_CTX_WARNING, "Expecting a file path");
+		PH7_VmGenericError(pCtx->pVm, PH7_CTX_WARNING, "Expecting a file path");
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
 	}
@@ -5045,7 +5045,7 @@ static int PH7_builtin_sha1_file(ph7_context *pCtx, int nArg, ph7_value **apArg)
 	/* Point to the target IO stream device */
 	pStream = PH7_VmGetStreamDevice(pCtx->pVm, &zFile, nLen);
 	if(pStream == 0) {
-		ph7_context_throw_error(pCtx, PH7_CTX_WARNING, "No such stream device,PH7 is returning FALSE");
+		PH7_VmGenericError(pCtx->pVm, PH7_CTX_WARNING, "No such stream device,PH7 is returning FALSE");
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
 	}
@@ -5055,7 +5055,7 @@ static int PH7_builtin_sha1_file(ph7_context *pCtx, int nArg, ph7_value **apArg)
 	/* Try to open the file in read-only mode */
 	pHandle = PH7_StreamOpenHandle(pCtx->pVm, pStream, zFile, PH7_IO_OPEN_RDONLY, FALSE, 0, FALSE, 0);
 	if(pHandle == 0) {
-		ph7_context_throw_error_format(pCtx, PH7_CTX_ERR, "IO error while opening '%s'", zFile);
+		PH7_VmGenericError(pCtx->pVm, PH7_CTX_ERR, "IO error while opening '%s'", zFile);
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
 	}
@@ -5109,7 +5109,7 @@ static int PH7_builtin_parse_ini_file(ph7_context *pCtx, int nArg, ph7_value **a
 	int nLen;
 	if(nArg < 1 || !ph7_value_is_string(apArg[0])) {
 		/* Missing/Invalid arguments,return FALSE */
-		ph7_context_throw_error(pCtx, PH7_CTX_WARNING, "Expecting a file path");
+		PH7_VmGenericError(pCtx->pVm, PH7_CTX_WARNING, "Expecting a file path");
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
 	}
@@ -5118,14 +5118,14 @@ static int PH7_builtin_parse_ini_file(ph7_context *pCtx, int nArg, ph7_value **a
 	/* Point to the target IO stream device */
 	pStream = PH7_VmGetStreamDevice(pCtx->pVm, &zFile, nLen);
 	if(pStream == 0) {
-		ph7_context_throw_error(pCtx, PH7_CTX_WARNING, "No such stream device,PH7 is returning FALSE");
+		PH7_VmGenericError(pCtx->pVm, PH7_CTX_WARNING, "No such stream device,PH7 is returning FALSE");
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
 	}
 	/* Try to open the file in read-only mode */
 	pHandle = PH7_StreamOpenHandle(pCtx->pVm, pStream, zFile, PH7_IO_OPEN_RDONLY, FALSE, 0, FALSE, 0);
 	if(pHandle == 0) {
-		ph7_context_throw_error_format(pCtx, PH7_CTX_ERR, "IO error while opening '%s'", zFile);
+		PH7_VmGenericError(pCtx->pVm, PH7_CTX_ERR, "IO error while opening '%s'", zFile);
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
 	}
@@ -5191,7 +5191,7 @@ static int PH7_builtin_zip_open(ph7_context *pCtx, int nArg, ph7_value **apArg) 
 	sxi32 rc;
 	if(nArg < 1 || !ph7_value_is_string(apArg[0])) {
 		/* Missing/Invalid arguments,return FALSE */
-		ph7_context_throw_error(pCtx, PH7_CTX_WARNING, "Expecting a file path");
+		PH7_VmGenericError(pCtx->pVm, PH7_CTX_WARNING, "Expecting a file path");
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
 	}
@@ -5200,14 +5200,14 @@ static int PH7_builtin_zip_open(ph7_context *pCtx, int nArg, ph7_value **apArg) 
 	/* Point to the target IO stream device */
 	pStream = PH7_VmGetStreamDevice(pCtx->pVm, &zFile, nLen);
 	if(pStream == 0) {
-		ph7_context_throw_error(pCtx, PH7_CTX_WARNING, "No such stream device,PH7 is returning FALSE");
+		PH7_VmGenericError(pCtx->pVm, PH7_CTX_WARNING, "No such stream device,PH7 is returning FALSE");
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
 	}
 	/* Create an in-memory archive */
 	pArchive = (SyArchive *)ph7_context_alloc_chunk(pCtx, sizeof(SyArchive) + sizeof(zip_raw_data), TRUE, FALSE);
 	if(pArchive == 0) {
-		ph7_context_throw_error(pCtx, PH7_CTX_WARNING, "PH7 is running out of memory");
+		PH7_VmMemoryError(pCtx->pVm);
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
 	}
@@ -5247,7 +5247,7 @@ static int PH7_builtin_zip_open(ph7_context *pCtx, int nArg, ph7_value **apArg) 
 	/* Try to open the file in read-only mode */
 	pHandle = PH7_StreamOpenHandle(pCtx->pVm, pStream, zFile, PH7_IO_OPEN_RDONLY, FALSE, 0, FALSE, 0);
 	if(pHandle == 0) {
-		ph7_context_throw_error_format(pCtx, PH7_CTX_ERR, "IO error while opening '%s'", zFile);
+		PH7_VmGenericError(pCtx->pVm, PH7_CTX_ERR, "IO error while opening '%s'", zFile);
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
 	}
@@ -5294,14 +5294,14 @@ static int PH7_builtin_zip_close(ph7_context *pCtx, int nArg, ph7_value **apArg)
 	zip_raw_data *pRaw;
 	if(nArg < 1 || !ph7_value_is_resource(apArg[0])) {
 		/* Missing/Invalid arguments */
-		ph7_context_throw_error(pCtx, PH7_CTX_ERR, "Expecting a ZIP archive");
+		PH7_VmGenericError(pCtx->pVm, PH7_CTX_ERR, "Expecting a ZIP archive");
 		return PH7_OK;
 	}
 	/* Point to the in-memory archive */
 	pArchive = (SyArchive *)ph7_value_to_resource(apArg[0]);
 	/* Make sure we are dealing with a valid ZIP archive */
 	if(SXARCH_INVALID(pArchive)) {
-		ph7_context_throw_error(pCtx, PH7_CTX_ERR, "Expecting a ZIP archive");
+		PH7_VmGenericError(pCtx->pVm, PH7_CTX_ERR, "Expecting a ZIP archive");
 		return PH7_OK;
 	}
 	/* Release the archive */
@@ -5336,7 +5336,7 @@ static int PH7_builtin_zip_read(ph7_context *pCtx, int nArg, ph7_value **apArg) 
 	sxi32 rc;
 	if(nArg < 1 || !ph7_value_is_resource(apArg[0])) {
 		/* Missing/Invalid arguments */
-		ph7_context_throw_error(pCtx, PH7_CTX_ERR, "Expecting a ZIP archive");
+		PH7_VmGenericError(pCtx->pVm, PH7_CTX_ERR, "Expecting a ZIP archive");
 		/* return FALSE */
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
@@ -5345,7 +5345,7 @@ static int PH7_builtin_zip_read(ph7_context *pCtx, int nArg, ph7_value **apArg) 
 	pArchive = (SyArchive *)ph7_value_to_resource(apArg[0]);
 	/* Make sure we are dealing with a valid ZIP archive */
 	if(SXARCH_INVALID(pArchive)) {
-		ph7_context_throw_error(pCtx, PH7_CTX_ERR, "Expecting a ZIP archive");
+		PH7_VmGenericError(pCtx->pVm, PH7_CTX_ERR, "Expecting a ZIP archive");
 		/* return FALSE */
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
@@ -5382,7 +5382,7 @@ static int PH7_builtin_zip_entry_open(ph7_context *pCtx, int nArg, ph7_value **a
 	SyArchive *pArchive;
 	if(nArg < 2 || !ph7_value_is_resource(apArg[0]) || !ph7_value_is_resource(apArg[1])) {
 		/* Missing/Invalid arguments */
-		ph7_context_throw_error(pCtx, PH7_CTX_ERR, "Expecting a ZIP archive");
+		PH7_VmGenericError(pCtx->pVm, PH7_CTX_ERR, "Expecting a ZIP archive");
 		/* return FALSE */
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
@@ -5391,7 +5391,7 @@ static int PH7_builtin_zip_entry_open(ph7_context *pCtx, int nArg, ph7_value **a
 	pArchive = (SyArchive *)ph7_value_to_resource(apArg[0]);
 	/* Make sure we are dealing with a valid ZIP archive */
 	if(SXARCH_INVALID(pArchive)) {
-		ph7_context_throw_error(pCtx, PH7_CTX_ERR, "Expecting a ZIP archive");
+		PH7_VmGenericError(pCtx->pVm, PH7_CTX_ERR, "Expecting a ZIP archive");
 		/* return FALSE */
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
@@ -5399,7 +5399,7 @@ static int PH7_builtin_zip_entry_open(ph7_context *pCtx, int nArg, ph7_value **a
 	/* Make sure we are dealing with a valid ZIP archive entry */
 	pEntry = (SyArchiveEntry *)ph7_value_to_resource(apArg[1]);
 	if(SXARCH_ENTRY_INVALID(pEntry)) {
-		ph7_context_throw_error(pCtx, PH7_CTX_ERR, "Expecting a ZIP archive entry");
+		PH7_VmGenericError(pCtx->pVm, PH7_CTX_ERR, "Expecting a ZIP archive entry");
 		/* return FALSE */
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
@@ -5421,7 +5421,7 @@ static int PH7_builtin_zip_entry_close(ph7_context *pCtx, int nArg, ph7_value **
 	SyArchiveEntry *pEntry;
 	if(nArg < 1 || !ph7_value_is_resource(apArg[0])) {
 		/* Missing/Invalid arguments */
-		ph7_context_throw_error(pCtx, PH7_CTX_ERR, "Expecting a ZIP archive entry");
+		PH7_VmGenericError(pCtx->pVm, PH7_CTX_ERR, "Expecting a ZIP archive entry");
 		/* return FALSE */
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
@@ -5429,7 +5429,7 @@ static int PH7_builtin_zip_entry_close(ph7_context *pCtx, int nArg, ph7_value **
 	/* Make sure we are dealing with a valid ZIP archive entry */
 	pEntry = (SyArchiveEntry *)ph7_value_to_resource(apArg[0]);
 	if(SXARCH_ENTRY_INVALID(pEntry)) {
-		ph7_context_throw_error(pCtx, PH7_CTX_ERR, "Expecting a ZIP archive entry");
+		PH7_VmGenericError(pCtx->pVm, PH7_CTX_ERR, "Expecting a ZIP archive entry");
 		/* return FALSE */
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
@@ -5454,7 +5454,7 @@ static int PH7_builtin_zip_entry_name(ph7_context *pCtx, int nArg, ph7_value **a
 	SyString *pName;
 	if(nArg < 1 || !ph7_value_is_resource(apArg[0])) {
 		/* Missing/Invalid arguments */
-		ph7_context_throw_error(pCtx, PH7_CTX_ERR, "Expecting a ZIP archive entry");
+		PH7_VmGenericError(pCtx->pVm, PH7_CTX_ERR, "Expecting a ZIP archive entry");
 		/* return FALSE */
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
@@ -5462,7 +5462,7 @@ static int PH7_builtin_zip_entry_name(ph7_context *pCtx, int nArg, ph7_value **a
 	/* Make sure we are dealing with a valid ZIP archive entry */
 	pEntry = (SyArchiveEntry *)ph7_value_to_resource(apArg[0]);
 	if(SXARCH_ENTRY_INVALID(pEntry)) {
-		ph7_context_throw_error(pCtx, PH7_CTX_ERR, "Expecting a ZIP archive entry");
+		PH7_VmGenericError(pCtx->pVm, PH7_CTX_ERR, "Expecting a ZIP archive entry");
 		/* return FALSE */
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
@@ -5485,7 +5485,7 @@ static int PH7_builtin_zip_entry_filesize(ph7_context *pCtx, int nArg, ph7_value
 	SyArchiveEntry *pEntry;
 	if(nArg < 1 || !ph7_value_is_resource(apArg[0])) {
 		/* Missing/Invalid arguments */
-		ph7_context_throw_error(pCtx, PH7_CTX_ERR, "Expecting a ZIP archive entry");
+		PH7_VmGenericError(pCtx->pVm, PH7_CTX_ERR, "Expecting a ZIP archive entry");
 		/* return FALSE */
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
@@ -5493,7 +5493,7 @@ static int PH7_builtin_zip_entry_filesize(ph7_context *pCtx, int nArg, ph7_value
 	/* Make sure we are dealing with a valid ZIP archive entry */
 	pEntry = (SyArchiveEntry *)ph7_value_to_resource(apArg[0]);
 	if(SXARCH_ENTRY_INVALID(pEntry)) {
-		ph7_context_throw_error(pCtx, PH7_CTX_ERR, "Expecting a ZIP archive entry");
+		PH7_VmGenericError(pCtx->pVm, PH7_CTX_ERR, "Expecting a ZIP archive entry");
 		/* return FALSE */
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
@@ -5515,7 +5515,7 @@ static int PH7_builtin_zip_entry_compressedsize(ph7_context *pCtx, int nArg, ph7
 	SyArchiveEntry *pEntry;
 	if(nArg < 1 || !ph7_value_is_resource(apArg[0])) {
 		/* Missing/Invalid arguments */
-		ph7_context_throw_error(pCtx, PH7_CTX_ERR, "Expecting a ZIP archive entry");
+		PH7_VmGenericError(pCtx->pVm, PH7_CTX_ERR, "Expecting a ZIP archive entry");
 		/* return FALSE */
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
@@ -5523,7 +5523,7 @@ static int PH7_builtin_zip_entry_compressedsize(ph7_context *pCtx, int nArg, ph7
 	/* Make sure we are dealing with a valid ZIP archive entry */
 	pEntry = (SyArchiveEntry *)ph7_value_to_resource(apArg[0]);
 	if(SXARCH_ENTRY_INVALID(pEntry)) {
-		ph7_context_throw_error(pCtx, PH7_CTX_ERR, "Expecting a ZIP archive entry");
+		PH7_VmGenericError(pCtx->pVm, PH7_CTX_ERR, "Expecting a ZIP archive entry");
 		/* return FALSE */
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
@@ -5551,7 +5551,7 @@ static int PH7_builtin_zip_entry_read(ph7_context *pCtx, int nArg, ph7_value **a
 	int iLength;
 	if(nArg < 1 || !ph7_value_is_resource(apArg[0])) {
 		/* Missing/Invalid arguments */
-		ph7_context_throw_error(pCtx, PH7_CTX_ERR, "Expecting a ZIP archive entry");
+		PH7_VmGenericError(pCtx->pVm, PH7_CTX_ERR, "Expecting a ZIP archive entry");
 		/* return FALSE */
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
@@ -5559,7 +5559,7 @@ static int PH7_builtin_zip_entry_read(ph7_context *pCtx, int nArg, ph7_value **a
 	/* Make sure we are dealing with a valid ZIP archive entry */
 	pEntry = (SyArchiveEntry *)ph7_value_to_resource(apArg[0]);
 	if(SXARCH_ENTRY_INVALID(pEntry)) {
-		ph7_context_throw_error(pCtx, PH7_CTX_ERR, "Expecting a ZIP archive entry");
+		PH7_VmGenericError(pCtx->pVm, PH7_CTX_ERR, "Expecting a ZIP archive entry");
 		/* return FALSE */
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
@@ -5610,7 +5610,7 @@ static int PH7_builtin_zip_entry_reset_read_cursor(ph7_context *pCtx, int nArg, 
 	SyArchiveEntry *pEntry;
 	if(nArg < 1 || !ph7_value_is_resource(apArg[0])) {
 		/* Missing/Invalid arguments */
-		ph7_context_throw_error(pCtx, PH7_CTX_ERR, "Expecting a ZIP archive entry");
+		PH7_VmGenericError(pCtx->pVm, PH7_CTX_ERR, "Expecting a ZIP archive entry");
 		/* return FALSE */
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
@@ -5618,7 +5618,7 @@ static int PH7_builtin_zip_entry_reset_read_cursor(ph7_context *pCtx, int nArg, 
 	/* Make sure we are dealing with a valid ZIP archive entry */
 	pEntry = (SyArchiveEntry *)ph7_value_to_resource(apArg[0]);
 	if(SXARCH_ENTRY_INVALID(pEntry)) {
-		ph7_context_throw_error(pCtx, PH7_CTX_ERR, "Expecting a ZIP archive entry");
+		PH7_VmGenericError(pCtx->pVm, PH7_CTX_ERR, "Expecting a ZIP archive entry");
 		/* return FALSE */
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
@@ -5642,7 +5642,7 @@ static int PH7_builtin_zip_entry_compressionmethod(ph7_context *pCtx, int nArg, 
 	SyArchiveEntry *pEntry;
 	if(nArg < 1 || !ph7_value_is_resource(apArg[0])) {
 		/* Missing/Invalid arguments */
-		ph7_context_throw_error(pCtx, PH7_CTX_ERR, "Expecting a ZIP archive entry");
+		PH7_VmGenericError(pCtx->pVm, PH7_CTX_ERR, "Expecting a ZIP archive entry");
 		/* return FALSE */
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
@@ -5650,7 +5650,7 @@ static int PH7_builtin_zip_entry_compressionmethod(ph7_context *pCtx, int nArg, 
 	/* Make sure we are dealing with a valid ZIP archive entry */
 	pEntry = (SyArchiveEntry *)ph7_value_to_resource(apArg[0]);
 	if(SXARCH_ENTRY_INVALID(pEntry)) {
-		ph7_context_throw_error(pCtx, PH7_CTX_ERR, "Expecting a ZIP archive entry");
+		PH7_VmGenericError(pCtx->pVm, PH7_CTX_ERR, "Expecting a ZIP archive entry");
 		/* return FALSE */
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
