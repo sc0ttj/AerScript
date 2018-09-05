@@ -69,7 +69,6 @@ PH7_PRIVATE sxi32 SySetGetNextEntry(SySet *pSet, void **ppEntry) {
 	pSet->nCursor++;
 	return SXRET_OK;
 }
-#ifndef PH7_DISABLE_BUILTIN_FUNC
 PH7_PRIVATE void *SySetPeekCurrentEntry(SySet *pSet) {
 	register unsigned char *zSrc;
 	if(pSet->nCursor >= pSet->nUsed) {
@@ -78,7 +77,6 @@ PH7_PRIVATE void *SySetPeekCurrentEntry(SySet *pSet) {
 	zSrc = (unsigned char *)SySetBasePtr(pSet);
 	return (void *)&zSrc[pSet->nCursor * pSet->eSize];
 }
-#endif /* PH7_DISABLE_BUILTIN_FUNC */
 PH7_PRIVATE sxi32 SySetTruncate(SySet *pSet, sxu32 nNewSize) {
 	if(nNewSize < pSet->nUsed) {
 		pSet->nUsed = nNewSize;

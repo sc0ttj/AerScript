@@ -124,12 +124,6 @@ typedef struct ph7 ph7;
  *   size! (the -Os option if using GCC).
  *   Telling your compiler to optimize for size usually has a much larger impact
  *   on library footprint than employing any of these compile-time options.
- *   PH7_DISABLE_BUILTIN_FUNC
- *     PH7 come with more than 460 built-in functions suitable for most purposes ranging
- *     from string/XML/INI processing to ZIP extracting, Base64 encoding/decoding and so on.
- *     If this directive is enabled, all the built-in functions are omitted from the build.
- *     Note that language construct functions such as is_int(), is_string(), func_get_arg(),
- *     define(), etc. are not omitted from the build and are not affected by this directive.
  *   PH7_ENABLE_MATH_FUNC
  *     If this directive is enabled, built-in math functions such as sqrt(),abs(),
  *     log(), ceil(), etc. are included in the build. Note that you may need to link
