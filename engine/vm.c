@@ -7691,16 +7691,14 @@ static int VmObConsumer(const void *pData, unsigned int nDataLen, void *pUserDat
 		return PH7_OK;
 	}
 	PH7_MemObjInit(pVm, &sResult);
-	if(ph7_value_is_callable(&pEntry->sCallback) && pVm->nObDepth < 15) {
+	if(ph7_value_is_callable(&pEntry->sCallback)) {
 		ph7_value sArg, *apArg[2];
 		/* Fill the first argument */
 		PH7_MemObjInitFromString(pVm, &sArg, 0);
 		PH7_MemObjStringAppend(&sArg, (const char *)pData, nDataLen);
 		apArg[0] = &sArg;
 		/* Call the 'filter' callback */
-		pVm->nObDepth++;
 		PH7_VmCallUserFunction(pVm, &pEntry->sCallback, 1, apArg, &sResult);
-		pVm->nObDepth--;
 		if(sResult.iFlags & MEMOBJ_STRING) {
 			/* Extract the function result */
 			pData = SyBlobData(&sResult.sBlob);

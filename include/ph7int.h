@@ -1229,7 +1229,6 @@ struct ph7_vm {
 	sxbool bErrReport;         /* TRUE to report all runtime Error/Warning/Notice/Deprecated */
 	int nRecursionDepth;       /* Current recursion depth */
 	int nMaxDepth;             /* Maximum allowed recursion depth */
-	int nObDepth;              /* OB depth */
 	int nExceptDepth;          /* Exception depth */
 	int closure_cnt;           /* Loaded closures counter */
 	int json_rc;               /* JSON return status [refer to json_encode()/json_decode()]*/
