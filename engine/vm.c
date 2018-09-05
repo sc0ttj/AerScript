@@ -1751,7 +1751,7 @@ PH7_PRIVATE sxi32 VmExtractDebugTrace(ph7_vm *pVm, SySet *pDebugTrace) {
 			aTrace.pArg = &pVm->pFrame->sArg;
 			for(sxi32 i = (SySetUsed(aByteCode) - 1); i >= 0 ; i--) {
 				VmInstr *cInstr = (VmInstr *)SySetAt(aByteCode, i);
-				if(cInstr->iOp == PH7_OP_CALL && cInstr->bExec == TRUE) {
+				if(cInstr->bExec == TRUE) {
 					/* Extract file name & line */
 					aTrace.pFile = cInstr->pFile;
 					aTrace.nLine = cInstr->iLine;
