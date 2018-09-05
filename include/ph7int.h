@@ -1365,6 +1365,7 @@ struct VmShutdownCB {
  * Allowed value for ph7_vm.nMagic
  */
 #define PH7_VM_INIT   0xFADE9512  /* VM correctly initialized */
+#define PH7_VM_INCL   0xC0DEBABE  /* VM waiting for compiling included file */
 #define PH7_VM_RUN    0xEA271285  /* VM ready to execute PH7 bytecode */
 #define PH7_VM_EXEC   0xCAFE2DAD  /* VM executing PH7 bytecode */
 #define PH7_VM_STALE  0xBAD1DEAD  /* Stale VM */
