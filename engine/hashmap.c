@@ -1568,7 +1568,6 @@ PH7_PRIVATE void PH7_HashmapExtractNodeKey(ph7_hashmap_node *pNode, ph7_value *p
 		MemObjSetType(pKey, MEMOBJ_STRING);
 	}
 }
-#ifndef PH7_DISABLE_BUILTIN_FUNC
 /*
  * Store the address of nodes value in the given container.
  * Refer to the [vfprintf(),vprintf(),vsprintf()] implementations
@@ -1592,7 +1591,6 @@ PH7_PRIVATE int PH7_HashmapValuesToSet(ph7_hashmap *pMap, SySet *pOut) {
 	/* Total inserted entries */
 	return (int)SySetUsed(pOut);
 }
-#endif /* PH7_DISABLE_BUILTIN_FUNC */
 /*
  * Merge sort.
  * The merge sort implementation is based on the one found in the SQLite3 source tree.

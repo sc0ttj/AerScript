@@ -52,10 +52,6 @@ PH7_PRIVATE const char *PH7_ExtractDirName(const char *zPath, int nByte, int *pL
 	return zPath;
 }
 /*
- * Omit the vfs layer implementation from the built if the PH7_DISABLE_BUILTIN_FUNC directive is defined.
- */
-#ifndef PH7_DISABLE_BUILTIN_FUNC
-/*
  * bool chdir(string $directory)
  *  Change the current directory.
  * Parameters
@@ -5685,7 +5681,6 @@ static int PH7_builtin_zip_entry_compressionmethod(ph7_context *pCtx, int nArg, 
 	}
 	return PH7_OK;
 }
-#endif /* #ifndef PH7_DISABLE_BUILTIN_FUNC*/
 /* NULL VFS [i.e: a no-op VFS]*/
 static const ph7_vfs null_vfs = {
 	"NullVFS",
@@ -5734,7 +5729,6 @@ static const ph7_vfs null_vfs = {
 	0, /* int (*xGid)(void) */
 	0 /* void (*xUsername)(ph7_context *) */
 };
-#ifndef PH7_DISABLE_BUILTIN_FUNC
 #ifndef PH7_DISABLE_DISK_IO
 #ifdef __WINNT__
 /*
@@ -7764,19 +7758,14 @@ static const ph7_io_stream sUnixFileStream = {
 };
 #endif /* __WINNT__/__UNIXES__ */
 #endif /* PH7_DISABLE_DISK_IO */
-#endif /* PH7_DISABLE_BUILTIN_FUNC */
 /*
  * Export the builtin vfs.
  * Return a pointer to the builtin vfs if available.
  * Otherwise return the null_vfs [i.e: a no-op vfs] instead.
  * Note:
  *  The built-in vfs is always available for Windows/UNIX systems.
- * Note:
- *  If the engine is compiled with the PH7_DISABLE_DISK_IO/PH7_DISABLE_BUILTIN_FUNC
- *  directives defined then this function return the null_vfs instead.
  */
 PH7_PRIVATE const ph7_vfs *PH7_ExportBuiltinVfs(void) {
-#ifndef PH7_DISABLE_BUILTIN_FUNC
 #ifdef PH7_DISABLE_DISK_IO
 	return &null_vfs;
 #else
@@ -7788,11 +7777,7 @@ PH7_PRIVATE const ph7_vfs *PH7_ExportBuiltinVfs(void) {
 	return &null_vfs;
 #endif /* __WINNT__/__UNIXES__ */
 #endif /* PH7_DISABLE_DISK_IO */
-#else
-	return &null_vfs;
-#endif /* PH7_DISABLE_BUILTIN_FUNC */
 }
-#ifndef PH7_DISABLE_BUILTIN_FUNC
 #ifndef PH7_DISABLE_DISK_IO
 /*
  * The following defines are mostly used by the UNIX built and have
@@ -8051,17 +8036,11 @@ static int is_php_stream(const ph7_io_stream *pStream) {
 	return 0;
 #endif /* PH7_DISABLE_DISK_IO */
 }
-
-#endif /* PH7_DISABLE_BUILTIN_FUNC */
 /*
  * Export the IO routines defined above and the built-in IO streams
  * [i.e: file://,php://].
- * Note:
- *  If the engine is compiled with the PH7_DISABLE_BUILTIN_FUNC directive
- *  defined then this function is a no-op.
  */
 PH7_PRIVATE sxi32 PH7_RegisterIORoutine(ph7_vm *pVm) {
-#ifndef PH7_DISABLE_BUILTIN_FUNC
 	/* VFS functions */
 	static const ph7_builtin_func aVfsFunc[] = {
 		{"chdir",   PH7_vfs_chdir   },
@@ -8188,16 +8167,12 @@ PH7_PRIVATE sxi32 PH7_RegisterIORoutine(ph7_vm *pVm) {
 		/* Install the file:// stream */
 		ph7_vm_config(pVm, PH7_VM_CONFIG_IO_STREAM, pFileStream);
 	}
-#else
-	SXUNUSED(pVm); /* cc warning */
-#endif /* PH7_DISABLE_BUILTIN_FUNC */
 	return SXRET_OK;
 }
 /*
  * Export the STDIN handle.
  */
 PH7_PRIVATE void *PH7_ExportStdin(ph7_vm *pVm) {
-#ifndef PH7_DISABLE_BUILTIN_FUNC
 #ifndef PH7_DISABLE_DISK_IO
 	if(pVm->pStdin == 0) {
 		io_private *pIn;
@@ -8219,16 +8194,11 @@ PH7_PRIVATE void *PH7_ExportStdin(ph7_vm *pVm) {
 #else
 	return 0;
 #endif
-#else
-	SXUNUSED(pVm); /* cc warning */
-	return 0;
-#endif
 }
 /*
  * Export the STDOUT handle.
  */
 PH7_PRIVATE void *PH7_ExportStdout(ph7_vm *pVm) {
-#ifndef PH7_DISABLE_BUILTIN_FUNC
 #ifndef PH7_DISABLE_DISK_IO
 	if(pVm->pStdout == 0) {
 		io_private *pOut;
@@ -8250,16 +8220,11 @@ PH7_PRIVATE void *PH7_ExportStdout(ph7_vm *pVm) {
 #else
 	return 0;
 #endif
-#else
-	SXUNUSED(pVm); /* cc warning */
-	return 0;
-#endif
 }
 /*
  * Export the STDERR handle.
  */
 PH7_PRIVATE void *PH7_ExportStderr(ph7_vm *pVm) {
-#ifndef PH7_DISABLE_BUILTIN_FUNC
 #ifndef PH7_DISABLE_DISK_IO
 	if(pVm->pStderr == 0) {
 		io_private *pErr;
@@ -8281,8 +8246,5 @@ PH7_PRIVATE void *PH7_ExportStderr(ph7_vm *pVm) {
 #else
 	return 0;
 #endif
-#else
-	SXUNUSED(pVm); /* cc warning */
-	return 0;
-#endif
+
 }

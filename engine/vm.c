@@ -8131,7 +8131,6 @@ static int vm_builtin_random_bytes(ph7_context *pCtx, int nArg, ph7_value **apAr
 	ph7_result_string(pCtx, (char *)zBuf, iLen);
 	return SXRET_OK;
 }
-#ifndef PH7_DISABLE_BUILTIN_FUNC
 #if !defined(PH7_DISABLE_HASH_FUNC)
 /* Unique ID private data */
 struct unique_id_data {
@@ -8219,7 +8218,6 @@ static int vm_builtin_uniqid(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	return PH7_OK;
 }
 #endif /* PH7_DISABLE_HASH_FUNC */
-#endif /* PH7_DISABLE_BUILTIN_FUNC */
 /*
  * Section:
  *  Language construct implementation as foreign functions.
@@ -10090,8 +10088,6 @@ PH7_PRIVATE sxi32 PH7_VmPushFilePath(ph7_vm *pVm, const char *zPath, int nLen, s
  * Note that the PHP script to evaluate can be a local or remote file.In
  * either cases the [PH7_StreamReadWholeFile()] function handle all the underlying
  * operations.
- * If the [PH7_DISABLE_BUILTIN_FUNC] compile-time directive is defined,then
- * this function is a no-op.
  * Refer to the implementation of the include(),include_once() language
  * constructs for more information.
  */
@@ -10101,7 +10097,6 @@ static sxi32 VmExecIncludedFile(
 	int IncludeOnce    /* TRUE if called from include_once() or require_once() */
 ) {
 	sxi32 rc;
-#ifndef PH7_DISABLE_BUILTIN_FUNC
 	const ph7_io_stream *pStream;
 	SyBlob sContents;
 	void *pHandle;
@@ -10141,12 +10136,6 @@ static sxi32 VmExecIncludedFile(
 	PH7_StreamCloseHandle(pStream, pHandle);
 	/* Release the working buffer */
 	SyBlobRelease(&sContents);
-#else
-	pCtx = 0; /* cc warning */
-	pPath = 0;
-	IncludeOnce = 0;
-	rc = SXERR_IO;
-#endif /* PH7_DISABLE_BUILTIN_FUNC */
 	return rc;
 }
 /*
@@ -10910,11 +10899,9 @@ static const ph7_builtin_func aVmFunc[] = {
 	{ "getrandmax",    vm_builtin_getrandmax      },
 	{ "random_int",    vm_builtin_random_int      },
 	{ "random_bytes",  vm_builtin_random_bytes    },
-#ifndef PH7_DISABLE_BUILTIN_FUNC
 #if !defined(PH7_DISABLE_HASH_FUNC)
 	{ "uniqid",        vm_builtin_uniqid          },
 #endif /* PH7_DISABLE_HASH_FUNC */
-#endif /* PH7_DISABLE_BUILTIN_FUNC */
 	/* Language constructs functions */
 	{ "print", vm_builtin_print                   },
 	{ "exit",  vm_builtin_exit                    },
@@ -11336,7 +11323,6 @@ PH7_PRIVATE sxi32 PH7_VmRefObjRemove(
 	}
 	return SXRET_OK;
 }
-#ifndef PH7_DISABLE_BUILTIN_FUNC
 /*
  * Extract the IO stream device associated with a given scheme.
  * Return a pointer to an instance of ph7_io_stream when the scheme
@@ -11391,7 +11377,6 @@ PH7_PRIVATE const ph7_io_stream *PH7_VmGetStreamDevice(
 	/* No such stream,return NULL */
 	return 0;
 }
-#endif /* PH7_DISABLE_BUILTIN_FUNC */
 /*
  * Section:
  *    HTTP/URI related routines.

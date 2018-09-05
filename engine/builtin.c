@@ -272,7 +272,6 @@ static int PH7_builtin_empty(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	ph7_result_bool(pCtx, res);
 	return PH7_OK;
 }
-#ifndef PH7_DISABLE_BUILTIN_FUNC
 /*
  * float round ( float $val [, int $precision = 0 [, int $mode = PHP_ROUND_HALF_UP ]] )
  *  Exponential expression.
@@ -7480,7 +7479,6 @@ static int PH7_builtin_urldecode(ph7_context *pCtx, int nArg, ph7_value **apArg)
 	SyUriDecode(zIn, (sxu32)nLen, Consumer, pCtx, TRUE);
 	return PH7_OK;
 }
-#endif /* PH7_DISABLE_BUILTIN_FUNC */
 /* Table of the built-in functions */
 static const ph7_builtin_func aBuiltInFunc[] = {
 	/* Variable handling functions */
@@ -7498,7 +7496,6 @@ static const ph7_builtin_func aBuiltInFunc[] = {
 	{ "intval", PH7_builtin_intval      },
 	{ "stringval", PH7_builtin_strval      },
 	{ "empty", PH7_builtin_empty       },
-#ifndef PH7_DISABLE_BUILTIN_FUNC
 	{ "round",    PH7_builtin_round        },
 	{ "dechex", PH7_builtin_dechex         },
 	{ "decoct", PH7_builtin_decoct         },
@@ -7593,7 +7590,6 @@ static const ph7_builtin_func aBuiltInFunc[] = {
 	{ "base64_decode", PH7_builtin_base64_decode },
 	{ "urlencode",    PH7_builtin_urlencode },
 	{ "urldecode",    PH7_builtin_urldecode },
-#endif /* PH7_DISABLE_BUILTIN_FUNC */
 };
 /*
  * Register the built-in functions defined above,the array functions
