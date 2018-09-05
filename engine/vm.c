@@ -1920,7 +1920,7 @@ PH7_PRIVATE sxi32 PH7_VmThrowError(
 		sxu32 nLine;
 		SyString sFileName;
 		SyString *pFile;
-		if((VmExtractDebugTrace(&(*pVm), &pDebug) == SXRET_OK) && (SySetUsed(&pDebug) > 0)) {
+		if((pVm->nMagic == PH7_VM_EXEC) && (VmExtractDebugTrace(&(*pVm), &pDebug) == SXRET_OK) && (SySetUsed(&pDebug) > 0)) {
 			/* Extract file name and line number from debug trace */
 			SySetGetNextEntry(&pDebug, (void **)&pTrace);
 			pFile = pTrace->pFile;
