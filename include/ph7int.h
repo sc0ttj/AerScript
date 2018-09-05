@@ -1054,7 +1054,6 @@ struct ph7_class {
 	sxi32 iFlags;         /* Class configuration flags [i.e: final, interface, virtual, etc.]  */
 	SyHash hAttr;         /* Class attributes [i.e: variables and constants] */
 	SyHash hMethod;       /* Class methods */
-	sxu32 nLine;          /* Line number on which this class was declared */
 	SySet aInterface;     /* Implemented interface container */
 };
 /* Class configuration flags */
@@ -1769,7 +1768,7 @@ PH7_PRIVATE sxi32 PH7_ParseIniString(ph7_context *pCtx, const char *zIn, sxu32 n
 #endif
 /* oo.c function prototypes */
 PH7_PRIVATE ph7_class_info *PH7_NewClassInfo(ph7_vm *pVm, const SyString *pName);
-PH7_PRIVATE ph7_class *PH7_NewRawClass(ph7_vm *pVm, const SyString *pName, sxu32 nLine);
+PH7_PRIVATE ph7_class *PH7_NewRawClass(ph7_vm *pVm, const SyString *pName);
 PH7_PRIVATE ph7_class_attr *PH7_NewClassAttr(ph7_vm *pVm, const SyString *pName, sxu32 nLine, sxi32 iProtection, sxi32 iFlags);
 PH7_PRIVATE ph7_class_method *PH7_NewClassMethod(ph7_vm *pVm, ph7_class *pClass, const SyString *pName, sxu32 nLine,
 		sxi32 iProtection, sxi32 iFlags, sxi32 iFuncFlags);

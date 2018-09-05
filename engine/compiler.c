@@ -3710,7 +3710,7 @@ static sxi32 PH7_CompileClassInterface(ph7_gen_state *pGen) {
 	/* Advance the stream cursor */
 	pGen->pIn++;
 	/* Obtain a raw class */
-	pClass = PH7_NewRawClass(pGen->pVm, pName, nLine);
+	pClass = PH7_NewRawClass(pGen->pVm, pName);
 	if(pClass == 0) {
 		PH7_GenCompileError(pGen, E_ERROR, nLine, "Fatal, PH7 is running out of memory");
 		return SXERR_ABORT;
@@ -3947,7 +3947,7 @@ static sxi32 PH7_GenStateCompileClass(ph7_gen_state *pGen, sxi32 iFlags) {
 	/* Advance the stream cursor */
 	pGen->pIn++;
 	/* Obtain a raw class */
-	pClass = PH7_NewRawClass(pGen->pVm, pName, nLine);
+	pClass = PH7_NewRawClass(pGen->pVm, pName);
 	if(pClass == 0) {
 		PH7_GenCompileError(pGen, E_ERROR, nLine, "Fatal, PH7 is running out of memory");
 		return SXERR_ABORT;

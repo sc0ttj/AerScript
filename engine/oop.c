@@ -46,7 +46,7 @@ PH7_PRIVATE ph7_class_info *PH7_NewClassInfo(ph7_vm *pVm, const SyString *pName)
  * Create an empty class.
  * Return a pointer to a raw class (ph7_class instance) on success. NULL otherwise.
  */
-PH7_PRIVATE ph7_class *PH7_NewRawClass(ph7_vm *pVm, const SyString *pName, sxu32 nLine) {
+PH7_PRIVATE ph7_class *PH7_NewRawClass(ph7_vm *pVm, const SyString *pName) {
 	ph7_class *pClass;
 	char *zName;
 	/* Allocate a new instance */
@@ -68,7 +68,6 @@ PH7_PRIVATE ph7_class *PH7_NewRawClass(ph7_vm *pVm, const SyString *pName, sxu32
 	SyHashInit(&pClass->hAttr, &pVm->sAllocator, 0, 0);
 	SyHashInit(&pClass->hDerived, &pVm->sAllocator, 0, 0);
 	SySetInit(&pClass->aInterface, &pVm->sAllocator, sizeof(ph7_class *));
-	pClass->nLine = nLine;
 	/* All done */
 	return pClass;
 }
