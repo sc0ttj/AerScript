@@ -298,6 +298,7 @@ PH7_PRIVATE sxi32 PH7_VmInstallClass(
  */
 PH7_PRIVATE sxi32 PH7_VmEmitInstr(
 	ph7_vm *pVm,  /* Target VM */
+	sxu32 nLine,  /* Line number, instruction was generated */
 	sxi32 iOp,    /* Operation to perform */
 	sxi32 iP1,    /* First operand */
 	sxu32 iP2,    /* Second operand */
@@ -320,7 +321,9 @@ PH7_PRIVATE sxi32 PH7_VmEmitInstr(
 	sInstr.bExec = FALSE;
 	sInstr.pFile = pFile;
 	sInstr.iLine = 1;
-	if(pVm->sCodeGen.pEnd && pVm->sCodeGen.pEnd->nLine > 0) {
+	if(nLine > 0) {
+		sInstr.iLine = nLine;
+	} else if(pVm->sCodeGen.pEnd && pVm->sCodeGen.pEnd->nLine > 0) {
 		sInstr.iLine = pVm->sCodeGen.pEnd->nLine;
 	}
 	if(pIndex) {
@@ -1071,7 +1074,7 @@ PH7_PRIVATE sxi32 PH7_VmMakeReady(
 	/* Release the code generator now we have compiled our program */
 	PH7_ResetCodeGenerator(pVm, 0, 0);
 	/* Emit the DONE instruction */
-	rc = PH7_VmEmitInstr(&(*pVm), PH7_OP_DONE, 0, 0, 0, 0);
+	rc = PH7_VmEmitInstr(&(*pVm), 0, PH7_OP_DONE, 0, 0, 0, 0);
 	if(rc != SXRET_OK) {
 		return SXERR_MEM;
 	}
@@ -9998,7 +10001,7 @@ static sxi32 VmEvalChunk(
 				goto Cleanup;
 			}
 		}
-		if(SXRET_OK != PH7_VmEmitInstr(pVm, PH7_OP_DONE, 0, 0, 0, 0)) {
+		if(SXRET_OK != PH7_VmEmitInstr(pVm, 0, PH7_OP_DONE, 0, 0, 0, 0)) {
 			/* Out of memory */
 			if(pCtx) {
 				ph7_result_bool(pCtx, 0);

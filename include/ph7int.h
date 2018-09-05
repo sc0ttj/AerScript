@@ -1695,7 +1695,7 @@ PH7_PRIVATE VmInstr *PH7_VmPeekNextInstr(ph7_vm *pVm);
 PH7_PRIVATE VmInstr *PH7_VmGetInstr(ph7_vm *pVm, sxu32 nIndex);
 PH7_PRIVATE SySet *PH7_VmGetByteCodeContainer(ph7_vm *pVm);
 PH7_PRIVATE sxi32 PH7_VmSetByteCodeContainer(ph7_vm *pVm, SySet *pContainer);
-PH7_PRIVATE sxi32 PH7_VmEmitInstr(ph7_vm *pVm, sxi32 iOp, sxi32 iP1, sxu32 iP2, void *p3, sxu32 *pIndex);
+PH7_PRIVATE sxi32 PH7_VmEmitInstr(ph7_vm *pVm, sxu32 nLine, sxi32 iOp, sxi32 iP1, sxu32 iP2, void *p3, sxu32 *pIndex);
 PH7_PRIVATE sxu32 PH7_VmRandomNum(ph7_vm *pVm);
 PH7_PRIVATE sxi32 PH7_VmCallClassMethod(ph7_vm *pVm, ph7_class_instance *pThis, ph7_class_method *pMethod,
 										ph7_value *pResult, int nArg, ph7_value **apArg);

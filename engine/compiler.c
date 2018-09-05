@@ -269,7 +269,7 @@ static sxi32 PH7_CompileNumLiteral(ph7_gen_state *pGen, sxi32 iCompileFlag) {
 		PH7_MemObjToReal(pObj);
 	}
 	/* Emit the load constant instruction */
-	PH7_VmEmitInstr(pGen->pVm, PH7_OP_LOADC, 0, nIdx, 0, 0);
+	PH7_VmEmitInstr(pGen->pVm, 0, PH7_OP_LOADC, 0, nIdx, 0, 0);
 	/* Node successfully compiled */
 	return SXRET_OK;
 }
@@ -295,7 +295,7 @@ PH7_PRIVATE sxi32 PH7_CompileSimpleString(ph7_gen_state *pGen, sxi32 iCompileFla
 		/* Already processed,emit the load constant instruction
 		 * and return.
 		 */
-		PH7_VmEmitInstr(pGen->pVm, PH7_OP_LOADC, 0, nIdx, 0, 0);
+		PH7_VmEmitInstr(pGen->pVm, 0, PH7_OP_LOADC, 0, nIdx, 0, 0);
 		return SXRET_OK;
 	}
 	/* Reserve a new constant */
@@ -339,7 +339,7 @@ PH7_PRIVATE sxi32 PH7_CompileSimpleString(ph7_gen_state *pGen, sxi32 iCompileFla
 		zIn++;
 	}
 	/* Emit the load constant instruction */
-	PH7_VmEmitInstr(pGen->pVm, PH7_OP_LOADC, 0, nIdx, 0, 0);
+	PH7_VmEmitInstr(pGen->pVm, 0, PH7_OP_LOADC, 0, nIdx, 0, 0);
 	if(pStr->nByte < 1024) {
 		/* Install in the literal table */
 		PH7_GenStateInstallLiteral(pGen, pObj, nIdx);
@@ -413,7 +413,7 @@ static ph7_value *PH7_GenStateNewStrObj(ph7_gen_state *pGen, sxi32 *pCount) {
 	(*pCount)++;
 	PH7_MemObjInitFromString(pGen->pVm, pConstObj, 0);
 	/* Emit the load constant instruction */
-	PH7_VmEmitInstr(pGen->pVm, PH7_OP_LOADC, 0, nIdx, 0, 0);
+	PH7_VmEmitInstr(pGen->pVm, 0, PH7_OP_LOADC, 0, nIdx, 0, 0);
 	return pConstObj;
 }
 /*
@@ -701,7 +701,7 @@ static sxi32 PH7_GenStateCompileString(ph7_gen_state *pGen) {
 	}/*for(;;)*/
 	if(iCons > 1) {
 		/* Concatenate all compiled constants */
-		PH7_VmEmitInstr(pGen->pVm, PH7_OP_ADD, iCons, 1, 0, 0);
+		PH7_VmEmitInstr(pGen->pVm, 0, PH7_OP_ADD, iCons, 1, 0, 0);
 	}
 	/* Node successfully compiled */
 	return SXRET_OK;
@@ -861,7 +861,7 @@ PH7_PRIVATE sxi32 PH7_CompileArray(ph7_gen_state *pGen, sxi32 iCompileFlag) {
 		}
 		if(rc == SXERR_EMPTY) {
 			/* No available key,load NULL */
-			PH7_VmEmitInstr(pGen->pVm, PH7_OP_LOADC, 0, 0 /* nil index */, 0, 0);
+			PH7_VmEmitInstr(pGen->pVm, 0, PH7_OP_LOADC, 0, 0 /* nil index */, 0, 0);
 		}
 		if(pCur->nType & PH7_TK_AMPER /*'&'*/) {
 			/* Insertion by reference, [i.e: $a = array(&$x);] */
@@ -884,14 +884,14 @@ PH7_PRIVATE sxi32 PH7_CompileArray(ph7_gen_state *pGen, sxi32 iCompileFlag) {
 		}
 		if(iEmitRef) {
 			/* Emit the load reference instruction */
-			PH7_VmEmitInstr(pGen->pVm, PH7_OP_LOAD_REF, 0, 0, 0, 0);
+			PH7_VmEmitInstr(pGen->pVm, 0, PH7_OP_LOAD_REF, 0, 0, 0, 0);
 		}
 		xValidator = 0;
 		iEmitRef = 0;
 		nPair++;
 	}
 	/* Emit the load map instruction */
-	PH7_VmEmitInstr(pGen->pVm, PH7_OP_LOAD_MAP, nPair * 2, 0, 0, 0);
+	PH7_VmEmitInstr(pGen->pVm, 0, PH7_OP_LOAD_MAP, nPair * 2, 0, 0, 0);
 	/* Node successfully compiled */
 	return SXRET_OK;
 }
@@ -957,14 +957,14 @@ PH7_PRIVATE sxi32 PH7_CompileList(ph7_gen_state *pGen, sxi32 iCompileFlag) {
 			}
 		} else {
 			/* Empty entry,load NULL */
-			PH7_VmEmitInstr(pGen->pVm, PH7_OP_LOADC, 0, 0/* NULL index */, 0, 0);
+			PH7_VmEmitInstr(pGen->pVm, 0, PH7_OP_LOADC, 0, 0/* NULL index */, 0, 0);
 		}
 		nExpr++;
 		/* Advance the stream cursor */
 		pGen->pIn = &pNext[1];
 	}
 	/* Emit the LOAD_LIST instruction */
-	PH7_VmEmitInstr(pGen->pVm, PH7_OP_LOAD_LIST, nExpr, 0, 0, 0);
+	PH7_VmEmitInstr(pGen->pVm, 0, PH7_OP_LOAD_LIST, nExpr, 0, 0, 0);
 	/* Node successfully compiled */
 	return SXRET_OK;
 }
@@ -1020,10 +1020,10 @@ PH7_PRIVATE sxi32 PH7_CompileClosure(ph7_gen_state *pGen, sxi32 iCompileFlag) {
 	}
 	if(pAnonFunc->iFlags & VM_FUNC_CLOSURE) {
 		/* Emit the load closure instruction */
-		PH7_VmEmitInstr(pGen->pVm, PH7_OP_LOAD_CLOSURE, 0, 0, pAnonFunc, 0);
+		PH7_VmEmitInstr(pGen->pVm, 0, PH7_OP_LOAD_CLOSURE, 0, 0, pAnonFunc, 0);
 	} else {
 		/* Emit the load constant instruction */
-		PH7_VmEmitInstr(pGen->pVm, PH7_OP_LOADC, 0, nIdx, 0, 0);
+		PH7_VmEmitInstr(pGen->pVm, 0, PH7_OP_LOADC, 0, nIdx, 0, 0);
 	}
 	/* Node successfully compiled */
 	return SXRET_OK;
@@ -1062,8 +1062,8 @@ PH7_PRIVATE sxi32 PH7_CompileLangConstruct(ph7_gen_state *pGen, sxi32 iCompileFl
 		PH7_GenStateInstallLiteral(&(*pGen), pObj, nIdx);
 	}
 	/* Emit the call instruction */
-	PH7_VmEmitInstr(pGen->pVm, PH7_OP_LOADC, 0, nIdx, 0, 0);
-	PH7_VmEmitInstr(pGen->pVm, PH7_OP_CALL, nArg, 0, 0, 0);
+	PH7_VmEmitInstr(pGen->pVm, 0, PH7_OP_LOADC, 0, nIdx, 0, 0);
+	PH7_VmEmitInstr(pGen->pVm, 0, PH7_OP_CALL, nArg, 0, 0, 0);
 	/* Node successfully compiled */
 	return SXRET_OK;
 }
@@ -1157,9 +1157,9 @@ PH7_PRIVATE sxi32 PH7_CompileVariable(ph7_gen_state *pGen, sxi32 iCompileFlag) {
 		}
 	}
 	/* Emit the load instruction */
-	PH7_VmEmitInstr(pGen->pVm, PH7_OP_LOAD, iP1, 0, p3, 0);
+	PH7_VmEmitInstr(pGen->pVm, 0, PH7_OP_LOAD, iP1, 0, p3, 0);
 	while(iVv > 0) {
-		PH7_VmEmitInstr(pGen->pVm, PH7_OP_LOAD, iP1, 0, 0, 0);
+		PH7_VmEmitInstr(pGen->pVm, 0, PH7_OP_LOAD, iP1, 0, 0, 0);
 		iVv--;
 	}
 	/* Node successfully compiled */
@@ -1179,17 +1179,17 @@ static sxi32 PH7_GenStateLoadLiteral(ph7_gen_state *pGen) {
 	if(pStr->nByte == sizeof("NULL") - 1) {
 		if(SyStrnicmp(pStr->zString, "null", sizeof("NULL") - 1) == 0) {
 			/* NULL constant are always indexed at 0 */
-			PH7_VmEmitInstr(pGen->pVm, PH7_OP_LOADC, 0, 0, 0, 0);
+			PH7_VmEmitInstr(pGen->pVm, 0, PH7_OP_LOADC, 0, 0, 0, 0);
 			return SXRET_OK;
 		} else if(SyStrnicmp(pStr->zString, "true", sizeof("TRUE") - 1) == 0) {
 			/* TRUE constant are always indexed at 1 */
-			PH7_VmEmitInstr(pGen->pVm, PH7_OP_LOADC, 0, 1, 0, 0);
+			PH7_VmEmitInstr(pGen->pVm, 0, PH7_OP_LOADC, 0, 1, 0, 0);
 			return SXRET_OK;
 		}
 	} else if(pStr->nByte == sizeof("FALSE") - 1 &&
 			  SyStrnicmp(pStr->zString, "false", sizeof("FALSE") - 1) == 0) {
 		/* FALSE constant are always indexed at 2 */
-		PH7_VmEmitInstr(pGen->pVm, PH7_OP_LOADC, 0, 2, 0, 0);
+		PH7_VmEmitInstr(pGen->pVm, 0, PH7_OP_LOADC, 0, 2, 0, 0);
 		return SXRET_OK;
 	} else if(pStr->nByte == sizeof("__LINE__") - 1 &&
 			  SyMemcmp(pStr->zString, "__LINE__", sizeof("__LINE__") - 1) == 0) {
@@ -1201,7 +1201,7 @@ static sxi32 PH7_GenStateLoadLiteral(ph7_gen_state *pGen) {
 		}
 		PH7_MemObjInitFromInt(pGen->pVm, pObj, pToken->nLine);
 		/* Emit the load constant instruction */
-		PH7_VmEmitInstr(pGen->pVm, PH7_OP_LOADC, 0, nIdx, 0, 0);
+		PH7_VmEmitInstr(pGen->pVm, 0, PH7_OP_LOADC, 0, nIdx, 0, 0);
 		return SXRET_OK;
 	} else if((pStr->nByte == sizeof("__FILE__") - 1 &&
 			  SyMemcmp(pStr->zString, "__FILE__", sizeof("__FILE__") - 1) == 0) ||
@@ -1234,7 +1234,7 @@ static sxi32 PH7_GenStateLoadLiteral(ph7_gen_state *pGen) {
 			}
 		}
 		/* Emit the load constant instruction */
-		PH7_VmEmitInstr(pGen->pVm, PH7_OP_LOADC, 0, nIdx, 0, 0);
+		PH7_VmEmitInstr(pGen->pVm, 0, PH7_OP_LOADC, 0, nIdx, 0, 0);
 		return SXRET_OK;
 	} else if(pStr->nByte == sizeof("__CLASS__") - 1 && SyMemcmp(pStr->zString, "__CLASS__", sizeof("__CLASS__") - 1) == 0) {
 		GenBlock *pBlock = pGen->pCurrent;
@@ -1244,7 +1244,7 @@ static sxi32 PH7_GenStateLoadLiteral(ph7_gen_state *pGen) {
 		}
 		if(pBlock == 0) {
 			/* Called in the global scope,load NULL */
-			PH7_VmEmitInstr(pGen->pVm, PH7_OP_LOADC, 0, 0, 0, 0);
+			PH7_VmEmitInstr(pGen->pVm, 0, PH7_OP_LOADC, 0, 0, 0, 0);
 		} else {
 			/* Extract the target class */
 			ph7_class_info *pClassInfo = (ph7_class_info *)pBlock->pUserData;
@@ -1255,7 +1255,7 @@ static sxi32 PH7_GenStateLoadLiteral(ph7_gen_state *pGen) {
 			}
 			PH7_MemObjInitFromString(pGen->pVm, pObj, &pClassInfo->sName);
 			/* Emit the load constant instruction */
-			PH7_VmEmitInstr(pGen->pVm, PH7_OP_LOADC, 0, nIdx, 0, 0);
+			PH7_VmEmitInstr(pGen->pVm, 0, PH7_OP_LOADC, 0, nIdx, 0, 0);
 		}
 		return SXRET_OK;
 	} else if((pStr->nByte == sizeof("__FUNCTION__") - 1 &&
@@ -1270,13 +1270,13 @@ static sxi32 PH7_GenStateLoadLiteral(ph7_gen_state *pGen) {
 		}
 		if(pBlock == 0) {
 			/* Called in the global scope,load NULL */
-			PH7_VmEmitInstr(pGen->pVm, PH7_OP_LOADC, 0, 0, 0, 0);
+			PH7_VmEmitInstr(pGen->pVm, 0, PH7_OP_LOADC, 0, 0, 0, 0);
 		} else {
 			/* Extract the target function/method */
 			ph7_vm_func *pFunc = (ph7_vm_func *)pBlock->pUserData;
 			if(pStr->zString[2] == 'M' /* METHOD */ && (pFunc->iFlags & VM_FUNC_CLASS_METHOD) == 0) {
 				/* Not a class method,Load null */
-				PH7_VmEmitInstr(pGen->pVm, PH7_OP_LOADC, 0, 0, 0, 0);
+				PH7_VmEmitInstr(pGen->pVm, 0, PH7_OP_LOADC, 0, 0, 0, 0);
 			} else {
 				pObj = PH7_ReserveConstObj(pGen->pVm, &nIdx);
 				if(pObj == 0) {
@@ -1285,7 +1285,7 @@ static sxi32 PH7_GenStateLoadLiteral(ph7_gen_state *pGen) {
 				}
 				PH7_MemObjInitFromString(pGen->pVm, pObj, &pFunc->sName);
 				/* Emit the load constant instruction */
-				PH7_VmEmitInstr(pGen->pVm, PH7_OP_LOADC, 0, nIdx, 0, 0);
+				PH7_VmEmitInstr(pGen->pVm, 0, PH7_OP_LOADC, 0, nIdx, 0, 0);
 			}
 		}
 		return SXRET_OK;
@@ -1303,7 +1303,7 @@ static sxi32 PH7_GenStateLoadLiteral(ph7_gen_state *pGen) {
 		PH7_GenStateInstallLiteral(&(*pGen), pObj, nIdx);
 	}
 	/* Emit the load constant instruction */
-	PH7_VmEmitInstr(pGen->pVm, PH7_OP_LOADC, 1, nIdx, 0, 0);
+	PH7_VmEmitInstr(pGen->pVm, 0, PH7_OP_LOADC, 1, nIdx, 0, 0);
 	return SXRET_OK;
 }
 /*
@@ -1447,7 +1447,7 @@ static sxi32 PH7_CompileConstant(ph7_gen_state *pGen) {
 	/* Compile constant value */
 	rc = PH7_CompileExpr(&(*pGen), 0, 0);
 	/* Emit the done instruction */
-	PH7_VmEmitInstr(pGen->pVm, PH7_OP_DONE, (rc != SXERR_EMPTY ? 1 : 0), 0, 0, 0);
+	PH7_VmEmitInstr(pGen->pVm, 0, PH7_OP_DONE, (rc != SXERR_EMPTY ? 1 : 0), 0, 0, 0);
 	PH7_VmSetByteCodeContainer(pGen->pVm, pInstrContainer);
 	if(rc == SXERR_ABORT) {
 		/* Don't worry about freeing memory, everything will be released shortly */
@@ -1516,13 +1516,13 @@ static sxi32 PH7_CompileContinue(ph7_gen_state *pGen) {
 			 * and acts similar to break. If you have a switch inside a loop and wish to continue
 			 * to the next iteration of the outer loop, use continue 2.
 			 */
-			rc = PH7_VmEmitInstr(pGen->pVm, PH7_OP_JMP, 0, 0, 0, &nInstrIdx);
+			rc = PH7_VmEmitInstr(pGen->pVm, 0, PH7_OP_JMP, 0, 0, 0, &nInstrIdx);
 			if(rc == SXRET_OK) {
 				PH7_GenStateNewJumpFixup(pLoop, PH7_OP_JMP, nInstrIdx);
 			}
 		} else {
 			/* Emit the unconditional jump to the beginning of the target loop */
-			PH7_VmEmitInstr(pGen->pVm, PH7_OP_JMP, 0, pLoop->nFirstInstr, 0, &nInstrIdx);
+			PH7_VmEmitInstr(pGen->pVm, 0, PH7_OP_JMP, 0, pLoop->nFirstInstr, 0, &nInstrIdx);
 			if(pLoop->bPostContinue == TRUE) {
 				JumpFixup sJumpFix;
 				/* Post-continue */
@@ -1576,7 +1576,7 @@ static sxi32 PH7_CompileBreak(ph7_gen_state *pGen) {
 		}
 	} else {
 		sxu32 nInstrIdx;
-		rc = PH7_VmEmitInstr(pGen->pVm, PH7_OP_JMP, 0, 0, 0, &nInstrIdx);
+		rc = PH7_VmEmitInstr(pGen->pVm, 0, PH7_OP_JMP, 0, 0, 0, &nInstrIdx);
 		if(rc == SXRET_OK) {
 			/* Fix the jump later when the jump destination is resolved */
 			PH7_GenStateNewJumpFixup(pLoop, PH7_OP_JMP, nInstrIdx);
@@ -1739,7 +1739,7 @@ static sxi32 PH7_CompileWhile(ph7_gen_state *pGen) {
 	pGen->pIn  = &pEnd[1];
 	pGen->pEnd = pTmp;
 	/* Emit the false jump */
-	PH7_VmEmitInstr(pGen->pVm, PH7_OP_JZ, 0, 0, 0, &nFalseJump);
+	PH7_VmEmitInstr(pGen->pVm, 0, PH7_OP_JZ, 0, 0, 0, &nFalseJump);
 	/* Save the instruction index so we can fix it later when the jump destination is resolved */
 	PH7_GenStateNewJumpFixup(pWhileBlock, PH7_OP_JZ, nFalseJump);
 	/* Compile the loop body */
@@ -1748,7 +1748,7 @@ static sxi32 PH7_CompileWhile(ph7_gen_state *pGen) {
 		return SXERR_ABORT;
 	}
 	/* Emit the unconditional jump to the start of the loop */
-	PH7_VmEmitInstr(pGen->pVm, PH7_OP_JMP, 0, pWhileBlock->nFirstInstr, 0, 0);
+	PH7_VmEmitInstr(pGen->pVm, 0, PH7_OP_JMP, 0, pWhileBlock->nFirstInstr, 0, 0);
 	/* Fix all jumps now the destination is resolved */
 	PH7_GenStateFixJumps(pWhileBlock, -1, PH7_VmInstrLength(pGen->pVm));
 	/* Release the loop block */
@@ -1871,7 +1871,7 @@ static sxi32 PH7_CompileDoWhile(ph7_gen_state *pGen) {
 	pGen->pIn  = &pEnd[1];
 	pGen->pEnd = pTmp;
 	/* Emit the true jump to the beginning of the loop */
-	PH7_VmEmitInstr(pGen->pVm, PH7_OP_JNZ, 0, pDoBlock->nFirstInstr, 0, 0);
+	PH7_VmEmitInstr(pGen->pVm, 0, PH7_OP_JNZ, 0, pDoBlock->nFirstInstr, 0, 0);
 	/* Fix all jumps now the destination is resolved */
 	PH7_GenStateFixJumps(pDoBlock, -1, PH7_VmInstrLength(pGen->pVm));
 	/* Release the loop block */
@@ -1952,7 +1952,7 @@ static sxi32 PH7_CompileFor(ph7_gen_state *pGen) {
 		/* Expression handler request an operation abort [i.e: Out-of-memory] */
 		return SXERR_ABORT;
 	} else if(rc != SXERR_EMPTY) {
-		PH7_VmEmitInstr(pGen->pVm, PH7_OP_POP, 1, 0, 0, 0);
+		PH7_VmEmitInstr(pGen->pVm, 0, PH7_OP_POP, 1, 0, 0, 0);
 	}
 	if((pGen->pIn->nType & PH7_TK_SEMI) == 0) {
 		/* Syntax error */
@@ -1980,7 +1980,7 @@ static sxi32 PH7_CompileFor(ph7_gen_state *pGen) {
 		return SXERR_ABORT;
 	} else if(rc != SXERR_EMPTY) {
 		/* Emit the false jump */
-		PH7_VmEmitInstr(pGen->pVm, PH7_OP_JZ, 0, 0, 0, &nFalseJump);
+		PH7_VmEmitInstr(pGen->pVm, 0, PH7_OP_JZ, 0, 0, 0, &nFalseJump);
 		/* Save the instruction index so we can fix it later when the jump destination is resolved */
 		PH7_GenStateNewJumpFixup(pForBlock, PH7_OP_JZ, nFalseJump);
 	}
@@ -2044,11 +2044,11 @@ static sxi32 PH7_CompileFor(ph7_gen_state *pGen) {
 			return SXERR_ABORT;
 		} else if(rc != SXERR_EMPTY) {
 			/* Pop operand lvalue */
-			PH7_VmEmitInstr(pGen->pVm, PH7_OP_POP, 1, 0, 0, 0);
+			PH7_VmEmitInstr(pGen->pVm, 0, PH7_OP_POP, 1, 0, 0, 0);
 		}
 	}
 	/* Emit the unconditional jump to the start of the loop */
-	PH7_VmEmitInstr(pGen->pVm, PH7_OP_JMP, 0, pForBlock->nFirstInstr, 0, 0);
+	PH7_VmEmitInstr(pGen->pVm, 0, PH7_OP_JMP, 0, pForBlock->nFirstInstr, 0, 0);
 	/* Fix all jumps now the destination is resolved */
 	PH7_GenStateFixJumps(pForBlock, -1, PH7_VmInstrLength(pGen->pVm));
 	/* Release the loop block */
@@ -2251,13 +2251,13 @@ static sxi32 PH7_CompileForeach(ph7_gen_state *pGen) {
 		SyStringInitFromBuf(&pInfo->sValue, pInstr->p3, SyStrlen((const char *)pInstr->p3));
 	}
 	/* Emit the 'FOREACH_INIT' instruction */
-	PH7_VmEmitInstr(pGen->pVm, PH7_OP_FOREACH_INIT, 0, 0, pInfo, &nFalseJump);
+	PH7_VmEmitInstr(pGen->pVm, 0, PH7_OP_FOREACH_INIT, 0, 0, pInfo, &nFalseJump);
 	/* Save the instruction index so we can fix it later when the jump destination is resolved */
 	PH7_GenStateNewJumpFixup(pForeachBlock, PH7_OP_FOREACH_INIT, nFalseJump);
 	/* Record the first instruction to execute */
 	pForeachBlock->nFirstInstr = PH7_VmInstrLength(pGen->pVm);
 	/* Emit the FOREACH_STEP instruction */
-	PH7_VmEmitInstr(pGen->pVm, PH7_OP_FOREACH_STEP, 0, 0, pInfo, &nFalseJump);
+	PH7_VmEmitInstr(pGen->pVm, 0, PH7_OP_FOREACH_STEP, 0, 0, pInfo, &nFalseJump);
 	/* Save the instruction index so we can fix it later when the jump destination is resolved */
 	PH7_GenStateNewJumpFixup(pForeachBlock, PH7_OP_FOREACH_STEP, nFalseJump);
 	/* Compile the loop body */
@@ -2269,7 +2269,7 @@ static sxi32 PH7_CompileForeach(ph7_gen_state *pGen) {
 		return SXERR_ABORT;
 	}
 	/* Emit the unconditional jump to the start of the loop */
-	PH7_VmEmitInstr(pGen->pVm, PH7_OP_JMP, 0, pForeachBlock->nFirstInstr, 0, 0);
+	PH7_VmEmitInstr(pGen->pVm, 0, PH7_OP_JMP, 0, pForeachBlock->nFirstInstr, 0, 0);
 	/* Fix all jumps now the destination is resolved */
 	PH7_GenStateFixJumps(pForeachBlock, -1, PH7_VmInstrLength(pGen->pVm));
 	/* Release the loop block */
@@ -2374,7 +2374,7 @@ static sxi32 PH7_CompileIf(ph7_gen_state *pGen) {
 			return SXERR_ABORT;
 		}
 		/* Emit the false jump */
-		PH7_VmEmitInstr(pGen->pVm, PH7_OP_JZ, 0, 0, 0, &nJumpIdx);
+		PH7_VmEmitInstr(pGen->pVm, 0, PH7_OP_JZ, 0, 0, 0, &nJumpIdx);
 		/* Save the instruction index so we can fix it later when the jump destination is resolved */
 		PH7_GenStateNewJumpFixup(pCondBlock, PH7_OP_JZ, nJumpIdx);
 		/* Compile the body */
@@ -2391,7 +2391,7 @@ static sxi32 PH7_CompileIf(ph7_gen_state *pGen) {
 			break;
 		}
 		/* Emit the unconditional jump */
-		PH7_VmEmitInstr(pGen->pVm, PH7_OP_JMP, 0, 0, 0, &nJumpIdx);
+		PH7_VmEmitInstr(pGen->pVm, 0, PH7_OP_JMP, 0, 0, 0, &nJumpIdx);
 		/* Save the instruction index so we can fix it later when the jump destination is resolved */
 		PH7_GenStateNewJumpFixup(pCondBlock, PH7_OP_JMP, nJumpIdx);
 		if(nKeyID & PH7_KEYWORD_ELSE) {
@@ -2464,7 +2464,7 @@ static sxi32 PH7_CompileReturn(ph7_gen_state *pGen) {
 		}
 	}
 	/* Emit the done instruction */
-	PH7_VmEmitInstr(pGen->pVm, PH7_OP_DONE, nRet, 0, 0, 0);
+	PH7_VmEmitInstr(pGen->pVm, 0, PH7_OP_DONE, nRet, 0, 0, 0);
 	return SXRET_OK;
 }
 /*
@@ -2487,7 +2487,7 @@ static sxi32 PH7_CompileHalt(ph7_gen_state *pGen) {
 		}
 	}
 	/* Emit the HALT instruction */
-	PH7_VmEmitInstr(pGen->pVm, PH7_OP_HALT, nExpr, 0, 0, 0);
+	PH7_VmEmitInstr(pGen->pVm, 0, PH7_OP_HALT, nExpr, 0, 0, 0);
 	return SXRET_OK;
 }
 /*
@@ -2538,7 +2538,7 @@ static sxi32 PH7_CompileStatic(ph7_gen_state *pGen) {
 			return SXERR_ABORT;
 		} else if(rc != SXERR_EMPTY) {
 			/* Emit the POP instruction */
-			PH7_VmEmitInstr(pGen->pVm, PH7_OP_POP, 1, 0, 0, 0);
+			PH7_VmEmitInstr(pGen->pVm, 0, PH7_OP_POP, 1, 0, 0, 0);
 		}
 		return SXRET_OK;
 	}
@@ -2586,7 +2586,7 @@ static sxi32 PH7_CompileStatic(ph7_gen_state *pGen) {
 		/* Compile the expression */
 		rc = PH7_CompileExpr(&(*pGen), 0, 0);
 		/* Emit the done instruction */
-		PH7_VmEmitInstr(pGen->pVm, PH7_OP_DONE, (rc != SXERR_EMPTY ? 1 : 0), 0, 0, 0);
+		PH7_VmEmitInstr(pGen->pVm, 0, PH7_OP_DONE, (rc != SXERR_EMPTY ? 1 : 0), 0, 0, 0);
 		/* Restore default bytecode container */
 		PH7_VmSetByteCodeContainer(pGen->pVm, pInstrContainer);
 	}
@@ -2627,7 +2627,7 @@ static sxi32 PH7_CompileVar(ph7_gen_state *pGen) {
 		if(rc == SXERR_ABORT) {
 			return SXERR_ABORT;
 		} else if(rc != SXERR_EMPTY) {
-			PH7_VmEmitInstr(pGen->pVm, PH7_OP_POP, 1, 0, 0, 0);
+			PH7_VmEmitInstr(pGen->pVm, 0, PH7_OP_POP, 1, 0, 0, 0);
 		}
 	}
 	return SXRET_OK;
@@ -2845,7 +2845,7 @@ static sxi32 PH7_GenStateProcessArgValue(ph7_gen_state *pGen, ph7_vm_func_arg *p
 	/* Compile the expression holding the argument value */
 	rc = PH7_CompileExpr(&(*pGen), 0, 0);
 	/* Emit the done instruction */
-	PH7_VmEmitInstr(pGen->pVm, PH7_OP_DONE, (rc != SXERR_EMPTY ? 1 : 0), 0, 0, 0);
+	PH7_VmEmitInstr(pGen->pVm, 0, PH7_OP_DONE, (rc != SXERR_EMPTY ? 1 : 0), 0, 0, 0);
 	PH7_VmSetByteCodeContainer(pGen->pVm, pInstrContainer);
 	RE_SWAP_DELIMITER(pGen);
 	if(rc == SXERR_ABORT) {
@@ -3070,7 +3070,7 @@ static sxi32 PH7_GenStateCompileFuncBody(
 	/* Fix exception jumps now the destination is resolved */
 	PH7_GenStateFixJumps(pGen->pCurrent, PH7_OP_THROW, PH7_VmInstrLength(pGen->pVm));
 	/* Emit the final return if not yet done */
-	PH7_VmEmitInstr(pGen->pVm, PH7_OP_DONE, 0, 0, 0, 0);
+	PH7_VmEmitInstr(pGen->pVm, 0, PH7_OP_DONE, 0, 0, 0, 0);
 	/* Restore the default container */
 	PH7_VmSetByteCodeContainer(pGen->pVm, pInstrContainer);
 	/* Leave function block */
@@ -3368,7 +3368,7 @@ loop:
 		}
 	}
 	/* Emit the done instruction */
-	PH7_VmEmitInstr(pGen->pVm, PH7_OP_DONE, 1, 0, 0, 0);
+	PH7_VmEmitInstr(pGen->pVm, 0, PH7_OP_DONE, 1, 0, 0, 0);
 	PH7_VmSetByteCodeContainer(pGen->pVm, pInstrContainer);
 	if(rc == SXERR_ABORT) {
 		/* Don't worry about freeing memory, everything will be released shortly */
@@ -3482,7 +3482,7 @@ loop:
 			}
 		}
 		/* Emit the done instruction */
-		PH7_VmEmitInstr(pGen->pVm, PH7_OP_DONE, 1, 0, 0, 0);
+		PH7_VmEmitInstr(pGen->pVm, 0, PH7_OP_DONE, 1, 0, 0, 0);
 		PH7_VmSetByteCodeContainer(pGen->pVm, pInstrContainer);
 	}
 	/* All done,install the attribute */
@@ -3890,7 +3890,7 @@ static sxi32 PH7_CompileClassInterface(ph7_gen_state *pGen) {
 	rc = PH7_VmInstallClass(pGen->pVm, pClass);
 	if(iP1) {
 		/* Emit the INTERFACE_INIT instruction only if there is such a need */
-		PH7_VmEmitInstr(pGen->pVm, PH7_OP_INTERFACE_INIT, iP1, 0, pClassInfo, 0);
+		PH7_VmEmitInstr(pGen->pVm, nLine, PH7_OP_INTERFACE_INIT, iP1, 0, pClassInfo, 0);
 	}
 	if(rc != SXRET_OK) {
 		PH7_GenCompileError(pGen, E_ERROR, nLine, "Fatal, PH7 is running out of memory");
@@ -4268,7 +4268,7 @@ static sxi32 PH7_GenStateCompileClass(ph7_gen_state *pGen, sxi32 iFlags) {
 	rc = PH7_VmInstallClass(pGen->pVm, pClass);
 	if(iP1 || iP2) {
 		/* Emit the CLASS_INIT instruction only if there is such a need */
-		PH7_VmEmitInstr(pGen->pVm, PH7_OP_CLASS_INIT, iP1, iP2, pClassInfo, 0);
+		PH7_VmEmitInstr(pGen->pVm, nLine, PH7_OP_CLASS_INIT, iP1, iP2, pClassInfo, 0);
 	}
 	if(rc != SXRET_OK) {
 		PH7_GenCompileError(pGen, E_ERROR, nLine, "Fatal, PH7 is running out of memory");
@@ -4399,7 +4399,7 @@ static sxi32 PH7_CompileThrow(ph7_gen_state *pGen) {
 		pBlock = pBlock->pParent;
 	}
 	/* Emit the throw instruction */
-	PH7_VmEmitInstr(pGen->pVm, PH7_OP_THROW, 0, 0, 0, &nIdx);
+	PH7_VmEmitInstr(pGen->pVm, 0, PH7_OP_THROW, 0, 0, 0, &nIdx);
 	/* Emit the jump */
 	PH7_GenStateNewJumpFixup(pBlock, PH7_OP_THROW, nIdx);
 	return SXRET_OK;
@@ -4498,7 +4498,7 @@ static sxi32 PH7_CompileCatch(ph7_gen_state *pGen, ph7_exception *pException) {
 	/* Fix forward jumps now the destination is resolved  */
 	PH7_GenStateFixJumps(pCatch, -1, PH7_VmInstrLength(pGen->pVm));
 	/* Emit the DONE instruction */
-	PH7_VmEmitInstr(pGen->pVm, PH7_OP_DONE, 0, 0, 0, 0);
+	PH7_VmEmitInstr(pGen->pVm, 0, PH7_OP_DONE, 0, 0, 0, 0);
 	/* Leave the block */
 	PH7_GenStateLeaveBlock(&(*pGen), 0);
 	/* Restore the default container */
@@ -4543,7 +4543,7 @@ static sxi32 PH7_CompileTry(ph7_gen_state *pGen) {
 		return SXERR_ABORT;
 	}
 	/* Emit the 'LOAD_EXCEPTION' instruction */
-	PH7_VmEmitInstr(pGen->pVm, PH7_OP_LOAD_EXCEPTION, 0, 0, pException, &nJmpIdx);
+	PH7_VmEmitInstr(pGen->pVm, 0, PH7_OP_LOAD_EXCEPTION, 0, 0, pException, &nJmpIdx);
 	/* Fix the jump later when the destination is resolved */
 	PH7_GenStateNewJumpFixup(pTry, PH7_OP_LOAD_EXCEPTION, nJmpIdx);
 	pGen->pIn++; /* Jump the 'try' keyword */
@@ -4555,7 +4555,7 @@ static sxi32 PH7_CompileTry(ph7_gen_state *pGen) {
 	/* Fix forward jumps now the destination is resolved */
 	PH7_GenStateFixJumps(pTry, -1, PH7_VmInstrLength(pGen->pVm));
 	/* Emit the 'POP_EXCEPTION' instruction */
-	PH7_VmEmitInstr(pGen->pVm, PH7_OP_POP_EXCEPTION, 0, 0, pException, 0);
+	PH7_VmEmitInstr(pGen->pVm, 0, PH7_OP_POP_EXCEPTION, 0, 0, pException, 0);
 	/* Leave the block */
 	PH7_GenStateLeaveBlock(&(*pGen), 0);
 	/* Compile the catch block */
@@ -4670,7 +4670,7 @@ static sxi32 PH7_GenStateCompileCaseExpr(ph7_gen_state *pGen, ph7_case_expr *pEx
 	PH7_VmSetByteCodeContainer(pGen->pVm, &pExpr->aByteCode);
 	rc = PH7_CompileExpr(&(*pGen), 0, 0);
 	/* Emit the done instruction */
-	PH7_VmEmitInstr(pGen->pVm, PH7_OP_DONE, (rc != SXERR_EMPTY ? 1 : 0), 0, 0, 0);
+	PH7_VmEmitInstr(pGen->pVm, 0, PH7_OP_DONE, (rc != SXERR_EMPTY ? 1 : 0), 0, 0, 0);
 	PH7_VmSetByteCodeContainer(pGen->pVm, pInstrContainer);
 	/* Update token stream */
 	pGen->pIn  = pEnd;
@@ -4787,7 +4787,7 @@ static sxi32 PH7_CompileSwitch(ph7_gen_state *pGen) {
 	/* Initialize fields */
 	SySetInit(&pSwitch->aCaseExpr, &pGen->pVm->sAllocator, sizeof(ph7_case_expr));
 	/* Emit the switch instruction */
-	PH7_VmEmitInstr(pGen->pVm, PH7_OP_SWITCH, 0, 0, pSwitch, 0);
+	PH7_VmEmitInstr(pGen->pVm, 0, PH7_OP_SWITCH, 0, 0, pSwitch, 0);
 	/* Compile case blocks */
 	for(;;) {
 		sxu32 nKwrd;
@@ -4916,7 +4916,7 @@ static sxi32 PH7_GenStateEmitExprCode(
 		}
 		nJz = nJmp = 0; /* cc -O6 warning */
 		/* Phase#2: Emit the false jump */
-		PH7_VmEmitInstr(pGen->pVm, PH7_OP_JZ, 0, 0, 0, &nJz);
+		PH7_VmEmitInstr(pGen->pVm, 0, PH7_OP_JZ, 0, 0, 0, &nJz);
 		if(pNode->pLeft) {
 			/* Phase#3: Compile the 'then' expression  */
 			rc = PH7_GenStateEmitExprCode(&(*pGen), pNode->pLeft, iFlags);
@@ -4925,7 +4925,7 @@ static sxi32 PH7_GenStateEmitExprCode(
 			}
 		}
 		/* Phase#4: Emit the unconditional jump */
-		PH7_VmEmitInstr(pGen->pVm, PH7_OP_JMP, 0, 0, 0, &nJmp);
+		PH7_VmEmitInstr(pGen->pVm, 0, PH7_OP_JMP, 0, 0, 0, &nJmp);
 		/* Phase#5: Fix the false jump now the jump destination is resolved. */
 		pInstr = PH7_VmGetInstr(pGen->pVm, nJz);
 		if(pInstr) {
@@ -5003,7 +5003,7 @@ static sxi32 PH7_GenStateEmitExprCode(
 			}
 		} else if(pNode->pOp->iOp == EXPR_OP_COMMA) {
 			/* POP the left node */
-			PH7_VmEmitInstr(pGen->pVm, PH7_OP_POP, 1, 0, 0, 0);
+			PH7_VmEmitInstr(pGen->pVm, 0, PH7_OP_POP, 1, 0, 0, 0);
 		}
 	}
 	rc = SXRET_OK;
@@ -5012,10 +5012,10 @@ static sxi32 PH7_GenStateEmitExprCode(
 	if(pNode->pRight) {
 		if(iVmOp == PH7_OP_LAND) {
 			/* Emit the false jump so we can short-circuit the logical and */
-			PH7_VmEmitInstr(pGen->pVm, PH7_OP_JZ, 1/* Keep the value on the stack */, 0, 0, &nJmpIdx);
+			PH7_VmEmitInstr(pGen->pVm, 0, PH7_OP_JZ, 1/* Keep the value on the stack */, 0, 0, &nJmpIdx);
 		} else if(iVmOp == PH7_OP_LOR) {
 			/* Emit the true jump so we can short-circuit the logical or*/
-			PH7_VmEmitInstr(pGen->pVm, PH7_OP_JNZ, 1/* Keep the value on the stack */, 0, 0, &nJmpIdx);
+			PH7_VmEmitInstr(pGen->pVm, 0, PH7_OP_JNZ, 1/* Keep the value on the stack */, 0, 0, &nJmpIdx);
 		} else if(pNode->pOp->iPrec == 18 /* Combined binary operators [i.e: =,'.=','+=',*=' ...] precedence */) {
 			iFlags |= EXPR_FLAG_LOAD_IDX_STORE;
 		}
@@ -5087,7 +5087,7 @@ static sxi32 PH7_GenStateEmitExprCode(
 			}
 		}
 		/* Finally,emit the VM instruction associated with this operator */
-		PH7_VmEmitInstr(pGen->pVm, iVmOp, iP1, iP2, p3, 0);
+		PH7_VmEmitInstr(pGen->pVm, 0, iVmOp, iP1, iP2, p3, 0);
 		if(nJmpIdx > 0) {
 			/* Fix short-circuited jumps now the destination is resolved */
 			pInstr = PH7_VmGetInstr(pGen->pVm, nJmpIdx);
@@ -5347,7 +5347,7 @@ static sxi32 PH7_GenStateCompileChunk(
 				rc = PH7_CompileExpr(&(*pGen), 0, 0);
 				if(rc != SXERR_EMPTY) {
 					/* Pop l-value */
-					PH7_VmEmitInstr(pGen->pVm, PH7_OP_POP, 1, 0, 0, 0);
+					PH7_VmEmitInstr(pGen->pVm, 0, PH7_OP_POP, 1, 0, 0, 0);
 				}
 			} else {
 				/* Compile the statement */
@@ -5441,7 +5441,7 @@ static sxi32 PH7_CompileScript(
 			rc = PH7_CompileExpr(pGen, 0, 0);
 		}
 		/* Emit the DONE instruction */
-		PH7_VmEmitInstr(pGen->pVm, PH7_OP_DONE, (rc != SXERR_EMPTY ? 1 : 0), 0, 0, 0);
+		PH7_VmEmitInstr(pGen->pVm, 0, PH7_OP_DONE, (rc != SXERR_EMPTY ? 1 : 0), 0, 0, 0);
 		return SXRET_OK;
 	} else if(iFlags & PH7_AERSCRIPT_CHNK) {
 		/* Compile a chunk of code */
