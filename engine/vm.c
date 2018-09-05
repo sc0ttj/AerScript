@@ -1122,7 +1122,7 @@ PH7_PRIVATE sxi32 PH7_VmMakeReady(
  * Reset a Virtual Machine to it's initial state.
  */
 PH7_PRIVATE sxi32 PH7_VmReset(ph7_vm *pVm) {
-	if(pVm->nMagic != PH7_VM_RUN && pVm->nMagic != PH7_VM_EXEC) {
+	if(pVm->nMagic != PH7_VM_RUN && pVm->nMagic != PH7_VM_EXEC && pVm->nMagic != PH7_VM_INCL) {
 		return SXERR_CORRUPT;
 	}
 	/* TICKET 1433-003: As of this version, the VM is automatically reset */
@@ -5412,7 +5412,7 @@ PH7_PRIVATE sxi32 PH7_VmByteCodeExec(ph7_vm *pVm) {
 	ph7_value pResult;
 	/* Make sure we are ready to execute this program */
 	if(pVm->nMagic != PH7_VM_RUN) {
-		return pVm->nMagic == PH7_VM_EXEC ? SXERR_LOCKED /* Locked VM */ : SXERR_CORRUPT; /* Stale VM */
+		return (pVm->nMagic == PH7_VM_EXEC || pVm->nMagic == PH7_VM_INCL) ? SXERR_LOCKED /* Locked VM */ : SXERR_CORRUPT; /* Stale VM */
 	}
 	/* Set the execution magic number  */
 	pVm->nMagic = PH7_VM_EXEC;
@@ -10169,7 +10169,9 @@ static sxi32 VmExecIncludedFile(
 			SyString sScript;
 			/* Compile and execute the script */
 			SyStringInitFromBuf(&sScript, SyBlobData(&sContents), SyBlobLength(&sContents));
+			pVm->nMagic = PH7_VM_INCL;
 			VmEvalChunk(pCtx->pVm, &(*pCtx), &sScript, PH7_AERSCRIPT_CODE);
+			pVm->nMagic = PH7_VM_EXEC;
 		}
 	}
 	/* Close the handle */
