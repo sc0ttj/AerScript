@@ -124,11 +124,6 @@ typedef struct ph7 ph7;
  *   size! (the -Os option if using GCC).
  *   Telling your compiler to optimize for size usually has a much larger impact
  *   on library footprint than employing any of these compile-time options.
- *   PH7_ENABLE_MATH_FUNC
- *     If this directive is enabled, built-in math functions such as sqrt(),abs(),
- *     log(), ceil(), etc. are included in the build. Note that you may need to link
- *     PH7 with the math library in same linux/BSD flavor (i.e: -lm).Otherwise you
- *     will get a link time error.
  *  PH7_DISABLE_DISK_IO
  *     If this directive is enabled, built-in Virtual File System functions such as
  *     chdir(), mkdir(), chroot(), unlink(), delete(), etc. are omitted from the build.
