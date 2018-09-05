@@ -1233,7 +1233,6 @@ struct ph7_vm {
 	int nExceptDepth;          /* Exception depth */
 	int closure_cnt;           /* Loaded closures counter */
 	int json_rc;               /* JSON return status [refer to json_encode()/json_decode()]*/
-	sxu32 nOutputLen;          /* Total number of generated output */
 	ph7_output_consumer sVmConsumer; /* Registered output consumer callback */
 	int iAssertFlags;          /* Assertion flags */
 	ph7_value sAssertCallback; /* Callback to call on failed assertions */

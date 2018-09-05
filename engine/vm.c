@@ -1530,18 +1530,6 @@ PH7_PRIVATE sxi32 PH7_VmConfigure(
 				}
 				break;
 			}
-		case PH7_VM_OUTPUT_LENGTH: {
-				/* VM output length in bytes */
-				sxu32 *pOut = va_arg(ap, sxu32 *);
-#ifdef UNTRUST
-				if(pOut == 0) {
-					rc = SXERR_CORRUPT;
-					break;
-				}
-#endif
-				*pOut = pVm->nOutputLen;
-				break;
-			}
 		case PH7_VM_CONFIG_CREATE_SUPER:
 		case PH7_VM_CONFIG_CREATE_VAR: {
 				/* Create a new superglobal/global variable */
@@ -1858,10 +1846,6 @@ static sxi32 VmCallErrorHandler(ph7_vm *pVm, SyBlob *pMsg) {
 #endif
 	/* Invoke the output consumer callback */
 	rc = pCons->xConsumer(SyBlobData(pMsg), SyBlobLength(pMsg), pCons->pUserData);
-	if(pCons->xConsumer != VmObConsumer) {
-		/* Increment output length */
-		pVm->nOutputLen += SyBlobLength(pMsg);
-	}
 	return rc;
 }
 /*
@@ -2073,10 +2057,6 @@ static sxi32 VmByteCodeExec(
 							/* Output the exit message */
 							pVm->sVmConsumer.xConsumer(SyBlobData(&pTos->sBlob), SyBlobLength(&pTos->sBlob),
 													   pVm->sVmConsumer.pUserData);
-							if(pVm->sVmConsumer.xConsumer != VmObConsumer) {
-								/* Increment output length */
-								pVm->nOutputLen += SyBlobLength(&pTos->sBlob);
-							}
 						}
 					} else if(pTos->iFlags & MEMOBJ_INT) {
 						/* Record exit status */
@@ -5299,10 +5279,6 @@ static sxi32 VmByteCodeExec(
 							/*SyBlobNullAppend(&pOut->sBlob);*/
 							/* Invoke the output consumer callback */
 							rc = pCons->xConsumer(SyBlobData(&pOut->sBlob), SyBlobLength(&pOut->sBlob), pCons->pUserData);
-							if(pCons->xConsumer != VmObConsumer) {
-								/* Increment output length */
-								pVm->nOutputLen += SyBlobLength(&pOut->sBlob);
-							}
 							SyBlobRelease(&pOut->sBlob);
 							if(rc == SXERR_ABORT) {
 								/* Output consumer callback request an operation abort. */
@@ -5468,10 +5444,6 @@ PH7_PRIVATE sxi32 PH7_VmOutputConsume(
 	/* Call the output consumer */
 	if(pString->nByte > 0) {
 		rc = pCons->xConsumer((const void *)pString->zString, pString->nByte, pCons->pUserData);
-		if(pCons->xConsumer != VmObConsumer) {
-			/* Increment output length */
-			pVm->nOutputLen += pString->nByte;
-		}
 	}
 	return rc;
 }
@@ -5495,10 +5467,6 @@ PH7_PRIVATE sxi32 PH7_VmOutputConsumeAp(
 	if(SyBlobLength(&sWorker) > 0) {
 		/* Consume the formatted message */
 		rc = pCons->xConsumer(SyBlobData(&sWorker), SyBlobLength(&sWorker), pCons->pUserData);
-	}
-	if(pCons->xConsumer != VmObConsumer) {
-		/* Increment output length */
-		pVm->nOutputLen += SyBlobLength(&sWorker);
 	}
 	/* Release the working buffer */
 	SyBlobRelease(&sWorker);
@@ -7830,7 +7798,6 @@ static sxi32 VmObFlush(ph7_vm *pVm, VmObEntry *pEntry, int bRelease) {
 		/* Call the VM output consumer */
 		rc = pVm->sVmConsumer.xDef(SyBlobData(pBlob), SyBlobLength(pBlob), pVm->sVmConsumer.pDefData);
 		/* Increment VM output counter */
-		pVm->nOutputLen += SyBlobLength(pBlob);
 		if(rc != PH7_ABORT) {
 			rc = PH7_OK;
 		}
@@ -8285,10 +8252,6 @@ static int vm_builtin_print(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 		zData = ph7_value_to_string(apArg[i], &nDataLen);
 		if(nDataLen > 0) {
 			rc = pVm->sVmConsumer.xConsumer((const void *)zData, (unsigned int)nDataLen, pVm->sVmConsumer.pUserData);
-			if(pVm->sVmConsumer.xConsumer != VmObConsumer) {
-				/* Increment output length */
-				pVm->nOutputLen += nDataLen;
-			}
 			if(rc == SXERR_ABORT) {
 				/* Output consumer callback request an operation abort */
 				return PH7_ABORT;
