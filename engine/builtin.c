@@ -4076,7 +4076,6 @@ static int PH7_builtin_size_format(ph7_context *pCtx, int nArg, ph7_value **apAr
 	ph7_result_string_format(pCtx, "%d.%d %cB", i_32, nRest, zUnit[c]);
 	return PH7_OK;
 }
-#if !defined(PH7_DISABLE_HASH_FUNC)
 /*
  * string md5(string $str[,bool $raw_output = false])
  *   Calculate the md5 hash of a string.
@@ -4194,7 +4193,6 @@ static int PH7_builtin_crc32(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	ph7_result_int64(pCtx, (ph7_int64)nCRC ^ 0xFFFFFFFF);
 	return PH7_OK;
 }
-#endif /* PH7_DISABLE_HASH_FUNC */
 /*
  * Parse a CSV string and invoke the supplied callback for each processed xhunk.
  */
@@ -7553,11 +7551,9 @@ static const ph7_builtin_func aBuiltInFunc[] = {
 	{ "vprintf",      PH7_builtin_vprintf    },
 	{ "vsprintf",     PH7_builtin_vsprintf   },
 	{ "size_format",  PH7_builtin_size_format},
-#if !defined(PH7_DISABLE_HASH_FUNC)
 	{ "md5",          PH7_builtin_md5       },
 	{ "sha1",         PH7_builtin_sha1      },
 	{ "crc32",        PH7_builtin_crc32     },
-#endif /* PH7_DISABLE_HASH_FUNC */
 	{ "str_getcsv",   PH7_builtin_str_getcsv },
 	{ "strip_tags",   PH7_builtin_strip_tags },
 	{ "str_shuffle",  PH7_builtin_str_shuffle},

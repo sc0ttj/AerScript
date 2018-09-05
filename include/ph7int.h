@@ -596,7 +596,6 @@ struct SyArchiveEntry {
 * Extra flags for extending the file local header
 */
 #define SXZIP_EXTRA_TIMESTAMP	0x001	/* Extended UNIX timestamp */
-#ifndef PH7_DISABLE_HASH_FUNC
 /* MD5 context */
 typedef struct MD5Context MD5Context;
 struct MD5Context {
@@ -611,7 +610,6 @@ struct SHA1Context {
 	unsigned int count[2];
 	unsigned char buffer[64];
 };
-#endif /* PH7_DISABLE_HASH_FUNC */
 /* PH7 private declaration */
 /*
  * Memory Objects.
@@ -1800,17 +1798,15 @@ PH7_PRIVATE sxi32 SyArchiveResetLoopCursor(SyArchive *pArch);
 PH7_PRIVATE sxi32 SyArchiveGetNextEntry(SyArchive *pArch, SyArchiveEntry **ppEntry);
 PH7_PRIVATE sxi32 SyZipExtractFromBuf(SyArchive *pArch, const char *zBuf, sxu32 nLen);
 PH7_PRIVATE sxi32 SyBinToHexConsumer(const void *pIn, sxu32 nLen, ProcConsumer xConsumer, void *pConsumerData);
-#ifndef PH7_DISABLE_HASH_FUNC
-	PH7_PRIVATE sxu32 SyCrc32(const void *pSrc, sxu32 nLen);
-	PH7_PRIVATE void MD5Update(MD5Context *ctx, const unsigned char *buf, unsigned int len);
-	PH7_PRIVATE void MD5Final(unsigned char digest[16], MD5Context *ctx);
-	PH7_PRIVATE sxi32 MD5Init(MD5Context *pCtx);
-	PH7_PRIVATE sxi32 SyMD5Compute(const void *pIn, sxu32 nLen, unsigned char zDigest[16]);
-	PH7_PRIVATE void SHA1Init(SHA1Context *context);
-	PH7_PRIVATE void SHA1Update(SHA1Context *context, const unsigned char *data, unsigned int len);
-	PH7_PRIVATE void SHA1Final(SHA1Context *context, unsigned char digest[20]);
-	PH7_PRIVATE sxi32 SySha1Compute(const void *pIn, sxu32 nLen, unsigned char zDigest[20]);
-#endif
+PH7_PRIVATE sxu32 SyCrc32(const void *pSrc, sxu32 nLen);
+PH7_PRIVATE void MD5Update(MD5Context *ctx, const unsigned char *buf, unsigned int len);
+PH7_PRIVATE void MD5Final(unsigned char digest[16], MD5Context *ctx);
+PH7_PRIVATE sxi32 MD5Init(MD5Context *pCtx);
+PH7_PRIVATE sxi32 SyMD5Compute(const void *pIn, sxu32 nLen, unsigned char zDigest[16]);
+PH7_PRIVATE void SHA1Init(SHA1Context *context);
+PH7_PRIVATE void SHA1Update(SHA1Context *context, const unsigned char *data, unsigned int len);
+PH7_PRIVATE void SHA1Final(SHA1Context *context, unsigned char digest[20]);
+PH7_PRIVATE sxi32 SySha1Compute(const void *pIn, sxu32 nLen, unsigned char zDigest[20]);
 PH7_PRIVATE sxi32 SyRandomness(SyPRNGCtx *pCtx, void *pBuf, sxu32 nLen);
 PH7_PRIVATE sxi32 SyRandomnessInit(SyPRNGCtx *pCtx, ProcRandomSeed xSeed, void *pUserData);
 PH7_PRIVATE sxu32 SyBufferFormat(char *zBuf, sxu32 nLen, const char *zFormat, ...);

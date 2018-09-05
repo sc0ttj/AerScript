@@ -4930,7 +4930,6 @@ static int PH7_builtin_fclose(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	ph7_result_bool(pCtx, 1);
 	return PH7_OK;
 }
-#if !defined(PH7_DISABLE_HASH_FUNC)
 /*
  * MD5/SHA1 digest consumer.
  */
@@ -5079,7 +5078,6 @@ static int PH7_builtin_sha1_file(ph7_context *pCtx, int nArg, ph7_value **apArg)
 	}
 	return PH7_OK;
 }
-#endif /* PH7_DISABLE_HASH_FUNC */
 /*
  * array parse_ini_file(string $filename[, bool $process_sections = false [, int $scanner_mode = INI_SCANNER_NORMAL ]] )
  *  Parse a configuration file.
@@ -8137,10 +8135,8 @@ PH7_PRIVATE sxi32 PH7_RegisterIORoutine(ph7_vm *pVm) {
 		{"fpassthru", PH7_builtin_fpassthru },
 		{"fputcsv",   PH7_builtin_fputcsv },
 		{"fprintf",   PH7_builtin_fprintf },
-#if !defined(PH7_DISABLE_HASH_FUNC)
 		{"md5_file",  PH7_builtin_md5_file},
 		{"sha1_file", PH7_builtin_sha1_file},
-#endif /* PH7_DISABLE_HASH_FUNC */
 		{"parse_ini_file", PH7_builtin_parse_ini_file},
 		{"vfprintf",  PH7_builtin_vfprintf}
 	};

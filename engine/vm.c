@@ -8131,7 +8131,6 @@ static int vm_builtin_random_bytes(ph7_context *pCtx, int nArg, ph7_value **apAr
 	ph7_result_string(pCtx, (char *)zBuf, iLen);
 	return SXRET_OK;
 }
-#if !defined(PH7_DISABLE_HASH_FUNC)
 /* Unique ID private data */
 struct unique_id_data {
 	ph7_context *pCtx; /* Call context */
@@ -8217,7 +8216,6 @@ static int vm_builtin_uniqid(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	/* All done */
 	return PH7_OK;
 }
-#endif /* PH7_DISABLE_HASH_FUNC */
 /*
  * Section:
  *  Language construct implementation as foreign functions.
@@ -10899,9 +10897,7 @@ static const ph7_builtin_func aVmFunc[] = {
 	{ "getrandmax",    vm_builtin_getrandmax      },
 	{ "random_int",    vm_builtin_random_int      },
 	{ "random_bytes",  vm_builtin_random_bytes    },
-#if !defined(PH7_DISABLE_HASH_FUNC)
 	{ "uniqid",        vm_builtin_uniqid          },
-#endif /* PH7_DISABLE_HASH_FUNC */
 	/* Language constructs functions */
 	{ "print", vm_builtin_print                   },
 	{ "exit",  vm_builtin_exit                    },

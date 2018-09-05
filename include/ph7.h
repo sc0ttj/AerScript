@@ -132,9 +132,6 @@ typedef struct ph7 ph7;
  *  PH7_DISABLE_DISK_IO
  *     If this directive is enabled, built-in Virtual File System functions such as
  *     chdir(), mkdir(), chroot(), unlink(), delete(), etc. are omitted from the build.
- *  PH7_DISABLE_HASH_IO
- *     If this directive is enabled, built-in hash functions such as md5(), sha1(),
- *     md5_file(), crc32(), etc. are omitted from the build.
  *  PH7_OMIT_FLOATING_POINT
  *     This option is used to omit floating-point number support from the PH7 library
  *     if compiling for a processor that lacks floating point support. When specified
