@@ -1116,8 +1116,6 @@ PH7_PRIVATE sxi32 PH7_VmMakeReady(
 			return rc;
 		}
 	}
-	/* Random number between 0 and 1023 used to generate unique ID */
-	pVm->unique_id = PH7_VmRandomNum(&(*pVm)) & 1023;
 	/* VM is ready for bytecode execution */
 	return SXRET_OK;
 }
@@ -8220,10 +8218,13 @@ static int vm_builtin_uniqid(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	const char *zPrefix;
 	SHA1Context sCtx;
 	char zRandom[7];
+	sxu32 uniqueid;
 	int nPrefix;
 	int entropy;
 	/* Generate a random string first */
 	PH7_VmRandomString(pVm, zRandom, (int)sizeof(zRandom));
+	/* Generate a random number between 0 and 1023 */
+	uniqueid = PH7_VmRandomNum(&(*pVm)) & 1023;
 	/* Initialize fields */
 	zPrefix = 0;
 	nPrefix = 0;
@@ -8241,11 +8242,9 @@ static int vm_builtin_uniqid(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 		SHA1Update(&sCtx, (const unsigned char *)zPrefix, (unsigned int)nPrefix);
 	}
 	/* Append the random ID */
-	SHA1Update(&sCtx, (const unsigned char *)&pVm->unique_id, sizeof(int));
+	SHA1Update(&sCtx, (const unsigned char *)&uniqueid, sizeof(int));
 	/* Append the random string */
 	SHA1Update(&sCtx, (const unsigned char *)zRandom, sizeof(zRandom));
-	/* Increment the number */
-	pVm->unique_id++;
 	SHA1Final(&sCtx, zDigest);
 	/* Hexify the digest */
 	sUniq.pCtx = pCtx;
