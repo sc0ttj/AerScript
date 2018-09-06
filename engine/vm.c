@@ -2858,7 +2858,7 @@ static sxi32 VmByteCodeExec(
 								MemObjSetType(pTos, MEMOBJ_INT);
 							}
 							if(pInstr->iP1) {
-								/* Pre-icrement */
+								/* Pre-increment */
 								PH7_MemObjStore(pObj, pTos);
 							}
 						}
@@ -2909,13 +2909,13 @@ static sxi32 VmByteCodeExec(
 								MemObjSetType(pTos, MEMOBJ_INT);
 							}
 							if(pInstr->iP1) {
-								/* Pre-icrement */
+								/* Pre-decrement */
 								PH7_MemObjStore(pObj, pTos);
 							}
 						}
 					} else {
 						if(pInstr->iP1) {
-							/* Pre-increment */
+							/* Pre-decrement */
 							if(pTos->iFlags & MEMOBJ_REAL) {
 								pTos->rVal--;
 								/* Try to get an integer representation */
