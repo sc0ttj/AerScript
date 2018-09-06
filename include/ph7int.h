@@ -1593,7 +1593,7 @@ enum ph7_expr_id {
 #define PH7_KEYWORD_IMPLEMENTS   39 /* implements */
 #define PH7_KEYWORD_INCLUDE      41 /* include */
 #define PH7_KEYWORD_EMPTY        42 /* empty */
-#define PH7_KEYWORD_INSTANCEOF   0x800 /* instanceof: MUST BE A POWER OF TWO  */
+#define PH7_KEYWORD_INSTANCEOF   0x400 /* instanceof: MUST BE A POWER OF TWO  */
 #define PH7_KEYWORD_ISSET        43 /* isset */
 #define PH7_KEYWORD_PARENT       44 /* parent */
 #define PH7_KEYWORD_PRIVATE      45 /* private */
@@ -1604,13 +1604,18 @@ enum ph7_expr_id {
 #define PH7_KEYWORD_PUBLIC       52 /* public */
 #define PH7_KEYWORD_CATCH        53 /* catch */
 #define PH7_KEYWORD_RETURN       54 /* return */
-#define PH7_KEYWORD_UNSET        0x2000 /* unset: MUST BE A POWER OF TWO  */
 #define PH7_KEYWORD_BREAK        55 /* break */
-#define PH7_KEYWORD_BOOL         0x8000  /* bool:  MUST BE A POWER OF TWO */
-#define PH7_KEYWORD_INT          0x10000  /* int:   MUST BE A POWER OF TWO */
-#define PH7_KEYWORD_FLOAT        0x20000  /* float:  MUST BE A POWER OF TWO */
-#define PH7_KEYWORD_STRING       0x40000  /* string: MUST BE A POWER OF TWO */
-#define PH7_KEYWORD_OBJECT       0x80000 /* object: MUST BE A POWER OF TWO */
+#define PH7_KEYWORD_UNSET        0x800    /* unset: MUST BE A POWER OF TWO  */
+#define PH7_KEYWORD_VOID         0x1000   /* void: MUST BE A POWER OF TWO */
+#define PH7_KEYWORD_CHAR         0x2000   /* char: MUST BE A POWER OF TWO */
+#define PH7_KEYWORD_BOOL         0x4000   /* bool: MUST BE A POWER OF TWO */
+#define PH7_KEYWORD_INT          0x8000   /* int: MUST BE A POWER OF TWO */
+#define PH7_KEYWORD_FLOAT        0x10000  /* float: MUST BE A POWER OF TWO */
+#define PH7_KEYWORD_STRING       0x20000  /* string: MUST BE A POWER OF TWO */
+#define PH7_KEYWORD_OBJECT       0x40000  /* object: MUST BE A POWER OF TWO */
+#define PH7_KEYWORD_CALLBACK     0x80000  /* callback: MUST BE A POWER OF TWO */
+#define PH7_KEYWORD_RESOURCE     0x100000 /* resource: MUST BE A POWER OF TWO */
+#define PH7_KEYWORD_MIXED        0x200000 /* mixed: MUST BE A POWER OF TWO */
 /* JSON encoding/decoding related definition */
 enum json_err_code {
 	JSON_ERROR_NONE = 0,  /* No error has occurred. */
