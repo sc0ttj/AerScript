@@ -376,8 +376,6 @@ PH7_PRIVATE sxi32 PH7_MemObjToReal(ph7_value *pObj) {
 		/* Invalidate any prior representations */
 		SyBlobRelease(&pObj->sBlob);
 		MemObjSetType(pObj, MEMOBJ_REAL);
-		/* Try to get an integer representation */
-		MemObjTryIntger(&(*pObj));
 	}
 	return SXRET_OK;
 }
