@@ -2851,8 +2851,6 @@ static sxi32 VmByteCodeExec(
 							PH7_MemObjToNumeric(pObj);
 							if(pObj->iFlags & MEMOBJ_REAL) {
 								pObj->rVal++;
-								/* Try to get an integer representation */
-								PH7_MemObjTryInteger(pTos);
 							} else {
 								pObj->x.iVal++;
 								MemObjSetType(pTos, MEMOBJ_INT);
@@ -2869,8 +2867,6 @@ static sxi32 VmByteCodeExec(
 							/* Pre-increment */
 							if(pTos->iFlags & MEMOBJ_REAL) {
 								pTos->rVal++;
-								/* Try to get an integer representation */
-								PH7_MemObjTryInteger(pTos);
 							} else {
 								pTos->x.iVal++;
 								MemObjSetType(pTos, MEMOBJ_INT);
@@ -2902,8 +2898,6 @@ static sxi32 VmByteCodeExec(
 							PH7_MemObjToNumeric(pObj);
 							if(pObj->iFlags & MEMOBJ_REAL) {
 								pObj->rVal--;
-								/* Try to get an integer representation */
-								PH7_MemObjTryInteger(pTos);
 							} else {
 								pObj->x.iVal--;
 								MemObjSetType(pTos, MEMOBJ_INT);
@@ -2918,8 +2912,6 @@ static sxi32 VmByteCodeExec(
 							/* Pre-decrement */
 							if(pTos->iFlags & MEMOBJ_REAL) {
 								pTos->rVal--;
-								/* Try to get an integer representation */
-								PH7_MemObjTryInteger(pTos);
 							} else {
 								pTos->x.iVal--;
 								MemObjSetType(pTos, MEMOBJ_INT);
@@ -3037,8 +3029,6 @@ static sxi32 VmByteCodeExec(
 						/* Push the result */
 						pNos->rVal = r;
 						MemObjSetType(pNos, MEMOBJ_REAL);
-						/* Try to get an integer representation */
-						PH7_MemObjTryInteger(pNos);
 					} else {
 						/* Integer arithmetic */
 						sxi64 a, b, r;
@@ -3169,8 +3159,6 @@ static sxi32 VmByteCodeExec(
 						/* Push the result */
 						pNos->rVal = r;
 						MemObjSetType(pNos, MEMOBJ_REAL);
-						/* Try to get an integer representation */
-						PH7_MemObjTryInteger(pNos);
 					} else {
 						/* Integer arithmetic */
 						sxi64 a, b, r;
@@ -3213,8 +3201,6 @@ static sxi32 VmByteCodeExec(
 						/* Push the result */
 						pNos->rVal = r;
 						MemObjSetType(pNos, MEMOBJ_REAL);
-						/* Try to get an integer representation */
-						PH7_MemObjTryInteger(pNos);
 					} else {
 						/* Integer arithmetic */
 						sxi64 a, b, r;
@@ -3355,8 +3341,6 @@ static sxi32 VmByteCodeExec(
 						/* Push the result */
 						pNos->rVal = r;
 						MemObjSetType(pNos, MEMOBJ_REAL);
-						/* Try to get an integer representation */
-						PH7_MemObjTryInteger(pNos);
 					}
 					VmPopOperand(&pTos, 1);
 					break;
@@ -3398,8 +3382,6 @@ static sxi32 VmByteCodeExec(
 						/* Push the result */
 						pNos->rVal = r;
 						MemObjSetType(pNos, MEMOBJ_REAL);
-						/* Try to get an integer representation */
-						PH7_MemObjTryInteger(pNos);
 					}
 					if(pTos->nIdx == SXU32_HIGH) {
 						PH7_VmThrowError(&(*pVm), PH7_CTX_ERR, "Cannot perform assignment on a constant class attribute");

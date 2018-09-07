@@ -1642,7 +1642,6 @@ PH7_PRIVATE sxi32 PH7_MemObjStore(ph7_value *pSrc, ph7_value *pDest);
 PH7_PRIVATE sxi32 PH7_MemObjLoad(ph7_value *pSrc, ph7_value *pDest);
 PH7_PRIVATE sxi32 PH7_MemObjRelease(ph7_value *pObj);
 PH7_PRIVATE sxi32 PH7_MemObjToNumeric(ph7_value *pObj);
-PH7_PRIVATE sxi32 PH7_MemObjTryInteger(ph7_value *pObj);
 PH7_PRIVATE ProcMemObjCast PH7_MemObjCastMethod(sxi32 iFlags);
 PH7_PRIVATE sxi32 PH7_MemObjIsNumeric(ph7_value *pObj);
 PH7_PRIVATE sxi32 PH7_MemObjIsEmpty(ph7_value *pObj);

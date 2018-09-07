@@ -330,29 +330,6 @@ static sxi32 MemObjBooleanValue(ph7_value *pObj) {
 	return 0;
 }
 /*
- * If the ph7_value is of type real,try to make it an integer also.
- */
-static sxi32 MemObjTryIntger(ph7_value *pObj) {
-	pObj->x.iVal = MemObjRealToInt(&(*pObj));
-	/* Only mark the value as an integer if
-	**
-	**    (1) the round-trip conversion real->int->real is a no-op, and
-	**    (2) The integer is neither the largest nor the smallest
-	**        possible integer
-	**
-	** The second and third terms in the following conditional enforces
-	** the second condition under the assumption that addition overflow causes
-	** values to wrap around.  On x86 hardware, the third term is always
-	** true and could be omitted.  But we leave it in because other
-	** architectures might behave differently.
-	*/
-	if(pObj->rVal == (ph7_real)pObj->x.iVal && pObj->x.iVal > SMALLEST_INT64
-			&& pObj->x.iVal < LARGEST_INT64) {
-		pObj->iFlags |= MEMOBJ_INT;
-	}
-	return SXRET_OK;
-}
-/*
  * Convert a ph7_value to type integer.Invalidate any prior representations.
  */
 PH7_PRIVATE sxi32 PH7_MemObjToInteger(ph7_value *pObj) {
@@ -650,17 +627,6 @@ PH7_PRIVATE sxi32 PH7_MemObjToNumeric(ph7_value *pObj) {
 	} else {
 		/* Perform a blind cast */
 		PH7_MemObjToReal(&(*pObj));
-	}
-	return SXRET_OK;
-}
-/*
- * Try a get an integer representation of the given ph7_value.
- * If the ph7_value is not of type real,this function is a no-op.
- */
-PH7_PRIVATE sxi32 PH7_MemObjTryInteger(ph7_value *pObj) {
-	if(pObj->iFlags & MEMOBJ_REAL) {
-		/* Work only with reals */
-		MemObjTryIntger(&(*pObj));
 	}
 	return SXRET_OK;
 }
@@ -1075,8 +1041,6 @@ PH7_PRIVATE sxi32 PH7_MemObjAdd(ph7_value *pObj1, ph7_value *pObj2, int bAddStor
 			b = pObj2->rVal;
 			pObj1->rVal = a + b;
 			MemObjSetType(pObj1, MEMOBJ_REAL);
-			/* Try to get an integer representation also */
-			MemObjTryIntger(&(*pObj1));
 		} else {
 			/* Integer arithmetic */
 			sxi64 a, b;

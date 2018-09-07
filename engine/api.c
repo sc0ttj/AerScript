@@ -1794,8 +1794,6 @@ int ph7_value_double(ph7_value *pVal, double Value) {
 	PH7_MemObjRelease(pVal);
 	pVal->rVal = (ph7_real)Value;
 	MemObjSetType(pVal, MEMOBJ_REAL);
-	/* Try to get an integer representation also */
-	PH7_MemObjTryInteger(pVal);
 	return PH7_OK;
 }
 /*
