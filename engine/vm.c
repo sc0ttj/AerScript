@@ -2850,7 +2850,7 @@ static sxi32 VmByteCodeExec(
 							/* Force a numeric cast */
 							PH7_MemObjToNumeric(pObj);
 							if(pObj->iFlags & MEMOBJ_REAL) {
-								pObj->rVal++;
+								pObj->x.rVal++;
 							} else {
 								pObj->x.iVal++;
 								MemObjSetType(pTos, MEMOBJ_INT);
@@ -2866,7 +2866,7 @@ static sxi32 VmByteCodeExec(
 							PH7_MemObjToNumeric(pTos);
 							/* Pre-increment */
 							if(pTos->iFlags & MEMOBJ_REAL) {
-								pTos->rVal++;
+								pTos->x.rVal++;
 							} else {
 								pTos->x.iVal++;
 								MemObjSetType(pTos, MEMOBJ_INT);
@@ -2897,7 +2897,7 @@ static sxi32 VmByteCodeExec(
 							/* Force a numeric cast */
 							PH7_MemObjToNumeric(pObj);
 							if(pObj->iFlags & MEMOBJ_REAL) {
-								pObj->rVal--;
+								pObj->x.rVal--;
 							} else {
 								pObj->x.iVal--;
 								MemObjSetType(pTos, MEMOBJ_INT);
@@ -2911,7 +2911,7 @@ static sxi32 VmByteCodeExec(
 						if(pInstr->iP1) {
 							/* Pre-decrement */
 							if(pTos->iFlags & MEMOBJ_REAL) {
-								pTos->rVal--;
+								pTos->x.rVal--;
 							} else {
 								pTos->x.iVal--;
 								MemObjSetType(pTos, MEMOBJ_INT);
@@ -2934,7 +2934,7 @@ static sxi32 VmByteCodeExec(
 				/* Force a numeric (integer,real or both) cast */
 				PH7_MemObjToNumeric(pTos);
 				if(pTos->iFlags & MEMOBJ_REAL) {
-					pTos->rVal = -pTos->rVal;
+					pTos->x.rVal = -pTos->x.rVal;
 				}
 				if(pTos->iFlags & MEMOBJ_INT) {
 					pTos->x.iVal = -pTos->x.iVal;
@@ -2954,7 +2954,7 @@ static sxi32 VmByteCodeExec(
 				/* Force a numeric (integer,real or both) cast */
 				PH7_MemObjToNumeric(pTos);
 				if(pTos->iFlags & MEMOBJ_REAL) {
-					pTos->rVal = +pTos->rVal;
+					pTos->x.rVal = +pTos->x.rVal;
 				}
 				if(pTos->iFlags & MEMOBJ_INT) {
 					pTos->x.iVal = +pTos->x.iVal;
@@ -3023,11 +3023,11 @@ static sxi32 VmByteCodeExec(
 						if((pNos->iFlags & MEMOBJ_REAL) == 0) {
 							PH7_MemObjToReal(pNos);
 						}
-						a = pNos->rVal;
-						b = pTos->rVal;
+						a = pNos->x.rVal;
+						b = pTos->x.rVal;
 						r = a * b;
 						/* Push the result */
-						pNos->rVal = r;
+						pNos->x.rVal = r;
 						MemObjSetType(pNos, MEMOBJ_REAL);
 					} else {
 						/* Integer arithmetic */
@@ -3153,11 +3153,11 @@ static sxi32 VmByteCodeExec(
 						if((pNos->iFlags & MEMOBJ_REAL) == 0) {
 							PH7_MemObjToReal(pNos);
 						}
-						a = pNos->rVal;
-						b = pTos->rVal;
+						a = pNos->x.rVal;
+						b = pTos->x.rVal;
 						r = a - b;
 						/* Push the result */
-						pNos->rVal = r;
+						pNos->x.rVal = r;
 						MemObjSetType(pNos, MEMOBJ_REAL);
 					} else {
 						/* Integer arithmetic */
@@ -3195,11 +3195,11 @@ static sxi32 VmByteCodeExec(
 						if((pNos->iFlags & MEMOBJ_REAL) == 0) {
 							PH7_MemObjToReal(pNos);
 						}
-						a = pTos->rVal;
-						b = pNos->rVal;
+						a = pTos->x.rVal;
+						b = pNos->x.rVal;
 						r = a - b;
 						/* Push the result */
-						pNos->rVal = r;
+						pNos->x.rVal = r;
 						MemObjSetType(pNos, MEMOBJ_REAL);
 					} else {
 						/* Integer arithmetic */
@@ -3329,8 +3329,8 @@ static sxi32 VmByteCodeExec(
 						PH7_MemObjToReal(pNos);
 					}
 					/* Perform the requested operation */
-					a = pNos->rVal;
-					b = pTos->rVal;
+					a = pNos->x.rVal;
+					b = pTos->x.rVal;
 					if(b == 0) {
 						/* Division by zero */
 						r = 0;
@@ -3339,7 +3339,7 @@ static sxi32 VmByteCodeExec(
 					} else {
 						r = a / b;
 						/* Push the result */
-						pNos->rVal = r;
+						pNos->x.rVal = r;
 						MemObjSetType(pNos, MEMOBJ_REAL);
 					}
 					VmPopOperand(&pTos, 1);
@@ -3370,8 +3370,8 @@ static sxi32 VmByteCodeExec(
 						PH7_MemObjToReal(pNos);
 					}
 					/* Perform the requested operation */
-					a = pTos->rVal;
-					b = pNos->rVal;
+					a = pTos->x.rVal;
+					b = pNos->x.rVal;
 					if(b == 0) {
 						/* Division by zero */
 						r = 0;
@@ -3380,7 +3380,7 @@ static sxi32 VmByteCodeExec(
 					} else {
 						r = a / b;
 						/* Push the result */
-						pNos->rVal = r;
+						pNos->x.rVal = r;
 						MemObjSetType(pNos, MEMOBJ_REAL);
 					}
 					if(pTos->nIdx == SXU32_HIGH) {

@@ -4668,7 +4668,7 @@ static void DoubleSum(ph7_context *pCtx, ph7_hashmap *pMap) {
 		pObj = HashmapExtractNodeValue(pEntry);
 		if(pObj && (pObj->iFlags & (MEMOBJ_NULL | MEMOBJ_HASHMAP | MEMOBJ_OBJ | MEMOBJ_RES)) == 0) {
 			if(pObj->iFlags & MEMOBJ_REAL) {
-				dSum += pObj->rVal;
+				dSum += pObj->x.rVal;
 			} else if(pObj->iFlags & (MEMOBJ_INT | MEMOBJ_BOOL)) {
 				dSum += (double)pObj->x.iVal;
 			} else if(pObj->iFlags & MEMOBJ_STRING) {
@@ -4695,7 +4695,7 @@ static void Int64Sum(ph7_context *pCtx, ph7_hashmap *pMap) {
 		pObj = HashmapExtractNodeValue(pEntry);
 		if(pObj && (pObj->iFlags & (MEMOBJ_NULL | MEMOBJ_HASHMAP | MEMOBJ_OBJ | MEMOBJ_RES)) == 0) {
 			if(pObj->iFlags & MEMOBJ_REAL) {
-				nSum += (sxi64)pObj->rVal;
+				nSum += (sxi64)pObj->x.rVal;
 			} else if(pObj->iFlags & (MEMOBJ_INT | MEMOBJ_BOOL)) {
 				nSum += pObj->x.iVal;
 			} else if(pObj->iFlags & MEMOBJ_STRING) {
@@ -4769,7 +4769,7 @@ static void DoubleProd(ph7_context *pCtx, ph7_hashmap *pMap) {
 		pObj = HashmapExtractNodeValue(pEntry);
 		if(pObj && (pObj->iFlags & (MEMOBJ_NULL | MEMOBJ_HASHMAP | MEMOBJ_OBJ | MEMOBJ_RES)) == 0) {
 			if(pObj->iFlags & MEMOBJ_REAL) {
-				dProd *= pObj->rVal;
+				dProd *= pObj->x.rVal;
 			} else if(pObj->iFlags & (MEMOBJ_INT | MEMOBJ_BOOL)) {
 				dProd *= (double)pObj->x.iVal;
 			} else if(pObj->iFlags & MEMOBJ_STRING) {
@@ -4797,7 +4797,7 @@ static void Int64Prod(ph7_context *pCtx, ph7_hashmap *pMap) {
 		pObj = HashmapExtractNodeValue(pEntry);
 		if(pObj && (pObj->iFlags & (MEMOBJ_NULL | MEMOBJ_HASHMAP | MEMOBJ_OBJ | MEMOBJ_RES)) == 0) {
 			if(pObj->iFlags & MEMOBJ_REAL) {
-				nProd *= (sxi64)pObj->rVal;
+				nProd *= (sxi64)pObj->x.rVal;
 			} else if(pObj->iFlags & (MEMOBJ_INT | MEMOBJ_BOOL)) {
 				nProd *= pObj->x.iVal;
 			} else if(pObj->iFlags & MEMOBJ_STRING) {

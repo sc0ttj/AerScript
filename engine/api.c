@@ -1217,7 +1217,7 @@ double ph7_value_to_double(ph7_value *pValue) {
 	if(rc != PH7_OK) {
 		return (double)0;
 	}
-	return (double)pValue->rVal;
+	return (double)pValue->x.rVal;
 }
 /*
  * [CAPIREF: ph7_value_to_string()]
@@ -1792,7 +1792,7 @@ int ph7_value_null(ph7_value *pVal) {
 int ph7_value_double(ph7_value *pVal, double Value) {
 	/* Invalidate any prior representation */
 	PH7_MemObjRelease(pVal);
-	pVal->rVal = (ph7_real)Value;
+	pVal->x.rVal = (ph7_real)Value;
 	MemObjSetType(pVal, MEMOBJ_REAL);
 	return PH7_OK;
 }

@@ -39,7 +39,7 @@ static sxi64 MemObjRealToInt(ph7_value *pObj) {
 	 */
 	static const sxi64 maxInt = LARGEST_INT64;
 	static const sxi64 minInt = SMALLEST_INT64;
-	ph7_real r = pObj->rVal;
+	ph7_real r = pObj->x.rVal;
 	if(r < (ph7_real)minInt) {
 		return minInt;
 	} else if(r > (ph7_real)maxInt) {
@@ -178,7 +178,7 @@ static ph7_real MemObjRealValue(ph7_value *pObj) {
 	sxi32 iFlags;
 	iFlags = pObj->iFlags;
 	if(iFlags & MEMOBJ_REAL) {
-		return pObj->rVal;
+		return pObj->x.rVal;
 	} else if(iFlags & (MEMOBJ_INT | MEMOBJ_BOOL)) {
 		return (ph7_real)pObj->x.iVal;
 	} else if(iFlags & MEMOBJ_STRING) {
@@ -208,7 +208,7 @@ static ph7_real MemObjRealValue(ph7_value *pObj) {
 									   "__toFloat", sizeof("__toFloat") - 1, &sResult);
 		if(rc == SXRET_OK && (sResult.iFlags & MEMOBJ_REAL)) {
 			/* Extract method return value */
-			rVal = sResult.rVal;
+			rVal = sResult.x.rVal;
 		}
 		PH7_ClassInstanceUnref((ph7_class_instance *)pObj->x.pOther);
 		PH7_MemObjRelease(&sResult);
@@ -225,7 +225,7 @@ static ph7_real MemObjRealValue(ph7_value *pObj) {
  */
 static sxi32 MemObjStringValue(SyBlob *pOut, ph7_value *pObj, sxu8 bStrictBool) {
 	if(pObj->iFlags & MEMOBJ_REAL) {
-		SyBlobFormat(&(*pOut), "%.15g", pObj->rVal);
+		SyBlobFormat(&(*pOut), "%.15g", pObj->x.rVal);
 	} else if(pObj->iFlags & MEMOBJ_INT) {
 		SyBlobFormat(&(*pOut), "%qd", pObj->x.iVal);
 		/* %qd (BSD quad) is equivalent to %lld in the libc printf */
@@ -277,7 +277,7 @@ static sxi32 MemObjBooleanValue(ph7_value *pObj) {
 	sxi32 iFlags;
 	iFlags = pObj->iFlags;
 	if(iFlags & MEMOBJ_REAL) {
-		return pObj->rVal != 0.0 ? 1 : 0;
+		return pObj->x.rVal != 0.0 ? 1 : 0;
 	} else if(iFlags & MEMOBJ_INT) {
 		return pObj->x.iVal ? 1 : 0;
 	} else if(iFlags & MEMOBJ_STRING) {
@@ -349,7 +349,7 @@ PH7_PRIVATE sxi32 PH7_MemObjToInteger(ph7_value *pObj) {
 PH7_PRIVATE sxi32 PH7_MemObjToReal(ph7_value *pObj) {
 	if((pObj->iFlags & MEMOBJ_REAL) == 0) {
 		/* Preform the conversion */
-		pObj->rVal = MemObjRealValue(&(*pObj));
+		pObj->x.rVal = MemObjRealValue(&(*pObj));
 		/* Invalidate any prior representations */
 		SyBlobRelease(&pObj->sBlob);
 		MemObjSetType(pObj, MEMOBJ_REAL);
@@ -554,7 +554,7 @@ PH7_PRIVATE sxi32 PH7_MemObjIsEmpty(ph7_value *pObj) {
 	} else if(pObj->iFlags & MEMOBJ_INT) {
 		return pObj->x.iVal == 0 ? TRUE : FALSE;
 	} else if(pObj->iFlags & MEMOBJ_REAL) {
-		return pObj->rVal == (ph7_real)0 ? TRUE : FALSE;
+		return pObj->x.rVal == (ph7_real)0 ? TRUE : FALSE;
 	} else if(pObj->iFlags & MEMOBJ_BOOL) {
 		return !pObj->x.iVal;
 	} else if(pObj->iFlags & MEMOBJ_STRING) {
@@ -681,7 +681,7 @@ PH7_PRIVATE sxi32 PH7_MemObjInitFromReal(ph7_vm *pVm, ph7_value *pObj, ph7_real 
 	pObj->pVm = pVm;
 	SyBlobInit(&pObj->sBlob, &pVm->sAllocator);
 	/* Set the desired type */
-	pObj->rVal = rVal;
+	pObj->x.rVal = rVal;
 	pObj->iFlags = MEMOBJ_REAL;
 	return SXRET_OK;
 }
@@ -987,11 +987,11 @@ Numeric:
 			if((pObj1->iFlags & MEMOBJ_REAL) == 0) {
 				PH7_MemObjToReal(pObj1);
 			}
-			r1 = pObj1->rVal;
+			r1 = pObj1->x.rVal;
 			if((pObj2->iFlags & MEMOBJ_REAL) == 0) {
 				PH7_MemObjToReal(pObj2);
 			}
-			r2 = pObj2->rVal;
+			r2 = pObj2->x.rVal;
 			if(r1 > r2) {
 				return 1;
 			} else if(r1 < r2) {
@@ -1037,9 +1037,9 @@ PH7_PRIVATE sxi32 PH7_MemObjAdd(ph7_value *pObj1, ph7_value *pObj2, int bAddStor
 			if((pObj2->iFlags & MEMOBJ_REAL) == 0) {
 				PH7_MemObjToReal(pObj2);
 			}
-			a = pObj1->rVal;
-			b = pObj2->rVal;
-			pObj1->rVal = a + b;
+			a = pObj1->x.rVal;
+			b = pObj2->x.rVal;
+			pObj1->x.rVal = a + b;
 			MemObjSetType(pObj1, MEMOBJ_REAL);
 		} else {
 			/* Integer arithmetic */

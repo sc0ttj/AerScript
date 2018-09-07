@@ -619,9 +619,9 @@ struct SHA1Context {
  * of the same value.
  */
 struct ph7_value {
-	ph7_real rVal;      /* Real value */
 	union {
 		sxi64 iVal;     /* Integer value */
+		ph7_real rVal;  /* Real value */
 		void *pOther;   /* Other values (Object, Array, Resource, Namespace, etc.) */
 	} x;
 	sxi32 iFlags;       /* Control flags (see below) */
