@@ -3267,7 +3267,6 @@ struct ph7_fmt_info {
 	const char *charset; /* The character set for conversion */
 	const char *prefix;  /* Prefix on non-zero values in alt format */
 };
-#ifndef PH7_OMIT_FLOATING_POINT
 /*
 ** "*val" is a double such that 0.1 <= *val < 10.0
 ** Return the ascii code for the leading digit of *val, then
@@ -3292,7 +3291,6 @@ static int vxGetdigit(sxlongreal *val, int *cnt) {
 	*val = (*val - d) * 10.0;
 	return digit + '0' ;
 }
-#endif /* PH7_OMIT_FLOATING_POINT */
 /*
  * The following table is searched linearly, so it is good to put the most frequently
  * used conversion types first.
@@ -3621,7 +3619,6 @@ PH7_PRIVATE sxi32 PH7_InputFormat(
 			case PH7_FMT_FLOAT:
 			case PH7_FMT_EXP:
 			case PH7_FMT_GENERIC: {
-#ifndef PH7_OMIT_FLOATING_POINT
 					long double realvalue;
 					int  exp;                /* exponent of real numbers */
 					double rounder;          /* Used for rounding floating point values */
@@ -3804,10 +3801,6 @@ PH7_PRIVATE sxi32 PH7_InputFormat(
 						}
 						length = width;
 					}
-#else
-					zBuf = " ";
-					length = (int)sizeof(char);
-#endif /* PH7_OMIT_FLOATING_POINT */
 					break;
 				}
 			default:

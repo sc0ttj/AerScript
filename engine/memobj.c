@@ -30,12 +30,6 @@
  * point value is out of range.
  */
 static sxi64 MemObjRealToInt(ph7_value *pObj) {
-#ifdef PH7_OMIT_FLOATING_POINT
-	/* Real and 64bit integer are the same when floating point arithmetic
-	 * is omitted from the build.
-	 */
-	return pObj->rVal;
-#else
 	/*
 	 ** Many compilers we encounter do not define constants for the
 	 ** minimum and maximum 64-bit integers, or they define them
@@ -57,7 +51,6 @@ static sxi64 MemObjRealToInt(ph7_value *pObj) {
 	} else {
 		return (sxi64)r;
 	}
-#endif
 }
 /*
  * Convert a raw token value typically a stream of digit [i.e: hex,octal,binary or decimal]
@@ -190,27 +183,15 @@ static ph7_real MemObjRealValue(ph7_value *pObj) {
 		return (ph7_real)pObj->x.iVal;
 	} else if(iFlags & MEMOBJ_STRING) {
 		SyString sString;
-#ifdef PH7_OMIT_FLOATING_POINT
-		ph7_real rVal = 0;
-#else
 		ph7_real rVal = 0.0;
-#endif
 		SyStringInitFromBuf(&sString, SyBlobData(&pObj->sBlob), SyBlobLength(&pObj->sBlob));
 		if(SyBlobLength(&pObj->sBlob) > 0) {
 			/* Convert as much as we can */
-#ifdef PH7_OMIT_FLOATING_POINT
-			rVal = MemObjStringToInt(&(*pObj));
-#else
 			SyStrToReal(sString.zString, sString.nByte, (void *)&rVal, 0);
-#endif
 		}
 		return rVal;
 	} else if(iFlags & MEMOBJ_NULL) {
-#ifdef PH7_OMIT_FLOATING_POINT
-		return 0;
-#else
 		return 0.0;
-#endif
 	} else if(iFlags & MEMOBJ_HASHMAP) {
 		/* Return the total number of entries in the hashmap */
 		ph7_hashmap *pMap = (ph7_hashmap *)pObj->x.pOther;
@@ -296,11 +277,7 @@ static sxi32 MemObjBooleanValue(ph7_value *pObj) {
 	sxi32 iFlags;
 	iFlags = pObj->iFlags;
 	if(iFlags & MEMOBJ_REAL) {
-#ifdef PH7_OMIT_FLOATING_POINT
-		return pObj->rVal ? 1 : 0;
-#else
 		return pObj->rVal != 0.0 ? 1 : 0;
-#endif
 	} else if(iFlags & MEMOBJ_INT) {
 		return pObj->x.iVal ? 1 : 0;
 	} else if(iFlags & MEMOBJ_STRING) {

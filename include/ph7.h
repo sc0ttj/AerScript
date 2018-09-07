@@ -127,11 +127,6 @@ typedef struct ph7 ph7;
  *  PH7_DISABLE_DISK_IO
  *     If this directive is enabled, built-in Virtual File System functions such as
  *     chdir(), mkdir(), chroot(), unlink(), delete(), etc. are omitted from the build.
- *  PH7_OMIT_FLOATING_POINT
- *     This option is used to omit floating-point number support from the PH7 library
- *     if compiling for a processor that lacks floating point support. When specified
- *     the library will substitute 64-bit integer arithmetic for floating-point which
- *     mean that 25.e-3 and 25 are equals and are of type integer.
  */
 /* Symisc public definitions */
 #if !defined(SYMISC_STANDARD_DEFS)
@@ -311,11 +306,7 @@ struct SyMutexMethods {
  * If compiling for a processor that lacks floating point
  * support, substitute integer for floating-point.
  */
-#ifdef PH7_OMIT_FLOATING_POINT
-	typedef sxi64 ph7_real;
-#else
-	typedef double ph7_real;
-#endif
+typedef double ph7_real;
 typedef sxi64 ph7_int64;
 #define PH7_APIEXPORT SX_APIEXPORT
 #define PH7_APIIMPORT SX_APIIMPORT
