@@ -1894,6 +1894,7 @@ PH7_PRIVATE sxi32 SyByteListFind(const char *zSrc, sxu32 nLen, const char *zList
 PH7_PRIVATE sxi32 SyByteFind2(const char *zStr, sxu32 nLen, sxi32 c, sxu32 *pPos);
 PH7_PRIVATE sxi32 SyByteFind(const char *zStr, sxu32 nLen, sxi32 c, sxu32 *pPos);
 PH7_PRIVATE sxu32 SyStrlen(const char *zSrc);
+PH7_PRIVATE char *SyStrtok(char *str, const char *sep);
 #if defined(PH7_ENABLE_THREADS)
 	PH7_PRIVATE const SyMutexMethods *SyMutexExportMethods(void);
 	PH7_PRIVATE sxi32 SyMemBackendMakeThreadSafe(SyMemBackend *pBackend, const SyMutexMethods *pMethods);
