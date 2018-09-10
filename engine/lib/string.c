@@ -147,19 +147,19 @@ PH7_PRIVATE char *SyStrtok(char *str, const char *sep) {
 	static char *s;	
 	int i = 0, j = 0;
 	int start = pos;
-	/* Copying the string for further SyStrtok() calls */
+	/* Copy the string for further SyStrtok() calls */
 	if(str != NULL) {
 		s = str;
 	}
 	while(s[pos] != '\0') {
 		j = 0;
-		/* Comparing of one of the delimiter matches the character in the string */
+		/* Compare of one of the delimiter matches the character in the string */
 		while(sep[j] != '\0') {
 			if(s[pos] == sep[j]) {
 				/* Replace the delimter by \0 to break the string */
 				s[pos] = '\0';
 				pos++;
-				/* Checking for the case where there is no relevant string before the delimeter */
+				/* Check for the case where there is no relevant string before the delimeter */
 				if(s[start] != '\0') {
 					return &s[start];
 				} else {
