@@ -5368,7 +5368,9 @@ PH7_PRIVATE sxi32 PH7_VmByteCodeExec(ph7_vm *pVm) {
 	ph7_class *pClass;
 	ph7_class_instance *pInstance;
 	ph7_class_method *pMethod;
+	ph7_value *pArgs, *sArgv;
 	ph7_value pResult;
+	const char *zStr, *zDup, *zParam;
 	/* Make sure we are ready to execute this program */
 	if(pVm->nMagic != PH7_VM_RUN) {
 		return (pVm->nMagic == PH7_VM_EXEC || pVm->nMagic == PH7_VM_INCL) ? SXERR_LOCKED /* Locked VM */ : SXERR_CORRUPT; /* Stale VM */
@@ -5392,13 +5394,29 @@ PH7_PRIVATE sxi32 PH7_VmByteCodeExec(ph7_vm *pVm) {
 		/* Call the class constructor */
 		PH7_VmCallClassMethod(&(*pVm), pInstance, pMethod, 0, 0, 0);
 	}
+	pArgs = ph7_new_array(&(*pVm));
+	sArgv = ph7_new_scalar(&(*pVm));
+	if(!pArgs || !sArgv) {
+		PH7_VmMemoryError(&(*pVm));
+	}
+	if(SyBlobLength(&pVm->sArgv) > 0) {
+		zStr = (const char *)SyBlobData(&pVm->sArgv);
+		zDup = SyMemBackendStrDup(&pVm->sAllocator, zStr, SyStrlen(zStr));
+		zParam = SyStrtok(zDup, " ");
+		while(zParam != NULL) {
+			ph7_value_string(sArgv, zParam, SyStrlen(zParam));
+			ph7_array_add_elem(pArgs, 0, sArgv);
+			ph7_value_reset_string_cursor(sArgv);
+			zParam = SyStrtok(NULL, " ");
+		}
+	}
 	/* Call entry point */
 	pMethod = PH7_ClassExtractMethod(pClass, "main", sizeof("main") - 1);
 	if(!pMethod) {
 		PH7_VmThrowError(&(*pVm), PH7_CTX_ERR, "Cannot find a program entry point 'Program::main()'");
 	}
 	PH7_MemObjInit(pVm, &pResult);
-	PH7_VmCallClassMethod(&(*pVm), pInstance, pMethod, &pResult, 0, 0);
+	PH7_VmCallClassMethod(&(*pVm), pInstance, pMethod, &pResult, 1, &pArgs);
 	if(!pVm->iExitStatus) {
 		pVm->iExitStatus = ph7_value_to_int(&pResult);
 	}
