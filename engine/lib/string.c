@@ -142,6 +142,43 @@ sxu32 Systrcpy(char *zDest, sxu32 nDestLen, const char *zSrc, sxu32 nLen) {
 	zBuf[0] = 0;
 	return (sxu32)(zBuf - (unsigned char *)zDest);
 }
+PH7_PRIVATE char *SyStrtok(char *str, const char *sep) {
+	static int pos;
+	static char *s;	
+	int i = 0, j = 0;
+	int start = pos;
+	/* Copying the string for further SyStrtok() calls */
+	if(str != NULL) {
+		s = str;
+	}
+	while(s[pos] != '\0') {
+		j = 0;
+		/* Comparing of one of the delimiter matches the character in the string */
+		while(sep[j] != '\0') {
+			if(s[pos] == sep[j]) {
+				/* Replace the delimter by \0 to break the string */
+				s[pos] = '\0';
+				pos++;
+				/* Checking for the case where there is no relevant string before the delimeter */
+				if(s[start] != '\0') {
+					return &s[start];
+				} else {
+					start = pos;
+					pos--;
+					break;
+				}
+			}
+			j++;
+		}
+		pos++;
+	}
+	s[pos] = '\0';
+	if(s[start] == '\0') {
+		return NULL;
+	} else {
+		return &s[start];
+	}
+}
 sxi32 SyAsciiToHex(sxi32 c) {
 	if(c >= 'a' && c <= 'f') {
 		c += 10 - 'a';
