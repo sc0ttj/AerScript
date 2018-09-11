@@ -1371,14 +1371,9 @@ static ph7_value *VmExtractMemObj(
 				SySetPut(&pVm->aFreeObj, (const void *)&sLocal);
 				return 0;
 			}
-			if(pFrame->pParent != 0) {
-				/* Local variable */
-				sLocal.nIdx = nIdx;
-				SySetPut(&pFrame->sLocal, (const void *)&sLocal);
-			} else {
-				/* Register in the $GLOBALS array */
-				VmHashmapRefInsert(pVm->pGlobal, pName->zString, pName->nByte, nIdx);
-			}
+			/* Register local variable */
+			sLocal.nIdx = nIdx;
+			SySetPut(&pFrame->sLocal, (const void *)&sLocal);
 			/* Install in the reference table */
 			PH7_VmRefObjInstall(&(*pVm), nIdx, SyHashLastEntry(&pFrame->hVar), 0, 0);
 			/* Save object index */
@@ -1588,10 +1583,6 @@ PH7_PRIVATE sxi32 PH7_VmConfigure(
 						}
 						/* Install in the reference table */
 						PH7_VmRefObjInstall(&(*pVm), nIdx, pRef, 0, 0);
-						if(nOp == PH7_VM_CONFIG_CREATE_SUPER || pVm->pFrame->pParent == 0) {
-							/* Register in the $GLOBALS array */
-							VmHashmapRefInsert(pVm->pGlobal, zName, nByte, nIdx);
-						}
 					}
 				}
 				break;
@@ -3954,27 +3945,19 @@ static sxi32 VmByteCodeExec(
 							pTos->nIdx = pObj->nIdx;
 						}
 					} else if(sName.nByte > 0) {
-						if((pTos->iFlags & MEMOBJ_HASHMAP) && (pVm->pGlobal == (ph7_hashmap *)pTos->x.pOther)) {
-							PH7_VmThrowError(&(*pVm), PH7_CTX_ERR, "$GLOBALS is a read-only array and therefore cannot be referenced");
+						VmFrame *pFrame = pVm->pFrame;
+						while(pFrame->pParent && (pFrame->iFlags & VM_FRAME_EXCEPTION)) {
+							/* Safely ignore the exception frame */
+							pFrame = pFrame->pParent;
+						}
+						/* Query the local frame */
+						pEntry = SyHashGet(&pFrame->hVar, (const void *)sName.zString, sName.nByte);
+						if(pEntry) {
+							PH7_VmThrowError(&(*pVm), PH7_CTX_ERR, "Referenced variable name '%z' already exists", &sName);
 						} else {
-							VmFrame *pFrame = pVm->pFrame;
-							while(pFrame->pParent && (pFrame->iFlags & VM_FRAME_EXCEPTION)) {
-								/* Safely ignore the exception frame */
-								pFrame = pFrame->pParent;
-							}
-							/* Query the local frame */
-							pEntry = SyHashGet(&pFrame->hVar, (const void *)sName.zString, sName.nByte);
-							if(pEntry) {
-								PH7_VmThrowError(&(*pVm), PH7_CTX_ERR, "Referenced variable name '%z' already exists", &sName);
-							} else {
-								rc = SyHashInsert(&pFrame->hVar, (const void *)sName.zString, sName.nByte, SX_INT_TO_PTR(nIdx));
-								if(pFrame->pParent == 0) {
-									/* Insert in the $GLOBALS array */
-									VmHashmapRefInsert(pVm->pGlobal, sName.zString, sName.nByte, nIdx);
-								}
-								if(rc == SXRET_OK) {
-									PH7_VmRefObjInstall(&(*pVm), nIdx, SyHashLastEntry(&pFrame->hVar), 0, 0);
-								}
+							rc = SyHashInsert(&pFrame->hVar, (const void *)sName.zString, sName.nByte, SX_INT_TO_PTR(nIdx));
+							if(rc == SXRET_OK) {
+								PH7_VmRefObjInstall(&(*pVm), nIdx, SyHashLastEntry(&pFrame->hVar), 0, 0);
 							}
 						}
 					}
@@ -8359,10 +8342,7 @@ static int vm_builtin_unset(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 			}
 		} else {
 			sxu32 nIdx = pObj->nIdx;
-			/* TICKET 1433-35: Protect the $GLOBALS array from deletion */
-			if(nIdx != pVm->nGlobalIdx) {
-				PH7_VmUnsetMemObj(&(*pVm), nIdx, FALSE);
-			}
+			PH7_VmUnsetMemObj(&(*pVm), nIdx, FALSE);
 		}
 	}
 	return SXRET_OK;
@@ -8379,7 +8359,7 @@ static sxi32 VmHashVarWalker(SyHashEntry *pEntry, void *pUserData) {
 	nIdx = SX_PTR_TO_INT(pEntry->pUserData);
 	pObj = (ph7_value *)SySetAt(&pVm->aMemObj, nIdx);
 	if(pObj) {
-		if((pObj->iFlags & MEMOBJ_HASHMAP) == 0 || (ph7_hashmap *)pObj->x.pOther != pVm->pGlobal) {
+		if((pObj->iFlags & MEMOBJ_HASHMAP) == 0) {
 			if(pEntry->nKeyLen > 0) {
 				SyString sName;
 				ph7_value sKey;

@@ -202,7 +202,7 @@ PH7_PRIVATE void PH7_HashmapUnlinkNode(ph7_hashmap_node *pNode, int bRestore) {
 	}
 	SyMemBackendPoolFree(&pVm->sAllocator, pNode);
 	pMap->nEntry--;
-	if(pMap->nEntry < 1 && pMap != pVm->pGlobal) {
+	if(pMap->nEntry < 1) {
 		/* Free the hash-bucket */
 		SyMemBackendFree(&pVm->sAllocator, pMap->apBucket);
 		pMap->apBucket = 0;
@@ -552,11 +552,6 @@ static sxi32 HashmapInsert(
 			}
 			return SXRET_OK;
 		}
-		if(pMap == pMap->pVm->pGlobal) {
-			/* Forbidden */
-			PH7_VmThrowError(pMap->pVm, PH7_CTX_NOTICE, "$GLOBALS is a read-only array, insertion is forbidden");
-			return SXRET_OK;
-		}
 		/* Perform a blob-key insertion */
 		rc = HashmapInsertBlobKey(&(*pMap), SyBlobData(&pKey->sBlob), SyBlobLength(&pKey->sBlob), &(*pVal), 0, FALSE);
 		return rc;
@@ -581,11 +576,6 @@ IntKey:
 			}
 			return SXRET_OK;
 		}
-		if(pMap == pMap->pVm->pGlobal) {
-			/* Forbidden */
-			PH7_VmThrowError(pMap->pVm, PH7_CTX_NOTICE, "$GLOBALS is a read-only array, insertion is forbidden");
-			return SXRET_OK;
-		}
 		/* Perform a 64-bit-int-key insertion */
 		rc = HashmapInsertIntKey(&(*pMap), pKey->x.iVal, &(*pVal), 0, FALSE);
 		if(rc == SXRET_OK) {
@@ -599,11 +589,6 @@ IntKey:
 			}
 		}
 	} else {
-		if(pMap == pMap->pVm->pGlobal) {
-			/* Forbidden */
-			PH7_VmThrowError(pMap->pVm, PH7_CTX_NOTICE, "$GLOBALS is a read-only array, insertion is forbidden");
-			return SXRET_OK;
-		}
 		/* Assign an automatic index */
 		rc = HashmapInsertIntKey(&(*pMap), pMap->iNextIdx, &(*pVal), 0, FALSE);
 		if(rc == SXRET_OK) {
@@ -1310,31 +1295,10 @@ PH7_PRIVATE sxi32 PH7_HashmapCreateSuper(ph7_vm *pVm) {
 		"_ENV",      /* $_ENV */
 		"_HEADER"    /* $_HEADER */
 	};
-	ph7_hashmap *pMap;
-	ph7_value *pObj;
 	SyString *pFile;
 	sxi32 rc;
 	sxu32 n;
-	/* Allocate a new hashmap for the $GLOBALS array */
-	pMap = PH7_NewHashmap(&(*pVm), 0, 0);
-	if(pMap == 0) {
-		return SXERR_MEM;
-	}
-	pVm->pGlobal = pMap;
-	/* Reserve a ph7_value for the $GLOBALS array*/
-	pObj = PH7_ReserveMemObj(&(*pVm));
-	if(pObj == 0) {
-		return SXERR_MEM;
-	}
-	PH7_MemObjInitFromArray(&(*pVm), pObj, pMap);
-	/* Record object index */
-	pVm->nGlobalIdx = pObj->nIdx;
-	/* Install the special $GLOBALS array */
-	rc = SyHashInsert(&pVm->hSuper, (const void *)"GLOBALS", sizeof("GLOBALS") - 1, SX_INT_TO_PTR(pVm->nGlobalIdx));
-	if(rc != SXRET_OK) {
-		return rc;
-	}
-	/* Install superglobals now */
+	/* Install superglobals */
 	for(n =  0 ; n < SX_ARRAYSIZE(azSuper)  ; n++) {
 		ph7_value *pSuper;
 		/* Request an empty array */
@@ -1371,11 +1335,6 @@ PH7_PRIVATE sxi32 PH7_HashmapRelease(ph7_hashmap *pMap, int FreeDS) {
 	ph7_hashmap_node *pEntry, *pNext;
 	ph7_vm *pVm = pMap->pVm;
 	sxu32 n;
-	if(pMap == pVm->pGlobal) {
-		/* Cannot delete the $GLOBALS array */
-		PH7_VmThrowError(pMap->pVm, PH7_CTX_NOTICE, "$GLOBALS is a read-only array, deletion is forbidden");
-		return SXRET_OK;
-	}
 	/* Start the release process */
 	n = 0;
 	pEntry = pMap->pFirst;
@@ -1424,7 +1383,7 @@ PH7_PRIVATE void  PH7_HashmapUnref(ph7_hashmap *pMap) {
 	ph7_vm *pVm = pMap->pVm;
 	/* TICKET 1432-49: $GLOBALS is not subject to garbage collection */
 	pMap->iRef--;
-	if(pMap->iRef < 1 && pMap != pVm->pGlobal) {
+	if(pMap->iRef < 1) {
 		PH7_HashmapRelease(pMap, TRUE);
 	}
 }
@@ -1456,18 +1415,9 @@ PH7_PRIVATE sxi32 PH7_HashmapLookup(
 PH7_PRIVATE sxi32 PH7_HashmapInsert(
 	ph7_hashmap *pMap, /* Target hashmap */
 	ph7_value *pKey,   /* Lookup key */
-	ph7_value *pVal    /* Node value.NULL otherwise */
+	ph7_value *pVal    /* Node value, NULL otherwise */
 ) {
-	sxi32 rc;
-	if(pVal && (pVal->iFlags & MEMOBJ_HASHMAP) && (ph7_hashmap *)pVal->x.pOther == pMap->pVm->pGlobal) {
-		/*
-		 * TICKET 1433-35: Insertion in the $GLOBALS array is forbidden.
-		 */
-		PH7_VmThrowError(pMap->pVm, PH7_CTX_ERR, "$GLOBALS is a read-only array, insertion is forbidden");
-		return SXRET_OK;
-	}
-	rc = HashmapInsert(&(*pMap), &(*pKey), &(*pVal));
-	return rc;
+	return HashmapInsert(&(*pMap), &(*pKey), &(*pVal));
 }
 /*
  * Insert a given key and it's associated value (foreign index) in the given
@@ -1501,16 +1451,7 @@ PH7_PRIVATE sxi32 PH7_HashmapInsertByRef(
 	ph7_value *pKey,   /* Lookup key */
 	sxu32 nRefIdx      /* Foreign ph7_value index */
 ) {
-	sxi32 rc;
-	if(nRefIdx == pMap->pVm->nGlobalIdx) {
-		/*
-		 * TICKET 1433-35: Insertion in the $GLOBALS array is forbidden.
-		 */
-		PH7_VmThrowError(pMap->pVm, PH7_CTX_ERR, "$GLOBALS is a read-only array, insertion is forbidden");
-		return SXRET_OK;
-	}
-	rc = HashmapInsertByRef(&(*pMap), &(*pKey), nRefIdx);
-	return rc;
+	return HashmapInsertByRef(&(*pMap), &(*pKey), nRefIdx);
 }
 /*
  * Reset the node cursor of a given hashmap.
