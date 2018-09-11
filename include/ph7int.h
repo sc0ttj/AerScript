@@ -1236,8 +1236,6 @@ struct ph7_vm {
 	sxu32 nRefSize;            /* apRefObj[] size */
 	sxu32 nRefUsed;            /* Total entries in apRefObj[] */
 	SySet aSelf;               /* 'self' stack used for static member access [i.e: self::MyConstant] */
-	ph7_hashmap *pGlobal;      /* $GLOBALS hashmap */
-	sxu32 nGlobalIdx;          /* $GLOBALS index */
 	sxi32 iExitStatus;         /* Script exit status */
 	ph7_gen_state sCodeGen;    /* Code generator module */
 	ph7_vm *pNext, *pPrev;     /* List of active VM's */
