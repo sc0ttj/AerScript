@@ -1644,32 +1644,16 @@ PH7_PRIVATE sxi32 PH7_VmConfigure(
 		case PH7_VM_CONFIG_ARGV_ENTRY: {
 				/* Script arguments */
 				const char *zValue = va_arg(ap, const char *);
-				ph7_hashmap *pMap;
-				ph7_value *pValue;
 				sxu32 n;
 				if(SX_EMPTY_STR(zValue)) {
 					rc = SXERR_EMPTY;
 					break;
 				}
-				/* Extract the $argv array */
-				pValue = VmExtractSuper(&(*pVm), "argv", sizeof("argv") - 1);
-				if(pValue == 0 || (pValue->iFlags & MEMOBJ_HASHMAP) == 0) {
-					/* No such entry */
-					rc = SXERR_NOTFOUND;
-					break;
-				}
-				/* Point to the hashmap */
-				pMap = (ph7_hashmap *)pValue->x.pOther;
-				/* Perform the insertion */
 				n = (sxu32)SyStrlen(zValue);
-				rc = VmHashmapInsert(pMap, 0, 0, zValue, (int)n);
-				if(rc == SXRET_OK) {
-					if(pMap->nEntry > 1) {
-						/* Append space separator first */
-						SyBlobAppend(&pVm->sArgv, (const void *)" ", sizeof(char));
-					}
-					SyBlobAppend(&pVm->sArgv, (const void *)zValue, n);
+				if(SyBlobLength(&pVm->sArgv) > 0) {
+					SyBlobAppend(&pVm->sArgv, (const void *)" ", sizeof(char));
 				}
+				SyBlobAppend(&pVm->sArgv, (const void *)zValue, n);
 				break;
 			}
 		case PH7_VM_CONFIG_IO_STREAM: {

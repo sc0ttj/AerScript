@@ -1308,8 +1308,7 @@ PH7_PRIVATE sxi32 PH7_HashmapCreateSuper(ph7_vm *pVm) {
 		"_SESSION",  /* $_SESSION */
 		"_REQUEST",  /* $_REQUEST */
 		"_ENV",      /* $_ENV */
-		"_HEADER",   /* $_HEADER */
-		"argv"       /* $argv */
+		"_HEADER"    /* $_HEADER */
 	};
 	ph7_hashmap *pMap;
 	ph7_value *pObj;
