@@ -5248,7 +5248,7 @@ static int PH7_builtin_strtok(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 			/* Return the extracted token */
 			ph7_result_string(pCtx, sToken.zString, (int)sToken.nByte);
 		}
-		/* Create our auxilliary data and copy the input */
+		/* Create our auxiliary data and copy the input */
 		pAux = (strtok_aux_data *)ph7_context_alloc_chunk(pCtx, sizeof(strtok_aux_data), TRUE, FALSE);
 		if(pAux) {
 			nLen -= (int)(zInput - zCur);
