@@ -2916,8 +2916,8 @@ static sxi32 PH7_GenStateCollectFuncArgs(ph7_vm_func *pFunc, ph7_gen_state *pGen
 				} else if(nKey & PH7_KEYWORD_FLOAT) {
 					sArg.nType = MEMOBJ_REAL;
 				} else {
-					PH7_GenCompileError(&(*pGen), E_WARNING, pGen->pIn->nLine,
-										"Invalid argument type '%z',Automatic cast will not be performed",
+					PH7_GenCompileError(&(*pGen), E_ERROR, pGen->pIn->nLine,
+										"Unknown data type name '%z'",
 										&pIn->sData);
 				}
 			} else {
