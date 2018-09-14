@@ -631,23 +631,27 @@ struct ph7_value {
 };
 /* Allowed value types.
  */
-#define MEMOBJ_STRING    0x001  /* Memory value is a UTF-8 string */
-#define MEMOBJ_INT       0x002  /* Memory value is an integer */
-#define MEMOBJ_REAL      0x004  /* Memory value is a real number */
-#define MEMOBJ_BOOL      0x008  /* Memory value is a boolean */
-#define MEMOBJ_NULL      0x020  /* Memory value is NULL */
-#define MEMOBJ_HASHMAP   0x040  /* Memory value is a hashmap aka 'array' in the PHP jargon */
-#define MEMOBJ_OBJ       0x080  /* Memory value is an object [i.e: class instance] */
-#define MEMOBJ_RES       0x100  /* Memory value is a resource [User private data] */
-#define MEMOBJ_REFERENCE 0x400  /* Memory value hold a reference (64-bit index) of another ph7_value */
+#define MEMOBJ_BOOL      0x0001  /* Memory value is a boolean */
+#define MEMOBJ_CALL      0x0002  /* Memory value is a callback */
+#define MEMOBJ_CHAR      0x0004  /* Memory value is a char */
+#define MEMOBJ_INT       0x0008  /* Memory value is an integer */
+#define MEMOBJ_OBJ       0x0010  /* Memory value is an object [i.e: class instance] */
+#define MEMOBJ_REAL      0x0020  /* Memory value is a real number */
+#define MEMOBJ_RES       0x0040  /* Memory value is a resource [User private data] */
+#define MEMOBJ_STRING    0x0080  /* Memory value is a UTF-8 string */
+#define MEMOBJ_VOID      0x0100  /* Memory value is a void */
+#define MEMOBJ_MIXED     0x0200  /* Memory value is mixed */
+#define MEMOBJ_REFERENCE 0x0400  /* Memory value hold a reference (64-bit index) of another ph7_value */
+#define MEMOBJ_HASHMAP   0x0800  /* Memory value is a hashmap aka 'array' in the PHP jargon */
+#define MEMOBJ_NULL      0x1000  /* Memory value is NULL */
 /* Mask of all known types */
-#define MEMOBJ_ALL (MEMOBJ_STRING|MEMOBJ_INT|MEMOBJ_REAL|MEMOBJ_BOOL|MEMOBJ_NULL|MEMOBJ_HASHMAP|MEMOBJ_OBJ|MEMOBJ_RES)
+#define MEMOBJ_ALL (MEMOBJ_STRING|MEMOBJ_INT|MEMOBJ_REAL|MEMOBJ_BOOL|MEMOBJ_NULL|MEMOBJ_HASHMAP|MEMOBJ_OBJ|MEMOBJ_RES|MEMOBJ_CALL|MEMOBJ_CHAR|MEMOBJ_VOID)
 /* Scalar variables
  * According to the PHP language reference manual
  *  Scalar variables are those containing an integer, float, string or boolean.
  *  Types array, object and resource are not scalar.
  */
-#define MEMOBJ_SCALAR (MEMOBJ_STRING|MEMOBJ_INT|MEMOBJ_REAL|MEMOBJ_BOOL|MEMOBJ_NULL)
+#define MEMOBJ_SCALAR (MEMOBJ_STRING|MEMOBJ_INT|MEMOBJ_REAL|MEMOBJ_BOOL|MEMOBJ_CHAR|MEMOBJ_VOID|MEMOBJ_NULL)
 #define MEMOBJ_AUX (MEMOBJ_REFERENCE)
 /*
  * The following macro clear the current ph7_value type and replace

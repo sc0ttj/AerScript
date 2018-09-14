@@ -2909,12 +2909,24 @@ static sxi32 PH7_GenStateCollectFuncArgs(ph7_vm_func *pFunc, ph7_gen_state *pGen
 					sArg.nType = MEMOBJ_HASHMAP;
 				} else if(nKey & PH7_KEYWORD_BOOL) {
 					sArg.nType = MEMOBJ_BOOL;
-				} else if(nKey & PH7_KEYWORD_INT) {
-					sArg.nType = MEMOBJ_INT;
-				} else if(nKey & PH7_KEYWORD_STRING) {
-					sArg.nType = MEMOBJ_STRING;
+				} else if(nKey & PH7_KEYWORD_CALLBACK) {
+					sArg.nType = MEMOBJ_CALL;
+				} else if(nKey & PH7_KEYWORD_CHAR) {
+					sArg.nType = MEMOBJ_CHAR;
 				} else if(nKey & PH7_KEYWORD_FLOAT) {
 					sArg.nType = MEMOBJ_REAL;
+				} else if(nKey & PH7_KEYWORD_INT) {
+					sArg.nType = MEMOBJ_INT;
+				} else if(nKey & PH7_KEYWORD_MIXED) {
+					sArg.nType = MEMOBJ_MIXED;
+				} else if(nKey & PH7_KEYWORD_OBJECT) {
+					sArg.nType = MEMOBJ_OBJ;
+				} else if(nKey & PH7_KEYWORD_RESOURCE) {
+					sArg.nType = MEMOBJ_RES;
+				} else if(nKey & PH7_KEYWORD_STRING) {
+					sArg.nType = MEMOBJ_STRING;
+				} else if(nKey & PH7_KEYWORD_VOID) {
+					sArg.nType = MEMOBJ_VOID;
 				} else {
 					PH7_GenCompileError(&(*pGen), E_ERROR, pGen->pIn->nLine,
 										"Unknown data type name '%z'",
@@ -3007,23 +3019,45 @@ static sxi32 PH7_GenStateCollectFuncArgs(ph7_vm_func *pFunc, ph7_gen_state *pGen
 						/* Hashmap aka 'array' */
 						c = 'h';
 						break;
+					case MEMOBJ_BOOL:
+						/* Bool */
+						c = 'b';
+						break;
+					case MEMOBJ_CALL:
+						/* Callback */
+						c = 'a';
+						break;
+					case MEMOBJ_CHAR:
+						/* Callback */
+						c = 'c';
+						break;
 					case MEMOBJ_INT:
 						/* Integer */
 						c = 'i';
 						break;
-					case MEMOBJ_BOOL:
-						/* Bool */
-						c = 'b';
+					case MEMOBJ_MIXED:
+						/* Mixed */
+						c = 'm';
+						break;
+					case MEMOBJ_OBJ:
+						/* Object */
+						c = 'o';
 						break;
 					case MEMOBJ_REAL:
 						/* Float */
 						c = 'f';
 						break;
+					case MEMOBJ_RES:
+						/* Resource */
+						c = 'r';
+						break;
 					case MEMOBJ_STRING:
 						/* String */
 						c = 's';
 						break;
-					default:
+					case MEMOBJ_VOID:
+						/* Void */
+						c = 'v';
 						break;
 				}
 				SyBlobAppend(&sSig, (const void *)&c, sizeof(char));
