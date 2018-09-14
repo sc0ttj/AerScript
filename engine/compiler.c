@@ -2935,7 +2935,7 @@ static sxi32 PH7_GenStateCollectFuncArgs(ph7_vm_func *pFunc, ph7_gen_state *pGen
 			} else {
 				SyString *pName = &pIn->sData; /* Class name */
 				char *zDup;
-				/* Argument must be a class instance,record that*/
+				/* Argument must be a class instance, record that*/
 				zDup = SyMemBackendStrDup(&pGen->pVm->sAllocator, pName->zString, pName->nByte);
 				if(zDup) {
 					sArg.nType = SXU32_HIGH; /* 0xFFFFFFFF as sentinel */
@@ -2959,6 +2959,9 @@ static sxi32 PH7_GenStateCollectFuncArgs(ph7_vm_func *pFunc, ph7_gen_state *pGen
 			return rc;
 		}
 		pIn++; /* Jump the dollar sign */
+		if(!sArg.nType) {
+			PH7_GenCompileError(&(*pGen), E_ERROR, pIn->nLine, "Argument '$%z' is of undefined data type", &pIn->sData);
+		}
 		/* Copy argument name */
 		zDup = SyMemBackendStrDup(&pGen->pVm->sAllocator, SyStringData(&pIn->sData), SyStringLength(&pIn->sData));
 		if(zDup == 0) {
