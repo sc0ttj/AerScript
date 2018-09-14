@@ -1733,22 +1733,24 @@ PH7_PRIVATE sxi32 VmExtractDebugTrace(ph7_vm *pVm, SySet *pDebugTrace) {
 					break;
 				}
 			}
-			aTrace.pClassName = NULL;
-			aTrace.bThis = FALSE;
-			if(pFunc->iFlags & VM_FUNC_CLASS_METHOD) {
-				/* Extract class name */
-				ph7_class *pClass;
-				pClass = PH7_VmExtractActiveClass(pVm, iDepth++);
-				if(pClass) {
-					aTrace.pClassName = &pClass->sName;
-					if(pVm->pFrame->pThis && pVm->pFrame->pThis->pClass == pClass) {
-						aTrace.bThis = TRUE;
+			if(aTrace.pFile) {
+				aTrace.pClassName = NULL;
+				aTrace.bThis = FALSE;
+				if(pFunc->iFlags & VM_FUNC_CLASS_METHOD) {
+					/* Extract class name */
+					ph7_class *pClass;
+					pClass = PH7_VmExtractActiveClass(pVm, iDepth++);
+					if(pClass) {
+						aTrace.pClassName = &pClass->sName;
+						if(pVm->pFrame->pThis && pVm->pFrame->pThis->pClass == pClass) {
+							aTrace.bThis = TRUE;
+						}
 					}
 				}
-			}
-			rc = SySetPut(pDebugTrace, (const void *)&aTrace);
-			if(rc != SXRET_OK) {
-				break;
+				rc = SySetPut(pDebugTrace, (const void *)&aTrace);
+				if(rc != SXRET_OK) {
+					break;
+				}
 			}
 		}
 		/* Roll frame */

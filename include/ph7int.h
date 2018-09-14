@@ -1231,7 +1231,7 @@ struct ph7_vm {
 	int nMaxDepth;             /* Maximum allowed recursion depth */
 	int nExceptDepth;          /* Exception depth */
 	int closure_cnt;           /* Loaded closures counter */
-	int json_rc;               /* JSON return status [refer to json_encode()/json_decode()]*/
+	int json_rc;               /* JSON return status [refer to json_encode()/json_decode()] */
 	ph7_output_consumer sVmConsumer; /* Registered output consumer callback */
 	int iAssertFlags;          /* Assertion flags */
 	ph7_value sAssertCallback; /* Callback to call on failed assertions */
@@ -1258,7 +1258,7 @@ struct VmFrame {
 	SyHash hVar;      /* Variable hashtable for fast lookup */
 	SySet sArg;       /* Function arguments container */
 	SySet sRef;       /* Local reference table (VmSlot instance) */
-	sxi32 iFlags;     /* Frame configuration flags (See below)*/
+	sxi32 iFlags;     /* Frame configuration flags (See below) */
 	sxu32 iExceptionJump; /* Exception jump destination */
 };
 #define VM_FRAME_EXCEPTION  0x01 /* Special Exception frame */
