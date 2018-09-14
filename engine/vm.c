@@ -4964,9 +4964,9 @@ static sxi32 VmByteCodeExec(
 										if(pClass) {
 											if((pArg->iFlags & MEMOBJ_OBJ) == 0) {
 												if((pArg->iFlags & MEMOBJ_NULL) == 0) {
-													PH7_VmThrowError(&(*pVm), PH7_CTX_WARNING,
-																  "Function '%z()':Argument %u must be an object of type '%z', PH7 is loading NULL instead",
-																  &pVmFunc->sName, n + 1, pName);
+													PH7_VmThrowError(&(*pVm), PH7_CTX_ERR,
+																  "Argument %u passed to function '%z()' must be an object of type '%z'",
+																  n+1, &pVmFunc->sName, pName);
 													PH7_MemObjRelease(pArg);
 												}
 											} else {
@@ -4974,8 +4974,8 @@ static sxi32 VmByteCodeExec(
 												/* Make sure the object is an instance of the given class */
 												if(! VmInstanceOf(pThis->pClass, pClass)) {
 													PH7_VmThrowError(&(*pVm), PH7_CTX_WARNING,
-																  "Function '%z()':Argument %u must be an object of type '%z', PH7 is loading NULL instead",
-																  &pVmFunc->sName, n + 1, pName);
+																  "Argument %u passed to function '%z()' must be an object of type '%z'",
+																  n+1, &pVmFunc->sName, pName);
 													PH7_MemObjRelease(pArg);
 												}
 											}
