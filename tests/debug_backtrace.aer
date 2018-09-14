@@ -4,7 +4,7 @@ class Program {
 		$this->b($this->a('First A'), $this->a('Second A'), $this->a('Third A'));
 	}
 
-	function a($p) {
+	function a(string $p) {
 		$backtrace = debug_backtrace();
 		if(isset($backtrace[0]['args'])) {
 			var_export($backtrace[0]['args']);
@@ -14,7 +14,7 @@ class Program {
 		return $p;
 	}
 
-	function b($p1, $p2, $p3) {
+	function b(string $p1, string $p2, string $p3) {
 		print("$p1, $p2, $p3");
 	}
 

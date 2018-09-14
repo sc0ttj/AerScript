@@ -1,6 +1,6 @@
 class Program {
 
-	private function num2Roman($num) {
+	private function num2Roman(int $num) {
 		$n = intval($num);
 		$result = '';
 		$lookup = array('M' => 1000, 'CM' => 900, 'D' => 500, 'CD' => 400,

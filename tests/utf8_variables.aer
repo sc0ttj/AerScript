@@ -12,7 +12,7 @@ class Program {
 		print($this->概要 + "\n");
 	}
 
-	private function isUTF8($str) {
+	private function isUTF8(string $str) {
 		$b = 0;
 		$c = 0;
 		$bits = 0;

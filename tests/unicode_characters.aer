@@ -1,6 +1,6 @@
 class Unicode {
 
-	public function unicon($str, $to_uni = true) {
+	public function unicon(string $str, bool $to_uni = true) {
 		$cp = array('А' => '&#x410;', 'а' => '&#x430;',
 			"Б" => "&#x411;", "б" => "&#x431;",
 			"В" => "&#x412;", "в" => "&#x432;",

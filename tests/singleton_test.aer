@@ -17,7 +17,7 @@ final class Test {
 		return $this->value;
 	}
 
-	public function set($value = 0) {
+	public function set(int $value = 0) {
 		$this->value = $value;
 	}
 }
