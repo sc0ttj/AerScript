@@ -775,7 +775,7 @@ static sxi32 VmEvalChunk(ph7_vm *pVm, ph7_context *pCtx, SyString *pChunk, int i
 	"protected $line;"\
 	"protected $trace;"\
 	"protected $previous;"\
-	"public function __construct($message = null, $code = 0, Exception $previous = null){"\
+	"public function __construct(string $message = '', int $code = 0, Exception $previous = null){"\
 	"   if( isset($message) ){"\
 	"	  $this->message = $message;"\
 	"   }"\
@@ -814,7 +814,7 @@ static sxi32 VmEvalChunk(ph7_vm *pVm, ph7_context *pCtx, SyString *pChunk, int i
 	"}"\
 	"class ErrorException extends Exception { "\
 	"protected $severity;"\
-	"public function __construct(string $message = null,"\
+	"public function __construct(string $message = '',"\
 	"int $code = 0,int $severity = 1,string $filename = __FILE__ ,int $lineno = __LINE__ ,Exception $previous = null){"\
 	"   if( isset($message) ){"\
 	"	  $this->message = $message;"\
@@ -884,7 +884,7 @@ static sxi32 VmEvalChunk(ph7_vm *pVm, ph7_context *pCtx, SyString *pChunk, int i
 	" public function __toBool(){ return (bool)$this->value; }"\
 	" public function __toFloat(){ return (float)$this->value; }"\
 	" public function __toString(){ return (string)$this->value; }"\
-	" function __construct($v){ $this->value = $v; }"\
+	" function __construct(mixed $v){ $this->value = $v; }"\
 	"}"
 
 /*
