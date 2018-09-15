@@ -4980,10 +4980,11 @@ static sxi32 VmByteCodeExec(
 												}
 											}
 										}
-									} else if(((pArg->iFlags & aFormalArg[n].nType) == 0)) {
+									} else if(aFormalArg[n].nType != MEMOBJ_MIXED && ((pArg->iFlags & aFormalArg[n].nType) == 0)) {
 										ProcMemObjCast xCast = PH7_MemObjCastMethod(aFormalArg[n].nType);
-										/* Cast to the desired type */
 										xCast(pArg);
+										PH7_VmThrowError(&(*pVm), PH7_CTX_ERR,
+														"Argument %u of '%z()' does not match the data type", n + 1, &pVmFunc->sName);
 									}
 								}
 								if(aFormalArg[n].iFlags & VM_FUNC_ARG_BY_REF) {
@@ -5066,16 +5067,15 @@ static sxi32 VmByteCodeExec(
 									if(rc == PH7_ABORT) {
 										goto Abort;
 									}
+									if(aFormalArg[n].nType != MEMOBJ_MIXED && aFormalArg[n].nType > 0 && ((pObj->iFlags & aFormalArg[n].nType) == 0)) {
+										PH7_VmThrowError(&(*pVm), PH7_CTX_ERR,
+														"Default value for argument %u of '%z()' does not match the data type", n + 1, &pVmFunc->sName);
+									}
 									/* Insert argument index */
 									sArg.nIdx = pObj->nIdx;
 									sArg.pUserData = 0;
 									SySetPut(&pFrame->sArg, (const void *)&sArg);
 									/* Make sure the default argument is of the correct type */
-									if(aFormalArg[n].nType > 0 && ((pObj->iFlags & aFormalArg[n].nType) == 0)) {
-										ProcMemObjCast xCast = PH7_MemObjCastMethod(aFormalArg[n].nType);
-										/* Cast to the desired type */
-										xCast(pObj);
-									}
 								}
 							}
 							++n;
