@@ -1261,9 +1261,10 @@ struct VmFrame {
 	sxi32 iFlags;     /* Frame configuration flags (See below) */
 	sxu32 iExceptionJump; /* Exception jump destination */
 };
-#define VM_FRAME_EXCEPTION  0x01 /* Special Exception frame */
-#define VM_FRAME_THROW      0x02 /* An exception was thrown */
-#define VM_FRAME_CATCH      0x04 /* Catch frame */
+#define VM_FRAME_ACTIVE     0x01 /* Active call frame */
+#define VM_FRAME_EXCEPTION  0x02 /* Special Exception frame */
+#define VM_FRAME_THROW      0x04 /* An exception was thrown */
+#define VM_FRAME_CATCH      0x08 /* Catch frame */
 /*
  * When a debug stacktrace is extracted from Virtual Machine, all information about
  * calls (file, line, class, method, arguments) are stored in this structure.

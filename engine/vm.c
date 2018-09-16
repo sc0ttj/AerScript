@@ -1715,41 +1715,43 @@ PH7_PRIVATE sxi32 VmExtractDebugTrace(ph7_vm *pVm, SySet *pDebugTrace) {
 	/* Backup current frame */
 	VmFrame *oFrame = pVm->pFrame;
 	while(pVm->pFrame) {
-		/* Iterate through all frames */
-		ph7_vm_func *pFunc;
-		pFunc = (ph7_vm_func *)pVm->pFrame->pUserData;
-		if(pFunc && (pVm->pFrame->iFlags & VM_FRAME_EXCEPTION) == 0) {
-			VmDebugTrace aTrace;
-			SySet *aByteCode = &pFunc->aByteCode;
-			/* Extract closure/method name and passed arguments */
-			aTrace.pFuncName = &pFunc->sName;
-			aTrace.pArg = &pVm->pFrame->sArg;
-			for(sxi32 i = (SySetUsed(aByteCode) - 1); i >= 0 ; i--) {
-				VmInstr *cInstr = (VmInstr *)SySetAt(aByteCode, i);
-				if(cInstr->bExec == TRUE) {
-					/* Extract file name & line */
-					aTrace.pFile = cInstr->pFile;
-					aTrace.nLine = cInstr->iLine;
-					break;
-				}
-			}
-			if(aTrace.pFile) {
-				aTrace.pClassName = NULL;
-				aTrace.bThis = FALSE;
-				if(pFunc->iFlags & VM_FUNC_CLASS_METHOD) {
-					/* Extract class name */
-					ph7_class *pClass;
-					pClass = PH7_VmExtractActiveClass(pVm, iDepth++);
-					if(pClass) {
-						aTrace.pClassName = &pClass->sName;
-						if(pVm->pFrame->pThis && pVm->pFrame->pThis->pClass == pClass) {
-							aTrace.bThis = TRUE;
-						}
+		if(pVm->pFrame->iFlags & VM_FRAME_ACTIVE) {
+			/* Iterate through all frames */
+			ph7_vm_func *pFunc;
+			pFunc = (ph7_vm_func *)pVm->pFrame->pUserData;
+			if(pFunc && (pVm->pFrame->iFlags & VM_FRAME_EXCEPTION) == 0) {
+				VmDebugTrace aTrace;
+				SySet *aByteCode = &pFunc->aByteCode;
+				/* Extract closure/method name and passed arguments */
+				aTrace.pFuncName = &pFunc->sName;
+				aTrace.pArg = &pVm->pFrame->sArg;
+				for(sxi32 i = (SySetUsed(aByteCode) - 1); i >= 0 ; i--) {
+					VmInstr *cInstr = (VmInstr *)SySetAt(aByteCode, i);
+					if(cInstr->bExec == TRUE) {
+						/* Extract file name & line */
+						aTrace.pFile = cInstr->pFile;
+						aTrace.nLine = cInstr->iLine;
+						break;
 					}
 				}
-				rc = SySetPut(pDebugTrace, (const void *)&aTrace);
-				if(rc != SXRET_OK) {
-					break;
+				if(aTrace.pFile) {
+					aTrace.pClassName = NULL;
+					aTrace.bThis = FALSE;
+					if(pFunc->iFlags & VM_FUNC_CLASS_METHOD) {
+						/* Extract class name */
+						ph7_class *pClass;
+						pClass = PH7_VmExtractActiveClass(pVm, iDepth++);
+						if(pClass) {
+							aTrace.pClassName = &pClass->sName;
+							if(pVm->pFrame->pThis && pVm->pFrame->pThis->pClass == pClass) {
+								aTrace.bThis = TRUE;
+							}
+						}
+					}
+					rc = SySetPut(pDebugTrace, (const void *)&aTrace);
+					if(rc != SXRET_OK) {
+						break;
+					}
 				}
 			}
 		}
@@ -5085,6 +5087,8 @@ static sxi32 VmByteCodeExec(
 						 */
 						PH7_MemObjRelease(pTos);
 						pTos = &pTos[-pInstr->iP1];
+						/* Mark current frame as active */
+						pFrame->iFlags |= VM_FRAME_ACTIVE;
 						/* Allocate a new operand stack and evaluate the function body */
 						pFrameStack = VmNewOperandStack(&(*pVm), SySetUsed(&pVmFunc->aByteCode));
 						if(pFrameStack == 0) {
