@@ -4983,10 +4983,14 @@ static sxi32 VmByteCodeExec(
 											}
 										}
 									} else if(aFormalArg[n].nType != MEMOBJ_MIXED && ((pArg->iFlags & aFormalArg[n].nType) == 0)) {
-										ProcMemObjCast xCast = PH7_MemObjCastMethod(aFormalArg[n].nType);
-										xCast(pArg);
-										PH7_VmThrowError(&(*pVm), PH7_CTX_ERR,
-														"Argument %u of '%z()' does not match the data type", n + 1, &pVmFunc->sName);
+										if(aFormalArg[n].nType == MEMOBJ_REAL && (pArg->iFlags & MEMOBJ_INT)) {
+											/* Silently typecast integer value to float */
+											ProcMemObjCast xCast = PH7_MemObjCastMethod(aFormalArg[n].nType);
+											xCast(pArg);
+										} else {
+											PH7_VmThrowError(&(*pVm), PH7_CTX_ERR,
+															"Argument %u of '%z()' does not match the data type", n + 1, &pVmFunc->sName);
+										}
 									}
 								}
 								if(aFormalArg[n].iFlags & VM_FUNC_ARG_BY_REF) {
@@ -5070,8 +5074,14 @@ static sxi32 VmByteCodeExec(
 										goto Abort;
 									}
 									if(aFormalArg[n].nType != MEMOBJ_MIXED && aFormalArg[n].nType > 0 && ((pObj->iFlags & aFormalArg[n].nType) == 0)) {
-										PH7_VmThrowError(&(*pVm), PH7_CTX_ERR,
-														"Default value for argument %u of '%z()' does not match the data type", n + 1, &pVmFunc->sName);
+										if(aFormalArg[n].nType == MEMOBJ_REAL && (pObj->iFlags & MEMOBJ_INT)) {
+											/* Silently typecast integer value to float */
+											ProcMemObjCast xCast = PH7_MemObjCastMethod(aFormalArg[n].nType);
+											xCast(pObj);
+										} else {
+											PH7_VmThrowError(&(*pVm), PH7_CTX_ERR,
+															"Default value for argument %u of '%z()' does not match the data type", n + 1, &pVmFunc->sName);
+										}
 									}
 									/* Insert argument index */
 									sArg.nIdx = pObj->nIdx;
