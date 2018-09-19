@@ -553,27 +553,42 @@ static ph7_vm_func *VmOverload(
 	SyBlobInit(&sSig, &pVm->sAllocator);
 	for(j = 0 ; j < nArg ; j++) {
 		int c = 'n'; /* null */
-		if(aArg[j].iFlags & MEMOBJ_HASHMAP) {
-			/* Hashmap */
-			c = 'h';
-		} else if(aArg[j].iFlags & MEMOBJ_BOOL) {
-			/* bool */
+		if(aArg[j].iFlags & MEMOBJ_BOOL) {
+			/* Bool */
 			c = 'b';
+		} else if(aArg[j].iFlags & MEMOBJ_CALL) {
+			/* Callback */
+			c = 'a';
+		} else if(aArg[j].iFlags & MEMOBJ_CHAR) {
+			/* Char */
+			c = 'c';
 		} else if(aArg[j].iFlags & MEMOBJ_INT) {
-			/* int */
+			/* Integer */
 			c = 'i';
-		} else if(aArg[j].iFlags & MEMOBJ_STRING) {
-			/* String */
-			c = 's';
-		} else if(aArg[j].iFlags & MEMOBJ_REAL) {
-			/* Float */
-			c = 'f';
+		} else if(aArg[j].iFlags & MEMOBJ_MIXED) {
+			/* Mixed */
+			c = 'm';
 		} else if(aArg[j].iFlags & MEMOBJ_OBJ) {
 			/* Class instance */
 			ph7_class *pClass = ((ph7_class_instance *)aArg[j].x.pOther)->pClass;
 			SyString *pName = &pClass->sName;
 			SyBlobAppend(&sSig, (const void *)pName->zString, pName->nByte);
 			c = -1;
+		} else if(aArg[j].iFlags & MEMOBJ_REAL) {
+			/* Float */
+			c = 'f';
+		} else if(aArg[j].iFlags & MEMOBJ_RES) {
+			/* Resource */
+			c = 'r';
+		} else if(aArg[j].iFlags & MEMOBJ_STRING) {
+			/* String */
+			c = 's';
+		} else if(aArg[j].iFlags & MEMOBJ_VOID) {
+			/* Void */
+			c = 'v';
+		}
+		if(aArg[j].iFlags & MEMOBJ_HASHMAP && (aArg[j].iFlags & MEMOBJ_OBJ) == 0) {
+			c = SyToUpper(c);
 		}
 		if(c > 0) {
 			SyBlobAppend(&sSig, (const void *)&c, sizeof(char));
@@ -4982,7 +4997,7 @@ static sxi32 VmByteCodeExec(
 												}
 											}
 										}
-									} else if(aFormalArg[n].nType != MEMOBJ_MIXED && ((pArg->iFlags & aFormalArg[n].nType) == 0)) {
+									} else if((aFormalArg[n].nType & MEMOBJ_MIXED) == 0 && pArg->iFlags != aFormalArg[n].nType) {
 										if(aFormalArg[n].nType == MEMOBJ_REAL && (pArg->iFlags & MEMOBJ_INT)) {
 											/* Silently typecast integer value to float */
 											ProcMemObjCast xCast = PH7_MemObjCastMethod(aFormalArg[n].nType);
@@ -5073,7 +5088,7 @@ static sxi32 VmByteCodeExec(
 									if(rc == PH7_ABORT) {
 										goto Abort;
 									}
-									if(aFormalArg[n].nType != MEMOBJ_MIXED && aFormalArg[n].nType > 0 && ((pObj->iFlags & aFormalArg[n].nType) == 0)) {
+									if((aFormalArg[n].nType & MEMOBJ_MIXED) == 0 && aFormalArg[n].nType > 0 && pObj->iFlags != aFormalArg[n].nType) {
 										if(aFormalArg[n].nType == MEMOBJ_REAL && (pObj->iFlags & MEMOBJ_INT)) {
 											/* Silently typecast integer value to float */
 											ProcMemObjCast xCast = PH7_MemObjCastMethod(aFormalArg[n].nType);
@@ -5393,12 +5408,16 @@ PH7_PRIVATE sxi32 PH7_VmByteCodeExec(ph7_vm *pVm) {
 			zParam = SyStrtok(NULL, " ");
 		}
 	}
-	/* Call entry point */
+	/* Extract script entry point */
 	pMethod = PH7_ClassExtractMethod(pClass, "main", sizeof("main") - 1);
 	if(!pMethod) {
 		PH7_VmThrowError(&(*pVm), PH7_CTX_ERR, "Cannot find a program entry point 'Program::main()'");
 	}
+	/* A set of arguments is stored in array of strings */
+	pArgs->iFlags |= MEMOBJ_STRING;
+	/* Initialize variable for return value */
 	PH7_MemObjInit(pVm, &pResult);
+	/* Call entry point */
 	PH7_VmCallClassMethod(&(*pVm), pInstance, pMethod, &pResult, 1, &pArgs);
 	if(!pVm->iExitStatus) {
 		pVm->iExitStatus = ph7_value_to_int(&pResult);

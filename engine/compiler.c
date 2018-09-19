@@ -2905,9 +2905,7 @@ static sxi32 PH7_GenStateCollectFuncArgs(ph7_vm_func *pFunc, ph7_gen_state *pGen
 		if(pIn->nType & (PH7_TK_ID | PH7_TK_KEYWORD)) {
 			if(pIn->nType & PH7_TK_KEYWORD) {
 				sxu32 nKey = (sxu32)(SX_PTR_TO_INT(pIn->pUserData));
-				if(nKey & PH7_KEYWORD_ARRAY) {
-					sArg.nType = MEMOBJ_HASHMAP;
-				} else if(nKey & PH7_KEYWORD_BOOL) {
+				if(nKey & PH7_KEYWORD_BOOL) {
 					sArg.nType = MEMOBJ_BOOL;
 				} else if(nKey & PH7_KEYWORD_CALLBACK) {
 					sArg.nType = MEMOBJ_CALL;
@@ -2943,6 +2941,10 @@ static sxi32 PH7_GenStateCollectFuncArgs(ph7_vm_func *pFunc, ph7_gen_state *pGen
 				}
 			}
 			pIn++;
+			if((pIn->nType & PH7_TK_OSB) && &pIn[1] < pEnd && (pIn[1].nType & PH7_TK_CSB)) {
+				sArg.nType |= MEMOBJ_HASHMAP;
+				pIn += 2;
+			}
 		}
 		if(pIn >= pEnd) {
 			rc = PH7_GenCompileError(&(*pGen), E_ERROR, pGen->pIn->nLine, "Missing argument name");
@@ -3014,54 +3016,41 @@ static sxi32 PH7_GenStateCollectFuncArgs(ph7_vm_func *pFunc, ph7_gen_state *pGen
 				/* Class name */
 				SyBlobAppend(&sSig, SyStringData(&sArg.sClass), SyStringLength(&sArg.sClass));
 			} else {
-				int c;
-				c = 'n'; /* cc warning */
+				int c = 'n'; /* cc warning */
 				/* Type leading character */
-				switch(sArg.nType) {
-					case MEMOBJ_HASHMAP:
-						/* Hashmap aka 'array' */
-						c = 'h';
-						break;
-					case MEMOBJ_BOOL:
-						/* Bool */
-						c = 'b';
-						break;
-					case MEMOBJ_CALL:
-						/* Callback */
-						c = 'a';
-						break;
-					case MEMOBJ_CHAR:
-						/* Callback */
-						c = 'c';
-						break;
-					case MEMOBJ_INT:
-						/* Integer */
-						c = 'i';
-						break;
-					case MEMOBJ_MIXED:
-						/* Mixed */
-						c = 'm';
-						break;
-					case MEMOBJ_OBJ:
-						/* Object */
-						c = 'o';
-						break;
-					case MEMOBJ_REAL:
-						/* Float */
-						c = 'f';
-						break;
-					case MEMOBJ_RES:
-						/* Resource */
-						c = 'r';
-						break;
-					case MEMOBJ_STRING:
-						/* String */
-						c = 's';
-						break;
-					case MEMOBJ_VOID:
-						/* Void */
-						c = 'v';
-						break;
+				if(sArg.nType & MEMOBJ_BOOL) {
+					/* Bool */
+					c = 'b';
+				} else if(sArg.nType & MEMOBJ_CALL) {
+					/* Callback */
+					c = 'a';
+				} else if(sArg.nType & MEMOBJ_CHAR) {
+					/* Char */
+					c = 'c';
+				} else if(sArg.nType & MEMOBJ_INT) {
+					/* Integer */
+					c = 'i';
+				} else if(sArg.nType & MEMOBJ_MIXED) {
+					/* Mixed */
+					c = 'm';
+				} else if(sArg.nType & MEMOBJ_OBJ) {
+					/* Object */
+					c = 'o';
+				} else if(sArg.nType & MEMOBJ_REAL) {
+					/* Float */
+					c = 'f';
+				} else if(sArg.nType & MEMOBJ_RES) {
+					/* Resource */
+					c = 'r';
+				} else if(sArg.nType & MEMOBJ_STRING) {
+					/* String */
+					c = 's';
+				} else if(sArg.nType & MEMOBJ_VOID) {
+					/* Void */
+					c = 'v';
+				}
+				if(sArg.nType & MEMOBJ_HASHMAP) {
+					c = SyToUpper(c);
 				}
 				SyBlobAppend(&sSig, (const void *)&c, sizeof(char));
 			}
