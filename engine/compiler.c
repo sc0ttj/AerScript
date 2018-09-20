@@ -5248,12 +5248,10 @@ static const LangConstruct aLangConstruct[] = {
 	{ PH7_KEYWORD_RETURN,   PH7_CompileReturn   }, /* return statement */
 	{ PH7_KEYWORD_SWITCH,   PH7_CompileSwitch   }, /* Switch statement */
 	{ PH7_KEYWORD_DO,       PH7_CompileDoWhile  }, /* do{ }while(); statement */
-	{ PH7_KEYWORD_STATIC,   PH7_CompileStatic   }, /* static statement */
 	{ PH7_KEYWORD_EXIT,     PH7_CompileHalt     }, /* exit language construct */
 	{ PH7_KEYWORD_TRY,      PH7_CompileTry      }, /* try statement */
 	{ PH7_KEYWORD_THROW,    PH7_CompileThrow    }, /* throw statement */
 	{ PH7_KEYWORD_CONST,    PH7_CompileConstant }, /* const statement */
-	{ PH7_KEYWORD_VAR,      PH7_CompileVar      }, /* var statement */
 };
 /*
  * Return a pointer to the global scope handler routine associated
@@ -5291,23 +5289,29 @@ static ProcLangConstruct PH7_GenStateGetStatementHandler(
 	SyToken *pLookahead  /* Look-ahead token */
 ) {
 	sxu32 n = 0;
-	for(;;) {
-		if(n >= SX_ARRAYSIZE(aLangConstruct)) {
-			break;
-		}
-		if(aLangConstruct[n].nID == nKeywordID) {
-			if(nKeywordID == PH7_KEYWORD_STATIC && pLookahead && (pLookahead->nType & PH7_TK_OP)) {
-				const ph7_expr_op *pOp = (const ph7_expr_op *)pLookahead->pUserData;
-				if(pOp && pOp->iOp == EXPR_OP_DC /*::*/) {
-					/* 'static' (class context),return null */
-					return 0;
-				}
+	if((nKeywordID & PH7_KEYWORD_TYPEDEF) != 0) {
+		return PH7_CompileVar;
+	} else if(nKeywordID == PH7_KEYWORD_STATIC) {
+		if(pLookahead && (pLookahead->nType & PH7_TK_OP)) {
+			const ph7_expr_op *pOp = (const ph7_expr_op *)pLookahead->pUserData;
+			if(pOp && pOp->iOp == EXPR_OP_DC /*::*/) {
+				/* 'static' (class context),return null */
+				return 0;
 			}
-			/* Return a pointer to the handler.
-			*/
-			return aLangConstruct[n].xConstruct;
 		}
-		n++;
+		return PH7_CompileStatic;
+	} else {
+		for(;;) {
+			if(n >= SX_ARRAYSIZE(aLangConstruct)) {
+				break;
+			}
+			if(aLangConstruct[n].nID == nKeywordID) {
+				/* Return a pointer to the handler.
+				*/
+				return aLangConstruct[n].xConstruct;
+			}
+			n++;
+		}
 	}
 	/* Not a language construct */
 	return 0;
