@@ -6,7 +6,7 @@ final class Test {
 
 	/* This is singleton */
 	public function getInstance() {
-		static $instance;
+		static object $instance;
 		if(!$instance) {
 			$instance = new Test();
 		}

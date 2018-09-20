@@ -2609,25 +2609,125 @@ Synchronize:
  */
 static sxi32 PH7_CompileVar(ph7_gen_state *pGen) {
 	sxu32 nLine = pGen->pIn->nLine;
+	sxbool bStatic = FALSE;
+	ph7_vm_func_static_var sStatic;
+	ph7_vm_func *pFunc;
+	GenBlock *pBlock;
+	SyString *pName;
+	sxu32 nKey, nType;
+	char *zDup;
 	sxi32 rc;
-	/* Jump the 'var' keyword */
-	pGen->pIn++;
-	if(pGen->pIn >= pGen->pEnd || (pGen->pIn->nType & PH7_TK_DOLLAR/*'$'*/) == 0) {
-		rc = PH7_GenCompileError(&(*pGen), E_ERROR, nLine, "var: Expecting variable name");
-		/* Synchronize with the first semi-colon */
-		while(pGen->pIn < pGen->pEnd && (pGen->pIn->nType & PH7_TK_SEMI/*';'*/) == 0) {
-			pGen->pIn++;
-		}
-		if(rc == SXERR_ABORT) {
-			return SXERR_ABORT;
-		}
+	nKey = (sxu32)(SX_PTR_TO_INT(pGen->pIn->pUserData));
+	if(nKey == PH7_KEYWORD_STATIC) {
+		bStatic = TRUE;
+		/* Jump the 'static' keyword' */
+		pGen->pIn++;
+		nKey = (sxu32)(SX_PTR_TO_INT(pGen->pIn->pUserData));
+	}
+	if(nKey & PH7_KEYWORD_BOOL) {
+		nType = MEMOBJ_BOOL;
+	} else if(nKey & PH7_KEYWORD_CALLBACK) {
+		nType = MEMOBJ_CALL;
+	} else if(nKey & PH7_KEYWORD_CHAR) {
+		nType = MEMOBJ_CHAR;
+	} else if(nKey & PH7_KEYWORD_FLOAT) {
+		nType = MEMOBJ_REAL;
+	} else if(nKey & PH7_KEYWORD_INT) {
+		nType = MEMOBJ_INT;
+	} else if(nKey & PH7_KEYWORD_MIXED) {
+		nType = MEMOBJ_MIXED;
+	} else if(nKey & PH7_KEYWORD_OBJECT) {
+		nType = MEMOBJ_OBJ;
+	} else if(nKey & PH7_KEYWORD_RESOURCE) {
+		nType = MEMOBJ_RES;
+	} else if(nKey & PH7_KEYWORD_STRING) {
+		nType = MEMOBJ_STRING;
+	} else if(nKey & PH7_KEYWORD_VOID) {
+		nType = MEMOBJ_VOID;
 	} else {
-		/* Compile the expression */
-		rc = PH7_CompileExpr(&(*pGen), 0, 0);
-		if(rc == SXERR_ABORT) {
-			return SXERR_ABORT;
-		} else if(rc != SXERR_EMPTY) {
-			PH7_VmEmitInstr(pGen->pVm, nLine, PH7_OP_POP, 1, 0, 0, 0);
+		PH7_GenCompileError(&(*pGen), E_ERROR, pGen->pIn->nLine,
+							"Unknown data type name '%z'",
+							&pGen->pIn->sData);
+	}
+	/* Jump the data type keyword */
+	pGen->pIn++;
+	if((pGen->pIn->nType & PH7_TK_OSB) && &pGen->pIn[1] < pGen->pEnd && (pGen->pIn[1].nType & PH7_TK_CSB)) {
+		nType |= MEMOBJ_HASHMAP;
+		pGen->pIn += 2;
+	}
+	for(;;) {
+		if(pGen->pIn >= pGen->pEnd || (pGen->pIn->nType & PH7_TK_DOLLAR/*'$'*/) == 0 || &pGen->pIn[1] >= pGen->pEnd ||
+				(pGen->pIn[1].nType & (PH7_TK_ID | PH7_TK_KEYWORD)) == 0) {
+			PH7_GenCompileError(&(*pGen), E_ERROR, pGen->pIn->nLine,
+								"Unexpected '%z', expecting variable",
+								&pGen->pIn->sData);
+		}
+		/* Extract variable name */
+		pName = &pGen->pIn[1].sData;
+		if(bStatic) {
+			/* Extract the enclosing method/closure */
+			pBlock = pGen->pCurrent;
+			while(pBlock) {
+				if(pBlock->iFlags & GEN_BLOCK_FUNC) {
+					break;
+				}
+				/* Point to the upper block */
+				pBlock = pBlock->pParent;
+			}
+			pFunc = (ph7_vm_func *)pBlock->pUserData;
+			pGen->pIn += 2; /* Jump the dollar '$' sign and variable name */
+			if(pGen->pIn < pGen->pEnd && (pGen->pIn->nType & (PH7_TK_COMMA/*','*/ | PH7_TK_SEMI/*';'*/ | PH7_TK_EQUAL/*'='*/)) == 0) {
+				PH7_GenCompileError(&(*pGen), E_ERROR, pGen->pIn->nLine, "Unexpected token '%z'", &pGen->pIn->sData);
+			}
+			/* TODO: Check if static variable exists to avoid redeclaration */
+
+			/* Initialize the structure describing the static variable */
+			SySetInit(&sStatic.aByteCode, &pGen->pVm->sAllocator, sizeof(VmInstr));
+			sStatic.nIdx = SXU32_HIGH; /* Not yet created */
+			/* Duplicate variable name */
+			zDup = SyMemBackendStrDup(&pGen->pVm->sAllocator, pName->zString, pName->nByte);
+			if(zDup == 0) {
+				PH7_GenCompileError(&(*pGen), E_ERROR, nLine, "Fatal, PH7 engine is running out of memory");
+			}
+			SyStringInitFromBuf(&sStatic.sName, zDup, pName->nByte);
+			/* Check if we have an expression to compile */
+			if(pGen->pIn < pGen->pEnd && (pGen->pIn->nType & PH7_TK_EQUAL)) {
+				SySet *pInstrContainer;
+				pGen->pIn++; /* Jump the equal '=' sign */
+				/* Swap bytecode container */
+				pInstrContainer = PH7_VmGetByteCodeContainer(pGen->pVm);
+				PH7_VmSetByteCodeContainer(pGen->pVm, &sStatic.aByteCode);
+				/* Compile the expression */
+				rc = PH7_CompileExpr(&(*pGen), EXPR_FLAG_COMMA_STATEMENT, 0);
+				if(rc == SXERR_EMPTY) {
+					PH7_GenCompileError(&(*pGen), E_ERROR, pGen->pIn->nLine, "Static variable '%z' is missing default value", &pName);
+				}
+				/* Emit the done instruction */
+				PH7_VmEmitInstr(pGen->pVm, pGen->pIn->nLine, PH7_OP_DONE, (rc != SXERR_EMPTY ? 1 : 0), 0, 0, 0);
+				/* Restore default bytecode container */
+				PH7_VmSetByteCodeContainer(pGen->pVm, pInstrContainer);
+			}
+			/* Finally save the compiled static variable in the appropriate container */
+			SySetPut(&pFunc->aStatic, (const void *)&sStatic);
+		} else {
+			void *p3 = (void *) pName;
+			/* Emit OP_LOAD instruction */
+			PH7_VmEmitInstr(pGen->pVm, pGen->pIn->nLine, PH7_OP_LOAD, 0, nType, p3, 0);
+			/* Check if we have an expression to compile */
+			if(pGen->pIn < pGen->pEnd && (pGen->pIn[2].nType & PH7_TK_EQUAL)) {
+				/* Compile the expression */
+				rc = PH7_CompileExpr(&(*pGen), EXPR_FLAG_COMMA_STATEMENT, 0);
+				if(rc == SXERR_EMPTY) {
+					PH7_GenCompileError(&(*pGen), E_ERROR, pGen->pIn->nLine, "Variable '%z' is missing default value", &pName);
+				}
+			} else {
+				pGen->pIn += 2; /* Jump the dollar '$' sign and variable name */
+			}
+		}
+		if(pGen->pIn->nType == PH7_TK_SEMI) {
+			break;
+		} else {
+			pGen->pIn++;
 		}
 	}
 	return SXRET_OK;
@@ -5289,17 +5389,15 @@ static ProcLangConstruct PH7_GenStateGetStatementHandler(
 	SyToken *pLookahead  /* Look-ahead token */
 ) {
 	sxu32 n = 0;
-	if((nKeywordID & PH7_KEYWORD_TYPEDEF) != 0) {
-		return PH7_CompileVar;
-	} else if(nKeywordID == PH7_KEYWORD_STATIC) {
-		if(pLookahead && (pLookahead->nType & PH7_TK_OP)) {
+	if((nKeywordID & PH7_KEYWORD_TYPEDEF) != 0 || nKeywordID == PH7_KEYWORD_STATIC) {
+		if(nKeywordID == PH7_KEYWORD_STATIC && pLookahead && (pLookahead->nType & PH7_TK_OP)) {
 			const ph7_expr_op *pOp = (const ph7_expr_op *)pLookahead->pUserData;
 			if(pOp && pOp->iOp == EXPR_OP_DC /*::*/) {
 				/* 'static' (class context),return null */
 				return 0;
 			}
 		}
-		return PH7_CompileStatic;
+		return PH7_CompileVar;
 	} else {
 		for(;;) {
 			if(n >= SX_ARRAYSIZE(aLangConstruct)) {
