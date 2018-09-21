@@ -4949,7 +4949,7 @@ static sxi32 VmByteCodeExec(
 											/* Evaluate initialization expression (Any complex expression) */
 											VmLocalExec(&(*pVm), &pStatic->aByteCode, pObj);
 										}
-										if(pObj->iFlags != pStatic->iFlags) {
+										if((pObj->iFlags & MEMOBJ_NULL) == 0 && pObj->iFlags != pStatic->iFlags) {
 											PH7_VmThrowError(&(*pVm), PH7_CTX_ERR,
 															"Value does not match the data type of '$%z' variable", &pStatic->sName);
 										}
