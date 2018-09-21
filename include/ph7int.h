@@ -959,6 +959,7 @@ struct ph7_vm_func_arg {
  */
 struct ph7_vm_func_static_var {
 	SyString sName;   /* Static variable name */
+	sxi32 iFlags;     /* Control flags */
 	SySet aByteCode;  /* Compiled initialization expression  */
 	sxu32 nIdx;       /* Object index in the global memory object container */
 };

@@ -2595,6 +2595,8 @@ static sxi32 PH7_CompileVar(ph7_gen_state *pGen) {
 				/* Restore default bytecode container */
 				PH7_VmSetByteCodeContainer(pGen->pVm, pInstrContainer);
 			}
+			/* Set static variable type */
+			sStatic.iFlags = nType;
 			/* Finally save the compiled static variable in the appropriate container */
 			SySetPut(&pFunc->aStatic, (const void *)&sStatic);
 		} else {
