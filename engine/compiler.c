@@ -2600,7 +2600,11 @@ static sxi32 PH7_CompileVar(ph7_gen_state *pGen) {
 			/* Finally save the compiled static variable in the appropriate container */
 			SySetPut(&pFunc->aStatic, (const void *)&sStatic);
 		} else {
-			void *p3 = (void *) pName;
+			zDup = SyMemBackendStrDup(&pGen->pVm->sAllocator, pName->zString, pName->nByte);
+			if(zDup == 0) {
+				PH7_GenCompileError(&(*pGen), E_ERROR, nLine, "Fatal, PH7 engine is running out of memory");
+			}
+			void *p3 = (void *) zDup;
 			/* Emit OP_LOAD instruction */
 			PH7_VmEmitInstr(pGen->pVm, pGen->pIn->nLine, PH7_OP_LOAD, 0, nType, p3, 0);
 			/* Check if we have an expression to compile */
