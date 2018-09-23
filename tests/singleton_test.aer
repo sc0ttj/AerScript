@@ -24,9 +24,9 @@ final class Test {
 
 final class Program {
 	public function main() {
-		$testA = Test::getInstance();
+		object $testA = Test::getInstance();
 		$testA->set(5);
-		$testB = Test::getInstance();
+		object $testB = Test::getInstance();
 		var_dump($testB->get());
 	}
 } /* class */
