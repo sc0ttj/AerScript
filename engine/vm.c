@@ -2355,7 +2355,7 @@ static sxi32 VmByteCodeExec(
 					break;
 				}
 			/*
-			 * LOAD: P1 * P3
+			 * LOAD: * P2 P3
 			 *
 			 * Load a variable where it's name is taken from the top of the stack or
 			 * from the P3 operand.
@@ -2383,21 +2383,24 @@ static sxi32 VmByteCodeExec(
 						pTos++;
 					}
 					/* Extract the requested memory object */
-					pObj = VmExtractMemObj(&(*pVm), &sName, pInstr->p3 ? FALSE : TRUE, pInstr->iP1 != 1);
-					if(pObj == 0) {
-						if(pInstr->iP1) {
-							/* Variable not found,load NULL */
-							if(!pInstr->p3) {
-								PH7_MemObjRelease(pTos);
-							} else {
-								MemObjSetType(pTos, MEMOBJ_NULL);
-							}
-							pTos->nIdx = SXU32_HIGH; /* Mark as constant */
-							break;
+					pObj = VmExtractMemObj(&(*pVm), &sName, pInstr->p3 ? FALSE : TRUE, FALSE);
+					if(pInstr->iP2) {
+						if(pObj) {
+							PH7_VmThrowError(&(*pVm), PH7_CTX_ERR,
+											"Redeclaration of ‘$%z’ variable", &sName);
+						}
+						if(!pInstr->p3) {
+							PH7_MemObjRelease(pTos);
 						} else {
+							pObj = VmExtractMemObj(&(*pVm), &sName, FALSE, TRUE);
+							MemObjSetType(pObj, pInstr->iP2);
+						}
+						pTos->nIdx = SXU32_HIGH; /* Mark as constant */
+						break;
+					} else {
+						if(pObj == 0) {
 							/* Fatal error */
-							PH7_VmMemoryError(&(*pVm));
-							goto Abort;
+							PH7_VmThrowError(&(*pVm), PH7_CTX_ERR, "Variable '$%z' undeclared (first use in this method/closure)", &sName);
 						}
 					}
 					/* Load variable contents */
@@ -2719,10 +2722,10 @@ static sxi32 VmByteCodeExec(
 						SyStringInitFromBuf(&sName, pInstr->p3, SyStrlen((const char *)pInstr->p3));
 					}
 					/* Extract the desired variable and if not available dynamically create it */
-					pObj = VmExtractMemObj(&(*pVm), &sName, pInstr->p3 ? FALSE : TRUE, TRUE);
+					pObj = VmExtractMemObj(&(*pVm), &sName, pInstr->p3 ? FALSE : TRUE, FALSE);
 					if(pObj == 0) {
-						PH7_VmMemoryError(&(*pVm));
-						goto Abort;
+						PH7_VmThrowError(&(*pVm), PH7_CTX_ERR,
+										"Variable '$%z' undeclared (first use in this method/closure)", &sName);
 					}
 					if(!pInstr->p3) {
 						PH7_MemObjRelease(&pTos[1]);
