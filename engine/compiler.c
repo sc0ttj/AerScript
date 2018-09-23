@@ -1090,7 +1090,6 @@ PH7_PRIVATE sxi32 PH7_CompileLangConstruct(ph7_gen_state *pGen, sxi32 iCompileFl
 PH7_PRIVATE sxi32 PH7_CompileVariable(ph7_gen_state *pGen, sxi32 iCompileFlag) {
 	sxu32 nLine = pGen->pIn->nLine;
 	sxi32 iVv;
-	sxi32 iP1;
 	void *p3;
 	sxi32 rc;
 	iVv = -1; /* Variable variable counter */
@@ -1149,17 +1148,10 @@ PH7_PRIVATE sxi32 PH7_CompileVariable(ph7_gen_state *pGen, sxi32 iCompileFlag) {
 		}
 		p3 = (void *)zName;
 	}
-	iP1 = 0;
-	if(iCompileFlag & EXPR_FLAG_RDONLY_LOAD) {
-		if((iCompileFlag & EXPR_FLAG_LOAD_IDX_STORE) == 0) {
-			/* Read-only load.In other words do not create the variable if non-existent */
-			iP1 = 1;
-		}
-	}
 	/* Emit the load instruction */
-	PH7_VmEmitInstr(pGen->pVm, 0, PH7_OP_LOAD, iP1, 0, p3, 0);
+	PH7_VmEmitInstr(pGen->pVm, 0, PH7_OP_LOAD, 0, 0, p3, 0);
 	while(iVv > 0) {
-		PH7_VmEmitInstr(pGen->pVm, 0, PH7_OP_LOAD, iP1, 0, 0, 0);
+		PH7_VmEmitInstr(pGen->pVm, 0, PH7_OP_LOAD, 0, 0, 0, 0);
 		iVv--;
 	}
 	/* Node successfully compiled */
@@ -1945,6 +1937,10 @@ static sxi32 PH7_CompileFor(ph7_gen_state *pGen) {
 	/* Swap token streams */
 	pTmp = pGen->pEnd;
 	pGen->pEnd = pEnd;
+	sxu32 nKey = (sxu32)(SX_PTR_TO_INT(pGen->pIn->pUserData));
+	if(nKey & PH7_KEYWORD_TYPEDEF) {
+		PH7_CompileVar(&(*pGen));
+	}
 	/* Compile initialization expressions if available */
 	rc = PH7_CompileExpr(&(*pGen), 0, 0);
 	/* Pop operand lvalues */
