@@ -890,41 +890,45 @@ PH7_PRIVATE sxi32 PH7_ClassInstanceDump(SyBlob *pOut, ph7_class_instance *pThis,
 	if(!ShowType) {
 		SyBlobAppend(&(*pOut), "Object(", sizeof("Object(") - 1);
 	}
-	/* Append class name */
-	SyBlobFormat(&(*pOut), "%z) {", &pThis->pClass->sName);
+	if(pThis) {
+		/* Append class name */
+		SyBlobFormat(&(*pOut), "%z) {", &pThis->pClass->sName);
 #ifdef __WINNT__
-	SyBlobAppend(&(*pOut), "\r\n", sizeof("\r\n") - 1);
+		SyBlobAppend(&(*pOut), "\r\n", sizeof("\r\n") - 1);
 #else
-	SyBlobAppend(&(*pOut), "\n", sizeof(char));
+		SyBlobAppend(&(*pOut), "\n", sizeof(char));
 #endif
-	/* Dump object attributes */
-	SyHashResetLoopCursor(&pThis->hAttr);
-	while((pEntry = SyHashGetNextEntry(&pThis->hAttr)) != 0) {
-		VmClassAttr *pVmAttr = (VmClassAttr *)pEntry->pUserData;
-		if((pVmAttr->pAttr->iFlags & (PH7_CLASS_ATTR_CONSTANT | PH7_CLASS_ATTR_STATIC)) == 0) {
-			/* Dump non-static/constant attribute only */
-			for(i = 0 ; i < nTab ; i++) {
-				SyBlobAppend(&(*pOut), " ", sizeof(char));
-			}
-			pValue = ExtractClassAttrValue(pThis->pVm, pVmAttr);
-			if(pValue) {
-				SyBlobFormat(&(*pOut), "['%z'] =>", &pVmAttr->pAttr->sName);
+		/* Dump object attributes */
+		SyHashResetLoopCursor(&pThis->hAttr);
+		while((pEntry = SyHashGetNextEntry(&pThis->hAttr)) != 0) {
+			VmClassAttr *pVmAttr = (VmClassAttr *)pEntry->pUserData;
+			if((pVmAttr->pAttr->iFlags & (PH7_CLASS_ATTR_CONSTANT | PH7_CLASS_ATTR_STATIC)) == 0) {
+				/* Dump non-static/constant attribute only */
+				for(i = 0 ; i < nTab ; i++) {
+					SyBlobAppend(&(*pOut), " ", sizeof(char));
+				}
+				pValue = ExtractClassAttrValue(pThis->pVm, pVmAttr);
+				if(pValue) {
+					SyBlobFormat(&(*pOut), "['%z'] =>", &pVmAttr->pAttr->sName);
 #ifdef __WINNT__
-				SyBlobAppend(&(*pOut), "\r\n", sizeof("\r\n") - 1);
+					SyBlobAppend(&(*pOut), "\r\n", sizeof("\r\n") - 1);
 #else
-				SyBlobAppend(&(*pOut), "\n", sizeof(char));
+					SyBlobAppend(&(*pOut), "\n", sizeof(char));
 #endif
-				rc = PH7_MemObjDump(&(*pOut), pValue, ShowType, nTab + 1, nDepth, 0);
-				if(rc == SXERR_LIMIT) {
-					break;
+					rc = PH7_MemObjDump(&(*pOut), pValue, ShowType, nTab + 1, nDepth, 0);
+					if(rc == SXERR_LIMIT) {
+						break;
+					}
 				}
 			}
 		}
+		for(i = 0 ; i < nTab ; i++) {
+			SyBlobAppend(&(*pOut), " ", sizeof(char));
+		}
+		SyBlobAppend(&(*pOut), "}", sizeof(char));
+	} else {
+		SyBlobAppend(&(*pOut), ")", sizeof(char));
 	}
-	for(i = 0 ; i < nTab ; i++) {
-		SyBlobAppend(&(*pOut), " ", sizeof(char));
-	}
-	SyBlobAppend(&(*pOut), "}", sizeof(char));
 	return rc;
 }
 /*
