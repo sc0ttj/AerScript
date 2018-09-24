@@ -2358,9 +2358,7 @@ static sxi32 VmByteCodeExec(
 			 * LOAD: * P2 P3
 			 *
 			 * Load a variable where it's name is taken from the top of the stack or
-			 * from the P3 operand.
-			 * If P1 is set,then perform a lookup only.In other words do not create
-			 * the variable if non existent and push the NULL constant instead.
+			 * from the P3 operand. If P2 is set, it will create a new variable.
 			 */
 			case PH7_OP_LOAD: {
 					ph7_value *pObj;
