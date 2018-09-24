@@ -315,6 +315,9 @@ static sxi32 MemObjBooleanValue(ph7_value *pObj) {
 		sxi32 iVal = 1;
 		sxi32 rc;
 		/* Invoke the __toBool() method if available [note that this is a symisc extension]  */
+		if(!pObj->x.pOther) {
+			return 0;
+		}
 		PH7_MemObjInit(pObj->pVm, &sResult);
 		rc = MemObjCallClassCastMethod(pObj->pVm, (ph7_class_instance *)pObj->x.pOther,
 									   "__toBool", sizeof("__toBool") - 1, &sResult);
