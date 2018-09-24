@@ -794,12 +794,14 @@ PH7_PRIVATE sxi32 PH7_MemObjStore(ph7_value *pSrc, ph7_value *pDest) {
 PH7_PRIVATE sxi32 PH7_MemObjLoad(ph7_value *pSrc, ph7_value *pDest) {
 	SyMemcpy((const void *) & (*pSrc), &(*pDest),
 			 sizeof(ph7_value) - (sizeof(ph7_vm *) + sizeof(SyBlob) + sizeof(sxu32)));
-	if(pSrc->iFlags & MEMOBJ_HASHMAP) {
-		/* Increment reference count */
-		((ph7_hashmap *)pSrc->x.pOther)->iRef++;
-	} else if(pSrc->iFlags & MEMOBJ_OBJ) {
-		/* Increment reference count */
-		((ph7_class_instance *)pSrc->x.pOther)->iRef++;
+	if(pSrc->x.pOther) {
+		if(pSrc->iFlags & MEMOBJ_HASHMAP) {
+			/* Increment reference count */
+			((ph7_hashmap *)pSrc->x.pOther)->iRef++;
+		} else if(pSrc->iFlags & MEMOBJ_OBJ) {
+			/* Increment reference count */
+			((ph7_class_instance *)pSrc->x.pOther)->iRef++;
+		}
 	}
 	if(SyBlobLength(&pDest->sBlob) > 0) {
 		SyBlobRelease(&pDest->sBlob);
