@@ -717,10 +717,12 @@ static void PH7_ClassInstanceRelease(ph7_class_instance *pThis) {
  * If the reference count reaches zero,release the whole instance.
  */
 PH7_PRIVATE void PH7_ClassInstanceUnref(ph7_class_instance *pThis) {
-	pThis->iRef--;
-	if(pThis->iRef < 1) {
-		/* No more reference to this instance */
-		PH7_ClassInstanceRelease(&(*pThis));
+	if(pThis) {
+		pThis->iRef--;
+		if(pThis->iRef < 1) {
+			/* No more reference to this instance */
+			PH7_ClassInstanceRelease(&(*pThis));
+		}
 	}
 }
 /*

@@ -105,9 +105,11 @@ static sxi32 MemObjCallClassCastMethod(
 	sxu32 nLen,                /* Method name length */
 	ph7_value *pResult         /* OUT: Store the return value of the magic method here */
 ) {
-	ph7_class_method *pMethod;
+	ph7_class_method *pMethod = 0;
 	/* Check if the method is available */
-	pMethod = PH7_ClassExtractMethod(pThis->pClass, zMethod, nLen);
+	if(pThis) {
+		pMethod = PH7_ClassExtractMethod(pThis->pClass, zMethod, nLen);
+	}
 	if(pMethod == 0) {
 		/* No such method */
 		return SXERR_NOTFOUND;
@@ -757,12 +759,14 @@ PH7_PRIVATE sxi32 PH7_MemObjStore(ph7_value *pSrc, ph7_value *pDest) {
 	ph7_class_instance *pObj = 0;
 	ph7_hashmap *pMap = 0;
 	sxi32 rc;
-	if(pSrc->iFlags & MEMOBJ_HASHMAP) {
-		/* Increment reference count */
-		((ph7_hashmap *)pSrc->x.pOther)->iRef++;
-	} else if(pSrc->iFlags & MEMOBJ_OBJ) {
-		/* Increment reference count */
-		((ph7_class_instance *)pSrc->x.pOther)->iRef++;
+	if(pSrc->x.pOther) {
+		if(pSrc->iFlags & MEMOBJ_HASHMAP) {
+			/* Increment reference count */
+			((ph7_hashmap *)pSrc->x.pOther)->iRef++;
+		} else if(pSrc->iFlags & MEMOBJ_OBJ) {
+			/* Increment reference count */
+			((ph7_class_instance *)pSrc->x.pOther)->iRef++;
+		}
 	}
 	if(pDest->iFlags & MEMOBJ_HASHMAP) {
 		pMap = (ph7_hashmap *)pDest->x.pOther;
