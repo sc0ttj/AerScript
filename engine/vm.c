@@ -4959,6 +4959,7 @@ static sxi32 VmByteCodeExec(
 											PH7_VmThrowError(&(*pVm), PH7_CTX_ERR,
 															"Value does not match the data type of '$%z' variable", &pStatic->sName);
 										}
+										pObj->iFlags = pStatic->iFlags;
 										pObj->nIdx = pStatic->nIdx;
 									} else {
 										continue;
