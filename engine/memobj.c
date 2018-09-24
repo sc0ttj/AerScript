@@ -814,10 +814,12 @@ PH7_PRIVATE sxi32 PH7_MemObjLoad(ph7_value *pSrc, ph7_value *pDest) {
  */
 PH7_PRIVATE sxi32 PH7_MemObjRelease(ph7_value *pObj) {
 	if((pObj->iFlags & MEMOBJ_NULL) == 0) {
-		if(pObj->iFlags & MEMOBJ_HASHMAP) {
-			PH7_HashmapUnref((ph7_hashmap *)pObj->x.pOther);
-		} else if(pObj->iFlags & MEMOBJ_OBJ) {
-			PH7_ClassInstanceUnref((ph7_class_instance *)pObj->x.pOther);
+		if(pObj->x.pOther) {
+			if(pObj->iFlags & MEMOBJ_HASHMAP) {
+				PH7_HashmapUnref((ph7_hashmap *)pObj->x.pOther);
+			} else if(pObj->iFlags & MEMOBJ_OBJ) {
+				PH7_ClassInstanceUnref((ph7_class_instance *)pObj->x.pOther);
+			}
 		}
 		/* Release the internal buffer */
 		SyBlobRelease(&pObj->sBlob);
