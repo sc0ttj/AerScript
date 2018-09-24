@@ -4383,6 +4383,9 @@ static sxi32 VmByteCodeExec(
 						}
 #endif
 						if(pNos->iFlags & MEMOBJ_OBJ) {
+							if(!pNos->x.pOther) {
+								PH7_VmThrowError(&(*pVm), PH7_CTX_ERR, "Call to non-instantiated object '$%z'", &sName);
+							}
 							ph7_class *pClass;
 							/* Class already instantiated */
 							pThis = (ph7_class_instance *)pNos->x.pOther;
