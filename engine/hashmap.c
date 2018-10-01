@@ -5514,59 +5514,63 @@ PH7_PRIVATE sxi32 PH7_HashmapDump(SyBlob *pOut, ph7_hashmap *pMap, int ShowType,
 		}
 		return SXERR_LIMIT;
 	}
-	/* Point to the first inserted entry */
-	pEntry = pMap->pFirst;
 	rc = SXRET_OK;
 	if(!ShowType) {
 		SyBlobAppend(&(*pOut), "Array(", sizeof("Array(") - 1);
 	}
-	/* Total entries */
-	SyBlobFormat(&(*pOut), "%u) {", pMap->nEntry);
-#ifdef __WINNT__
-	SyBlobAppend(&(*pOut), "\r\n", sizeof("\r\n") - 1);
-#else
-	SyBlobAppend(&(*pOut), "\n", sizeof(char));
-#endif
-	for(;;) {
-		if(n >= pMap->nEntry) {
-			break;
-		}
-		for(i = 0 ; i < nTab ; i++) {
-			SyBlobAppend(&(*pOut), " ", sizeof(char));
-		}
-		/* Dump key */
-		if(pEntry->iType == HASHMAP_INT_NODE) {
-			SyBlobFormat(&(*pOut), "[%qd] =>", pEntry->xKey.iKey);
-		} else {
-			SyBlobFormat(&(*pOut), "[%.*s] =>",
-						 SyBlobLength(&pEntry->xKey.sKey), SyBlobData(&pEntry->xKey.sKey));
-		}
+	if(pMap) {
+		/* Point to the first inserted entry */
+		pEntry = pMap->pFirst;
+		/* Total entries */
+		SyBlobFormat(&(*pOut), "%u) {", pMap->nEntry);
 #ifdef __WINNT__
 		SyBlobAppend(&(*pOut), "\r\n", sizeof("\r\n") - 1);
 #else
 		SyBlobAppend(&(*pOut), "\n", sizeof(char));
 #endif
-		/* Dump node value */
-		pObj = HashmapExtractNodeValue(pEntry);
-		isRef = 0;
-		if(pObj) {
-			if(pEntry->iFlags & HASHMAP_NODE_FOREIGN_OBJ) {
-				/* Referenced object */
-				isRef = 1;
-			}
-			rc = PH7_MemObjDump(&(*pOut), pObj, ShowType, nTab + 1, nDepth, isRef);
-			if(rc == SXERR_LIMIT) {
+		for(;;) {
+			if(n >= pMap->nEntry) {
 				break;
 			}
+			for(i = 0 ; i < nTab ; i++) {
+				SyBlobAppend(&(*pOut), " ", sizeof(char));
+			}
+			/* Dump key */
+			if(pEntry->iType == HASHMAP_INT_NODE) {
+				SyBlobFormat(&(*pOut), "[%qd] =>", pEntry->xKey.iKey);
+			} else {
+				SyBlobFormat(&(*pOut), "[%.*s] =>",
+							 SyBlobLength(&pEntry->xKey.sKey), SyBlobData(&pEntry->xKey.sKey));
+			}
+#ifdef __WINNT__
+			SyBlobAppend(&(*pOut), "\r\n", sizeof("\r\n") - 1);
+#else
+			SyBlobAppend(&(*pOut), "\n", sizeof(char));
+#endif
+			/* Dump node value */
+			pObj = HashmapExtractNodeValue(pEntry);
+			isRef = 0;
+			if(pObj) {
+				if(pEntry->iFlags & HASHMAP_NODE_FOREIGN_OBJ) {
+					/* Referenced object */
+					isRef = 1;
+				}
+				rc = PH7_MemObjDump(&(*pOut), pObj, ShowType, nTab + 1, nDepth, isRef);
+				if(rc == SXERR_LIMIT) {
+					break;
+				}
+			}
+			/* Point to the next entry */
+			n++;
+			pEntry = pEntry->pPrev; /* Reverse link */
 		}
-		/* Point to the next entry */
-		n++;
-		pEntry = pEntry->pPrev; /* Reverse link */
+		for(i = 0 ; i < nTab ; i++) {
+			SyBlobAppend(&(*pOut), " ", sizeof(char));
+		}
+		SyBlobAppend(&(*pOut), "}", sizeof(char));
+	} else {
+		SyBlobAppend(&(*pOut), ")", sizeof(char));
 	}
-	for(i = 0 ; i < nTab ; i++) {
-		SyBlobAppend(&(*pOut), " ", sizeof(char));
-	}
-	SyBlobAppend(&(*pOut), "}", sizeof(char));
 	return rc;
 }
 /*
