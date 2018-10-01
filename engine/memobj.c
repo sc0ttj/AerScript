@@ -1123,6 +1123,10 @@ PH7_PRIVATE const char *PH7_MemObjTypeDump(ph7_value *pVal) {
 	const char *zType = "";
 	if(pVal->iFlags & MEMOBJ_NULL) {
 		zType = "null";
+	} else if(pVal->iFlags & MEMOBJ_HASHMAP) {
+		zType = "array";
+	} else if(pVal->iFlags & MEMOBJ_OBJ) {
+		zType = "object";
 	} else if(pVal->iFlags & MEMOBJ_INT) {
 		zType = "int";
 	} else if(pVal->iFlags & MEMOBJ_REAL) {
@@ -1131,10 +1135,6 @@ PH7_PRIVATE const char *PH7_MemObjTypeDump(ph7_value *pVal) {
 		zType = "string";
 	} else if(pVal->iFlags & MEMOBJ_BOOL) {
 		zType = "bool";
-	} else if(pVal->iFlags & MEMOBJ_HASHMAP) {
-		zType = "array";
-	} else if(pVal->iFlags & MEMOBJ_OBJ) {
-		zType = "object";
 	} else if(pVal->iFlags & MEMOBJ_RES) {
 		zType = "resource";
 	}
