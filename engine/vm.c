@@ -2414,6 +2414,7 @@ static sxi32 VmByteCodeExec(
 			 * stack and insert them (key => value pair) in the new hashmap.
 			 */
 			case PH7_OP_LOAD_MAP: {
+					sxi32 iFlags, pFlags;
 					ph7_hashmap *pMap;
 					/* Allocate a new hashmap instance */
 					pMap = PH7_NewHashmap(&(*pVm), 0, 0);
@@ -2423,6 +2424,7 @@ static sxi32 VmByteCodeExec(
 					}
 					if(pInstr->iP1 > 0) {
 						ph7_value *pEntry = &pTos[-pInstr->iP1 + 1]; /* Point to the first entry */
+						iFlags = pEntry[1].iFlags; /* Save the type of value */
 						/* Perform the insertion */
 						while(pEntry < pTos) {
 							if(pEntry[1].iFlags & MEMOBJ_REFERENCE) {
@@ -2438,6 +2440,17 @@ static sxi32 VmByteCodeExec(
 												  &pEntry[1]
 												 );
 							}
+							/* Set the proper type of array */
+							if((iFlags & MEMOBJ_MIXED) == 0) {
+								if(pEntry[1].iFlags & MEMOBJ_REFERENCE) {
+									pFlags = pEntry[1].iFlags ^ MEMOBJ_REFERENCE;
+								} else {
+									pFlags = pEntry[1].iFlags;
+								}
+								if(iFlags != pFlags) {
+									iFlags = MEMOBJ_MIXED;
+								}
+							}
 							/* Next pair on the stack */
 							pEntry += 2;
 						}
@@ -2448,7 +2461,7 @@ static sxi32 VmByteCodeExec(
 					pTos++;
 					pTos->nIdx = SXU32_HIGH;
 					pTos->x.pOther = pMap;
-					MemObjSetType(pTos, MEMOBJ_HASHMAP);
+					MemObjSetType(pTos, MEMOBJ_HASHMAP | iFlags);
 					break;
 				}
 			/*
