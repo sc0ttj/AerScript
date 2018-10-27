@@ -1126,17 +1126,17 @@ PH7_PRIVATE const char *PH7_MemObjTypeDump(ph7_value *pVal) {
 	} else {
 	if(pVal->iFlags & MEMOBJ_HASHMAP) {
 		if(pVal->iFlags & MEMOBJ_OBJ) {
-			zType = "array<object>";
+			zType = "array(object, ";
 		} else if(pVal->iFlags & MEMOBJ_INT) {
-			zType = "array<int>";
+			zType = "array(int, ";
 		} else if(pVal->iFlags & MEMOBJ_REAL) {
-			zType = "array<float>";
+			zType = "array(float, ";
 		} else if(pVal->iFlags & MEMOBJ_STRING) {
-			zType = "array<string>";
+			zType = "array(string, ";
 		} else if(pVal->iFlags & MEMOBJ_BOOL) {
-			zType = "array<bool>";
+			zType = "array(bool, ";
 		} else if(pVal->iFlags & MEMOBJ_RES) {
-			zType = "array<resource>";
+			zType = "array(resource, ";
 		}
 	} else if(pVal->iFlags & MEMOBJ_OBJ) {
 		zType = "object";
@@ -1181,7 +1181,7 @@ PH7_PRIVATE sxi32 PH7_MemObjDump(
 		SyBlobAppend(&(*pOut), zType, SyStrlen(zType));
 	}
 	if((pObj->iFlags & MEMOBJ_NULL) == 0) {
-		if(ShowType) {
+		if(ShowType && (pObj->iFlags & MEMOBJ_HASHMAP) == 0) {
 			SyBlobAppend(&(*pOut), "(", sizeof(char));
 		}
 		if(pObj->iFlags & MEMOBJ_HASHMAP) {
