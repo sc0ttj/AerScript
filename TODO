@@ -2,14 +2,11 @@ TODO list for typehinting branch.
 Below list contains things that should be changed/fixed/implemented.
 
 
-1. mixed[] $arr = array(5, '5');
-	var_dump shows some trash information about $arr variable.
-
-2. int[] $arr = {5, 5};
+1. int[] $arr = {5, 5};
 	This syntax is unsupported yet. Should replace the array() function.
 
-3. Data types like char or void are still not supported.
+2. Data types like char or void are still not supported.
 
-4. Class properties do not support strict data type hinting.
+3. Class properties do not support strict data type hinting.
 
-5. Closures and methods declaration / definition uses function keyword.
+4. Closures and methods declaration / definition uses function keyword.
