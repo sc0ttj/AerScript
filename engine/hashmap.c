@@ -5569,7 +5569,13 @@ PH7_PRIVATE sxi32 PH7_HashmapDump(SyBlob *pOut, ph7_hashmap *pMap, int ShowType,
 		}
 		SyBlobAppend(&(*pOut), "}", sizeof(char));
 	} else {
-		SyBlobAppend(&(*pOut), ")", sizeof(char));
+		SyBlobAppend(&(*pOut), "0) {", sizeof("0) {"));
+#ifdef __WINNT__
+		SyBlobAppend(&(*pOut), "\r\n", sizeof("\r\n") - 1);
+#else
+		SyBlobAppend(&(*pOut), "\n", sizeof(char));
+#endif
+		SyBlobAppend(&(*pOut), " }", sizeof(" }"));
 	}
 	return rc;
 }

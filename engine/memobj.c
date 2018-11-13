@@ -1125,7 +1125,9 @@ PH7_PRIVATE const char *PH7_MemObjTypeDump(ph7_value *pVal) {
 		zType = "null";
 	} else {
 	if(pVal->iFlags & MEMOBJ_HASHMAP) {
-		if(pVal->iFlags & MEMOBJ_OBJ) {
+		if(pVal->iFlags & MEMOBJ_MIXED) {
+			zType = "array(mixed, ";
+		} else if(pVal->iFlags & MEMOBJ_OBJ) {
 			zType = "array(object, ";
 		} else if(pVal->iFlags & MEMOBJ_INT) {
 			zType = "array(int, ";
