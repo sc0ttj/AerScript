@@ -5027,7 +5027,7 @@ static sxi32 VmByteCodeExec(
 												}
 											}
 										}
-									} else if((aFormalArg[n].nType & MEMOBJ_MIXED) == 0 && pArg->iFlags != aFormalArg[n].nType) {
+									} else if((aFormalArg[n].nType & MEMOBJ_MIXED) == 0 && (pArg->iFlags & aFormalArg[n].nType) == 0) {
 										if(aFormalArg[n].nType == MEMOBJ_REAL && (pArg->iFlags & MEMOBJ_INT)) {
 											/* Silently typecast integer value to float */
 											ProcMemObjCast xCast = PH7_MemObjCastMethod(aFormalArg[n].nType);
