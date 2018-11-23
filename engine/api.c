@@ -1797,6 +1797,16 @@ int ph7_value_double(ph7_value *pVal, double Value) {
 	return PH7_OK;
 }
 /*
+ * [CAPIREF: ph7_value_void()]
+ * Please refer to the official documentation for function purpose and expected parameters.
+ */
+int ph7_value_void(ph7_value *pVal) {
+	/* Invalidate any prior representation */
+	PH7_MemObjRelease(pVal);
+	MemObjSetType(pVal, MEMOBJ_VOID);
+	return PH7_OK;
+}
+/*
  * [CAPIREF: ph7_value_string()]
  * Please refer to the official documentation for function purpose and expected parameters.
  */
@@ -1881,6 +1891,13 @@ int ph7_value_is_float(ph7_value *pVal) {
  */
 int ph7_value_is_bool(ph7_value *pVal) {
 	return (pVal->iFlags & MEMOBJ_BOOL) ? TRUE : FALSE;
+}
+/*
+ * [CAPIREF: ph7_value_is_void()]
+ * Please refer to the official documentation for function purpose and expected parameters.
+ */
+int ph7_value_is_void(ph7_value *pVal) {
+	return (pVal->iFlags & MEMOBJ_VOID) ? TRUE : FALSE;
 }
 /*
  * [CAPIREF: ph7_value_is_string()]

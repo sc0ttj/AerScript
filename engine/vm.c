@@ -2267,6 +2267,19 @@ static sxi32 VmByteCodeExec(
 				}
 				break;
 			/*
+			 * CVT_VOID: * * *
+			 *
+			 * Force the top of the stack to be a void type.
+			 */
+			case PH7_OP_CVT_VOID:
+#ifdef UNTRUST
+				if(pTos < pStack) {
+					goto Abort;
+				}
+#endif
+				PH7_MemObjToVoid(pTos);
+				break;
+			/*
 			 * ERR_CTRL * * *
 			 *
 			 * Error control operator.
