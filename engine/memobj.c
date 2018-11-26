@@ -133,7 +133,7 @@ static sxi64 MemObjIntValue(ph7_value *pObj) {
 	iFlags = pObj->iFlags;
 	if(iFlags & MEMOBJ_REAL) {
 		return MemObjRealToInt(&(*pObj));
-	} else if(iFlags & (MEMOBJ_INT | MEMOBJ_BOOL)) {
+	} else if(iFlags & (MEMOBJ_INT | MEMOBJ_BOOL | MEMOBJ_CHAR)) {
 		return pObj->x.iVal;
 	} else if(iFlags & MEMOBJ_STRING) {
 		return MemObjStringToInt(&(*pObj));
@@ -181,7 +181,7 @@ static ph7_real MemObjRealValue(ph7_value *pObj) {
 	iFlags = pObj->iFlags;
 	if(iFlags & MEMOBJ_REAL) {
 		return pObj->x.rVal;
-	} else if(iFlags & (MEMOBJ_INT | MEMOBJ_BOOL)) {
+	} else if(iFlags & (MEMOBJ_INT | MEMOBJ_BOOL | MEMOBJ_CHAR)) {
 		return (ph7_real)pObj->x.iVal;
 	} else if(iFlags & MEMOBJ_STRING) {
 		SyString sString;
@@ -284,7 +284,7 @@ static sxi32 MemObjBooleanValue(ph7_value *pObj) {
 	iFlags = pObj->iFlags;
 	if(iFlags & MEMOBJ_REAL) {
 		return pObj->x.rVal != 0.0 ? 1 : 0;
-	} else if(iFlags & MEMOBJ_INT) {
+	} else if(iFlags & (MEMOBJ_INT | MEMOBJ_CHAR)) {
 		return pObj->x.iVal ? 1 : 0;
 	} else if(iFlags & MEMOBJ_STRING) {
 		SyString sString;
