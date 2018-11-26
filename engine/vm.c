@@ -2206,6 +2206,23 @@ static sxi32 VmByteCodeExec(
 				}
 				break;
 			/*
+			 * CVT_CHAR: * * *
+			 *
+			 * Force the top of the stack to be a char.
+			 */
+			case PH7_OP_CVT_CHAR:
+#ifdef UNTRUST
+				if(pTos < pStack) {
+					goto Abort;
+				}
+#endif
+				if((pTos->iFlags & MEMOBJ_CHAR) == 0) {
+					PH7_MemObjToChar(pTos);
+				}
+				/* Invalidate any prior representation */
+				MemObjSetType(pTos, MEMOBJ_CHAR);
+				break;
+			/*
 			 * CVT_NULL: * * *
 			 *
 			 * Nullify the top of the stack.

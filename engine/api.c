@@ -1777,6 +1777,21 @@ int ph7_value_bool(ph7_value *pVal, int iBool) {
 	return PH7_OK;
 }
 /*
+ * [CAPIREF: ph7_value_char()]
+ * Please refer to the official documentation for function purpose and expected parameters.
+ */
+int ph7_value_char(ph7_value *pVal, int cValue) {
+	/* Invalidate any prior representation */
+	PH7_MemObjRelease(pVal);
+	if(cValue >= 0 && cValue <= 255) {
+		pVal->x.iVal = cValue;
+	} else {
+		pVal->x.iVal = 0;
+	}
+	MemObjSetType(pVal, MEMOBJ_CHAR);
+	return PH7_OK;
+}
+/*
  * [CAPIREF: ph7_value_null()]
  * Please refer to the official documentation for function purpose and expected parameters.
  */
@@ -1891,6 +1906,13 @@ int ph7_value_is_float(ph7_value *pVal) {
  */
 int ph7_value_is_bool(ph7_value *pVal) {
 	return (pVal->iFlags & MEMOBJ_BOOL) ? TRUE : FALSE;
+}
+/*
+ * [CAPIREF: ph7_value_is_char()]
+ * Please refer to the official documentation for function purpose and expected parameters.
+ */
+int ph7_value_is_char(ph7_value *pVal) {
+	return (pVal->iFlags & MEMOBJ_CHAR) ? TRUE : FALSE;
 }
 /*
  * [CAPIREF: ph7_value_is_void()]

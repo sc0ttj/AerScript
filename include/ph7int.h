@@ -1435,6 +1435,7 @@ enum ph7_vm_op {
 	PH7_OP_SWAP,         /* Stack swap */
 	PH7_OP_YIELD,        /* Stack yield */
 	PH7_OP_CVT_BOOL,     /* Boolean cast */
+	PH7_OP_CVT_CHAR,     /* Char cast */
 	PH7_OP_CVT_NUMC,     /* Numeric (integer,real or both) type cast */
 	PH7_OP_INCR,         /* Increment ++ */
 	PH7_OP_DECR,         /* Decrement -- */

@@ -228,6 +228,8 @@ static ph7_real MemObjRealValue(ph7_value *pObj) {
 static sxi32 MemObjStringValue(SyBlob *pOut, ph7_value *pObj, sxu8 bStrictBool) {
 	if(pObj->iFlags & MEMOBJ_REAL) {
 		SyBlobFormat(&(*pOut), "%.15g", pObj->x.rVal);
+	} else if(pObj->iFlags & MEMOBJ_CHAR) {
+		SyBlobFormat(&(*pOut), "%c", pObj->x.iVal);
 	} else if(pObj->iFlags & MEMOBJ_INT) {
 		SyBlobFormat(&(*pOut), "%qd", pObj->x.iVal);
 		/* %qd (BSD quad) is equivalent to %lld in the libc printf */
@@ -239,6 +241,8 @@ static sxi32 MemObjStringValue(SyBlob *pOut, ph7_value *pObj, sxu8 bStrictBool) 
 				SyBlobAppend(&(*pOut), "FALSE", sizeof("FALSE") - 1);
 			}
 		}
+	} else if(pObj->iFlags & MEMOBJ_CHAR) {
+		SyBlobFormat(&(*pOut), "%c", pObj->x.iVal);
 	} else if(pObj->iFlags & MEMOBJ_HASHMAP) {
 		SyBlobAppend(&(*pOut), "Array", sizeof("Array") - 1);
 		PH7_HashmapUnref((ph7_hashmap *)pObj->x.pOther);
@@ -335,6 +339,33 @@ static sxi32 MemObjBooleanValue(ph7_value *pObj) {
 	return 0;
 }
 /*
+ * Return the char representation of a given ph7_value.
+ * This function never fail and always return SXRET_OK.
+ */
+static ph7_real MemObjCharValue(ph7_value *pObj) {
+	sxi32 iFlags;
+	iFlags = pObj->iFlags;
+	if(iFlags & (MEMOBJ_REAL | MEMOBJ_HASHMAP | MEMOBJ_RES | MEMOBJ_NULL | MEMOBJ_VOID)) {
+		return 0;
+	} else if(iFlags & MEMOBJ_INT) {
+		if(pObj->x.iVal >= 0 && pObj->x.iVal <= 255) {
+			return pObj->x.iVal;
+		} else {
+			return 0;
+		}
+	} else if(iFlags & MEMOBJ_STRING) {
+		SyString sString;
+		SyStringInitFromBuf(&sString, SyBlobData(&pObj->sBlob), SyBlobLength(&pObj->sBlob));
+		if(sString.nByte == 0) {
+			/* Empty string */
+			return 0;
+		}
+		return (int) sString.zString[0];
+	}
+	/* NOT REACHED */
+	return 0;
+}
+/*
  * Convert a ph7_value to type integer.Invalidate any prior representations.
  */
 PH7_PRIVATE sxi32 PH7_MemObjToInteger(ph7_value *pObj) {
@@ -371,6 +402,16 @@ PH7_PRIVATE sxi32 PH7_MemObjToBool(ph7_value *pObj) {
 		/* Invalidate any prior representations */
 		SyBlobRelease(&pObj->sBlob);
 		MemObjSetType(pObj, MEMOBJ_BOOL);
+	}
+	return SXRET_OK;
+}
+PH7_PRIVATE sxi32 PH7_MemObjToChar(ph7_value *pObj) {
+	if((pObj->iFlags & MEMOBJ_CHAR) == 0) {
+		/* Preform the conversion */
+		pObj->x.iVal = MemObjCharValue(&(*pObj));
+		/* Invalidate any prior representations */
+		SyBlobRelease(&pObj->sBlob);
+		MemObjSetType(pObj, MEMOBJ_CHAR);
 	}
 	return SXRET_OK;
 }
@@ -1161,6 +1202,8 @@ PH7_PRIVATE const char *PH7_MemObjTypeDump(ph7_value *pVal) {
 			zType = "array(string, ";
 		} else if(pVal->iFlags & MEMOBJ_BOOL) {
 			zType = "array(bool, ";
+		} else if(pVal->iFlags & MEMOBJ_CHAR) {
+			zType = "array(char, ";
 		} else if(pVal->iFlags & MEMOBJ_RES) {
 			zType = "array(resource, ";
 		} else if(pVal->iFlags & MEMOBJ_VOID) {
@@ -1176,6 +1219,8 @@ PH7_PRIVATE const char *PH7_MemObjTypeDump(ph7_value *pVal) {
 		zType = "string";
 	} else if(pVal->iFlags & MEMOBJ_BOOL) {
 		zType = "bool";
+	} else if(pVal->iFlags & MEMOBJ_CHAR) {
+		zType = "char";
 	} else if(pVal->iFlags & MEMOBJ_RES) {
 		zType = "resource";
 	} else if(pVal->iFlags & MEMOBJ_VOID) {
