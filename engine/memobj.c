@@ -420,7 +420,7 @@ PH7_PRIVATE sxi32 PH7_MemObjToChar(ph7_value *pObj) {
  */
 PH7_PRIVATE sxi32 PH7_MemObjToVoid(ph7_value *pObj) {
 	if((pObj->iFlags & MEMOBJ_VOID) == 0) {
-//		PH7_MemObjRelease(pObj);
+		PH7_MemObjRelease(pObj);
 		MemObjSetType(pObj, MEMOBJ_VOID);
 	}
 	return SXRET_OK;
