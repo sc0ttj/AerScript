@@ -1,8 +1,8 @@
 class Unicode {
 
 	public function unicon(string $str, bool $to_uni = true) {
-		mixed $cpp;
-		mixed $cp = array('А' => '&#x410;', 'а' => '&#x430;',
+		string $cpp;
+		string[] $cp = array('А' => '&#x410;', 'а' => '&#x430;',
 			"Б" => "&#x411;", "б" => "&#x431;",
 			"В" => "&#x412;", "в" => "&#x432;",
 			"Г" => "&#x413;", "г" => "&#x433;",
