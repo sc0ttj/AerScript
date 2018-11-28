@@ -228,8 +228,6 @@ static ph7_real MemObjRealValue(ph7_value *pObj) {
 static sxi32 MemObjStringValue(SyBlob *pOut, ph7_value *pObj, sxu8 bStrictBool) {
 	if(pObj->iFlags & MEMOBJ_REAL) {
 		SyBlobFormat(&(*pOut), "%.15g", pObj->x.rVal);
-	} else if(pObj->iFlags & MEMOBJ_CHAR) {
-		SyBlobFormat(&(*pOut), "%c", pObj->x.iVal);
 	} else if(pObj->iFlags & MEMOBJ_INT) {
 		SyBlobFormat(&(*pOut), "%qd", pObj->x.iVal);
 		/* %qd (BSD quad) is equivalent to %lld in the libc printf */
