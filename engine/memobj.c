@@ -346,11 +346,7 @@ static ph7_real MemObjCharValue(ph7_value *pObj) {
 	if(iFlags & (MEMOBJ_REAL | MEMOBJ_HASHMAP | MEMOBJ_RES | MEMOBJ_NULL | MEMOBJ_VOID)) {
 		return 0;
 	} else if(iFlags & MEMOBJ_INT) {
-		if(pObj->x.iVal >= 0 && pObj->x.iVal <= 255) {
-			return pObj->x.iVal;
-		} else {
-			return 0;
-		}
+		return pObj->x.iVal;
 	} else if(iFlags & MEMOBJ_STRING) {
 		SyString sString;
 		SyStringInitFromBuf(&sString, SyBlobData(&pObj->sBlob), SyBlobLength(&pObj->sBlob));
