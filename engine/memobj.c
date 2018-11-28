@@ -553,6 +553,8 @@ PH7_PRIVATE ProcMemObjCast PH7_MemObjCastMethod(sxi32 iFlags) {
 		return PH7_MemObjToReal;
 	} else if(iFlags & MEMOBJ_BOOL) {
 		return PH7_MemObjToBool;
+	} else if(iFlags & MEMOBJ_CHAR) {
+		return PH7_MemObjToChar;
 	} else if(iFlags & MEMOBJ_HASHMAP) {
 		return PH7_MemObjToHashmap;
 	} else if(iFlags & MEMOBJ_OBJ) {
