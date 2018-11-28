@@ -7,6 +7,8 @@ Below list contains things that should be changed/fixed/implemented.
 
 2. CHAR data type do not allow assignment of integer values in range of 0-255 inclusively as well as strings of 1-character length.
 
-3. Class properties do not support strict data type hinting.
+3. FLOAT data type do not allow assignment of integer values. In this case INT value should be automatically typecasted to FLOAT.
 
-4. Closures and methods declaration / definition uses function keyword.
+4. Class properties do not support strict data type hinting.
+
+5. Closures and methods declaration / definition uses function keyword.
