@@ -5,7 +5,7 @@ Below list contains things that should be changed/fixed/implemented.
 1. int[] $arr = {5, 5};
 	This syntax is unsupported yet. Should replace the array() function.
 
-2. Data types like char or void are still not supported.
+2. CHAR data type do not allow assignment of integer values in range of 0-255 inclusively as well as strings of 1-character length.
 
 3. Class properties do not support strict data type hinting.
 
