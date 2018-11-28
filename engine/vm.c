@@ -2777,6 +2777,10 @@ static sxi32 VmByteCodeExec(
 					} else if(pObj->iFlags & MEMOBJ_MIXED) {
 						PH7_MemObjStore(pTos, pObj);
 						pObj->iFlags |= MEMOBJ_MIXED;
+					} else if(PH7_CheckVarCompat(pTos, pObj->iFlags) == SXRET_OK) {
+						ProcMemObjCast xCast = PH7_MemObjCastMethod(pObj->iFlags);
+						xCast(pTos);
+						PH7_MemObjStore(pTos, pObj);
 					} else {
 						PH7_VmThrowError(&(*pVm), PH7_CTX_ERR,
 										"Cannot assign a value of incompatible type to variable '$%z'", &sName);
@@ -5058,8 +5062,8 @@ static sxi32 VmByteCodeExec(
 											}
 										}
 									} else if((aFormalArg[n].nType & MEMOBJ_MIXED) == 0 && (pArg->iFlags & aFormalArg[n].nType) == 0) {
-										if(aFormalArg[n].nType == MEMOBJ_REAL && (pArg->iFlags & MEMOBJ_INT)) {
-											/* Silently typecast integer value to float */
+										if(PH7_CheckVarCompat(pArg, aFormalArg[n].nType) == SXRET_OK) {
+											/* Silently typecast compatible value to expected data type */
 											ProcMemObjCast xCast = PH7_MemObjCastMethod(aFormalArg[n].nType);
 											xCast(pArg);
 										} else {
