@@ -5,10 +5,6 @@ Below list contains things that should be changed/fixed/implemented.
 1. int[] $arr = {5, 5};
 	This syntax is unsupported yet. Should replace the array() function.
 
-2. CHAR data type do not allow assignment of integer values in range of 0-255 inclusively as well as strings of 1-character length.
+2. Class properties do not support strict data type hinting.
 
-3. FLOAT data type do not allow assignment of integer values. In this case INT value should be automatically typecasted to FLOAT.
-
-4. Class properties do not support strict data type hinting.
-
-5. Closures and methods declaration / definition uses function keyword.
+3. Closures and methods declaration / definition uses function keyword.
