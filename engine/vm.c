@@ -4831,7 +4831,7 @@ static sxi32 VmByteCodeExec(
 					SyHashEntry *pEntry;
 					SyString sName;
 					/* Extract function name */
-					if((pTos->iFlags & MEMOBJ_STRING) == 0) {
+					if((pTos->iFlags & (MEMOBJ_CALL | MEMOBJ_STRING)) == 0) {
 						if(pTos->iFlags & MEMOBJ_HASHMAP) {
 							ph7_value sResult;
 							SySetReset(&aArg);
