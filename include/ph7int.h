@@ -1458,6 +1458,7 @@ enum ph7_vm_op {
 	PH7_OP_CVT_NULL,     /* NULL cast */
 	PH7_OP_CVT_ARRAY,    /* Array cast */
 	PH7_OP_CVT_OBJ,      /* Object cast */
+	PH7_OP_CVT_CALL,     /* Callback cast */
 	PH7_OP_CVT_VOID,     /* Void cast */
 	PH7_OP_CLASS_INIT,    /* Class init */
 	PH7_OP_INTERFACE_INIT,/* Interface init */
