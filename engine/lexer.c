@@ -225,7 +225,7 @@ static sxi32 TokenizeAerScript(SyStream *pStream, SyToken *pToken, void *pUserDa
 						pTmp = (SyToken *)SySetPeek(pTokSet);
 						if(pTmp->nType & PH7_TK_KEYWORD) {
 							sxi32 nID = SX_PTR_TO_INT(pTmp->pUserData);
-							if((sxu32)nID & (PH7_KEYWORD_ARRAY | PH7_KEYWORD_INT | PH7_KEYWORD_FLOAT | PH7_KEYWORD_STRING | PH7_KEYWORD_OBJECT | PH7_KEYWORD_BOOL | PH7_KEYWORD_CHAR | PH7_KEYWORD_VOID)) {
+							if((sxu32)nID & (PH7_KEYWORD_ARRAY | PH7_KEYWORD_INT | PH7_KEYWORD_FLOAT | PH7_KEYWORD_STRING | PH7_KEYWORD_OBJECT | PH7_KEYWORD_BOOL | PH7_KEYWORD_CHAR | PH7_KEYWORD_CALLBACK | PH7_KEYWORD_VOID)) {
 								pTmp = (SyToken *)SySetAt(pTokSet, pTokSet->nUsed - 2);
 								if(pTmp->nType & PH7_TK_LPAREN) {
 									/* Merge the three tokens '(' 'TYPE' ')' into a single one */
@@ -242,6 +242,8 @@ static sxi32 TokenizeAerScript(SyStream *pStream, SyToken *pToken, void *pUserDa
 										zTypeCast = "(array)";
 									} else if(nID & PH7_KEYWORD_OBJECT) {
 										zTypeCast = "(object)";
+									} else if(nID & PH7_KEYWORD_CALLBACK) {
+										zTypeCast = "(callback)";
 									} else if(nID & PH7_KEYWORD_VOID) {
 										zTypeCast = "(void)";
 									}
