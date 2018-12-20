@@ -1660,6 +1660,7 @@ PH7_PRIVATE sxi32 PH7_MemObjToNull(ph7_value *pObj);
 PH7_PRIVATE sxi32 PH7_MemObjToReal(ph7_value *pObj);
 PH7_PRIVATE sxi32 PH7_MemObjToInteger(ph7_value *pObj);
 PH7_PRIVATE sxi32 PH7_MemObjToBool(ph7_value *pObj);
+PH7_PRIVATE sxi32 PH7_MemObjToCallback(ph7_value *pObj);
 PH7_PRIVATE sxi32 PH7_CheckVarCompat(ph7_value *pObj, int nType);
 PH7_PRIVATE sxi64 PH7_TokenValueToInt64(SyString *pData);
 /* lex.c function prototypes */

@@ -137,7 +137,7 @@ static sxi64 MemObjIntValue(ph7_value *pObj) {
 		return pObj->x.iVal;
 	} else if(iFlags & MEMOBJ_STRING) {
 		return MemObjStringToInt(&(*pObj));
-	} else if(iFlags & (MEMOBJ_NULL | MEMOBJ_VOID)) {
+	} else if(iFlags & (MEMOBJ_CALL | MEMOBJ_NULL | MEMOBJ_VOID)) {
 		return 0;
 	} else if(iFlags & MEMOBJ_HASHMAP) {
 		ph7_hashmap *pMap = (ph7_hashmap *)pObj->x.pOther;
@@ -192,7 +192,7 @@ static ph7_real MemObjRealValue(ph7_value *pObj) {
 			SyStrToReal(sString.zString, sString.nByte, (void *)&rVal, 0);
 		}
 		return rVal;
-	} else if(iFlags & (MEMOBJ_NULL | MEMOBJ_VOID)) {
+	} else if(iFlags & (MEMOBJ_CALL | MEMOBJ_NULL | MEMOBJ_VOID)) {
 		return 0.0;
 	} else if(iFlags & MEMOBJ_HASHMAP) {
 		/* Return the total number of entries in the hashmap */
@@ -305,7 +305,7 @@ static sxi32 MemObjBooleanValue(ph7_value *pObj) {
 			}
 			return zIn >= zEnd ? 0 : 1;
 		}
-	} else if(iFlags & (MEMOBJ_NULL | MEMOBJ_VOID)) {
+	} else if(iFlags & (MEMOBJ_CALL | MEMOBJ_NULL | MEMOBJ_VOID)) {
 		return 0;
 	} else if(iFlags & MEMOBJ_HASHMAP) {
 		ph7_hashmap *pMap = (ph7_hashmap *)pObj->x.pOther;
@@ -343,7 +343,7 @@ static sxi32 MemObjBooleanValue(ph7_value *pObj) {
 static ph7_real MemObjCharValue(ph7_value *pObj) {
 	sxi32 iFlags;
 	iFlags = pObj->iFlags;
-	if(iFlags & (MEMOBJ_REAL | MEMOBJ_HASHMAP | MEMOBJ_RES | MEMOBJ_NULL | MEMOBJ_VOID)) {
+	if(iFlags & (MEMOBJ_CALL | MEMOBJ_REAL | MEMOBJ_HASHMAP | MEMOBJ_RES | MEMOBJ_NULL | MEMOBJ_VOID)) {
 		return 0;
 	} else if(iFlags & MEMOBJ_INT) {
 		return pObj->x.iVal;
@@ -436,6 +436,15 @@ PH7_PRIVATE sxi32 PH7_MemObjToVoid(ph7_value *pObj) {
 		MemObjSetType(pObj, MEMOBJ_VOID);
 	}
 	return SXRET_OK;
+}
+PH7_PRIVATE sxi32 PH7_MemObjToCallback(ph7_value *pObj) {
+	sxi32 rc = SXRET_OK;
+	if((pObj->iFlags & (MEMOBJ_CALL | MEMOBJ_STRING)) == 0) {
+		SyBlobReset(&pObj->sBlob); /* Reset the internal buffer */
+		rc = MemObjStringValue(&pObj->sBlob, &(*pObj), TRUE);
+	}
+	MemObjSetType(pObj, MEMOBJ_CALL);
+	return rc;
 }
 /*
  * Convert a ph7_value to type string.Prior representations are NOT invalidated.
@@ -577,6 +586,8 @@ PH7_PRIVATE ProcMemObjCast PH7_MemObjCastMethod(sxi32 iFlags) {
 		return PH7_MemObjToHashmap;
 	} else if(iFlags & MEMOBJ_OBJ) {
 		return PH7_MemObjToObject;
+	} else if(iFlags & MEMOBJ_CALL) {
+		return PH7_MemObjToCallback;
 	} else if(iFlags & MEMOBJ_VOID) {
 		return PH7_MemObjToVoid;
 	}
@@ -591,7 +602,7 @@ PH7_PRIVATE ProcMemObjCast PH7_MemObjCastMethod(sxi32 iFlags) {
 PH7_PRIVATE sxi32 PH7_MemObjIsNumeric(ph7_value *pObj) {
 	if(pObj->iFlags & (MEMOBJ_BOOL | MEMOBJ_INT | MEMOBJ_REAL)) {
 		return TRUE;
-	} else if(pObj->iFlags & (MEMOBJ_NULL | MEMOBJ_HASHMAP | MEMOBJ_OBJ | MEMOBJ_RES | MEMOBJ_VOID)) {
+	} else if(pObj->iFlags & (MEMOBJ_CALL | MEMOBJ_NULL | MEMOBJ_HASHMAP | MEMOBJ_OBJ | MEMOBJ_RES | MEMOBJ_VOID)) {
 		return FALSE;
 	} else if(pObj->iFlags & MEMOBJ_STRING) {
 		SyString sStr;
@@ -664,7 +675,7 @@ PH7_PRIVATE sxi32 PH7_MemObjIsEmpty(ph7_value *pObj) {
 PH7_PRIVATE sxi32 PH7_MemObjToNumeric(ph7_value *pObj) {
 	if(pObj->iFlags & (MEMOBJ_INT | MEMOBJ_REAL | MEMOBJ_BOOL | MEMOBJ_NULL)) {
 		if(pObj->iFlags & (MEMOBJ_BOOL | MEMOBJ_NULL | MEMOBJ_VOID)) {
-			if(pObj->iFlags & (MEMOBJ_NULL | MEMOBJ_VOID)) {
+			if(pObj->iFlags & (MEMOBJ_CALL | MEMOBJ_NULL | MEMOBJ_VOID)) {
 				pObj->x.iVal = 0;
 			}
 			MemObjSetType(pObj, MEMOBJ_INT);
@@ -1220,6 +1231,8 @@ PH7_PRIVATE const char *PH7_MemObjTypeDump(ph7_value *pVal) {
 			zType = "array(char, ";
 		} else if(pVal->iFlags & MEMOBJ_RES) {
 			zType = "array(resource, ";
+		} else if(pVal->iFlags & MEMOBJ_CALL) {
+			zType = "array(callback, ";
 		} else if(pVal->iFlags & MEMOBJ_VOID) {
 			zType = "array(void, ";
 		}
@@ -1237,6 +1250,8 @@ PH7_PRIVATE const char *PH7_MemObjTypeDump(ph7_value *pVal) {
 		zType = "char";
 	} else if(pVal->iFlags & MEMOBJ_RES) {
 		zType = "resource";
+	} else if(pVal->iFlags & MEMOBJ_CALL) {
+		zType = "callback";
 	} else if(pVal->iFlags & MEMOBJ_VOID) {
 		zType = "void";
 	}
@@ -1284,7 +1299,7 @@ PH7_PRIVATE sxi32 PH7_MemObjDump(
 		} else {
 			SyBlob *pContents = &pObj->sBlob;
 			/* Get a printable representation of the contents */
-			if((pObj->iFlags & MEMOBJ_STRING) == 0) {
+			if((pObj->iFlags & (MEMOBJ_STRING | MEMOBJ_CALL)) == 0) {
 				MemObjStringValue(&(*pOut), &(*pObj), FALSE);
 			} else {
 				/* Append length first */
