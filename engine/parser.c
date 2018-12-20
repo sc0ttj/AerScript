@@ -183,7 +183,7 @@ static const ph7_expr_op aOpTable[] = {
 	{ {"(float)",    sizeof("(float)") - 1 }, EXPR_OP_TYPECAST, 4, EXPR_OP_ASSOC_RIGHT, PH7_OP_CVT_REAL },
 	{ {"(array)",    sizeof("(array)") - 1 }, EXPR_OP_TYPECAST, 4, EXPR_OP_ASSOC_RIGHT, PH7_OP_CVT_ARRAY},
 	{ {"(object)",   sizeof("(object)") - 1}, EXPR_OP_TYPECAST, 4, EXPR_OP_ASSOC_RIGHT, PH7_OP_CVT_OBJ  },
-	{ {"(callback)", sizeof("(callback") - 1}, EXPR_OP_TYPECAST, 4, EXPR_OP_ASSOC_RIGHT, PH7_OP_CVT_CALL},
+	{ {"(callback)", sizeof("(callback)") - 1}, EXPR_OP_TYPECAST, 4, EXPR_OP_ASSOC_RIGHT, PH7_OP_CVT_CALL},
 	{ {"(void)",     sizeof("(void)") - 1  }, EXPR_OP_TYPECAST, 4, EXPR_OP_ASSOC_RIGHT, PH7_OP_CVT_VOID },
 	/* Binary operators */
 	/* Precedence 7,left-associative */
