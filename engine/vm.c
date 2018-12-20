@@ -4843,8 +4843,11 @@ static sxi32 VmByteCodeExec(
 					ph7_value *pArg = &pTos[-pInstr->iP1];
 					SyHashEntry *pEntry;
 					SyString sName;
+					VmInstr *bInstr = &aInstr[pc - 1];
 					/* Extract function name */
-					if((pTos->iFlags & (MEMOBJ_CALL | MEMOBJ_STRING)) == 0) {
+					if(pTos->iFlags & MEMOBJ_STRING && bInstr->iOp == PH7_OP_LOAD) {
+						PH7_VmThrowError(&(*pVm), PH7_CTX_ERR, "Calling a non-callable object");
+					} else if((pTos->iFlags & (MEMOBJ_CALL | MEMOBJ_STRING)) == 0) {
 						if(pTos->iFlags & MEMOBJ_HASHMAP) {
 							ph7_value sResult;
 							SySetReset(&aArg);
