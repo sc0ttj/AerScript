@@ -5,7 +5,7 @@ class Program {
 	}
 
 	function a(string $p) {
-		mixed $backtrace = debug_backtrace();
+		mixed[] $backtrace = debug_backtrace();
 		if(isset($backtrace[0]['args'])) {
 			var_export($backtrace[0]['args']);
 		} else {
