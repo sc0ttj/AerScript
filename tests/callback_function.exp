@@ -1,0 +1,4 @@
+I'm alive
+callback(6 'printf')
+callback(11 '{closure_1}')
+string(6 'printf')

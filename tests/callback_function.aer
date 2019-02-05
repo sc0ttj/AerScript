@@ -1,0 +1,15 @@
+class Program {
+
+	function main(string[] $args) {
+		callback $y = function() {
+			callback $a = 'printf';
+			$a("I'm alive\n");
+			var_dump($a);
+		};
+		$y();
+		var_dump($y);
+		string $a = 'printf';
+		var_dump($a);
+	}
+
+}
