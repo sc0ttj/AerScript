@@ -1,0 +1,15 @@
+class Program {
+
+	function factorial(int $num) {
+		if($num == 0 || $num == 1)
+			return 1;
+		else
+			return $num * $this->factorial($num - 1);
+	}
+
+	function main() {
+		int $num = 7;
+		print('Factorial of ', $num, ' is ', $this->factorial($num), '.');
+	}
+
+}
