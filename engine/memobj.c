@@ -449,8 +449,7 @@ PH7_PRIVATE sxi32 PH7_MemObjToCallback(ph7_value *pObj) {
 PH7_PRIVATE sxi32 PH7_MemObjToResource(ph7_value *pObj) {
 	sxi32 rc = SXRET_OK;
 	if((pObj->iFlags & MEMOBJ_RES) == 0) {
-		SyBlobReset(&pObj->sBlob); /* Reset the internal buffer */
-		rc = MemObjStringValue(&pObj->sBlob, &(*pObj), TRUE);
+		pObj->x.iVal = 0;
 	}
 	MemObjSetType(pObj, MEMOBJ_RES);
 	return rc;
