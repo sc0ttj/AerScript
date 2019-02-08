@@ -1459,6 +1459,7 @@ enum ph7_vm_op {
 	PH7_OP_CVT_ARRAY,    /* Array cast */
 	PH7_OP_CVT_OBJ,      /* Object cast */
 	PH7_OP_CVT_CALL,     /* Callback cast */
+	PH7_OP_CVT_RES,      /* Resource cast */
 	PH7_OP_CVT_VOID,     /* Void cast */
 	PH7_OP_CLASS_INIT,    /* Class init */
 	PH7_OP_INTERFACE_INIT,/* Interface init */
@@ -1661,6 +1662,7 @@ PH7_PRIVATE sxi32 PH7_MemObjToReal(ph7_value *pObj);
 PH7_PRIVATE sxi32 PH7_MemObjToInteger(ph7_value *pObj);
 PH7_PRIVATE sxi32 PH7_MemObjToBool(ph7_value *pObj);
 PH7_PRIVATE sxi32 PH7_MemObjToCallback(ph7_value *pObj);
+PH7_PRIVATE sxi32 PH7_MemObjToResource(ph7_value *pObj);
 PH7_PRIVATE sxi32 PH7_CheckVarCompat(ph7_value *pObj, int nType);
 PH7_PRIVATE sxi64 PH7_TokenValueToInt64(SyString *pData);
 /* lex.c function prototypes */

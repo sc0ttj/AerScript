@@ -2297,6 +2297,19 @@ static sxi32 VmByteCodeExec(
 				PH7_MemObjToCallback(pTos);
 				break;
 			/*
+			 * CVT_RES: * * *
+			 *
+			 * Force the top of the stack to be a resource
+			 */
+			case PH7_OP_CVT_RES:
+#ifdef UNTRUST
+				if(pTos < pStack) {
+					goto Abort;
+				}
+#endif
+				PH7_MemObjToResource(pTos);
+				break;
+			/*
 			 * CVT_VOID: * * *
 			 *
 			 * Force the top of the stack to be a void type.

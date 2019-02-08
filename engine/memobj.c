@@ -446,6 +446,15 @@ PH7_PRIVATE sxi32 PH7_MemObjToCallback(ph7_value *pObj) {
 	MemObjSetType(pObj, MEMOBJ_CALL);
 	return rc;
 }
+PH7_PRIVATE sxi32 PH7_MemObjToResource(ph7_value *pObj) {
+	sxi32 rc = SXRET_OK;
+	if((pObj->iFlags & MEMOBJ_RES) == 0) {
+		SyBlobReset(&pObj->sBlob); /* Reset the internal buffer */
+		rc = MemObjStringValue(&pObj->sBlob, &(*pObj), TRUE);
+	}
+	MemObjSetType(pObj, MEMOBJ_RES);
+	return rc;
+}
 /*
  * Convert a ph7_value to type string.Prior representations are NOT invalidated.
  */
@@ -588,6 +597,8 @@ PH7_PRIVATE ProcMemObjCast PH7_MemObjCastMethod(sxi32 iFlags) {
 		return PH7_MemObjToObject;
 	} else if(iFlags & MEMOBJ_CALL) {
 		return PH7_MemObjToCallback;
+	} else if(iFlags & MEMOBJ_RES) {
+		return PH7_MemObjToResource;
 	} else if(iFlags & MEMOBJ_VOID) {
 		return PH7_MemObjToVoid;
 	}
