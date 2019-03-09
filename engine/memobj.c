@@ -1173,7 +1173,6 @@ PH7_PRIVATE sxi32 PH7_MemObjAdd(ph7_value *pObj1, ph7_value *pObj2, int bAddStor
 					rc = PH7_MemObjToHashmap(pObj1);
 					if(rc != SXRET_OK) {
 						PH7_VmMemoryError(pObj1->pVm);
-						return rc;
 					}
 				}
 				/* Point to the structure that describe the hashmap */
@@ -1183,7 +1182,6 @@ PH7_PRIVATE sxi32 PH7_MemObjAdd(ph7_value *pObj1, ph7_value *pObj2, int bAddStor
 				pMap = PH7_NewHashmap(pObj1->pVm, 0, 0);
 				if(pMap == 0) {
 					PH7_VmMemoryError(pObj1->pVm);
-					return SXERR_MEM;
 				}
 			}
 			if(!bAddStore) {
