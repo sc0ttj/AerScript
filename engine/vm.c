@@ -2452,7 +2452,6 @@ static sxi32 VmByteCodeExec(
 								pMap = PH7_NewHashmap(&(*pVm), 0, 0);
 								if(pMap == 0) {
 									PH7_VmMemoryError(&(*pVm));
-									goto Abort;
 								}
 								pObj->x.pOther = pMap;
 							}
@@ -2485,7 +2484,6 @@ static sxi32 VmByteCodeExec(
 					pMap = PH7_NewHashmap(&(*pVm), 0, 0);
 					if(pMap == 0) {
 						PH7_VmMemoryError(&(*pVm));
-						goto Abort;
 					}
 					if(pInstr->iP1 > 0) {
 						ph7_value *pEntry = &pTos[-pInstr->iP1 + 1]; /* Point to the first entry */
