@@ -1255,8 +1255,6 @@ static int PH7_vfs_stat(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	pValue = ph7_context_new_scalar(pCtx);
 	if(pArray == 0 || pValue == 0) {
 		PH7_VmMemoryError(pCtx->pVm);
-		ph7_result_bool(pCtx, 0);
-		return PH7_OK;
 	}
 	/* Extract the file path */
 	zPath = ph7_value_to_string(apArg[0], 0);
@@ -1323,8 +1321,6 @@ static int PH7_vfs_lstat(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	pValue = ph7_context_new_scalar(pCtx);
 	if(pArray == 0 || pValue == 0) {
 		PH7_VmMemoryError(pCtx->pVm);
-		ph7_result_bool(pCtx, 0);
-		return PH7_OK;
 	}
 	/* Extract the file path */
 	zPath = ph7_value_to_string(apArg[0], 0);
@@ -3250,8 +3246,6 @@ static int PH7_builtin_fread(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	pBuf = ph7_context_alloc_chunk(pCtx, (unsigned int)nLen, FALSE, FALSE);
 	if(pBuf == 0) {
 		PH7_VmMemoryError(pCtx->pVm);
-		ph7_result_bool(pCtx, 0);
-		return PH7_OK;
 	}
 	/* Perform the requested operation */
 	nRead = StreamRead(pDev, pBuf, (ph7_int64)nLen);
@@ -3367,8 +3361,6 @@ static int PH7_builtin_fgetcsv(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 		pArray = ph7_context_new_array(pCtx);
 		if(pArray == 0) {
 			PH7_VmMemoryError(pCtx->pVm);
-			ph7_result_null(pCtx);
-			return PH7_OK;
 		}
 		/* Parse the raw input */
 		PH7_ProcessCsv(zLine, (int)n, delim, encl, escape, PH7_CsvConsumer, pArray);
@@ -3625,8 +3617,6 @@ static int PH7_builtin_opendir(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	pDev = (io_private *)ph7_context_alloc_chunk(pCtx, sizeof(io_private), TRUE, FALSE);
 	if(pDev == 0) {
 		PH7_VmMemoryError(pCtx->pVm);
-		ph7_result_bool(pCtx, 0);
-		return PH7_OK;
 	}
 	/* Initialize the structure */
 	InitIOPrivate(pCtx->pVm, pStream, pDev);
@@ -3956,8 +3946,6 @@ static int PH7_builtin_file(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	pDev = (io_private *)ph7_context_alloc_chunk(pCtx, sizeof(io_private), TRUE, FALSE);
 	if(pDev == 0) {
 		PH7_VmMemoryError(pCtx->pVm);
-		ph7_result_bool(pCtx, 0);
-		return PH7_OK;
 	}
 	/* Initialize the structure */
 	InitIOPrivate(pCtx->pVm, pStream, pDev);
@@ -3973,8 +3961,6 @@ static int PH7_builtin_file(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	pLine = ph7_context_new_scalar(pCtx);
 	if(pArray == 0 || pLine == 0) {
 		PH7_VmMemoryError(pCtx->pVm);
-		ph7_result_bool(pCtx, 0);
-		return PH7_OK;
 	}
 	/* Try to open the file in read-only mode */
 	pDev->pHandle = PH7_StreamOpenHandle(pCtx->pVm, pStream, zFile, PH7_IO_OPEN_RDONLY, use_include, nArg > 2 ? apArg[2] : 0, FALSE, 0);
@@ -4168,8 +4154,6 @@ static int PH7_builtin_fstat(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	pValue = ph7_context_new_scalar(pCtx);
 	if(pArray == 0 || pValue == 0) {
 		PH7_VmMemoryError(pCtx->pVm);
-		ph7_result_bool(pCtx, 0);
-		return PH7_OK;
 	}
 	/* Perform the requested operation */
 	pStream->xStat(pDev->pHandle, pArray, pValue);
@@ -4848,8 +4832,6 @@ static int PH7_builtin_fopen(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	pDev = (io_private *)ph7_context_alloc_chunk(pCtx, sizeof(io_private), TRUE, FALSE);
 	if(pDev == 0) {
 		PH7_VmMemoryError(pCtx->pVm);
-		ph7_result_bool(pCtx, 0);
-		return PH7_OK;
 	}
 	pResource = 0;
 	if(nArg > 3) {
@@ -5202,8 +5184,6 @@ static int PH7_builtin_zip_open(ph7_context *pCtx, int nArg, ph7_value **apArg) 
 	pArchive = (SyArchive *)ph7_context_alloc_chunk(pCtx, sizeof(SyArchive) + sizeof(zip_raw_data), TRUE, FALSE);
 	if(pArchive == 0) {
 		PH7_VmMemoryError(pCtx->pVm);
-		ph7_result_bool(pCtx, 0);
-		return PH7_OK;
 	}
 	pRaw = (zip_raw_data *)&pArchive[1];
 	/* Initialize the archive */

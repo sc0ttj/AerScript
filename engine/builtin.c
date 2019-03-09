@@ -4330,8 +4330,6 @@ static int PH7_builtin_str_getcsv(ph7_context *pCtx, int nArg, ph7_value **apArg
 	pArray = ph7_context_new_array(pCtx);
 	if(pArray == 0) {
 		PH7_VmMemoryError(pCtx->pVm);
-		ph7_result_null(pCtx);
-		return PH7_OK;
 	}
 	/* Parse the raw input */
 	PH7_ProcessCsv(zInput, nLen, delim, encl, escape, PH7_CsvConsumer, pArray);
@@ -5501,9 +5499,8 @@ static int StrReplaceWalker(ph7_value *pKey, ph7_value *pData, void *pUserData) 
 											   TRUE /* Release the chunk automatically,upon this context is destroyed */
 											  );
 		if(zDup == 0) {
-			/* Ignore any memory failure problem */
+			/* Memory failure problem */
 			PH7_VmMemoryError(pRep->pCtx->pVm);
-			return PH7_OK;
 		}
 		SyMemcpy(zIn, zDup, (sxu32)nByte);
 		/* Save the chunk */
@@ -5777,9 +5774,6 @@ PH7_PRIVATE sxi32 PH7_ParseIniString(ph7_context *pCtx, const char *zIn, sxu32 n
 	if(pArray == 0 || pWorker == 0 || pValue == 0) {
 		/* Out of memory */
 		PH7_VmMemoryError(pCtx->pVm);
-		/* Return FALSE */
-		ph7_result_bool(pCtx, 0);
-		return PH7_OK;
 	}
 	SyHashInit(&sHash, &pCtx->pVm->sAllocator, 0, 0);
 	pCur = pArray;
