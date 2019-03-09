@@ -634,7 +634,6 @@ static sxi32 VmMountUserClass(
 			pMemObj = PH7_ReserveMemObj(&(*pVm));
 			if(pMemObj == 0) {
 				PH7_VmMemoryError(&(*pVm));
-				return SXERR_MEM;
 			}
 			if(SySetUsed(&pAttr->aByteCode) > 0) {
 				/* Initialize attribute default value (any complex expression) */
@@ -2700,7 +2699,6 @@ static sxi32 VmByteCodeExec(
 						zName = (char *)SyMemBackendAlloc(&pVm->sAllocator, sizeof("[closure_]") + 64);
 						if(pClosure == 0 || zName == 0) {
 							PH7_VmMemoryError(pVm);
-							goto Abort;
 						}
 						mLen = SyBufferFormat(zName, sizeof("[closure_]") + 64, "[closure_%d]", pVm->closure_cnt++);
 						while(SyHashGet(&pVm->hFunction, zName, mLen) != 0 && mLen < (sizeof("[closure_]") + 60/* not 64 */)) {
@@ -2895,7 +2893,6 @@ static sxi32 VmByteCodeExec(
 							rc = PH7_MemObjToHashmap(pObj);
 							if(rc != SXRET_OK) {
 								PH7_VmMemoryError(&(*pVm));
-								goto Abort;
 							}
 						}
 						pMap = (ph7_hashmap *)pObj->x.pOther;
@@ -4046,7 +4043,6 @@ static sxi32 VmByteCodeExec(
 							pObj = VmExtractMemObj(&(*pVm), &sName, FALSE, TRUE);
 							if(pObj == 0) {
 								PH7_VmMemoryError(&(*pVm));
-								goto Abort;
 							}
 							/* Perform the store operation */
 							PH7_MemObjStore(pTos, pObj);
@@ -4084,7 +4080,6 @@ static sxi32 VmByteCodeExec(
 					rc = VmEnterFrame(&(*pVm), 0, 0, &pFrame);
 					if(rc != SXRET_OK) {
 						PH7_VmMemoryError(&(*pVm));
-						goto Abort;
 					}
 					/* Mark the special frame */
 					pFrame->iFlags |= VM_FRAME_EXCEPTION;
@@ -4299,8 +4294,6 @@ static sxi32 VmByteCodeExec(
 						pStep = (ph7_foreach_step *)SyMemBackendPoolAlloc(&pVm->sAllocator, sizeof(ph7_foreach_step));
 						if(pStep == 0) {
 							PH7_VmMemoryError(&(*pVm));
-							/* Jump out of the loop */
-							pc = pInstr->iP2 - 1;
 						} else {
 							/* Zero the structure */
 							SyZero(pStep, sizeof(ph7_foreach_step));
@@ -4326,9 +4319,6 @@ static sxi32 VmByteCodeExec(
 						}
 						if(SXRET_OK != SySetPut(&pInfo->aStep, (const void *)&pStep)) {
 							PH7_VmMemoryError(&(*pVm));
-							SyMemBackendPoolFree(&pVm->sAllocator, pStep);
-							/* Jump out of the loop */
-							pc = pInstr->iP2 - 1;
 						}
 					}
 					VmPopOperand(&pTos, 1);
@@ -4727,12 +4717,6 @@ static sxi32 VmByteCodeExec(
 						pNew = PH7_NewClassInstance(&(*pVm), pClass);
 						if(pNew == 0) {
 							PH7_VmMemoryError(&(*pVm));
-							PH7_MemObjRelease(pTos);
-							if(pInstr->iP1 > 0) {
-								/* Pop given arguments */
-								VmPopOperand(&pTos, pInstr->iP1);
-							}
-							break;
 						}
 						/* Check if a constructor is available */
 						pCons = PH7_ClassExtractMethod(pClass, "__construct", sizeof("__construct") - 1);
@@ -5010,13 +4994,6 @@ static sxi32 VmByteCodeExec(
 						if(rc != SXRET_OK) {
 							/* Raise exception: Out of memory */
 							PH7_VmMemoryError(&(*pVm));
-							/* Pop given arguments */
-							if(pInstr->iP1 > 0) {
-								VmPopOperand(&pTos, pInstr->iP1);
-							}
-							/* Assume a null return value so that the program continue it's execution normally */
-							PH7_MemObjRelease(pTos);
-							break;
 						}
 						if((pVmFunc->iFlags & VM_FUNC_CLASS_METHOD) && pThis) {
 							/* Install the '$this' variable */
@@ -5219,10 +5196,6 @@ static sxi32 VmByteCodeExec(
 						if(pFrameStack == 0) {
 							/* Raise exception: Out of memory */
 							PH7_VmMemoryError(&(*pVm));
-							if(pInstr->iP1 > 0) {
-								VmPopOperand(&pTos, pInstr->iP1);
-							}
-							break;
 						}
 						if(pSelf) {
 							/* Push class name */
@@ -7125,7 +7098,6 @@ PH7_PRIVATE sxi32 PH7_VmCallClassMethod(
 	aStack = VmNewOperandStack(&(*pVm), 2/* Method name + Aux data */ + nArg);
 	if(aStack == 0) {
 		PH7_VmMemoryError(&(*pVm));
-		return SXERR_MEM;
 	}
 	/* Fill the operand stack with the given arguments */
 	for(i = 0 ; i < nArg ; i++) {
@@ -7262,11 +7234,6 @@ PH7_PRIVATE sxi32 PH7_VmCallUserFunction(
 	aStack = VmNewOperandStack(&(*pVm), 1 + nArg);
 	if(aStack == 0) {
 		PH7_VmMemoryError(&(*pVm));
-		if(pResult) {
-			/* Assume a null return value */
-			PH7_MemObjRelease(pResult);
-		}
-		return SXERR_MEM;
 	}
 	/* Fill the operand stack with the given arguments */
 	for(i = 0 ; i < nArg ; i++) {
@@ -7496,8 +7463,6 @@ static int vm_builtin_define(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	pValue = (ph7_value *)SyMemBackendPoolAlloc(&pCtx->pVm->sAllocator, sizeof(ph7_value));
 	if(pValue == 0) {
 		PH7_VmMemoryError(pCtx->pVm);
-		ph7_result_bool(pCtx, 0);
-		return SXRET_OK;
 	}
 	/* Initialize the memory object */
 	PH7_MemObjInit(pCtx->pVm, pValue);
@@ -7506,8 +7471,6 @@ static int vm_builtin_define(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	if(rc != SXRET_OK) {
 		SyMemBackendPoolFree(&pCtx->pVm->sAllocator, pValue);
 		PH7_VmMemoryError(pCtx->pVm);
-		ph7_result_bool(pCtx, 0);
-		return SXRET_OK;
 	}
 	/* Duplicate constant value */
 	PH7_MemObjStore(apArg[1], pValue);
@@ -8227,7 +8190,6 @@ static int vm_builtin_random_bytes(ph7_context *pCtx, int nArg, ph7_value **apAr
 	zBuf = SyMemBackendPoolAlloc(&pCtx->pVm->sAllocator, iLen);
 	if(zBuf == 0) {
 		PH7_VmMemoryError(pCtx->pVm);
-		return SXERR_MEM;
 	}
 	PH7_VmRandomBytes(pCtx->pVm, zBuf, iLen);
 	ph7_result_string(pCtx, (char *)zBuf, iLen);
@@ -9028,8 +8990,6 @@ static int vm_builtin_debug_backtrace(ph7_context *pCtx, int nArg, ph7_value **a
 	pArray = ph7_context_new_array(pCtx);
 	if(!pArray) {
 		PH7_VmMemoryError(pCtx->pVm);
-		ph7_result_null(pCtx);
-		return PH7_OK;
 	}
 	/* Iterate through debug frames */
 	while(SySetGetNextEntry(&pDebug, (void **)&pTrace) == SXRET_OK) {
@@ -9040,8 +9000,6 @@ static int vm_builtin_debug_backtrace(ph7_context *pCtx, int nArg, ph7_value **a
 		pValue = ph7_context_new_scalar(pCtx);
 		if(pArg == 0 || pSubArray == 0 || pValue == 0) {
 			PH7_VmMemoryError(pCtx->pVm);
-			ph7_result_null(pCtx);
-			return PH7_OK;
 		}
 		/* Extract file name and line */
 		ph7_value_int(pValue, pTrace->nLine);
@@ -9571,9 +9529,6 @@ static int vm_builtin_parse_url(ph7_context *pCtx, int nArg, ph7_value **apArg) 
 		if(pArray == 0 || pValue == 0) {
 			/* Out of memory */
 			PH7_VmMemoryError(pCtx->pVm);
-			/* Return false */
-			ph7_result_bool(pCtx, 0);
-			return PH7_OK;
 		}
 		/* Fill the array */
 		pComp = &sURI.sScheme;
@@ -9728,9 +9683,6 @@ static int vm_builtin_compact(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	if(pArray == 0) {
 		/* Out of memory */
 		PH7_VmMemoryError(pCtx->pVm);
-		/* Return NULL */
-		ph7_result_null(pCtx);
-		return PH7_OK;
 	}
 	/* Perform the requested operation */
 	for(i = 0 ; i < nArg ; i++) {
@@ -10673,8 +10625,6 @@ static int vm_builtin_getopt(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	pWorker = ph7_context_new_scalar(pCtx);
 	if(pArray == 0 || pWorker == 0) {
 		PH7_VmMemoryError(pCtx->pVm);
-		ph7_result_bool(pCtx, 0);
-		return PH7_OK;
 	}
 	if(SyBlobLength(pArg) < 1) {
 		/* Empty command line,return the empty array*/
