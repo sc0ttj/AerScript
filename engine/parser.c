@@ -461,7 +461,7 @@ static sxi32 ExprVerifyNodes(ph7_gen_state *pGen, ph7_expr_node **apNode, sxi32 
 		}
 	}
 	if(iParen != 0 || iSquare != 0 || iQuesty != 0 || iBraces != 0) {
-		rc = PH7_GenCompileError(&(*pGen), E_ERROR, apNode[0]->pStart->nLine, "Syntax error,mismatched '(','[','{' or '?'");
+		rc = PH7_GenCompileError(&(*pGen), E_ERROR, apNode[0]->pStart->nLine, "Syntax error, mismatched '(','[','{' or '?'");
 		if(rc != SXERR_ABORT) {
 			rc = SXERR_SYNTAX;
 		}
