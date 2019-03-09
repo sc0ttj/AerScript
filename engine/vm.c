@@ -2447,6 +2447,15 @@ static sxi32 VmByteCodeExec(
 							PH7_MemObjRelease(pTos);
 						} else {
 							pObj = VmExtractMemObj(&(*pVm), &sName, FALSE, TRUE);
+							if(pInstr->iP2 & MEMOBJ_HASHMAP) {
+								ph7_hashmap *pMap;
+								pMap = PH7_NewHashmap(&(*pVm), 0, 0);
+								if(pMap == 0) {
+									PH7_VmMemoryError(&(*pVm));
+									goto Abort;
+								}
+								pObj->x.pOther = pMap;
+							}
 							MemObjSetType(pObj, pInstr->iP2);
 						}
 						pTos->nIdx = SXU32_HIGH; /* Mark as constant */
