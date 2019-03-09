@@ -629,7 +629,6 @@ static sxu32 KeywordCode(const char *z, int n) {
 		{"if", PH7_KEYWORD_IF},
 		{"while", PH7_KEYWORD_WHILE},
 		/* Reserved keywords */
-		{"empty", PH7_KEYWORD_EMPTY},
 		{"eval", PH7_KEYWORD_EVAL},
 		{"exit", PH7_KEYWORD_EXIT},
 		{"import", PH7_KEYWORD_IMPORT},
