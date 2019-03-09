@@ -700,7 +700,7 @@ static sxi32 ExprExtractNode(ph7_gen_state *pGen, ph7_expr_node **ppNode) {
 					}
 				}
 			}
-		} else if(nKeyword == PH7_KEYWORD_FUNCTION) {
+		} else if(pCur[1].nType & PH7_TK_LPAREN && (nKeyword & PH7_KEYWORD_TYPEDEF)) {
 			/* Anonymous function */
 			if(&pCur[1] >= pGen->pEnd) {
 				/* Assume a literal */

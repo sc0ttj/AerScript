@@ -1,7 +1,7 @@
 class Program {
 
 	function main(string[] $args) {
-		callback $y = function() {
+		callback $y = void() {
 			callback $a = 'printf';
 			$a("I'm alive\n");
 			var_dump($a);
