@@ -2,11 +2,9 @@ TODO list for typehinting branch.
 Below list contains things that should be changed/fixed/implemented.
 
 
-1. int[] $f; $f[] = 4; causes segmentation fault.
-
-2. int[] $arr = {5, 5};
+1. int[] $arr = {5, 5};
 	This syntax is unsupported yet. Should replace the array() function.
 
-3. Class properties do not support strict data type hinting.
+2. Class properties do not support strict data type hinting.
 
-4. Closures and methods declaration / definition uses function keyword.
+3. Closures and methods declaration / definition uses function keyword.
