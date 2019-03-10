@@ -994,7 +994,36 @@ PH7_PRIVATE sxi32 PH7_CompileClosure(ph7_gen_state *pGen, sxi32 iCompileFlag) {
 	sxu32 nIdx;
 	sxu32 nLen;
 	sxi32 rc;
-	pGen->pIn++; /* Jump the 'function' keyword */
+	sxu32 nType;
+	sxu32 nKey = (sxu32)(SX_PTR_TO_INT(pGen->pIn->pUserData));
+	if(nKey & PH7_KEYWORD_BOOL) {
+		nType = MEMOBJ_BOOL;
+	} else if(nKey & PH7_KEYWORD_CALLBACK) {
+		nType = MEMOBJ_CALL;
+	} else if(nKey & PH7_KEYWORD_CHAR) {
+		nType = MEMOBJ_CHAR;
+	} else if(nKey & PH7_KEYWORD_FLOAT) {
+		nType = MEMOBJ_REAL;
+	} else if(nKey & PH7_KEYWORD_INT) {
+		nType = MEMOBJ_INT;
+	} else if(nKey & PH7_KEYWORD_MIXED) {
+		nType = MEMOBJ_MIXED;
+	} else if(nKey & PH7_KEYWORD_OBJECT) {
+		nType = MEMOBJ_OBJ;
+	} else if(nKey & PH7_KEYWORD_RESOURCE) {
+		nType = MEMOBJ_RES;
+	} else if(nKey & PH7_KEYWORD_STRING) {
+		nType = MEMOBJ_STRING;
+	} else if(nKey & PH7_KEYWORD_VOID) {
+		nType = MEMOBJ_VOID;
+	} else {
+		PH7_GenCompileError(&(*pGen), E_ERROR, pGen->pIn->nLine, "Invalid return data type '%z'", &pGen->pIn->sData);
+	}
+	pGen->pIn++; /* Jump the return data type */
+	if(pGen->pIn->nType & PH7_TK_OSB && pGen->pIn[1].nType & PH7_TK_CSB) {
+		pGen->pIn += 2;
+		nType |= MEMOBJ_HASHMAP;
+	}
 	if(pGen->pIn->nType & (PH7_TK_ID | PH7_TK_KEYWORD)) {
 		pGen->pIn++;
 	}
@@ -1019,6 +1048,7 @@ PH7_PRIVATE sxi32 PH7_CompileClosure(ph7_gen_state *pGen, sxi32 iCompileFlag) {
 	if(rc == SXERR_ABORT) {
 		return SXERR_ABORT;
 	}
+	pAnonFunc->nType = nType;
 	if(pAnonFunc->iFlags & VM_FUNC_CLOSURE) {
 		/* Emit the load closure instruction */
 		PH7_VmEmitInstr(pGen->pVm, 0, PH7_OP_LOAD_CLOSURE, 0, 0, pAnonFunc, 0);
