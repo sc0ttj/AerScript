@@ -12,3 +12,5 @@ Below list contains things that should be changed/fixed/implemented.
 4. PH7_OP_DONE operator should check if return value match the data type of declared method/closure.
 
 5. Some builtin functions like isset() seems to be useless, if varaible is not defined, interpreter will throw an error.
+
+6. Interpreter should verify that Program::main() returns a value of int or void data type.
