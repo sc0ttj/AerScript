@@ -5342,9 +5342,10 @@ static ProcLangConstruct PH7_GenStateGetStatementHandler(
  */
 static int PH7_IsLangConstruct(sxu32 nKeywordID) {
 	if(nKeywordID == PH7_KEYWORD_IMPORT || nKeywordID == PH7_KEYWORD_INCLUDE || nKeywordID == PH7_KEYWORD_REQUIRE
-				|| nKeywordID == PH7_KEYWORD_ISSET || nKeywordID == PH7_KEYWORD_EVAL || nKeywordID == PH7_KEYWORD_ARRAY
-				|| nKeywordID == PH7_KEYWORD_LIST || nKeywordID == PH7_KEYWORD_SELF || nKeywordID == PH7_KEYWORD_PARENT
-				|| nKeywordID == PH7_KEYWORD_STATIC || nKeywordID == PH7_KEYWORD_NEW || nKeywordID == PH7_KEYWORD_CLONE) {
+				|| nKeywordID == PH7_KEYWORD_ISSET || nKeywordID == PH7_KEYWORD_EVAL || nKeywordID == PH7_KEYWORD_EMPTY
+				|| nKeywordID == PH7_KEYWORD_ARRAY || nKeywordID == PH7_KEYWORD_LIST || nKeywordID == PH7_KEYWORD_SELF
+				|| nKeywordID == PH7_KEYWORD_PARENT || nKeywordID == PH7_KEYWORD_STATIC || nKeywordID == PH7_KEYWORD_NEW
+				|| nKeywordID == PH7_KEYWORD_CLONE) {
 			return TRUE;
 	}
 	/* Not a language construct */
