@@ -7,4 +7,8 @@ Below list contains things that should be changed/fixed/implemented.
 
 2. Class properties do not support strict data type hinting.
 
-3. Closures and methods declaration / definition uses function keyword.
+3. Methods declaration / definition still uses function keyword.
+
+4. PH7_OP_DONE operator should check if return value match the data type of declared method/closure.
+
+5. Some builtin functions like isset() seems to be useless, if varaible is not defined, interpreter will throw an error.
