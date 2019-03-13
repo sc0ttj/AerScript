@@ -2022,6 +2022,18 @@ static sxi32 VmByteCodeExec(
 					if(pResult) {
 						/* Execution result */
 						PH7_MemObjStore(pTos, pResult);
+						if(pVm->pFrame->iFlags & VM_FRAME_ACTIVE) {
+							ph7_vm_func *pFunc = (ph7_vm_func *)pVm->pFrame->pUserData;
+							if(pFunc->nType) {
+								if((pFunc->nType & MEMOBJ_MIXED) == 0) {
+									if(pFunc->nType & MEMOBJ_VOID) {
+										PH7_VmThrowError(&(*pVm), PH7_CTX_ERR, "Return with a value in closure/method returning void");
+									} else if(pFunc->nType != pResult->iFlags && PH7_CheckVarCompat(pTos, pFunc->nType) != SXRET_OK) {
+										PH7_VmThrowError(&(*pVm), PH7_CTX_ERR, "Incompatible type when returning data by closure/method");
+									}
+								}
+							}
+						}
 					}
 					VmPopOperand(&pTos, 1);
 				} else if(pLastRef) {
