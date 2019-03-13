@@ -1002,6 +1002,7 @@ struct ph7_vm_func {
 	SySet aClosureEnv;   /* Closure environment (ph7_vm_func_closure_env instace) */
 	sxi32 iFlags;        /* VM function configuration */
 	sxu32 nType;         /* Return data type expected by this function */
+	SyString sClass;     /* Return class expected by this function */
 	SyString sSignature; /* Function signature used to implement function overloading
 						  * (Refer to the official documentation for more information
 						  *  on this powerfull feature)
@@ -1100,8 +1101,6 @@ struct ph7_class_method {
 	sxi32 iFlags;        /* Methods configuration */
 	sxi32 iCloneDepth;   /* Clone depth [Only used by the magic method __clone ] */
 	sxu32 nLine;         /* Line on which this method was defined */
-	sxu32 nType;         /* Return data type expected by this method */
-	SyString sClass;     /* Return class expected by this method */
 };
 /*
  * Each active object (class instance) is represented by an instance of
