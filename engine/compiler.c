@@ -3926,7 +3926,7 @@ static sxi32 PH7_CompileClassInterface(ph7_gen_state *pGen) {
 				}
 			}
 			/* Process method signature */
-			rc = PH7_GenStateCompileClassMethod(&(*pGen), 0, FALSE/* Only method signature*/, iFlags, pClass);
+			rc = PH7_GenStateCompileClassMethod(&(*pGen), 0, iFlags, FALSE/* Only method signature*/, pClass);
 			if(rc != SXRET_OK) {
 				if(rc == SXERR_ABORT) {
 					return SXERR_ABORT;
