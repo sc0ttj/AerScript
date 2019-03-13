@@ -1002,7 +1002,6 @@ struct ph7_vm_func {
 	SySet aClosureEnv;   /* Closure environment (ph7_vm_func_closure_env instace) */
 	sxi32 iFlags;        /* VM function configuration */
 	sxu32 nType;         /* Return data type expected by this function */
-	SyString sClass;     /* Return class expected by this function */
 	SyString sSignature; /* Function signature used to implement function overloading
 						  * (Refer to the official documentation for more information
 						  *  on this powerfull feature)
