@@ -3578,6 +3578,7 @@ Synchronize:
  */
 static sxi32 PH7_GenStateCompileClassMethod(
 	ph7_gen_state *pGen, /* Code generator state */
+	sxu32 nType,         /* Method return data type */
 	sxi32 iProtection,   /* Visibility level */
 	sxi32 iFlags,        /* Configuration flags */
 	int doBody,          /* TRUE to process method body */
@@ -3707,6 +3708,8 @@ static sxi32 PH7_GenStateCompileClassMethod(
 			return SXERR_CORRUPT;
 		}
 	}
+	/* Store method return data type */
+	pMeth->sFunc.nType = nType;
 	/* All done,install the method */
 	rc = PH7_ClassInstallMethod(pClass, pMeth);
 	if(rc != SXRET_OK) {
@@ -3926,7 +3929,7 @@ static sxi32 PH7_CompileClassInterface(ph7_gen_state *pGen) {
 				}
 			}
 			/* Process method signature */
-			rc = PH7_GenStateCompileClassMethod(&(*pGen), 0, iFlags, FALSE/* Only method signature*/, pClass);
+			rc = PH7_GenStateCompileClassMethod(&(*pGen), 0, 0, iFlags, FALSE/* Only method signature*/, pClass);
 			if(rc != SXRET_OK) {
 				if(rc == SXERR_ABORT) {
 					return SXERR_ABORT;
@@ -4293,7 +4296,7 @@ static sxi32 PH7_GenStateCompileClass(ph7_gen_state *pGen, sxi32 iFlags) {
 					rc = PH7_GenStateCompileClassAttr(&(*pGen), iProtection, iAttrflags, pClass);
 				} else {
 					/* Process method declaration */
-					rc = PH7_GenStateCompileClassMethod(&(*pGen), iProtection, iAttrflags, TRUE, pClass);
+					rc = PH7_GenStateCompileClassMethod(&(*pGen), 0, iProtection, iAttrflags, TRUE, pClass);
 				}
 				if(rc != SXRET_OK) {
 					if(rc == SXERR_ABORT) {
