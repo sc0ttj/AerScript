@@ -3592,7 +3592,6 @@ static sxi32 PH7_GenStateCompileClassMethod(
 	sxi32 rc;
 	/* Extract visibility level */
 	iProtection = PH7_GetProtectionLevel(iProtection);
-	pGen->pIn++; /* Jump the 'function' keyword */
 	iFuncFlags = 0;
 	if(pGen->pIn >= pGen->pEnd) {
 		/* Invalid method name */
@@ -3854,7 +3853,7 @@ static sxi32 PH7_CompileClassInterface(ph7_gen_state *pGen) {
 		}
 		if((pGen->pIn->nType & PH7_TK_KEYWORD) == 0) {
 			rc = PH7_GenCompileError(pGen, E_ERROR, pGen->pIn->nLine,
-									 "Unexpected token '%z'.Expecting method signature or constant declaration inside interface '%z'",
+									 "Unexpected token '%z'. Expecting method signature or constant declaration inside interface '%z'",
 									 &pGen->pIn->sData, pName);
 			if(rc == SXERR_ABORT) {
 				/* Error count limit reached,abort immediately */
@@ -3869,15 +3868,6 @@ static sxi32 PH7_CompileClassInterface(ph7_gen_state *pGen) {
 			PH7_GenCompileError(&(*pGen), E_WARNING, pGen->pIn->nLine, "interface: Access type must be public");
 			nKwrd = PH7_KEYWORD_PUBLIC;
 		}
-		if(nKwrd != PH7_KEYWORD_PUBLIC && nKwrd != PH7_KEYWORD_FUNCTION && nKwrd != PH7_KEYWORD_CONST && nKwrd != PH7_KEYWORD_STATIC) {
-			rc = PH7_GenCompileError(pGen, E_ERROR, pGen->pIn->nLine,
-									 "Expecting method signature or constant declaration inside interface '%z'", pName);
-			if(rc == SXERR_ABORT) {
-				/* Error count limit reached,abort immediately */
-				return SXERR_ABORT;
-			}
-			goto done;
-		}
 		if(nKwrd == PH7_KEYWORD_PUBLIC) {
 			/* Advance the stream cursor */
 			pGen->pIn++;
@@ -3890,19 +3880,11 @@ static sxi32 PH7_CompileClassInterface(ph7_gen_state *pGen) {
 				}
 				goto done;
 			}
+			/* Extract the keyword */
 			nKwrd = SX_PTR_TO_INT(pGen->pIn->pUserData);
-			if(nKwrd != PH7_KEYWORD_FUNCTION && nKwrd != PH7_KEYWORD_CONST && nKwrd != PH7_KEYWORD_STATIC) {
-				rc = PH7_GenCompileError(pGen, E_ERROR, pGen->pIn->nLine,
-										 "Expecting method signature or constant declaration inside interface '%z'", pName);
-				if(rc == SXERR_ABORT) {
-					/* Error count limit reached,abort immediately */
-					return SXERR_ABORT;
-				}
-				goto done;
-			}
 		}
 		if(nKwrd == PH7_KEYWORD_CONST) {
-			/* Parse constant */
+			/* Process constant declaration */
 			rc = PH7_GenStateCompileClassConstant(&(*pGen), 0, 0, pClass);
 			if(rc != SXRET_OK) {
 				if(rc == SXERR_ABORT) {
@@ -3917,8 +3899,7 @@ static sxi32 PH7_CompileClassInterface(ph7_gen_state *pGen) {
 				iFlags |= PH7_CLASS_ATTR_STATIC;
 				/* Advance the stream cursor */
 				pGen->pIn++;
-				if(pGen->pIn >= pGen->pEnd || (pGen->pIn->nType & PH7_TK_KEYWORD) == 0
-						|| SX_PTR_TO_INT(pGen->pIn->pUserData) != PH7_KEYWORD_FUNCTION) {
+				if(pGen->pIn >= pGen->pEnd || (pGen->pIn->nType & PH7_TK_KEYWORD) == 0) {
 					rc = PH7_GenCompileError(pGen, E_ERROR, pGen->pIn->nLine,
 											 "Expecting method signature inside interface '%z'", pName);
 					if(rc == SXERR_ABORT) {
@@ -3927,14 +3908,71 @@ static sxi32 PH7_CompileClassInterface(ph7_gen_state *pGen) {
 					}
 					goto done;
 				}
+				/* Extract the keyword */
+				nKwrd = SX_PTR_TO_INT(pGen->pIn->pUserData);
+				if(nKwrd == PH7_KEYWORD_PRIVATE || nKwrd == PH7_KEYWORD_PROTECTED) {
+					/* Emit a warning and switch to public visibility */
+					PH7_GenCompileError(&(*pGen), E_WARNING, pGen->pIn->nLine, "interface: Access type must be public");
+					nKwrd = PH7_KEYWORD_PUBLIC;
+				}
+				if(nKwrd == PH7_KEYWORD_PUBLIC) {
+					/* Advance the stream cursor */
+					pGen->pIn++;
+					/* Extract the keyword */
+					nKwrd = SX_PTR_TO_INT(pGen->pIn->pUserData);
+				}
 			}
-			/* Process method signature */
-			rc = PH7_GenStateCompileClassMethod(&(*pGen), 0, 0, iFlags, FALSE/* Only method signature*/, pClass);
-			if(rc != SXRET_OK) {
+			if((nKwrd & PH7_KEYWORD_TYPEDEF) == 0) {
+				rc = PH7_GenCompileError(pGen, E_ERROR, pGen->pIn->nLine,
+										 "Unexpected token '%z', expecting data type for method signature inside interface '%z'",
+										 &pGen->pIn->sData, pName);
 				if(rc == SXERR_ABORT) {
+					/* Error count limit reached,abort immediately */
 					return SXERR_ABORT;
 				}
 				goto done;
+			}
+			sxu32 nType;
+			sxu32 nKey = (sxu32)(SX_PTR_TO_INT(pGen->pIn->pUserData));
+			if(nKey & PH7_KEYWORD_BOOL) {
+				nType = MEMOBJ_BOOL;
+			} else if(nKey & PH7_KEYWORD_CALLBACK) {
+				nType = MEMOBJ_CALL;
+			} else if(nKey & PH7_KEYWORD_CHAR) {
+				nType = MEMOBJ_CHAR;
+			} else if(nKey & PH7_KEYWORD_FLOAT) {
+				nType = MEMOBJ_REAL;
+			} else if(nKey & PH7_KEYWORD_INT) {
+				nType = MEMOBJ_INT;
+			} else if(nKey & PH7_KEYWORD_MIXED) {
+				nType = MEMOBJ_MIXED;
+			} else if(nKey & PH7_KEYWORD_OBJECT) {
+				nType = MEMOBJ_OBJ;
+			} else if(nKey & PH7_KEYWORD_RESOURCE) {
+				nType = MEMOBJ_RES;
+			} else if(nKey & PH7_KEYWORD_STRING) {
+				nType = MEMOBJ_STRING;
+			} else if(nKey & PH7_KEYWORD_VOID) {
+				nType = MEMOBJ_VOID;
+			} else {
+				PH7_GenCompileError(&(*pGen), E_ERROR, pGen->pIn->nLine, "Invalid return data type '%z'", &pGen->pIn->sData);
+			}
+			pGen->pIn++; /* Jump the return data type */
+			if(pGen->pIn->nType & PH7_TK_OSB && pGen->pIn[1].nType & PH7_TK_CSB) {
+				pGen->pIn += 2;
+				nType |= MEMOBJ_HASHMAP;
+			}
+			if(pGen->pIn->nType & PH7_TK_DOLLAR/*'$'*/) {
+				PH7_GenCompileError(&(*pGen), E_ERROR, pGen->pIn->nLine, "Attributes cannot be declared inside interface '%z'", pName);
+			} else {
+				/* Process method signature */
+				rc = PH7_GenStateCompileClassMethod(&(*pGen), nType, 0, iFlags, FALSE/* Only method signature*/, pClass);
+				if(rc != SXRET_OK) {
+					if(rc == SXERR_ABORT) {
+						return SXERR_ABORT;
+					}
+					goto done;
+				}
 			}
 		}
 	}
@@ -4122,9 +4160,9 @@ static sxi32 PH7_GenStateCompileClass(ph7_gen_state *pGen, sxi32 iFlags) {
 			/* End of class body */
 			break;
 		}
-		if((pGen->pIn->nType & (PH7_TK_KEYWORD | PH7_TK_DOLLAR)) == 0) {
+		if((pGen->pIn->nType & PH7_TK_KEYWORD) == 0) {
 			rc = PH7_GenCompileError(pGen, E_ERROR, pGen->pIn->nLine,
-									 "Unexpected token '%z'. Expecting attribute declaration inside class '%z'",
+									 "Unexpected token '%z'. Expecting attribute or method declaration inside class '%z'",
 									 &pGen->pIn->sData, pName);
 			if(rc == SXERR_ABORT) {
 				/* Error count limit reached,abort immediately */
@@ -4135,179 +4173,164 @@ static sxi32 PH7_GenStateCompileClass(ph7_gen_state *pGen, sxi32 iFlags) {
 		/* Assume public visibility */
 		iProtection = PH7_KEYWORD_PUBLIC;
 		iAttrflags = 0;
-		if(pGen->pIn->nType & PH7_TK_KEYWORD) {
-			/* Extract the current keyword */
+		/* Extract the current keyword */
+		nKwrd = SX_PTR_TO_INT(pGen->pIn->pUserData);
+		if(nKwrd == PH7_KEYWORD_PUBLIC || nKwrd == PH7_KEYWORD_PRIVATE || nKwrd == PH7_KEYWORD_PROTECTED) {
+			iProtection = nKwrd;
+			pGen->pIn++; /* Jump the visibility token */
+			if(pGen->pIn >= pGen->pEnd || (pGen->pIn->nType & PH7_TK_KEYWORD) == 0) {
+				rc = PH7_GenCompileError(pGen, E_ERROR, pGen->pIn->nLine,
+										 "Unexpected token '%z'. Expecting attribute or method declaration inside class '%z'",
+										 &pGen->pIn->sData, pName);
+				if(rc == SXERR_ABORT) {
+					/* Error count limit reached,abort immediately */
+					return SXERR_ABORT;
+				}
+				goto done;
+			}
+			/* Extract the keyword */
 			nKwrd = SX_PTR_TO_INT(pGen->pIn->pUserData);
-			if(nKwrd == PH7_KEYWORD_PUBLIC || nKwrd == PH7_KEYWORD_PRIVATE || nKwrd == PH7_KEYWORD_PROTECTED) {
-				iProtection = nKwrd;
-				pGen->pIn++; /* Jump the visibility token */
-				if(pGen->pIn >= pGen->pEnd || (pGen->pIn->nType & (PH7_TK_KEYWORD | PH7_TK_DOLLAR)) == 0) {
+		}
+		if(nKwrd == PH7_KEYWORD_CONST) {
+			/* Process constant declaration */
+			rc = PH7_GenStateCompileClassConstant(&(*pGen), iProtection, iAttrflags, pClass);
+			if(rc != SXRET_OK) {
+				if(rc == SXERR_ABORT) {
+					return SXERR_ABORT;
+				}
+				goto done;
+			}
+		} else {
+			if(nKwrd == PH7_KEYWORD_STATIC) {
+				/* Static method or attribute,record that */
+				iAttrflags |= PH7_CLASS_ATTR_STATIC;
+				pGen->pIn++; /* Jump the static keyword */
+				if(pGen->pIn >= pGen->pEnd || (pGen->pIn->nType & PH7_TK_KEYWORD) == 0) {
 					rc = PH7_GenCompileError(pGen, E_ERROR, pGen->pIn->nLine,
-											 "Unexpected token '%z'. Expecting attribute declaration inside class '%z'",
+											 "Unexpected token '%z',Expecting attribute or method declaration inside class '%z'",
 											 &pGen->pIn->sData, pName);
 					if(rc == SXERR_ABORT) {
 						/* Error count limit reached,abort immediately */
 						return SXERR_ABORT;
 					}
 					goto done;
-				}
-				if(pGen->pIn->nType & PH7_TK_DOLLAR) {
-					/* Attribute declaration */
-					rc = PH7_GenStateCompileClassAttr(&(*pGen), iProtection, iAttrflags, pClass);
-					if(rc != SXRET_OK) {
-						if(rc == SXERR_ABORT) {
-							return SXERR_ABORT;
-						}
-						goto done;
-					}
-					continue;
 				}
 				/* Extract the keyword */
 				nKwrd = SX_PTR_TO_INT(pGen->pIn->pUserData);
-			}
-			if(nKwrd == PH7_KEYWORD_CONST) {
-				/* Process constant declaration */
-				rc = PH7_GenStateCompileClassConstant(&(*pGen), iProtection, iAttrflags, pClass);
-				if(rc != SXRET_OK) {
-					if(rc == SXERR_ABORT) {
-						return SXERR_ABORT;
-					}
-					goto done;
+				if(nKwrd == PH7_KEYWORD_PUBLIC || nKwrd == PH7_KEYWORD_PRIVATE || nKwrd == PH7_KEYWORD_PROTECTED) {
+					iProtection = nKwrd;
+					pGen->pIn++; /* Jump the visibility token */
 				}
-			} else {
-				if(nKwrd == PH7_KEYWORD_STATIC) {
-					/* Static method or attribute,record that */
+				/* Extract the keyword */
+				nKwrd = SX_PTR_TO_INT(pGen->pIn->pUserData);
+			} else if(nKwrd == PH7_KEYWORD_VIRTUAL) {
+				/* Virtual method,record that */
+				iAttrflags |= PH7_CLASS_ATTR_VIRTUAL;
+				/* Advance the stream cursor */
+				pGen->pIn++;
+				if(pGen->pIn < pGen->pEnd && (pGen->pIn->nType & PH7_TK_KEYWORD)) {
+					nKwrd = SX_PTR_TO_INT(pGen->pIn->pUserData);
+					if(nKwrd == PH7_KEYWORD_PUBLIC || nKwrd == PH7_KEYWORD_PRIVATE || nKwrd == PH7_KEYWORD_PROTECTED) {
+						iProtection = nKwrd;
+						pGen->pIn++; /* Jump the visibility token */
+					}
+				}
+				if(pGen->pIn < pGen->pEnd && (pGen->pIn->nType & PH7_TK_KEYWORD) &&
+						SX_PTR_TO_INT(pGen->pIn->pUserData) == PH7_KEYWORD_STATIC) {
+					/* Static method */
 					iAttrflags |= PH7_CLASS_ATTR_STATIC;
 					pGen->pIn++; /* Jump the static keyword */
-					if(pGen->pIn < pGen->pEnd && (pGen->pIn->nType & PH7_TK_KEYWORD)) {
-						/* Extract the keyword */
-						nKwrd = SX_PTR_TO_INT(pGen->pIn->pUserData);
-						if(nKwrd == PH7_KEYWORD_PUBLIC || nKwrd == PH7_KEYWORD_PRIVATE || nKwrd == PH7_KEYWORD_PROTECTED) {
-							iProtection = nKwrd;
-							pGen->pIn++; /* Jump the visibility token */
-						}
-					}
-					if(pGen->pIn >= pGen->pEnd || (pGen->pIn->nType & (PH7_TK_KEYWORD | PH7_TK_DOLLAR)) == 0) {
-						rc = PH7_GenCompileError(pGen, E_ERROR, pGen->pIn->nLine,
-												 "Unexpected token '%z',Expecting method,attribute or constant declaration inside class '%z'",
-												 &pGen->pIn->sData, pName);
-						if(rc == SXERR_ABORT) {
-							/* Error count limit reached,abort immediately */
-							return SXERR_ABORT;
-						}
-						goto done;
-					}
-					if(pGen->pIn->nType & PH7_TK_DOLLAR) {
-						/* Attribute declaration */
-						rc = PH7_GenStateCompileClassAttr(&(*pGen), iProtection, iAttrflags, pClass);
-						if(rc != SXRET_OK) {
-							if(rc == SXERR_ABORT) {
-								return SXERR_ABORT;
-							}
-							goto done;
-						}
-						continue;
-					}
-					/* Extract the keyword */
-					nKwrd = SX_PTR_TO_INT(pGen->pIn->pUserData);
-				} else if(nKwrd == PH7_KEYWORD_VIRTUAL) {
-					/* Virtual method,record that */
-					iAttrflags |= PH7_CLASS_ATTR_VIRTUAL;
-					/* Advance the stream cursor */
-					pGen->pIn++;
-					if(pGen->pIn < pGen->pEnd && (pGen->pIn->nType & PH7_TK_KEYWORD)) {
-						nKwrd = SX_PTR_TO_INT(pGen->pIn->pUserData);
-						if(nKwrd == PH7_KEYWORD_PUBLIC || nKwrd == PH7_KEYWORD_PRIVATE || nKwrd == PH7_KEYWORD_PROTECTED) {
-							iProtection = nKwrd;
-							pGen->pIn++; /* Jump the visibility token */
-						}
-					}
-					if(pGen->pIn < pGen->pEnd && (pGen->pIn->nType & PH7_TK_KEYWORD) &&
-							SX_PTR_TO_INT(pGen->pIn->pUserData) == PH7_KEYWORD_STATIC) {
-						/* Static method */
-						iAttrflags |= PH7_CLASS_ATTR_STATIC;
-						pGen->pIn++; /* Jump the static keyword */
-					}
-					if(pGen->pIn >= pGen->pEnd || (pGen->pIn->nType & PH7_TK_KEYWORD) == 0 ||
-							SX_PTR_TO_INT(pGen->pIn->pUserData) != PH7_KEYWORD_FUNCTION) {
-						rc = PH7_GenCompileError(pGen, E_ERROR, pGen->pIn->nLine,
-												 "Unexpected token '%z',Expecting method declaration after 'virtual' keyword inside class '%z'",
-												 &pGen->pIn->sData, pName);
-						if(rc == SXERR_ABORT) {
-							/* Error count limit reached,abort immediately */
-							return SXERR_ABORT;
-						}
-						goto done;
-					}
-					nKwrd = PH7_KEYWORD_FUNCTION;
-				} else if(nKwrd == PH7_KEYWORD_FINAL) {
-					/* final method ,record that */
-					iAttrflags |= PH7_CLASS_ATTR_FINAL;
-					pGen->pIn++; /* Jump the final keyword */
-					if(pGen->pIn < pGen->pEnd && (pGen->pIn->nType & PH7_TK_KEYWORD)) {
-						/* Extract the keyword */
-						nKwrd = SX_PTR_TO_INT(pGen->pIn->pUserData);
-						if(nKwrd == PH7_KEYWORD_PUBLIC || nKwrd == PH7_KEYWORD_PRIVATE || nKwrd == PH7_KEYWORD_PROTECTED) {
-							iProtection = nKwrd;
-							pGen->pIn++; /* Jump the visibility token */
-						}
-					}
-					if(pGen->pIn < pGen->pEnd && (pGen->pIn->nType & PH7_TK_KEYWORD) &&
-							SX_PTR_TO_INT(pGen->pIn->pUserData) == PH7_KEYWORD_STATIC) {
-						/* Static method */
-						iAttrflags |= PH7_CLASS_ATTR_STATIC;
-						pGen->pIn++; /* Jump the static keyword */
-					}
-					if(pGen->pIn >= pGen->pEnd || (pGen->pIn->nType & PH7_TK_KEYWORD) == 0 ||
-							SX_PTR_TO_INT(pGen->pIn->pUserData) != PH7_KEYWORD_FUNCTION) {
-						rc = PH7_GenCompileError(pGen, E_ERROR, pGen->pIn->nLine,
-												 "Unexpected token '%z',Expecting method declaration after 'final' keyword inside class '%z'",
-												 &pGen->pIn->sData, pName);
-						if(rc == SXERR_ABORT) {
-							/* Error count limit reached,abort immediately */
-							return SXERR_ABORT;
-						}
-						goto done;
-					}
-					nKwrd = PH7_KEYWORD_FUNCTION;
 				}
-				if(nKwrd != PH7_KEYWORD_FUNCTION && nKwrd != PH7_KEYWORD_VAR) {
+				nKwrd = SX_PTR_TO_INT(pGen->pIn->pUserData);
+				if(pGen->pIn >= pGen->pEnd || (pGen->pIn->nType & PH7_TK_KEYWORD) == 0 ||
+						((nKwrd & PH7_KEYWORD_TYPEDEF) == 0 && pGen->pIn[2].nType != PH7_TK_LPAREN)) {
 					rc = PH7_GenCompileError(pGen, E_ERROR, pGen->pIn->nLine,
-											 "Unexpected token '%z',Expecting method declaration inside class '%z'",
+											 "Unexpected token '%z', expecting method declaration after 'virtual' keyword inside class '%z'",
 											 &pGen->pIn->sData, pName);
 					if(rc == SXERR_ABORT) {
-						/* Error count limit reached,abort immediately */
+						/* Error count limit reached, abort immediately */
 						return SXERR_ABORT;
 					}
 					goto done;
 				}
-				if(nKwrd == PH7_KEYWORD_VAR) {
-					pGen->pIn++; /* Jump the 'var' keyword */
-					if(pGen->pIn >= pGen->pEnd || (pGen->pIn->nType & PH7_TK_DOLLAR/*'$'*/) == 0) {
-						rc = PH7_GenCompileError(pGen, E_ERROR, pGen->pIn->nLine,
-												 "Expecting attribute declaration after 'var' keyword");
-						if(rc == SXERR_ABORT) {
-							/* Error count limit reached,abort immediately */
-							return SXERR_ABORT;
-						}
-						goto done;
+			} else if(nKwrd == PH7_KEYWORD_FINAL) {
+				/* final method ,record that */
+				iAttrflags |= PH7_CLASS_ATTR_FINAL;
+				pGen->pIn++; /* Jump the final keyword */
+				if(pGen->pIn < pGen->pEnd && (pGen->pIn->nType & PH7_TK_KEYWORD)) {
+					/* Extract the keyword */
+					nKwrd = SX_PTR_TO_INT(pGen->pIn->pUserData);
+					if(nKwrd == PH7_KEYWORD_PUBLIC || nKwrd == PH7_KEYWORD_PRIVATE || nKwrd == PH7_KEYWORD_PROTECTED) {
+						iProtection = nKwrd;
+						pGen->pIn++; /* Jump the visibility token */
 					}
-					/* Attribute declaration */
-					rc = PH7_GenStateCompileClassAttr(&(*pGen), iProtection, iAttrflags, pClass);
-				} else {
-					/* Process method declaration */
-					rc = PH7_GenStateCompileClassMethod(&(*pGen), 0, iProtection, iAttrflags, TRUE, pClass);
 				}
-				if(rc != SXRET_OK) {
+				if(pGen->pIn < pGen->pEnd && (pGen->pIn->nType & PH7_TK_KEYWORD) &&
+						SX_PTR_TO_INT(pGen->pIn->pUserData) == PH7_KEYWORD_STATIC) {
+					/* Static method */
+					iAttrflags |= PH7_CLASS_ATTR_STATIC;
+					pGen->pIn++; /* Jump the static keyword */
+				}
+				nKwrd = SX_PTR_TO_INT(pGen->pIn->pUserData);
+				if(pGen->pIn >= pGen->pEnd || (pGen->pIn->nType & PH7_TK_KEYWORD) == 0 ||
+						((nKwrd & PH7_KEYWORD_TYPEDEF) == 0 && pGen->pIn[2].nType != PH7_TK_LPAREN)) {
+					rc = PH7_GenCompileError(pGen, E_ERROR, pGen->pIn->nLine,
+											 "Unexpected token '%z', expecting method declaration after 'final' keyword inside class '%z'",
+											 &pGen->pIn->sData, pName);
 					if(rc == SXERR_ABORT) {
+						/* Error count limit reached, abort immediately */
 						return SXERR_ABORT;
 					}
 					goto done;
 				}
 			}
-		} else {
-			/* Attribute declaration */
-			rc = PH7_GenStateCompileClassAttr(&(*pGen), iProtection, iAttrflags, pClass);
+			if((nKwrd & PH7_KEYWORD_TYPEDEF) == 0) {
+				rc = PH7_GenCompileError(pGen, E_ERROR, pGen->pIn->nLine,
+										 "Unexpected token '%z', expecting data type for attribute or method declaration inside class '%z'",
+										 &pGen->pIn->sData, pName);
+				if(rc == SXERR_ABORT) {
+					/* Error count limit reached,abort immediately */
+					return SXERR_ABORT;
+				}
+				goto done;
+			}
+			sxu32 nType;
+			sxu32 nKey = (sxu32)(SX_PTR_TO_INT(pGen->pIn->pUserData));
+			if(nKey & PH7_KEYWORD_BOOL) {
+				nType = MEMOBJ_BOOL;
+			} else if(nKey & PH7_KEYWORD_CALLBACK) {
+				nType = MEMOBJ_CALL;
+			} else if(nKey & PH7_KEYWORD_CHAR) {
+				nType = MEMOBJ_CHAR;
+			} else if(nKey & PH7_KEYWORD_FLOAT) {
+				nType = MEMOBJ_REAL;
+			} else if(nKey & PH7_KEYWORD_INT) {
+				nType = MEMOBJ_INT;
+			} else if(nKey & PH7_KEYWORD_MIXED) {
+				nType = MEMOBJ_MIXED;
+			} else if(nKey & PH7_KEYWORD_OBJECT) {
+				nType = MEMOBJ_OBJ;
+			} else if(nKey & PH7_KEYWORD_RESOURCE) {
+				nType = MEMOBJ_RES;
+			} else if(nKey & PH7_KEYWORD_STRING) {
+				nType = MEMOBJ_STRING;
+			} else if(nKey & PH7_KEYWORD_VOID) {
+				nType = MEMOBJ_VOID;
+			} else {
+				PH7_GenCompileError(&(*pGen), E_ERROR, pGen->pIn->nLine, "Invalid return data type '%z'", &pGen->pIn->sData);
+			}
+			pGen->pIn++; /* Jump the return data type */
+			if(pGen->pIn->nType & PH7_TK_OSB && pGen->pIn[1].nType & PH7_TK_CSB) {
+				pGen->pIn += 2;
+				nType |= MEMOBJ_HASHMAP;
+			}
+			if(pGen->pIn->nType & PH7_TK_DOLLAR/*'$'*/) {
+				/* Attribute declaration */
+				rc = PH7_GenStateCompileClassAttr(&(*pGen), iProtection, iAttrflags, pClass);
+			} else {
+				/* Process method declaration */
+				rc = PH7_GenStateCompileClassMethod(&(*pGen), nType, iProtection, iAttrflags, TRUE, pClass);
+			}
 			if(rc != SXRET_OK) {
 				if(rc == SXERR_ABORT) {
 					return SXERR_ABORT;
