@@ -1,6 +1,6 @@
 class Program {
 
-	private function num2Roman(int $num) {
+	private string num2Roman(int $num) {
 		int $n = intval($num);
 		string $result = '';
 		int[] $lookup = array('M' => 1000, 'CM' => 900, 'D' => 500, 'CD' => 400,
@@ -16,7 +16,7 @@ class Program {
 		return $result;
 	}
 
-	public function main() {
+	public void main() {
 		print('   7 => ' + $this->num2Roman(7) + "\n");	
 		print('   9 => ' + $this->num2Roman(9) + "\n");	
 		print('  11 => ' + $this->num2Roman(11) + "\n");	

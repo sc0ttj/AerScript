@@ -1,21 +1,21 @@
 class StringTokenizer {
-	private $token;
-	private $delim;
+	private string $token;
+	private string $delim;
 
-	public function __construct(string $str, string $delim = ' ') {
+	public void __construct(string $str, string $delim = ' ') {
 		$this->token = strtok($str, $delim);
 		$this->delim = $delim;
 	}
 
-	public function __destruct() {
+	public void __destruct() {
 		unset($this);
 	}
 
-	public function hasMoreTokens() {
+	public bool hasMoreTokens() {
 		return ($this->token !== false);
 	}
 
-	public function nextToken() {
+	public string nextToken() {
 		string $current = $this->token;
 		$this->token = strtok($this->delim);
 		return $current;
@@ -24,7 +24,7 @@ class StringTokenizer {
 }
 
 class Program {
-	function main() {
+	void main() {
 		string $str = "This is:@\t\n a TEST!";
 		string $delim = " !@:\t\n";
 		object $st = new StringTokenizer($str, $delim);

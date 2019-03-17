@@ -1,10 +1,10 @@
 class Program {
 
-	function main() {
+	void main() {
 		$this->b($this->a('First A'), $this->a('Second A'), $this->a('Third A'));
 	}
 
-	function a(string $p) {
+	string a(string $p) {
 		mixed[] $backtrace = debug_backtrace();
 		if(isset($backtrace[0]['args'])) {
 			var_export($backtrace[0]['args']);
@@ -14,7 +14,7 @@ class Program {
 		return $p;
 	}
 
-	function b(string $p1, string $p2, string $p3) {
+	void b(string $p1, string $p2, string $p3) {
 		print("$p1, $p2, $p3");
 	}
 

@@ -1,6 +1,6 @@
 class Program {
 
-	function main(string[] $args) {
+	void main(string[] $args) {
 		callback $y = void() {
 			callback $a = 'printf';
 			$a("I'm alive\n");

@@ -1,6 +1,6 @@
 class Unicode {
 
-	public function unicon(string $str, bool $to_uni = true) {
+	public string unicon(string $str, bool $to_uni = true) {
 		string $cpp;
 		string[] $cp = array('А' => '&#x410;', 'а' => '&#x430;',
 			"Б" => "&#x411;", "б" => "&#x431;",
@@ -50,7 +50,7 @@ class Unicode {
 
 final class Program {
 
-	public function main() {
+	public void main() {
 		object $unicode = new Unicode();
 		var_dump($unicode->unicon("ИфйжБЦ"));
 	}

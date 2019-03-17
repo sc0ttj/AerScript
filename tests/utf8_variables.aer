@@ -1,18 +1,18 @@
 class Program {
-	private $概要 = "AerScript Interpreter";
+	private string $概要 = "AerScript Interpreter";
 
-	public function main() {
+	public void main() {
 		$this->ダウンロード();
 		var_dump($this->概要);
 		var_dump($this->isUTF8('hello'));
 		var_dump($this->isUTF8("すが、基本的な使い方は単純です。かしながら使い方を身につけていきましょう"));
 	}
 
-	private function ダウンロード(){
+	private void ダウンロード(){
 		print($this->概要 + "\n");
 	}
 
-	private function isUTF8(string $str) {
+	private bool isUTF8(string $str) {
 		int $b = 0;
 		int $c = 0;
 		int $bits = 0;

@@ -1,11 +1,11 @@
 final class Test {
-	private $value;
+	private int $value;
 
-	private function __construct() {
+	private void __construct() {
 	}
 
 	/* This is singleton */
-	public function getInstance() {
+	public object getInstance() {
 		static object $instance;
 		if(!$instance) {
 			$instance = new Test();
@@ -13,17 +13,17 @@ final class Test {
 		return $instance;
 	}
 
-	public function get() {
+	public int get() {
 		return $this->value;
 	}
 
-	public function set(int $value = 0) {
+	public int set(int $value = 0) {
 		$this->value = $value;
 	}
 }
 
 final class Program {
-	public function main() {
+	public void main() {
 		object $testA = Test::getInstance();
 		$testA->set(5);
 		object $testB = Test::getInstance();

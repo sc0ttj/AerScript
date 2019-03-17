@@ -1,6 +1,6 @@
 class Program {
 
-	public function main() {
+	public void main() {
 		print('Hello world!');
 	}
 

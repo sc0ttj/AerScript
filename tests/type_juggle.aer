@@ -1,6 +1,6 @@
 class Program {
 
-	function main() {
+	void main() {
 		mixed $foo;
 		$foo = '0';
 		var_dump($foo);

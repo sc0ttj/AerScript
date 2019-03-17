@@ -1,14 +1,14 @@
 class Program {
 
-	function count(int $a, int $b) {
+	void count(int $a, int $b) {
 		print("Counting 2 integers: $a + $b = ", $a + $b, "\n");
 	}
 
-	function count(float $a, float $b) {
+	void count(float $a, float $b) {
 		print("Counting 2 floats: $a + $b = ", $a + $b, "\n");
 	}
 
-	function main() {
+	void main() {
 		$this->count(4.3, 5.7);
 		$this->count(6, 4);
 	}
