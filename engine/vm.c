@@ -2063,6 +2063,7 @@ static sxi32 VmByteCodeExec(
 							pVm->sVmConsumer.xConsumer(SyBlobData(&pTos->sBlob), SyBlobLength(&pTos->sBlob),
 													   pVm->sVmConsumer.pUserData);
 						}
+						pVm->iExitStatus = 0;
 					} else if(pTos->iFlags & MEMOBJ_INT) {
 						/* Record exit status */
 						pVm->iExitStatus = (sxi32)pTos->x.iVal;
