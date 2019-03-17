@@ -783,54 +783,54 @@ static sxi32 VmEvalChunk(ph7_vm *pVm, ph7_context *pCtx, SyString *pChunk, int i
  */
 #define PH7_BUILTIN_LIB \
 	"class Exception { "\
-	"protected $message = 'Unknown exception';"\
-	"protected $code = 0;"\
-	"protected $file;"\
-	"protected $line;"\
-	"protected $trace;"\
-	"protected $previous;"\
-	"public function __construct(string $message = '', int $code = 0, Exception $previous = null){"\
-	"   if( isset($message) ){"\
+	"protected string $message = 'Unknown exception';"\
+	"protected int $code = 0;"\
+	"protected string $file;"\
+	"protected int $line;"\
+	"protected mixed $trace;"\
+	"protected object $previous;"\
+	"public void __construct(string $message = '', int $code = 0, Exception $previous = null) {"\
+	"   if(isset($message)) {"\
 	"	  $this->message = $message;"\
 	"   }"\
 	"   $this->code = $code;"\
 	"   $this->file = __FILE__;"\
 	"   $this->line = __LINE__;"\
 	"   $this->trace = debug_backtrace();"\
-	"   if( isset($previous) ){"\
+	"   if(isset($previous)) {"\
 	"     $this->previous = $previous;"\
 	"   }"\
 	"}"\
-	"public function getMessage(){"\
+	"public string getMessage() {"\
 	"   return $this->message;"\
 	"}"\
-	" public function getCode(){"\
+	" public int getCode() {"\
 	"  return $this->code;"\
 	"}"\
-	"public function getFile(){"\
+	"public string getFile() {"\
 	"  return $this->file;"\
 	"}"\
-	"public function getLine(){"\
+	"public int getLine() {"\
 	"  return $this->line;"\
 	"}"\
-	"public function getTrace(){"\
+	"public mixed getTrace() {"\
 	"   return $this->trace;"\
 	"}"\
-	"public function getTraceAsString(){"\
+	"public string getTraceAsString() {"\
 	"  return debug_string_backtrace();"\
 	"}"\
-	"public function getPrevious(){"\
+	"public object getPrevious() {"\
 	"    return $this->previous;"\
 	"}"\
-	"public function __toString(){"\
-	"   return $this->file+' '+$this->line+' '+$this->code+' '+$this->message;"\
+	"public string __toString(){"\
+	"   return $this->file + ' ' + $this->line + ' ' + $this->code + ' ' + $this->message;"\
 	"}"\
 	"}"\
 	"class ErrorException extends Exception { "\
-	"protected $severity;"\
-	"public function __construct(string $message = '',"\
-	"int $code = 0,int $severity = 1,string $filename = __FILE__ ,int $lineno = __LINE__ ,Exception $previous = null){"\
-	"   if( isset($message) ){"\
+	"protected int $severity;"\
+	"public void __construct(string $message = '',"\
+	"int $code = 0, int $severity = 1, string $filename = __FILE__ , int $lineno = __LINE__ , Exception $previous = null) {"\
+	"   if(isset($message)) {"\
 	"	  $this->message = $message;"\
 	"   }"\
 	"   $this->severity = $severity;"\
@@ -838,67 +838,67 @@ static sxi32 VmEvalChunk(ph7_vm *pVm, ph7_context *pCtx, SyString *pChunk, int i
 	"   $this->file = $filename;"\
 	"   $this->line = $lineno;"\
 	"   $this->trace = debug_backtrace();"\
-	"   if( isset($previous) ){"\
+	"   if(isset($previous)) {"\
 	"     $this->previous = $previous;"\
 	"   }"\
 	"}"\
-	"public function getSeverity(){"\
+	"public int getSeverity(){"\
 	"   return $this->severity;"\
 	"}"\
 	"}"\
 	"interface Iterator {"\
-	"public function current();"\
-	"public function key();"\
-	"public function next();"\
-	"public function rewind();"\
-	"public function valid();"\
+	"public mixed current();"\
+	"public mixed key();"\
+	"public void next();"\
+	"public void rewind();"\
+	"public bool valid();"\
 	"}"\
 	"interface IteratorAggregate {"\
-	"public function getIterator();"\
+	"public mixed getIterator();"\
 	"}"\
 	"interface Serializable {"\
-	"public function serialize();"\
-	"public function unserialize(string $serialized);"\
+	"public string serialize();"\
+	"public void unserialize(string $serialized);"\
 	"}"\
 	"/* Directory related IO */"\
 	"class Directory {"\
-	"public $handle = null;"\
-	"public $path  = null;"\
-	"public function __construct(string $path)"\
+	"public resource $handle;"\
+	"public string $path;"\
+	"public void __construct(string $path)"\
 	"{"\
 	"   $this->handle = opendir($path);"\
-	"   if( $this->handle !== FALSE ){"\
+	"   if($this->handle) {"\
 	"      $this->path = $path;"\
 	"   }"\
 	"}"\
-	"public function __destruct()"\
+	"public void __destruct()"\
 	"{"\
-	"  if( $this->handle != null ){"\
+	"  if($this->handle) {"\
 	"       closedir($this->handle);"\
 	"  }"\
 	"}"\
-	"public function read()"\
+	"public string2 read()"\
 	"{"\
 	"    return readdir($this->handle);"\
 	"}"\
-	"public function rewind()"\
+	"public void rewind()"\
 	"{"\
 	"    rewinddir($this->handle);"\
 	"}"\
-	"public function close()"\
+	"public void close()"\
 	"{"\
 	"    closedir($this->handle);"\
-	"    $this->handle = null;"\
+	"    $this->handle = 0;"\
 	"}"\
 	"}"\
 	"class stdClass{"\
-	"  public $value;"\
+	"  public mixed $value;"\
 	" /* Magic methods */"\
-	" public function __toInt(){ return (int)$this->value; }"\
-	" public function __toBool(){ return (bool)$this->value; }"\
-	" public function __toFloat(){ return (float)$this->value; }"\
-	" public function __toString(){ return (string)$this->value; }"\
-	" function __construct(mixed $v){ $this->value = $v; }"\
+	" public int __toInt(){ return (int)$this->value; }"\
+	" public bool __toBool(){ return (bool)$this->value; }"\
+	" public float __toFloat(){ return (float)$this->value; }"\
+	" public string __toString(){ return (string)$this->value; }"\
+	" void __construct(mixed $v){ $this->value = $v; }"\
 	"}"
 
 /*
