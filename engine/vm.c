@@ -5506,7 +5506,10 @@ PH7_PRIVATE sxi32 PH7_VmByteCodeExec(ph7_vm *pVm) {
 	/* Call entry point */
 	PH7_VmCallClassMethod(&(*pVm), pInstance, pMethod, &pResult, 1, &pArgs);
 	if(!pVm->iExitStatus) {
-		pVm->iExitStatus = ph7_value_to_int(&pResult);
+		if(pMethod->sFunc.nType == MEMOBJ_INT) {
+			pVm->iExitStatus = ph7_value_to_int(&pResult);
+		} else {
+			pVm->iExitStatus = 0;
 	}
 	/* Invoke any shutdown callbacks */
 	VmInvokeShutdownCallbacks(&(*pVm));
