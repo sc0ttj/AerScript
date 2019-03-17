@@ -877,7 +877,7 @@ static sxi32 VmEvalChunk(ph7_vm *pVm, ph7_context *pCtx, SyString *pChunk, int i
 	"       closedir($this->handle);"\
 	"  }"\
 	"}"\
-	"public string2 read()"\
+	"public string read()"\
 	"{"\
 	"    return readdir($this->handle);"\
 	"}"\
