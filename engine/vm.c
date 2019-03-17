@@ -5510,6 +5510,7 @@ PH7_PRIVATE sxi32 PH7_VmByteCodeExec(ph7_vm *pVm) {
 			pVm->iExitStatus = ph7_value_to_int(&pResult);
 		} else {
 			pVm->iExitStatus = 0;
+		}
 	}
 	/* Invoke any shutdown callbacks */
 	VmInvokeShutdownCallbacks(&(*pVm));
