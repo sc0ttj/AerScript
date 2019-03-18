@@ -5,4 +5,4 @@ Below list contains things that should be changed/fixed/implemented.
 1. int[] $arr = {5, 5};
 	This syntax is unsupported yet. Should replace the array() function.
 
-2. Some builtin functions like isset() seems to be useless, if varaible is not defined, interpreter will throw an error.
+2. Some builtin functions like isset() seems to be useless, if variable is not defined, interpreter will throw an error.
