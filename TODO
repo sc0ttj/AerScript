@@ -13,3 +13,4 @@ Below list contains things that should be changed/fixed/implemented.
 
 5. Accessing private attribute from parent class fails with 'Undefined class attribute' instead of error about visibility.
 
+6. Interpreter does not check if all methods match their signatures from interfaces and virtual classes.
