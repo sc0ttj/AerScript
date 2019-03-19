@@ -2638,7 +2638,9 @@ static sxi32 PH7_CompileVar(ph7_gen_state *pGen) {
 			if(pGen->pIn < pGen->pEnd && (pGen->pIn[2].nType & PH7_TK_EQUAL)) {
 				/* Compile the expression */
 				rc = PH7_CompileExpr(&(*pGen), EXPR_FLAG_COMMA_STATEMENT, 0);
-				if(rc == SXERR_EMPTY) {
+				if(rc == SXERR_ABORT) {
+					return SXERR_ABORT;
+				} else if(rc == SXERR_EMPTY) {
 					PH7_GenCompileError(&(*pGen), E_ERROR, pGen->pIn->nLine, "Variable '%z' is missing default value", &pName);
 				} else {
 					PH7_VmEmitInstr(pGen->pVm, nLine, PH7_OP_POP, 1, 0, 0, 0);
