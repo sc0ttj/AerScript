@@ -5472,6 +5472,8 @@ PH7_PRIVATE sxi32 PH7_VmByteCodeExec(ph7_vm *pVm) {
 	if(pInstance == 0) {
 		PH7_VmMemoryError(&(*pVm));
 	}
+	/* Enable garbage collector */
+	pInstance->iRef--;
 	/* Check if a constructor is available */
 	pMethod = PH7_ClassExtractMethod(pClass, "__construct", sizeof("__construct") - 1);
 	if(pMethod) {
