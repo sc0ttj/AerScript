@@ -383,7 +383,8 @@ PH7_PRIVATE sxi32 PH7_ClassInterfaceInherit(ph7_class *pSub, ph7_class *pBase) {
  * Any other return value indicates failure and the upper layer must generate an appropriate
  * error message.
  */
-PH7_PRIVATE sxi32 PH7_ClassImplement(ph7_class *pMain, ph7_class *pInterface) {
+PH7_PRIVATE sxi32 PH7_ClassImplement(ph7_vm *pVm, ph7_class *pMain, ph7_class *pInterface) {
+	ph7_class_method *pMeth;
 	ph7_class_attr *pAttr;
 	SyHashEntry *pEntry;
 	SyString *pName;
@@ -401,6 +402,20 @@ PH7_PRIVATE sxi32 PH7_ClassImplement(ph7_class *pMain, ph7_class *pInterface) {
 			if(rc != SXRET_OK) {
 				return rc;
 			}
+		}
+	}
+	SyHashResetLoopCursor(&pInterface->hMethod);
+	while((pEntry = SyHashGetNextEntry(&pInterface->hMethod)) != 0) {
+		pMeth = (ph7_class_method *)pEntry->pUserData;
+		pName = &pMeth->sFunc.sName;
+		if((pEntry = SyHashGet(&pMain->hMethod, (const void *)pName->zString, pName->nByte)) != 0) {
+			continue;
+		} else {
+			rc = PH7_VmThrowError(&(*pVm), PH7_CTX_ERR, "Method '%z:%z()' must be defined inside class '%z'", &pInterface->sName, pName, &pMain->sName);
+			if(rc == SXERR_ABORT) {
+				return SXERR_ABORT;
+			}
+			continue;
 		}
 	}
 	/* Install in the interface container */

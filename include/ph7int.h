@@ -1784,7 +1784,7 @@ PH7_PRIVATE sxi32 PH7_ClassInstallAttr(ph7_class *pClass, ph7_class_attr *pAttr)
 PH7_PRIVATE sxi32 PH7_ClassInstallMethod(ph7_class *pClass, ph7_class_method *pMeth);
 PH7_PRIVATE sxi32 PH7_ClassInherit(ph7_vm *pVm, ph7_class *pSub, ph7_class *pBase);
 PH7_PRIVATE sxi32 PH7_ClassInterfaceInherit(ph7_class *pSub, ph7_class *pBase);
-PH7_PRIVATE sxi32 PH7_ClassImplement(ph7_class *pMain, ph7_class *pInterface);
+PH7_PRIVATE sxi32 PH7_ClassImplement(ph7_vm *pVm, ph7_class *pMain, ph7_class *pInterface);
 PH7_PRIVATE ph7_class_instance *PH7_NewClassInstance(ph7_vm *pVm, ph7_class *pClass);
 PH7_PRIVATE ph7_class_instance *PH7_CloneClassInstance(ph7_class_instance *pSrc);
 PH7_PRIVATE sxi32 PH7_ClassInstanceCmp(ph7_class_instance *pLeft, ph7_class_instance *pRight, int bStrict, int iNest);

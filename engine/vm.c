@@ -4220,7 +4220,7 @@ static sxi32 VmByteCodeExec(
 								/* Trying to implement a class */
 								PH7_VmThrowError(&(*pVm), PH7_CTX_ERR, "Class '%z' cannot implement a class '%z'", &pClass->sName.zString, &apImplements->zString);
 							}
-							rc = PH7_ClassImplement(pClass, pBase);
+							rc = PH7_ClassImplement(pVm, pClass, pBase);
 							if(rc != SXRET_OK) {
 								break;
 							}
