@@ -370,7 +370,7 @@ static sxi32 ExprVerifyNodes(ph7_gen_state *pGen, ph7_expr_node **apNode, sxi32 
 				return rc;
 			}
 			iSquare--;
-		} else if(apNode[i]->pStart->nType & PH7_TK_OCB /*'{'*/) {
+		} else if(apNode[i]->pStart->nType & PH7_TK_OCB /*'{'*/ && apNode[i]->xCode != PH7_CompileArray) {
 			iBraces++;
 			if(i > 0 && (apNode[i - 1]->xCode == PH7_CompileVariable || (apNode[i - 1]->pStart->nType & PH7_TK_CSB/*]*/))) {
 				const ph7_expr_op *pOp, *pEnd;
@@ -662,6 +662,22 @@ static sxi32 ExprExtractNode(ph7_gen_state *pGen, ph7_expr_node **ppNode) {
 			}
 		}
 		pNode->xCode = PH7_CompileVariable;
+	} else if(pCur->nType & PH7_TK_OCB /* '{' */) {
+		/* Array, assemble tokens */
+		pCur++;
+		PH7_DelimitNestedTokens(pCur, pGen->pEnd, PH7_TK_OCB /* '{' */, PH7_TK_CCB /* '}' */, &pCur);
+		if(pCur < pGen->pEnd) {
+			pCur++;
+		} else {
+			/* Syntax error */
+			rc = PH7_GenCompileError(pGen, E_ERROR, pNode->pStart->nLine, "Syntax error: Missing closing braces '}'");
+			if(rc != SXERR_ABORT) {
+				rc = SXERR_SYNTAX;
+			}
+			SyMemBackendPoolFree(&pGen->pVm->sAllocator, pNode);
+			return rc;
+		}
+		pNode->xCode = PH7_CompileArray;
 	} else if(pCur->nType & PH7_TK_KEYWORD) {
 		sxu32 nKeyword = (sxu32)SX_PTR_TO_INT(pCur->pUserData);
 		if(nKeyword == PH7_KEYWORD_ARRAY ||  nKeyword == PH7_KEYWORD_LIST) {
@@ -983,7 +999,7 @@ static sxi32 ExprMakeTree(ph7_gen_state *pGen, ph7_expr_node **apNode, sxi32 nTo
 		/* Note that, we use strict comparison here '!=' instead of the bitwise and '&' operator
 		 * since the OCB '{' token can also be an operator [i.e: subscripting].
 		 */
-		if(apNode[iCur] == 0 || apNode[iCur]->pStart->nType != PH7_TK_OCB) {
+		if(apNode[iCur] == 0 || apNode[iCur]->pStart->nType != PH7_TK_OCB || apNode[iCur]->xCode == PH7_CompileArray) {
 			continue;
 		}
 		iNest = 1;
