@@ -798,9 +798,14 @@ PH7_PRIVATE sxi32 PH7_CompileArray(ph7_gen_state *pGen, sxi32 iCompileFlag) {
 	sxi32 nPair = 0;
 	sxi32 iNest;
 	sxi32 rc;
-	/* Jump the 'array' keyword,the leading left parenthesis and the trailing parenthesis.
-	 */
-	pGen->pIn += 2;
+	if(pGen->pIn->nType & PH7_TK_OCB) {
+		/* Jump the opening curly bracket */
+		pGen->pIn++;
+	} else {
+		/* Jump the 'array' keyword,the leading left parenthesis */
+		pGen->pIn += 2;
+	}
+	/* Jump the trailing parenthesis. */
 	pGen->pEnd--;
 	xValidator = 0;
 	SXUNUSED(iCompileFlag); /* cc warning */
