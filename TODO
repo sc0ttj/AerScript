@@ -6,5 +6,3 @@ Below list contains things that should be changed/fixed/implemented.
 	This syntax is unsupported yet. Should replace the array() function.
 
 2. Some builtin functions like isset() seems to be useless, if variable is not defined, interpreter will throw an error.
-
-3. Interpreter does not check if all methods match their signatures from interfaces and virtual classes.
