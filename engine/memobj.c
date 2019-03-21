@@ -1090,10 +1090,6 @@ Numeric:
 			PH7_MemObjToNumeric(pObj2);
 		}
 		if((pObj1->iFlags & pObj2->iFlags & MEMOBJ_INT) == 0) {
-			/*
-			 * Symisc eXtension to the PHP language:
-			 *  Floating point comparison is introduced and works as expected.
-			 */
 			ph7_real r1, r2;
 			/* Compare as reals */
 			if((pObj1->iFlags & MEMOBJ_REAL) == 0) {
