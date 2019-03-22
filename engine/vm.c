@@ -2235,19 +2235,6 @@ static sxi32 VmByteCodeExec(
 				MemObjSetType(pTos, MEMOBJ_CHAR);
 				break;
 			/*
-			 * CVT_NULL: * * *
-			 *
-			 * Nullify the top of the stack.
-			 */
-			case PH7_OP_CVT_NULL:
-#ifdef UNTRUST
-				if(pTos < pStack) {
-					goto Abort;
-				}
-#endif
-				PH7_MemObjRelease(pTos);
-				break;
-			/*
 			 * CVT_NUMC: * * *
 			 *
 			 * Force the top of the stack to be a numeric type (integer,real or both).
@@ -5644,9 +5631,6 @@ static const char *VmInstrToString(sxi32 nOp) {
 			break;
 		case PH7_OP_CVT_BOOL:
 			zOp = "CVT_BOOL";
-			break;
-		case PH7_OP_CVT_NULL:
-			zOp = "CVT_NULL";
 			break;
 		case PH7_OP_CVT_OBJ:
 			zOp = "CVT_OBJ";
