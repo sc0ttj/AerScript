@@ -1486,7 +1486,6 @@ enum ph7_expr_id {
 	EXPR_OP_UMINUS,    /* Unary minus  */
 	EXPR_OP_UPLUS,     /* Unary plus */
 	EXPR_OP_TYPECAST,  /* Type cast [i.e: (int),(float),(string)...] */
-	EXPR_OP_ALT,       /* @ */
 	EXPR_OP_INSTOF,    /* instanceof */
 	EXPR_OP_LOGNOT,    /* logical not ! */
 	EXPR_OP_MUL,       /* Multiplication */
