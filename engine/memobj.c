@@ -469,13 +469,6 @@ PH7_PRIVATE sxi32 PH7_MemObjToString(ph7_value *pObj) {
 	return rc;
 }
 /*
- * Nullify a ph7_value.In other words invalidate any prior
- * representation.
- */
-PH7_PRIVATE sxi32 PH7_MemObjToNull(ph7_value *pObj) {
-	return PH7_MemObjRelease(pObj);
-}
-/*
  * Convert a ph7_value to type array.Invalidate any prior representations.
   * According to the PHP language reference manual.
   *   For any of the types: integer, float, string, boolean converting a value
@@ -602,8 +595,8 @@ PH7_PRIVATE ProcMemObjCast PH7_MemObjCastMethod(sxi32 iFlags) {
 	} else if(iFlags & MEMOBJ_VOID) {
 		return PH7_MemObjToVoid;
 	}
-	/* NULL cast */
-	return PH7_MemObjToNull;
+	/* Release the variable */
+	return PH7_MemObjRelease;
 }
 /*
  * Check whether the ph7_value is numeric [i.e: int/float/bool] or looks

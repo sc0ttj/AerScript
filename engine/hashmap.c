@@ -546,8 +546,8 @@ static sxi32 HashmapInsert(
 				if(pVal) {
 					PH7_MemObjStore(pVal, pElem);
 				} else {
-					/* Nullify the entry */
-					PH7_MemObjToNull(pElem);
+					/* Release the entry */
+					PH7_MemObjRelease(pElem);
 				}
 			}
 			return SXRET_OK;
@@ -570,8 +570,8 @@ IntKey:
 				if(pVal) {
 					PH7_MemObjStore(pVal, pElem);
 				} else {
-					/* Nullify the entry */
-					PH7_MemObjToNull(pElem);
+					/* Release the entry */
+					PH7_MemObjRelease(pElem);
 				}
 			}
 			return SXRET_OK;
