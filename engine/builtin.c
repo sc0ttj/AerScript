@@ -290,7 +290,7 @@ static int PH7_builtin_round(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	r = ph7_value_to_double(apArg[0]);
 	/* If Y==0 and X will fit in a 64-bit int,
 	 * handle the rounding directly.Otherwise
-	 * use our own cutsom printf [i.e:SyBufferFormat()].
+	 * use our own custom printf [i.e:SyBufferFormat()].
 	 */
 	if(n == 0 && r >= 0 && r < LARGEST_INT64 - 1) {
 		r = (double)((ph7_int64)(r + 0.5));
