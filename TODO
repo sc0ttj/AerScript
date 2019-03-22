@@ -6,9 +6,6 @@ Below list contains things that should be changed/fixed/implemented.
 
 2. Some builtin functions like isset() seems to be useless, if variable is not defined, interpreter will throw an error.
 
-3. Arrays in AerScript are of incompatible type and can be assigned only to mixed variable type. This should be fixed.
-
-4. Arrays can be assigned to non-array variable, argument to Program::main is affected as well.
+3. Arrays can be assigned to non-array method argument to Program::main is affected as well.
 	int main(string[] $args); is valid, but int main(string $args); also works
 
-5. Array construct '{ ... }' should check if all elements are of the same type and set it as whole array type or failover to mixed.
