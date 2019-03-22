@@ -2317,18 +2317,6 @@ static sxi32 VmByteCodeExec(
 				PH7_MemObjToVoid(pTos);
 				break;
 			/*
-			 * ERR_CTRL * * *
-			 *
-			 * Error control operator.
-			 */
-			case PH7_OP_ERR_CTRL:
-				/*
-				 * TICKET 1433-038:
-				 * As of this version ,the error control operator '@' is a no-op,simply
-				 * use the public API,to control error output.
-				 */
-				break;
-			/*
 			 * IS_A * * *
 			 *
 			 * Pop the top two operands from the stack and check whether the first operand
@@ -5719,9 +5707,6 @@ static const char *VmInstrToString(sxi32 nOp) {
 			break;
 		case PH7_OP_MEMBER:
 			zOp = "MEMBER";
-			break;
-		case PH7_OP_ERR_CTRL:
-			zOp = "ERR_CTRL";
 			break;
 		case PH7_OP_IS_A:
 			zOp = "IS_A";
