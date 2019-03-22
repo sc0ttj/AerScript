@@ -1120,7 +1120,7 @@ PH7_PRIVATE sxi32 PH7_VmMakeReady(
 	}
 	/* Register built-in constants [i.e: PHP_EOL, PHP_OS...] */
 	PH7_RegisterBuiltInConstant(&(*pVm));
-	/* Register built-in functions [i.e: is_null(), array_diff(), strlen(), etc.] */
+	/* Register built-in functions [i.e: array_diff(), strlen(), etc.] */
 	PH7_RegisterBuiltInFunction(&(*pVm));
 	/* Initialize and install static and constants class attributes */
 	SyHashResetLoopCursor(&pVm->hClass);

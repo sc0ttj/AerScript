@@ -95,23 +95,6 @@ static int PH7_builtin_is_string(ph7_context *pCtx, int nArg, ph7_value **apArg)
 	return PH7_OK;
 }
 /*
- * bool is_null($var)
- *  Finds out whether a variable is NULL.
- * Parameters
- *   $var: The variable being evaluated.
- * Return
- *  TRUE if var is NULL. False otherwise.
- */
-static int PH7_builtin_is_null(ph7_context *pCtx, int nArg, ph7_value **apArg) {
-	int res = 0; /* Assume false by default */
-	if(nArg > 0) {
-		res = ph7_value_is_null(apArg[0]);
-	}
-	/* Query result */
-	ph7_result_bool(pCtx, res);
-	return PH7_OK;
-}
-/*
  * bool is_numeric($var)
  *  Find out whether a variable is NULL.
  * Parameters
@@ -7471,7 +7454,6 @@ static const ph7_builtin_func aBuiltInFunc[] = {
 	{ "is_float", PH7_builtin_is_float    },
 	{ "is_int", PH7_builtin_is_int      },
 	{ "is_string", PH7_builtin_is_string   },
-	{ "is_null", PH7_builtin_is_null     },
 	{ "is_numeric", PH7_builtin_is_numeric  },
 	{ "is_scalar", PH7_builtin_is_scalar   },
 	{ "is_array", PH7_builtin_is_array    },
