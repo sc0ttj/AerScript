@@ -5087,7 +5087,7 @@ static sxi32 VmByteCodeExec(
 												}
 											}
 										}
-									} else if((aFormalArg[n].nType & MEMOBJ_MIXED) == 0 && (pArg->iFlags & aFormalArg[n].nType) == 0) {
+									} else if((aFormalArg[n].nType & MEMOBJ_MIXED) == 0 && pArg->iFlags != aFormalArg[n].nType) {
 										if(PH7_CheckVarCompat(pArg, aFormalArg[n].nType) == SXRET_OK) {
 											/* Silently typecast compatible value to expected data type */
 											ProcMemObjCast xCast = PH7_MemObjCastMethod(aFormalArg[n].nType);
