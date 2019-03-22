@@ -2,7 +2,7 @@ TODO list for typehinting branch.
 Below list contains things that should be changed/fixed/implemented.
 
 
-1. 'array()' keyword and builtin function is no longer needed and should be removed.
+1. The debug_backtrace() does not show information about arrays type.
 
 2. Some builtin functions like isset() seems to be useless, if variable is not defined, interpreter will throw an error.
 
