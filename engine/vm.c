@@ -2262,24 +2262,6 @@ static sxi32 VmByteCodeExec(
 				PH7_MemObjToNumeric(pTos);
 				break;
 			/*
-			 * CVT_ARRAY: * * *
-			 *
-			 * Force the top of the stack to be a hashmap aka 'array'.
-			 */
-			case PH7_OP_CVT_ARRAY:
-#ifdef UNTRUST
-				if(pTos < pStack) {
-					goto Abort;
-				}
-#endif
-				/* Force a hashmap cast */
-				rc = PH7_MemObjToHashmap(pTos);
-				if(rc != SXRET_OK) {
-					/* OOM, emit an error message */
-					PH7_VmMemoryError(&(*pVm));
-				}
-				break;
-			/*
 			 * CVT_OBJ: * * *
 			 *
 			 * Force the top of the stack to be a class instance (Object in the PHP jargon).
@@ -2537,52 +2519,6 @@ static sxi32 VmByteCodeExec(
 					pTos->nIdx = SXU32_HIGH;
 					pTos->x.pOther = pMap;
 					MemObjSetType(pTos, MEMOBJ_HASHMAP | iFlags);
-					break;
-				}
-			/*
-			 * LOAD_LIST: P1 * *
-			 *
-			 * Assign hashmap entries values to the top P1 entries.
-			 * This is the VM implementation of the list() PHP construct.
-			 * Caveats:
-			 *  This implementation support only a single nesting level.
-			 */
-			case PH7_OP_LOAD_LIST: {
-					ph7_value *pEntry;
-					if(pInstr->iP1 <= 0) {
-						/* Empty list,break immediately */
-						break;
-					}
-					pEntry = &pTos[-pInstr->iP1 + 1];
-#ifdef UNTRUST
-					if(&pEntry[-1] < pStack) {
-						goto Abort;
-					}
-#endif
-					if(pEntry[-1].iFlags & MEMOBJ_HASHMAP) {
-						ph7_hashmap *pMap = (ph7_hashmap *)pEntry[-1].x.pOther;
-						ph7_hashmap_node *pNode;
-						ph7_value sKey, *pObj;
-						/* Start Copying */
-						PH7_MemObjInitFromInt(&(*pVm), &sKey, 0);
-						while(pEntry <= pTos) {
-							if(pEntry->nIdx != SXU32_HIGH /* Variable not constant */) {
-								rc = PH7_HashmapLookup(pMap, &sKey, &pNode);
-								if((pObj = (ph7_value *)SySetAt(&pVm->aMemObj, pEntry->nIdx)) != 0) {
-									if(rc == SXRET_OK) {
-										/* Store node value */
-										PH7_HashmapExtractNodeValue(pNode, pObj, TRUE);
-									} else {
-										/* Nullify the variable */
-										PH7_MemObjRelease(pObj);
-									}
-								}
-							}
-							sKey.x.iVal++; /* Next numeric index */
-							pEntry++;
-						}
-					}
-					VmPopOperand(&pTos, pInstr->iP1);
 					break;
 				}
 			/*
@@ -5592,9 +5528,6 @@ static const char *VmInstrToString(sxi32 nOp) {
 		case PH7_OP_LOAD_MAP:
 			zOp = "LOAD_MAP";
 			break;
-		case PH7_OP_LOAD_LIST:
-			zOp = "LOAD_LIST";
-			break;
 		case PH7_OP_LOAD_IDX:
 			zOp = "LOAD_IDX";
 			break;
@@ -5726,9 +5659,6 @@ static const char *VmInstrToString(sxi32 nOp) {
 			break;
 		case PH7_OP_CVT_NULL:
 			zOp = "CVT_NULL";
-			break;
-		case PH7_OP_CVT_ARRAY:
-			zOp = "CVT_ARRAY";
 			break;
 		case PH7_OP_CVT_OBJ:
 			zOp = "CVT_OBJ";

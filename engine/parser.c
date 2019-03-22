@@ -181,7 +181,6 @@ static const ph7_expr_op aOpTable[] = {
 	{ {"(char)",     sizeof("(char)") - 1  }, EXPR_OP_TYPECAST, 4, EXPR_OP_ASSOC_RIGHT, PH7_OP_CVT_CHAR },
 	{ {"(string)",   sizeof("(string)") - 1}, EXPR_OP_TYPECAST, 4, EXPR_OP_ASSOC_RIGHT, PH7_OP_CVT_STR  },
 	{ {"(float)",    sizeof("(float)") - 1 }, EXPR_OP_TYPECAST, 4, EXPR_OP_ASSOC_RIGHT, PH7_OP_CVT_REAL },
-	{ {"(array)",    sizeof("(array)") - 1 }, EXPR_OP_TYPECAST, 4, EXPR_OP_ASSOC_RIGHT, PH7_OP_CVT_ARRAY},
 	{ {"(object)",   sizeof("(object)") - 1}, EXPR_OP_TYPECAST, 4, EXPR_OP_ASSOC_RIGHT, PH7_OP_CVT_OBJ  },
 	{ {"(callback)", sizeof("(callback)") - 1}, EXPR_OP_TYPECAST, 4, EXPR_OP_ASSOC_RIGHT, PH7_OP_CVT_CALL},
 	{ {"(resource)", sizeof("(resource)") - 1}, EXPR_OP_TYPECAST, 4, EXPR_OP_ASSOC_RIGHT, PH7_OP_CVT_RES},
@@ -611,7 +610,7 @@ Synchronize:
  * An expression node can be a variable [i.e: $var],an operator [i.e: ++]
  * an anonymous function [i.e: function(){ return "Hello"; }, a double/single
  * quoted string, a literal [i.e: PHP_EOL],a namespace path
- * [i.e: namespaces\path\to..],a array/list [i.e: array(4,5,6)] and so on.
+ * [i.e: namespaces\path\to..],an array [i.e: {4,5,6}] and so on.
  */
 static sxi32 ExprExtractNode(ph7_gen_state *pGen, ph7_expr_node **ppNode) {
 	ph7_expr_node *pNode;
@@ -680,43 +679,7 @@ static sxi32 ExprExtractNode(ph7_gen_state *pGen, ph7_expr_node **ppNode) {
 		pNode->xCode = PH7_CompileArray;
 	} else if(pCur->nType & PH7_TK_KEYWORD) {
 		sxu32 nKeyword = (sxu32)SX_PTR_TO_INT(pCur->pUserData);
-		if(nKeyword == PH7_KEYWORD_ARRAY ||  nKeyword == PH7_KEYWORD_LIST) {
-			/* List/Array node */
-			if(&pCur[1] >= pGen->pEnd || (pCur[1].nType & PH7_TK_LPAREN) == 0) {
-				/* Assume a literal */
-				ExprAssembleLiteral(&pCur, pGen->pEnd);
-				pNode->xCode = PH7_CompileLiteral;
-			} else {
-				pCur += 2;
-				/* Collect array/list tokens */
-				PH7_DelimitNestedTokens(pCur, pGen->pEnd, PH7_TK_LPAREN /* '(' */, PH7_TK_RPAREN /* ')' */, &pCur);
-				if(pCur < pGen->pEnd) {
-					pCur++;
-				} else {
-					/* Syntax error */
-					rc = PH7_GenCompileError(pGen, E_ERROR, pNode->pStart->nLine,
-											 "%s: Missing closing parenthesis ')'", nKeyword == PH7_KEYWORD_LIST ? "list" : "array");
-					if(rc != SXERR_ABORT) {
-						rc = SXERR_SYNTAX;
-					}
-					SyMemBackendPoolFree(&pGen->pVm->sAllocator, pNode);
-					return rc;
-				}
-				pNode->xCode = (nKeyword == PH7_KEYWORD_LIST) ? PH7_CompileList : PH7_CompileArray;
-				if(pNode->xCode == PH7_CompileList) {
-					ph7_expr_op *pOp = (pCur < pGen->pEnd) ? (ph7_expr_op *)pCur->pUserData : 0;
-					if(pCur >= pGen->pEnd || (pCur->nType & PH7_TK_OP) == 0  || pOp == 0 || pOp->iVmOp != PH7_OP_STORE /*'='*/) {
-						/* Syntax error */
-						rc = PH7_GenCompileError(pGen, E_ERROR, pNode->pStart->nLine, "list(): expecting '=' after construct");
-						if(rc != SXERR_ABORT) {
-							rc = SXERR_SYNTAX;
-						}
-						SyMemBackendPoolFree(&pGen->pVm->sAllocator, pNode);
-						return rc;
-					}
-				}
-			}
-		} else if(pCur[1].nType & PH7_TK_LPAREN && (nKeyword & PH7_KEYWORD_TYPEDEF)) {
+		if(pCur[1].nType & PH7_TK_LPAREN && (nKeyword & PH7_KEYWORD_TYPEDEF)) {
 			/* Anonymous function */
 			if(&pCur[1] >= pGen->pEnd) {
 				/* Assume a literal */
@@ -1468,7 +1431,7 @@ static sxi32 ExprMakeTree(ph7_gen_state *pGen, ph7_expr_node **apNode, sxi32 nTo
 				return rc;
 			}
 			if(ExprIsModifiableValue(apNode[iLeft], FALSE) == FALSE) {
-				if(pNode->pOp->iVmOp != PH7_OP_STORE || apNode[iLeft]->xCode != PH7_CompileList) {
+				if(pNode->pOp->iVmOp != PH7_OP_STORE) {
 					/* Left operand must be a modifiable l-value */
 					rc = PH7_GenCompileError(pGen, E_ERROR, pNode->pStart->nLine,
 											 "'%z': Left operand must be a modifiable l-value", &pNode->pOp->sOp);

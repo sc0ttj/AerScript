@@ -225,7 +225,7 @@ static sxi32 TokenizeAerScript(SyStream *pStream, SyToken *pToken, void *pUserDa
 						pTmp = (SyToken *)SySetPeek(pTokSet);
 						if(pTmp->nType & PH7_TK_KEYWORD) {
 							sxi32 nID = SX_PTR_TO_INT(pTmp->pUserData);
-							if((sxu32)nID & (PH7_KEYWORD_ARRAY | PH7_KEYWORD_INT | PH7_KEYWORD_FLOAT | PH7_KEYWORD_STRING | PH7_KEYWORD_OBJECT | PH7_KEYWORD_BOOL | PH7_KEYWORD_CHAR | PH7_KEYWORD_CALLBACK | PH7_KEYWORD_RESOURCE | PH7_KEYWORD_VOID)) {
+							if((sxu32)nID & (PH7_KEYWORD_INT | PH7_KEYWORD_FLOAT | PH7_KEYWORD_STRING | PH7_KEYWORD_OBJECT | PH7_KEYWORD_BOOL | PH7_KEYWORD_CHAR | PH7_KEYWORD_CALLBACK | PH7_KEYWORD_RESOURCE | PH7_KEYWORD_VOID)) {
 								pTmp = (SyToken *)SySetAt(pTokSet, pTokSet->nUsed - 2);
 								if(pTmp->nType & PH7_TK_LPAREN) {
 									/* Merge the three tokens '(' 'TYPE' ')' into a single one */
@@ -238,8 +238,6 @@ static sxi32 TokenizeAerScript(SyStream *pStream, SyToken *pToken, void *pUserDa
 										zTypeCast = "(char)";
 									} else if(nID & PH7_KEYWORD_STRING) {
 										zTypeCast = "(string)";
-									} else if(nID & PH7_KEYWORD_ARRAY) {
-										zTypeCast = "(array)";
 									} else if(nID & PH7_KEYWORD_OBJECT) {
 										zTypeCast = "(object)";
 									} else if(nID & PH7_KEYWORD_CALLBACK) {
@@ -635,11 +633,9 @@ static sxu32 KeywordCode(const char *z, int n) {
 		{"import", PH7_KEYWORD_IMPORT},
 		{"include", PH7_KEYWORD_INCLUDE},
 		{"isset", PH7_KEYWORD_ISSET},
-		{"list", PH7_KEYWORD_LIST},
 		{"require", PH7_KEYWORD_REQUIRE},
 		{"return", PH7_KEYWORD_RETURN},
 		/* Other keywords */
-		{"array", PH7_KEYWORD_ARRAY},
 		{"function", PH7_KEYWORD_FUNCTION},
 		{"var", PH7_KEYWORD_VAR}
 	};

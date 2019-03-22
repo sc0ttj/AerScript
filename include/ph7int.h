@@ -1393,7 +1393,6 @@ enum ph7_vm_op {
 	PH7_OP_LOADC,        /* Load constant */
 	PH7_OP_LOAD_IDX,     /* Load array entry */
 	PH7_OP_LOAD_MAP,     /* Load hashmap('array') */
-	PH7_OP_LOAD_LIST,    /* Load list */
 	PH7_OP_LOAD_CLOSURE, /* Load closure */
 	PH7_OP_NOOP,         /* NOOP */
 	PH7_OP_JMP,          /* Unconditional jump */
@@ -1457,7 +1456,6 @@ enum ph7_vm_op {
 	PH7_OP_STORE_REF,    /* Store a reference to a variable*/
 	PH7_OP_MEMBER,       /* Class member run-time access */
 	PH7_OP_CVT_NULL,     /* NULL cast */
-	PH7_OP_CVT_ARRAY,    /* Array cast */
 	PH7_OP_CVT_OBJ,      /* Object cast */
 	PH7_OP_CVT_CALL,     /* Callback cast */
 	PH7_OP_CVT_RES,      /* Resource cast */
@@ -1576,7 +1574,6 @@ enum ph7_expr_id {
 #define PH7_KEYWORD_ELSE         0x8000000 /* else:  MUST BE A POWER OF TWO */
 #define PH7_KEYWORD_IF           13 /* if */
 #define PH7_KEYWORD_FINAL        14 /* final */
-#define PH7_KEYWORD_LIST         15 /* list */
 #define PH7_KEYWORD_STATIC       16 /* static */
 #define PH7_KEYWORD_CASE         17 /* case */
 #define PH7_KEYWORD_SELF         18 /* self */
@@ -1590,7 +1587,6 @@ enum ph7_expr_id {
 #define PH7_KEYWORD_WHILE        26 /* while */
 #define PH7_KEYWORD_EVAL         27 /* eval */
 #define PH7_KEYWORD_VAR          28 /* var */
-#define PH7_KEYWORD_ARRAY        0x200 /* array: MUST BE A POWER OF TWO */
 #define PH7_KEYWORD_VIRTUAL      29 /* virtual */
 #define PH7_KEYWORD_TRY          30 /* try */
 #define PH7_KEYWORD_DEFAULT      31 /* default */
@@ -1734,7 +1730,6 @@ PH7_PRIVATE sxi32 PH7_CompileLiteral(ph7_gen_state *pGen, sxi32 iCompileFlag);
 PH7_PRIVATE sxi32 PH7_CompileSimpleString(ph7_gen_state *pGen, sxi32 iCompileFlag);
 PH7_PRIVATE sxi32 PH7_CompileString(ph7_gen_state *pGen, sxi32 iCompileFlag);
 PH7_PRIVATE sxi32 PH7_CompileArray(ph7_gen_state *pGen, sxi32 iCompileFlag);
-PH7_PRIVATE sxi32 PH7_CompileList(ph7_gen_state *pGen, sxi32 iCompileFlag);
 PH7_PRIVATE sxi32 PH7_CompileClosure(ph7_gen_state *pGen, sxi32 iCompileFlag);
 PH7_PRIVATE sxi32 PH7_InitCodeGenerator(ph7_vm *pVm, ProcConsumer xErr, void *pErrData);
 PH7_PRIVATE sxi32 PH7_ResetCodeGenerator(ph7_vm *pVm, ProcConsumer xErr, void *pErrData);

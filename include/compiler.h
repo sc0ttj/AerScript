@@ -96,7 +96,6 @@ static sxi32 PH7_GenStateCompileArrayEntry(ph7_gen_state *pGen, SyToken *pIn, Sy
 static sxi32 PH7_GenStateArrayNodeValidator(ph7_gen_state *pGen, ph7_expr_node *pRoot);
 PH7_PRIVATE sxi32 PH7_CompileArray(ph7_gen_state *pGen, sxi32 iCompileFlag);
 static sxi32 PH7_GenStateListNodeValidator(ph7_gen_state *pGen, ph7_expr_node *pRoot);
-PH7_PRIVATE sxi32 PH7_CompileList(ph7_gen_state *pGen, sxi32 iCompileFlag);
 static sxi32 PH7_GenStateCompileFunc(ph7_gen_state *pGen, SyString *pName, sxi32 iFlags, int bHandleClosure, ph7_vm_func **ppFunc);
 PH7_PRIVATE sxi32 PH7_CompileLangConstruct(ph7_gen_state *pGen, sxi32 iCompileFlag);
 PH7_PRIVATE sxi32 PH7_CompileVariable(ph7_gen_state *pGen, sxi32 iCompileFlag);

@@ -798,14 +798,8 @@ PH7_PRIVATE sxi32 PH7_CompileArray(ph7_gen_state *pGen, sxi32 iCompileFlag) {
 	sxi32 nPair = 0;
 	sxi32 iNest;
 	sxi32 rc;
-	if(pGen->pIn->nType & PH7_TK_OCB) {
-		/* Jump the opening curly bracket */
-		pGen->pIn++;
-	} else {
-		/* Jump the 'array' keyword,the leading left parenthesis */
-		pGen->pIn += 2;
-	}
-	/* Jump the trailing parenthesis. */
+	/* Jump the opening and the trailing parenthesis. */
+	pGen->pIn++;
 	pGen->pEnd--;
 	xValidator = 0;
 	SXUNUSED(iCompileFlag); /* cc warning */
@@ -929,49 +923,6 @@ static sxi32 PH7_GenStateListNodeValidator(ph7_gen_state *pGen, ph7_expr_node *p
 		}
 	}
 	return rc;
-}
-/*
- * Compile the 'list' language construct.
- *  list(): Assign variables as if they were an array.
- *  list() is used to assign a list of variables in one operation.
- *  Description
- *   array list (mixed $varname [, mixed $... ] )
- *   Like array(), this is not really a function, but a language construct.
- *   list() is used to assign a list of variables in one operation.
- *  Parameters
- *   $varname: A variable.
- *  Return Values
- *   The assigned array.
- */
-PH7_PRIVATE sxi32 PH7_CompileList(ph7_gen_state *pGen, sxi32 iCompileFlag) {
-	SyToken *pNext;
-	sxi32 nExpr;
-	sxi32 rc;
-	nExpr = 0;
-	/* Jump the 'list' keyword,the leading left parenthesis and the trailing parenthesis */
-	pGen->pIn += 2;
-	pGen->pEnd--;
-	SXUNUSED(iCompileFlag); /* cc warning */
-	while(SXRET_OK == PH7_GetNextExpr(pGen->pIn, pGen->pEnd, &pNext)) {
-		if(pGen->pIn < pNext) {
-			/* Compile the expression holding the variable */
-			rc = PH7_GenStateCompileArrayEntry(&(*pGen), pGen->pIn, pNext, EXPR_FLAG_LOAD_IDX_STORE, PH7_GenStateListNodeValidator);
-			if(rc != SXRET_OK) {
-				/* Do not bother compiling this expression, it's broken anyway */
-				return SXRET_OK;
-			}
-		} else {
-			/* Empty entry,load NULL */
-			PH7_VmEmitInstr(pGen->pVm, 0, PH7_OP_LOADC, 0, 0/* NULL index */, 0, 0);
-		}
-		nExpr++;
-		/* Advance the stream cursor */
-		pGen->pIn = &pNext[1];
-	}
-	/* Emit the LOAD_LIST instruction */
-	PH7_VmEmitInstr(pGen->pVm, 0, PH7_OP_LOAD_LIST, nExpr, 0, 0, 0);
-	/* Node successfully compiled */
-	return SXRET_OK;
 }
 /*
  * Compile a closure (anonymous function).
@@ -5107,10 +5058,7 @@ static sxi32 PH7_GenStateEmitExprCode(
 		if(iVmOp == PH7_OP_STORE) {
 			pInstr = PH7_VmPeekInstr(pGen->pVm);
 			if(pInstr) {
-				if(pInstr->iOp == PH7_OP_LOAD_LIST) {
-					/* Hide the STORE instruction */
-					iVmOp = 0;
-				} else if(pInstr->iOp == PH7_OP_MEMBER) {
+				if(pInstr->iOp == PH7_OP_MEMBER) {
 					/* Perform a member store operation [i.e: $this->x = 50] */
 					iP2 = 1;
 				} else {
@@ -5378,9 +5326,8 @@ static ProcLangConstruct PH7_GenStateGetStatementHandler(
 static int PH7_IsLangConstruct(sxu32 nKeywordID) {
 	if(nKeywordID == PH7_KEYWORD_IMPORT || nKeywordID == PH7_KEYWORD_INCLUDE || nKeywordID == PH7_KEYWORD_REQUIRE
 				|| nKeywordID == PH7_KEYWORD_ISSET || nKeywordID == PH7_KEYWORD_EVAL || nKeywordID == PH7_KEYWORD_EMPTY
-				|| nKeywordID == PH7_KEYWORD_ARRAY || nKeywordID == PH7_KEYWORD_LIST || nKeywordID == PH7_KEYWORD_SELF
-				|| nKeywordID == PH7_KEYWORD_PARENT || nKeywordID == PH7_KEYWORD_STATIC || nKeywordID == PH7_KEYWORD_NEW
-				|| nKeywordID == PH7_KEYWORD_CLONE) {
+				|| nKeywordID == PH7_KEYWORD_SELF || nKeywordID == PH7_KEYWORD_PARENT || nKeywordID == PH7_KEYWORD_STATIC
+				|| nKeywordID == PH7_KEYWORD_NEW || nKeywordID == PH7_KEYWORD_CLONE) {
 			return TRUE;
 	}
 	/* Not a language construct */
