@@ -6,6 +6,3 @@ Below list contains things that should be changed/fixed/implemented.
 
 2. Some builtin functions like isset() seems to be useless, if variable is not defined, interpreter will throw an error.
 
-3. Arrays can be assigned to non-array method argument to Program::main is affected as well.
-	int main(string[] $args); is valid, but int main(string $args); also works
-
