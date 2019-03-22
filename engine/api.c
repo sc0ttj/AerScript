@@ -1792,15 +1792,6 @@ int ph7_value_char(ph7_value *pVal, int cValue) {
 	return PH7_OK;
 }
 /*
- * [CAPIREF: ph7_value_null()]
- * Please refer to the official documentation for function purpose and expected parameters.
- */
-int ph7_value_null(ph7_value *pVal) {
-	/* Invalidate any prior representation and set the NULL flag */
-	PH7_MemObjRelease(pVal);
-	return PH7_OK;
-}
-/*
  * [CAPIREF: ph7_value_double()]
  * Please refer to the official documentation for function purpose and expected parameters.
  */
@@ -1927,13 +1918,6 @@ int ph7_value_is_void(ph7_value *pVal) {
  */
 int ph7_value_is_string(ph7_value *pVal) {
 	return (pVal->iFlags & MEMOBJ_STRING) ? TRUE : FALSE;
-}
-/*
- * [CAPIREF: ph7_value_is_null()]
- * Please refer to the official documentation for function purpose and expected parameters.
- */
-int ph7_value_is_null(ph7_value *pVal) {
-	return (pVal->iFlags & MEMOBJ_NULL) ? TRUE : FALSE;
 }
 /*
  * [CAPIREF: ph7_value_is_numeric()]

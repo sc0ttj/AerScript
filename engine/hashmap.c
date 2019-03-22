@@ -2376,9 +2376,7 @@ static int ph7_hashmap_count(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 		return PH7_OK;
 	}
 	if(!ph7_value_is_array(apArg[0])) {
-		/* TICKET 1433-19: Handle objects */
-		int res = !ph7_value_is_null(apArg[0]);
-		ph7_result_int(pCtx, res);
+		ph7_result_int(pCtx, 1);
 		return PH7_OK;
 	}
 	if(nArg > 1) {
