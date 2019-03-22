@@ -635,9 +635,6 @@ static sxu32 KeywordCode(const char *z, int n) {
 		{"isset", PH7_KEYWORD_ISSET},
 		{"require", PH7_KEYWORD_REQUIRE},
 		{"return", PH7_KEYWORD_RETURN},
-		/* Other keywords */
-		{"function", PH7_KEYWORD_FUNCTION},
-		{"var", PH7_KEYWORD_VAR}
 	};
 	if(n < 2) {
 		return PH7_TK_ID;

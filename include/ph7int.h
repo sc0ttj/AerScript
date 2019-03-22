@@ -1574,7 +1574,6 @@ enum ph7_expr_id {
 #define PH7_KEYWORD_STATIC       16 /* static */
 #define PH7_KEYWORD_CASE         17 /* case */
 #define PH7_KEYWORD_SELF         18 /* self */
-#define PH7_KEYWORD_FUNCTION     19 /* function */
 #define PH7_KEYWORD_NAMESPACE    20 /* namespace */
 #define PH7_KEYWORD_CLONE        0x80 /* clone: MUST BE A POWER OF TWO  */
 #define PH7_KEYWORD_NEW          0x100 /* new: MUST BE A POWER OF TWO  */
@@ -1583,7 +1582,6 @@ enum ph7_expr_id {
 #define PH7_KEYWORD_USING        24 /* using */
 #define PH7_KEYWORD_WHILE        26 /* while */
 #define PH7_KEYWORD_EVAL         27 /* eval */
-#define PH7_KEYWORD_VAR          28 /* var */
 #define PH7_KEYWORD_VIRTUAL      29 /* virtual */
 #define PH7_KEYWORD_TRY          30 /* try */
 #define PH7_KEYWORD_DEFAULT      31 /* default */
