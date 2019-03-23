@@ -209,67 +209,6 @@ static int PH7_builtin_is_resource(ph7_context *pCtx, int nArg, ph7_value **apAr
 	return PH7_OK;
 }
 /*
- * float floatval($var)
- *  Get float value of a variable.
- * Parameter
- *  $var: The variable being processed.
- * Return
- *  the float value of a variable.
- */
-static int PH7_builtin_floatval(ph7_context *pCtx, int nArg, ph7_value **apArg) {
-	if(nArg < 1) {
-		/* return 0.0 */
-		ph7_result_double(pCtx, 0);
-	} else {
-		double dval;
-		/* Perform the cast */
-		dval = ph7_value_to_double(apArg[0]);
-		ph7_result_double(pCtx, dval);
-	}
-	return PH7_OK;
-}
-/*
- * int intval($var)
- *  Get integer value of a variable.
- * Parameter
- *  $var: The variable being processed.
- * Return
- *  the int value of a variable.
- */
-static int PH7_builtin_intval(ph7_context *pCtx, int nArg, ph7_value **apArg) {
-	if(nArg < 1) {
-		/* return 0 */
-		ph7_result_int(pCtx, 0);
-	} else {
-		sxi64 iVal;
-		/* Perform the cast */
-		iVal = ph7_value_to_int64(apArg[0]);
-		ph7_result_int64(pCtx, iVal);
-	}
-	return PH7_OK;
-}
-/*
- * string strval($var)
- *  Get the string representation of a variable.
- * Parameter
- *  $var: The variable being processed.
- * Return
- *  the string value of a variable.
- */
-static int PH7_builtin_strval(ph7_context *pCtx, int nArg, ph7_value **apArg) {
-	if(nArg < 1) {
-		/* return NULL */
-		ph7_result_null(pCtx);
-	} else {
-		const char *zVal;
-		int iLen = 0; /* cc -O6 warning */
-		/* Perform the cast */
-		zVal = ph7_value_to_string(apArg[0], &iLen);
-		ph7_result_string(pCtx, zVal, iLen);
-	}
-	return PH7_OK;
-}
-/*
  * bool empty($var)
  *  Determine whether a variable is empty.
  * Parameters
@@ -7491,9 +7430,6 @@ static const ph7_builtin_func aBuiltInFunc[] = {
 	{ "is_void", PH7_builtin_is_void     },
 	{ "is_numeric", PH7_builtin_is_numeric  },
 	{ "is_scalar", PH7_builtin_is_scalar   },
-	{ "floatval", PH7_builtin_floatval    },
-	{ "intval", PH7_builtin_intval      },
-	{ "stringval", PH7_builtin_strval      },
 	{ "empty", PH7_builtin_empty       },
 	{ "round",    PH7_builtin_round        },
 	{ "dechex", PH7_builtin_dechex         },
