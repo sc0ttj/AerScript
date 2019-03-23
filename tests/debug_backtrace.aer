@@ -6,7 +6,7 @@ class Program {
 
 	string a(string $p) {
 		mixed[] $backtrace = debug_backtrace();
-		if(isset($backtrace[0]['args'])) {
+		if(array_key_exists('args', $backtrace[0])) {
 			var_export($backtrace[0]['args']);
 		} else {
 			print("Cannot aquire arguments\n");
