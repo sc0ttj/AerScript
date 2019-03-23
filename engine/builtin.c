@@ -142,23 +142,6 @@ static int PH7_builtin_is_numeric(ph7_context *pCtx, int nArg, ph7_value **apArg
 	return PH7_OK;
 }
 /*
- * bool is_scalar($var)
- *  Find out whether a variable is a scalar.
- * Parameters
- *  $var: The variable being evaluated.
- * Return
- *  True if var is scalar. False otherwise.
- */
-static int PH7_builtin_is_scalar(ph7_context *pCtx, int nArg, ph7_value **apArg) {
-	int res = 0; /* Assume false by default */
-	if(nArg > 0) {
-		res = ph7_value_is_scalar(apArg[0]);
-	}
-	/* Query result */
-	ph7_result_bool(pCtx, res);
-	return PH7_OK;
-}
-/*
  * bool is_array($var)
  *  Find out whether a variable is an array.
  * Parameters
@@ -7429,7 +7412,6 @@ static const ph7_builtin_func aBuiltInFunc[] = {
 	{ "is_string", PH7_builtin_is_string   },
 	{ "is_void", PH7_builtin_is_void     },
 	{ "is_numeric", PH7_builtin_is_numeric  },
-	{ "is_scalar", PH7_builtin_is_scalar   },
 	{ "empty", PH7_builtin_empty       },
 	{ "round",    PH7_builtin_round        },
 	{ "dechex", PH7_builtin_dechex         },
