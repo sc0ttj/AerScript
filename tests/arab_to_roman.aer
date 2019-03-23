@@ -1,7 +1,7 @@
 class Program {
 
 	private string num2Roman(int $num) {
-		int $n = intval($num);
+		int $n = (int) $num;
 		string $result = '';
 		int[] $lookup = {'M' => 1000, 'CM' => 900, 'D' => 500, 'CD' => 400,
 			'C' => 100, 'XC' => 90, 'L' => 50, 'XL' => 40,
@@ -9,7 +9,7 @@ class Program {
 
 		int $matches;
 		foreach($lookup as $roman => $value) {
-			$matches = intval($n / $value);
+			$matches = (int) ($n / $value);
 			$result += str_repeat($roman, $matches);
 			$n = $n % $value;
 		}
