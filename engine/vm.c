@@ -8271,43 +8271,6 @@ static int vm_builtin_exit(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	return PH7_ABORT;
 }
 /*
- * bool isset($var,...)
- *  Finds out whether a variable is set.
- * Parameters
- *  One or more variable to check.
- * Return
- *  1 if var exists and has value other than NULL, 0 otherwise.
- */
-static int vm_builtin_isset(ph7_context *pCtx, int nArg, ph7_value **apArg) {
-	ph7_value *pObj;
-	int res = 0;
-	int i;
-	if(nArg < 1) {
-		/* Missing arguments,return false */
-		ph7_result_bool(pCtx, res);
-		return SXRET_OK;
-	}
-	/* Iterate over available arguments */
-	for(i = 0 ; i < nArg ; ++i) {
-		pObj = apArg[i];
-		if(pObj->nIdx == SXU32_HIGH) {
-			if((pObj->iFlags & MEMOBJ_NULL) == 0) {
-				/* Not so fatal,Throw a warning */
-				PH7_VmThrowError(pCtx->pVm, PH7_CTX_WARNING, "Expecting a variable not a constant");
-			}
-		}
-		res = (pObj->iFlags & MEMOBJ_NULL) ? 0 : 1;
-		if(!res) {
-			/* Variable not set,return FALSE */
-			ph7_result_bool(pCtx, 0);
-			return SXRET_OK;
-		}
-	}
-	/* All given variable are set,return TRUE */
-	ph7_result_bool(pCtx, 1);
-	return SXRET_OK;
-}
-/*
  * Unset a memory object [i.e: a ph7_value],remove it from the current
  * frame,the reference table and discard it's contents.
  * This function never fail and always return SXRET_OK.
@@ -10876,7 +10839,6 @@ static const ph7_builtin_func aVmFunc[] = {
 	{ "get_defined_vars", vm_builtin_get_defined_vars},
 	{ "gettype",   vm_builtin_gettype              },
 	{ "get_resource_type", vm_builtin_get_resource_type},
-	{ "isset",     vm_builtin_isset                },
 	{ "unset",     vm_builtin_unset                },
 	{ "var_dump",  vm_builtin_var_dump             },
 	{ "print_r",   vm_builtin_print_r              },

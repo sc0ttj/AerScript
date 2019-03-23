@@ -632,7 +632,6 @@ static sxu32 KeywordCode(const char *z, int n) {
 		{"exit", PH7_KEYWORD_EXIT},
 		{"import", PH7_KEYWORD_IMPORT},
 		{"include", PH7_KEYWORD_INCLUDE},
-		{"isset", PH7_KEYWORD_ISSET},
 		{"require", PH7_KEYWORD_REQUIRE},
 		{"return", PH7_KEYWORD_RETURN},
 	};
