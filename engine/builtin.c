@@ -40,9 +40,24 @@ static int PH7_builtin_is_bool(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	return PH7_OK;
 }
 /*
+ * bool is_char($var)
+ *  Finds out whether a variable is a character.
+ * Parameters
+ *   $var: The variable being evaluated.
+ * Return
+ *  TRUE if var is a character. False otherwise.
+ */
+static int PH7_builtin_is_char(ph7_context *pCtx, int nArg, ph7_value **apArg) {
+	int res = 0; /* Assume false by default */
+	if(nArg > 0) {
+		res = ph7_value_is_char(apArg[0]);
+	}
+	/* Query result */
+	ph7_result_bool(pCtx, res);
+	return PH7_OK;
+}
+/*
  * bool is_float($var)
- * bool is_real($var)
- * bool is_double($var)
  *  Finds out whether a variable is a float.
  * Parameters
  *   $var: The variable being evaluated.
@@ -60,8 +75,6 @@ static int PH7_builtin_is_float(ph7_context *pCtx, int nArg, ph7_value **apArg) 
 }
 /*
  * bool is_int($var)
- * bool is_integer($var)
- * bool is_long($var)
  *  Finds out whether a variable is an integer.
  * Parameters
  *   $var: The variable being evaluated.
@@ -89,6 +102,23 @@ static int PH7_builtin_is_string(ph7_context *pCtx, int nArg, ph7_value **apArg)
 	int res = 0; /* Assume false by default */
 	if(nArg > 0) {
 		res = ph7_value_is_string(apArg[0]);
+	}
+	/* Query result */
+	ph7_result_bool(pCtx, res);
+	return PH7_OK;
+}
+/*
+ * bool is_void($var)
+ *  Finds out whether a variable is a void.
+ * Parameters
+ *   $var: The variable being evaluated.
+ * Return
+ *  TRUE if var is void. False otherwise.
+ */
+static int PH7_builtin_is_void(ph7_context *pCtx, int nArg, ph7_value **apArg) {
+	int res = 0; /* Assume false by default */
+	if(nArg > 0) {
+		res = ph7_value_is_void(apArg[0]);
 	}
 	/* Query result */
 	ph7_result_bool(pCtx, res);
@@ -7450,15 +7480,17 @@ static int PH7_builtin_urldecode(ph7_context *pCtx, int nArg, ph7_value **apArg)
 /* Table of the built-in functions */
 static const ph7_builtin_func aBuiltInFunc[] = {
 	/* Variable handling functions */
+	{ "is_array", PH7_builtin_is_array    },
 	{ "is_bool", PH7_builtin_is_bool     },
+	{ "is_char", PH7_builtin_is_char     },
 	{ "is_float", PH7_builtin_is_float    },
 	{ "is_int", PH7_builtin_is_int      },
-	{ "is_string", PH7_builtin_is_string   },
-	{ "is_numeric", PH7_builtin_is_numeric  },
-	{ "is_scalar", PH7_builtin_is_scalar   },
-	{ "is_array", PH7_builtin_is_array    },
 	{ "is_object", PH7_builtin_is_object   },
 	{ "is_resource", PH7_builtin_is_resource },
+	{ "is_string", PH7_builtin_is_string   },
+	{ "is_void", PH7_builtin_is_void     },
+	{ "is_numeric", PH7_builtin_is_numeric  },
+	{ "is_scalar", PH7_builtin_is_scalar   },
 	{ "floatval", PH7_builtin_floatval    },
 	{ "intval", PH7_builtin_intval      },
 	{ "stringval", PH7_builtin_strval      },
