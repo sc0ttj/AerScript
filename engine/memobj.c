@@ -604,23 +604,9 @@ PH7_PRIVATE ProcMemObjCast PH7_MemObjCastMethod(sxi32 iFlags) {
  * Return TRUE if numeric.FALSE otherwise.
  */
 PH7_PRIVATE sxi32 PH7_MemObjIsNumeric(ph7_value *pObj) {
-	if(pObj->iFlags & (MEMOBJ_BOOL | MEMOBJ_INT | MEMOBJ_REAL)) {
+	if(pObj->iFlags & (MEMOBJ_INT | MEMOBJ_REAL)) {
 		return TRUE;
-	} else if(pObj->iFlags & (MEMOBJ_CALL | MEMOBJ_NULL | MEMOBJ_HASHMAP | MEMOBJ_OBJ | MEMOBJ_RES | MEMOBJ_VOID)) {
-		return FALSE;
-	} else if(pObj->iFlags & MEMOBJ_STRING) {
-		SyString sStr;
-		sxi32 rc;
-		SyStringInitFromBuf(&sStr, SyBlobData(&pObj->sBlob), SyBlobLength(&pObj->sBlob));
-		if(sStr.nByte <= 0) {
-			/* Empty string */
-			return FALSE;
-		}
-		/* Check if the string representation looks like a numeric number */
-		rc = SyStrIsNumeric(sStr.zString, sStr.nByte, 0, 0);
-		return rc == SXRET_OK ? TRUE : FALSE;
 	}
-	/* NOT REACHED */
 	return FALSE;
 }
 /*
