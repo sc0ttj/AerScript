@@ -5150,8 +5150,8 @@ static int ph7_hashmap_filter(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 			}
 			PH7_MemObjRelease(&sResult);
 		} else {
-			/* No available callback,check for empty item */
-			keep = !PH7_MemObjIsEmpty(pValue);
+			/* No available callback */
+			keep = FALSE;
 		}
 		if(keep) {
 			/* Perform the insertion,now the callback returned true */
