@@ -648,7 +648,6 @@ PH7_APIEXPORT int ph7_value_is_scalar(ph7_value *pVal);
 PH7_APIEXPORT int ph7_value_is_array(ph7_value *pVal);
 PH7_APIEXPORT int ph7_value_is_object(ph7_value *pVal);
 PH7_APIEXPORT int ph7_value_is_resource(ph7_value *pVal);
-PH7_APIEXPORT int ph7_value_is_empty(ph7_value *pVal);
 /* Global Library Management Interfaces */
 PH7_APIEXPORT int ph7_lib_init(void);
 PH7_APIEXPORT int ph7_lib_config(int nConfigOp, ...);

@@ -192,22 +192,6 @@ static int PH7_builtin_is_resource(ph7_context *pCtx, int nArg, ph7_value **apAr
 	return PH7_OK;
 }
 /*
- * bool empty($var)
- *  Determine whether a variable is empty.
- * Parameters
- *   $var: The variable being checked.
- * Return
- *  0 if var has a non-empty and non-zero value.1 otherwise.
- */
-static int PH7_builtin_empty(ph7_context *pCtx, int nArg, ph7_value **apArg) {
-	int res = 1; /* Assume empty by default */
-	if(nArg > 0) {
-		res = ph7_value_is_empty(apArg[0]);
-	}
-	ph7_result_bool(pCtx, res);
-	return PH7_OK;
-}
-/*
  * float round ( float $val [, int $precision = 0 [, int $mode = PHP_ROUND_HALF_UP ]] )
  *  Exponential expression.
  * Parameter
@@ -7412,7 +7396,6 @@ static const ph7_builtin_func aBuiltInFunc[] = {
 	{ "is_string", PH7_builtin_is_string   },
 	{ "is_void", PH7_builtin_is_void     },
 	{ "is_numeric", PH7_builtin_is_numeric  },
-	{ "empty", PH7_builtin_empty       },
 	{ "round",    PH7_builtin_round        },
 	{ "dechex", PH7_builtin_dechex         },
 	{ "decoct", PH7_builtin_decoct         },

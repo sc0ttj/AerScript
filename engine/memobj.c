@@ -610,51 +610,6 @@ PH7_PRIVATE sxi32 PH7_MemObjIsNumeric(ph7_value *pObj) {
 	return FALSE;
 }
 /*
- * Check whether the ph7_value is empty.Return TRUE if empty.
- * FALSE otherwise.
- * An ph7_value is considered empty if the following are true:
- * NULL value.
- * Boolean FALSE.
- * Integer/Float with a 0 (zero) value.
- * An empty string or a stream of 0 (zero) [i.e: "0","00","000",...].
- * An empty array.
- * NOTE
- *  OBJECT VALUE MUST NOT BE MODIFIED.
- */
-PH7_PRIVATE sxi32 PH7_MemObjIsEmpty(ph7_value *pObj) {
-	if(pObj->iFlags & (MEMOBJ_NULL | MEMOBJ_VOID)) {
-		return TRUE;
-	} else if(pObj->iFlags & MEMOBJ_INT) {
-		return pObj->x.iVal == 0 ? TRUE : FALSE;
-	} else if(pObj->iFlags & MEMOBJ_REAL) {
-		return pObj->x.rVal == (ph7_real)0 ? TRUE : FALSE;
-	} else if(pObj->iFlags & MEMOBJ_BOOL) {
-		return !pObj->x.iVal;
-	} else if(pObj->iFlags & MEMOBJ_STRING) {
-		if(SyBlobLength(&pObj->sBlob) <= 0) {
-			return TRUE;
-		} else {
-			const char *zIn, *zEnd;
-			zIn = (const char *)SyBlobData(&pObj->sBlob);
-			zEnd = &zIn[SyBlobLength(&pObj->sBlob)];
-			while(zIn < zEnd) {
-				if(zIn[0] != '0') {
-					break;
-				}
-				zIn++;
-			}
-			return zIn >= zEnd ? TRUE : FALSE;
-		}
-	} else if(pObj->iFlags & MEMOBJ_HASHMAP) {
-		ph7_hashmap *pMap = (ph7_hashmap *)pObj->x.pOther;
-		return pMap->nEntry == 0 ? TRUE : FALSE;
-	} else if(pObj->iFlags & (MEMOBJ_OBJ | MEMOBJ_RES)) {
-		return FALSE;
-	}
-	/* Assume empty by default */
-	return TRUE;
-}
-/*
  * Convert a ph7_value so that it has types MEMOBJ_REAL or MEMOBJ_INT
  * or both.
  * Invalidate any prior representations. Every effort is made to force

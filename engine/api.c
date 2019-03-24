@@ -1965,12 +1965,3 @@ int ph7_value_is_object(ph7_value *pVal) {
 int ph7_value_is_resource(ph7_value *pVal) {
 	return (pVal->iFlags & MEMOBJ_RES) ? TRUE : FALSE;
 }
-/*
- * [CAPIREF: ph7_value_is_empty()]
- * Please refer to the official documentation for function purpose and expected parameters.
- */
-int ph7_value_is_empty(ph7_value *pVal) {
-	int rc;
-	rc = PH7_MemObjIsEmpty(pVal);
-	return rc;
-}
