@@ -363,17 +363,19 @@ static ph7_real MemObjCharValue(ph7_value *pObj) {
  * Checks a ph7_value variable compatibility with nType data type.
  */
 PH7_PRIVATE sxi32 PH7_CheckVarCompat(ph7_value *pObj, int nType) {
-	if(nType == MEMOBJ_REAL && (pObj->iFlags & MEMOBJ_INT)) {
-		return SXRET_OK;
-	} else if(nType == MEMOBJ_CHAR && (pObj->iFlags & MEMOBJ_INT)) {
-		return SXRET_OK;
-	} else if(nType == MEMOBJ_CHAR && (pObj->iFlags & MEMOBJ_STRING)) {
-		int len = SyBlobLength(&pObj->sBlob);
-		if(len == 0 || len == 1) {
+	if(((nType & MEMOBJ_HASHMAP) && (pObj->iFlags & MEMOBJ_HASHMAP)) || (((nType & MEMOBJ_HASHMAP) == 0) && ((pObj->iFlags & MEMOBJ_HASHMAP) == 0))) {
+		if((nType & MEMOBJ_REAL) && (pObj->iFlags & MEMOBJ_INT)) {
+			return SXRET_OK;
+		} else if((nType & MEMOBJ_CHAR) && (pObj->iFlags & MEMOBJ_INT)) {
+			return SXRET_OK;
+		} else if((nType & MEMOBJ_CHAR) && (pObj->iFlags & MEMOBJ_STRING)) {
+			int len = SyBlobLength(&pObj->sBlob);
+			if(len == 0 || len == 1) {
+				return SXRET_OK;
+			}
+		} else if((nType & MEMOBJ_CALL) && (pObj->iFlags & MEMOBJ_STRING)) {
 			return SXRET_OK;
 		}
-	} else if(nType == MEMOBJ_CALL && (pObj->iFlags & MEMOBJ_STRING)) {
-		return SXRET_OK;
 	}
 	return SXERR_NOMATCH;
 }
