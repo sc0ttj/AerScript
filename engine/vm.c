@@ -6029,7 +6029,7 @@ PH7_PRIVATE int PH7_VmIsCallable(ph7_vm *pVm, ph7_value *pValue, int CallInvoke)
  * Return
  *  TRUE if name is callable, FALSE otherwise.
  */
-static int vm_builtin_is_callable(ph7_context *pCtx, int nArg, ph7_value **apArg) {
+static int vm_builtin_is_callback(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	ph7_vm *pVm;
 	int res;
 	if(nArg < 1) {
@@ -10795,7 +10795,7 @@ static const ph7_builtin_func aVmFunc[] = {
 	{ "func_get_args", vm_builtin_func_get_args },
 	{ "func_get_args_byref", vm_builtin_func_get_args_byref },
 	{ "function_exists", vm_builtin_func_exists   },
-	{ "is_callable", vm_builtin_is_callable   },
+	{ "is_callback", vm_builtin_is_callback   },
 	{ "get_defined_functions", vm_builtin_get_defined_func },
 	{ "register_autoload_handler", vm_builtin_register_autoload_handler },
 	{ "register_shutdown_function", vm_builtin_register_shutdown_function },
