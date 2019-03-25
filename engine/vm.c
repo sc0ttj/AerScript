@@ -2479,7 +2479,7 @@ static sxi32 VmByteCodeExec(
 								} else {
 									pFlags = pEntry[1].iFlags;
 								}
-								if(iFlags != pFlags) {
+								if(iFlags != pFlags && iFlags != (pFlags ^ MEMOBJ_HASHMAP)) {
 									iFlags = MEMOBJ_MIXED;
 								}
 							}
