@@ -5145,20 +5145,9 @@ static sxi32 VmByteCodeExec(
 								for(i = 0 ; i < SySetUsed(&pFrame->sLocal) ; ++i) {
 									if(n == aSlot[i].nIdx) {
 										pObj = (ph7_value *)SySetAt(&pVm->aMemObj, n);
-										if(pObj && (pObj->iFlags & (MEMOBJ_NULL | MEMOBJ_OBJ | MEMOBJ_HASHMAP | MEMOBJ_RES)) == 0) {
-											PH7_VmThrowError(&(*pVm), PH7_CTX_NOTICE,
-														  "Function '%z',return by reference: Cannot reference local variable, PH7 is switching to return by value",
-														  &pVmFunc->sName);
-										}
 										n = SXU32_HIGH;
 										break;
 									}
-								}
-							} else {
-								if((pTos->iFlags & (MEMOBJ_HASHMAP | MEMOBJ_OBJ | MEMOBJ_NULL | MEMOBJ_RES)) == 0) {
-									PH7_VmThrowError(&(*pVm), PH7_CTX_NOTICE,
-												  "Function '%z', return by reference: Cannot reference constant expression, PH7 is switching to return by value",
-												  &pVmFunc->sName);
 								}
 							}
 							pTos->nIdx = n;
