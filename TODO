@@ -4,7 +4,5 @@ Below list contains things that should be changed/fixed/implemented.
 
 1. The debug_backtrace() does not show information about arrays type.
 
-2. Some builtin functions like isset() seems to be useless, if variable is not defined, interpreter will throw an error.
-
-3. Array get a type of mixed, if there are at least 2 different types of value specified, even they are compatible, eg.
+2. Array get a type of mixed, if there are at least 2 different types of value specified, even they are compatible, eg.
 	{4, 5.5} will result in mixed instead of float.
