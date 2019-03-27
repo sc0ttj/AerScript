@@ -5578,7 +5578,7 @@ PH7_PRIVATE sxi32 PH7_HashmapDump(SyBlob *pOut, ph7_hashmap *pMap, int ShowType,
 	return rc;
 }
 /*
- * Iterate throw hashmap entries and invoke the given callback [i.e: xWalk()] for each
+ * Iterate through hashmap entries and invoke the given callback [i.e: xWalk()] for each
  * retrieved entry.
  * Note that argument are passed to the callback by copy. That is,any modification to
  * the entry value in the callback body will not alter the real value.
