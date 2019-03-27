@@ -5625,6 +5625,11 @@ PH7_PRIVATE sxi32 PH7_HashmapWalk(
 	/* All done */
 	return SXRET_OK;
 }
+/*
+ * Iterate through hashmap entries and typecast all of them recursively to specified type.
+ * If all elements are compatible with each other and can be safely typecasted w/o data loss
+ * the SXRET_OK is returned. Otherwise, SXERR_NOMATCH is returned.
+ */
 PH7_PRIVATE sxi32 PH7_HashmapCast(ph7_value *pObj, sxi32 nType) {
 	sxi32 rc;
 	if((pObj->iFlags & MEMOBJ_HASHMAP)) {
