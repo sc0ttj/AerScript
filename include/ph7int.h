@@ -1750,6 +1750,7 @@ PH7_PRIVATE void PH7_HashmapExtractNodeKey(ph7_hashmap_node *pNode, ph7_value *p
 PH7_PRIVATE void PH7_RegisterHashmapFunctions(ph7_vm *pVm);
 PH7_PRIVATE sxi32 PH7_HashmapDump(SyBlob *pOut, ph7_hashmap *pMap, int ShowType, int nTab, int nDepth);
 PH7_PRIVATE sxi32 PH7_HashmapWalk(ph7_hashmap *pMap, int (*xWalk)(ph7_value *, ph7_value *, void *), void *pUserData);
+PH7_PRIVATE sxi32 PH7_HashmapCast(ph7_value *pObj, sxi32 nType);
 PH7_PRIVATE int PH7_HashmapValuesToSet(ph7_hashmap *pMap, SySet *pOut);
 /* builtin.c function prototypes */
 PH7_PRIVATE sxi32 PH7_InputFormat(int (*xConsumer)(ph7_context *, const char *, int, void *),
