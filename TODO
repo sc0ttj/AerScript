@@ -6,3 +6,7 @@ Below list contains things that should be changed/fixed/implemented.
 
 2. Array get a type of mixed, if there are at least 2 different types of value specified, even they are compatible, eg.
 	{4, 5.5} will result in mixed instead of float.
+
+3. References are completely broken.
+
+4. Class attributes do not comply their declared data types.
