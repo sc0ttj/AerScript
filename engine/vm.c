@@ -3981,12 +3981,12 @@ static sxi32 VmByteCodeExec(
 						/* Query the local frame */
 						pEntry = SyHashGet(&pFrame->hVar, (const void *)sName.zString, sName.nByte);
 						if(pEntry) {
-							PH7_VmThrowError(&(*pVm), PH7_CTX_ERR, "Referenced variable name '%z' already exists", &sName);
-						} else {
 							rc = SyHashInsert(&pFrame->hVar, (const void *)sName.zString, sName.nByte, SX_INT_TO_PTR(nIdx));
 							if(rc == SXRET_OK) {
 								PH7_VmRefObjInstall(&(*pVm), nIdx, SyHashLastEntry(&pFrame->hVar), 0, 0);
 							}
+						} else {
+							PH7_VmThrowError(&(*pVm), PH7_CTX_ERR, "Referenced variable name '%z' does not exists", &sName);
 						}
 					}
 					break;
