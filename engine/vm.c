@@ -2028,8 +2028,17 @@ static sxi32 VmByteCodeExec(
 								if((pFunc->nType & MEMOBJ_MIXED) == 0) {
 									if(pFunc->nType & MEMOBJ_VOID) {
 										PH7_VmThrowError(&(*pVm), PH7_CTX_ERR, "Return with a value in closure/method returning void");
-									} else if(pFunc->nType != pResult->iFlags && PH7_CheckVarCompat(pTos, pFunc->nType) != SXRET_OK) {
-										PH7_VmThrowError(&(*pVm), PH7_CTX_ERR, "Incompatible type when returning data by closure/method");
+									} else if(pFunc->nType != pResult->iFlags) {
+										if(PH7_CheckVarCompat(pResult, pFunc->nType) == SXRET_OK) {
+											ProcMemObjCast xCast = PH7_MemObjCastMethod(pFunc->nType);
+											xCast(pResult);
+										} else if((pFunc->iFlags & MEMOBJ_HASHMAP) && (pResult->iFlags & MEMOBJ_HASHMAP)) {
+											if(PH7_HashmapCast(pResult, pFunc->iFlags ^ MEMOBJ_HASHMAP) != SXRET_OK) {
+												PH7_VmThrowError(&(*pVm), PH7_CTX_ERR, "Incompatible type when returning data by closure/method");
+											}
+										} else {
+											PH7_VmThrowError(&(*pVm), PH7_CTX_ERR, "Incompatible type when returning data by closure/method");
+										}
 									}
 								}
 							}
@@ -2735,6 +2744,12 @@ static sxi32 VmByteCodeExec(
 					} else if(PH7_CheckVarCompat(pTos, pObj->iFlags) == SXRET_OK) {
 						ProcMemObjCast xCast = PH7_MemObjCastMethod(pObj->iFlags);
 						xCast(pTos);
+						PH7_MemObjStore(pTos, pObj);
+					} else if((pObj->iFlags & MEMOBJ_HASHMAP) && (pTos->iFlags & MEMOBJ_HASHMAP)) {
+						if(PH7_HashmapCast(pTos, pObj->iFlags ^ MEMOBJ_HASHMAP) != SXRET_OK) {
+							PH7_VmThrowError(&(*pVm), PH7_CTX_ERR,
+											"Cannot assign a value of incompatible type to variable '$%z'", &sName);
+						}
 						PH7_MemObjStore(pTos, pObj);
 					} else {
 						PH7_VmThrowError(&(*pVm), PH7_CTX_ERR,
@@ -5003,6 +5018,11 @@ static sxi32 VmByteCodeExec(
 											/* Silently typecast compatible value to expected data type */
 											ProcMemObjCast xCast = PH7_MemObjCastMethod(aFormalArg[n].nType);
 											xCast(pArg);
+										} else if((aFormalArg[n].nType & MEMOBJ_HASHMAP) && (pArg->iFlags & MEMOBJ_HASHMAP)) {
+											if(PH7_HashmapCast(pArg, aFormalArg[n].nType ^ MEMOBJ_HASHMAP) != SXRET_OK) {
+												PH7_VmThrowError(&(*pVm), PH7_CTX_ERR,
+																"Argument %u of '%z()' does not match the data type", n + 1, &pVmFunc->sName);
+											}
 										} else {
 											PH7_VmThrowError(&(*pVm), PH7_CTX_ERR,
 															"Argument %u of '%z()' does not match the data type", n + 1, &pVmFunc->sName);

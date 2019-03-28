@@ -363,7 +363,7 @@ static ph7_real MemObjCharValue(ph7_value *pObj) {
  * Checks a ph7_value variable compatibility with nType data type.
  */
 PH7_PRIVATE sxi32 PH7_CheckVarCompat(ph7_value *pObj, int nType) {
-	if(((nType & MEMOBJ_HASHMAP) && (pObj->iFlags & MEMOBJ_HASHMAP)) || (((nType & MEMOBJ_HASHMAP) == 0) && ((pObj->iFlags & MEMOBJ_HASHMAP) == 0))) {
+	if(((nType & MEMOBJ_HASHMAP) == 0) && ((pObj->iFlags & MEMOBJ_HASHMAP) == 0)) {
 		if((nType & MEMOBJ_REAL) && (pObj->iFlags & MEMOBJ_INT)) {
 			return SXRET_OK;
 		} else if((nType & MEMOBJ_CHAR) && (pObj->iFlags & MEMOBJ_INT)) {
@@ -586,8 +586,6 @@ PH7_PRIVATE ProcMemObjCast PH7_MemObjCastMethod(sxi32 iFlags) {
 		return PH7_MemObjToBool;
 	} else if(iFlags & MEMOBJ_CHAR) {
 		return PH7_MemObjToChar;
-	} else if(iFlags & MEMOBJ_HASHMAP) {
-		return PH7_MemObjToHashmap;
 	} else if(iFlags & MEMOBJ_OBJ) {
 		return PH7_MemObjToObject;
 	} else if(iFlags & MEMOBJ_CALL) {
