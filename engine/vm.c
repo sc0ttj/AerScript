@@ -639,6 +639,20 @@ static sxi32 VmMountUserClass(
 				/* Initialize attribute default value (any complex expression) */
 				VmLocalExec(&(*pVm), &pAttr->aByteCode, pMemObj);
 			}
+			if((pAttr->nType & MEMOBJ_MIXED) == 0) {
+				if(pAttr->nType != pMemObj->iFlags) {
+					if(PH7_CheckVarCompat(pMemObj, pAttr->nType) == SXRET_OK) {
+						ProcMemObjCast xCast = PH7_MemObjCastMethod(pAttr->nType);
+						xCast(pMemObj);
+					} else if((pAttr->iFlags & MEMOBJ_HASHMAP) && (pMemObj->iFlags & MEMOBJ_HASHMAP)) {
+						if(PH7_HashmapCast(pMemObj, pAttr->iFlags ^ MEMOBJ_HASHMAP) != SXRET_OK) {
+							PH7_VmThrowError(&(*pVm), PH7_CTX_ERR, "Cannot assign a value of incompatible type to variable '%z::$%z'", &pClass->sName, &pAttr->sName);
+						}
+					} else {
+						PH7_VmThrowError(&(*pVm), PH7_CTX_ERR, "Cannot assign a value of incompatible type to variable '%z::$%z'", &pClass->sName, &pAttr->sName);
+					}
+				}
+			}
 			/* Record attribute index */
 			pAttr->nIdx = pMemObj->nIdx;
 			/* Install static attribute in the reference table */
