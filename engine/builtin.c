@@ -5106,7 +5106,7 @@ static int PH7_builtin_strtok(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 		pAux = (strtok_aux_data *)ph7_context_peek_aux_data(pCtx);
 		if(pAux == 0) {
 			/* No aux data,return FALSE */
-			ph7_result_bool(pCtx, 0);
+			ph7_result_string(pCtx, "", 0);
 			return PH7_OK;
 		}
 		nMasklen = 0;
@@ -5120,7 +5120,7 @@ static int PH7_builtin_strtok(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 			ph7_context_free_chunk(pCtx, (void *)pAux->zDup);
 			ph7_context_free_chunk(pCtx, pAux);
 			(void)ph7_context_pop_aux_data(pCtx);
-			ph7_result_bool(pCtx, 0);
+			ph7_result_string(pCtx, "", 0);
 			return PH7_OK;
 		}
 		/* Extract the token */
@@ -5130,7 +5130,7 @@ static int PH7_builtin_strtok(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 			ph7_context_free_chunk(pCtx, (void *)pAux->zDup);
 			ph7_context_free_chunk(pCtx, pAux);
 			(void)ph7_context_pop_aux_data(pCtx);
-			ph7_result_bool(pCtx, 0);
+			ph7_result_string(pCtx, "", 0);
 		} else {
 			/* Return the extracted token */
 			ph7_result_string(pCtx, sToken.zString, (int)sToken.nByte);
@@ -5143,7 +5143,7 @@ static int PH7_builtin_strtok(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 		zCur = zInput = ph7_value_to_string(apArg[0], &nLen);
 		if(nLen < 1) {
 			/* Empty input,return FALSE */
-			ph7_result_bool(pCtx, 0);
+			ph7_result_string(pCtx, "", 0);
 			return PH7_OK;
 		}
 		/* Extract the mask */
@@ -5159,7 +5159,7 @@ static int PH7_builtin_strtok(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 		rc = ExtractToken(&zInput, &zInput[nLen], zMask, nMasklen, &sToken);
 		if(rc != SXRET_OK) {
 			/* Empty input */
-			ph7_result_bool(pCtx, 0);
+			ph7_result_string(pCtx, "", 0);
 			return PH7_OK;
 		} else {
 			/* Return the extracted token */
