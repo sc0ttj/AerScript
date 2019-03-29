@@ -1150,7 +1150,7 @@ PH7_PRIVATE sxi32 PH7_MemObjAdd(ph7_value *pObj1, ph7_value *pObj2, int bAddStor
 PH7_PRIVATE const char *PH7_MemObjTypeDump(ph7_value *pVal) {
 	const char *zType = "";
 	if(pVal->iFlags & MEMOBJ_NULL) {
-		zType = "null";
+		zType = "NULL";
 	} else {
 	if(pVal->iFlags & MEMOBJ_HASHMAP) {
 		if(pVal->iFlags & MEMOBJ_MIXED) {
