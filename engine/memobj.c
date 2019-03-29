@@ -812,7 +812,6 @@ PH7_PRIVATE sxi32 PH7_MemObjStore(ph7_value *pSrc, ph7_value *pDest) {
 		pObj = (ph7_class_instance *)pDest->x.pOther;
 	}
 	SyMemcpy((const void *) & (*pSrc), &(*pDest), sizeof(ph7_value) - (sizeof(ph7_vm *) + sizeof(SyBlob) + sizeof(sxu32)));
-	pDest->iFlags &= ~MEMOBJ_AUX;
 	rc = SXRET_OK;
 	if(SyBlobLength(&pSrc->sBlob) > 0) {
 		SyBlobReset(&pDest->sBlob);
@@ -931,8 +930,8 @@ PH7_PRIVATE sxi32 PH7_MemObjCmp(ph7_value *pObj1, ph7_value *pObj2, int bStrict,
 	if(bStrict) {
 		sxi32 iF1, iF2;
 		/* Strict comparisons with === */
-		iF1 = pObj1->iFlags & ~MEMOBJ_AUX;
-		iF2 = pObj2->iFlags & ~MEMOBJ_AUX;
+		iF1 = pObj1->iFlags;
+		iF2 = pObj2->iFlags;
 		if(iF1 != iF2) {
 			/* Not of the same type */
 			return 1;
@@ -1206,8 +1205,7 @@ PH7_PRIVATE sxi32 PH7_MemObjDump(
 	ph7_value *pObj,   /* Dump this */
 	int ShowType,      /* TRUE to output value type */
 	int nTab,          /* # of Whitespace to insert */
-	int nDepth,        /* Nesting level */
-	int isRef          /* TRUE if referenced object */
+	int nDepth         /* Nesting level */
 ) {
 	sxi32 rc = SXRET_OK;
 	const char *zType;
@@ -1216,9 +1214,6 @@ PH7_PRIVATE sxi32 PH7_MemObjDump(
 		SyBlobAppend(&(*pOut), " ", sizeof(char));
 	}
 	if(ShowType) {
-		if(isRef) {
-			SyBlobAppend(&(*pOut), "&", sizeof(char));
-		}
 		/* Get value type first */
 		zType = PH7_MemObjTypeDump(pObj);
 		SyBlobAppend(&(*pOut), zType, SyStrlen(zType));

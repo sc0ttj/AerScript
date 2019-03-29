@@ -794,7 +794,6 @@ static sxi32 PH7_GenStateArrayNodeValidator(ph7_gen_state *pGen, ph7_expr_node *
 PH7_PRIVATE sxi32 PH7_CompileArray(ph7_gen_state *pGen, sxi32 iCompileFlag) {
 	sxi32(*xValidator)(ph7_gen_state *, ph7_expr_node *); /* Expression tree validator callback */
 	SyToken *pKey, *pCur;
-	sxi32 iEmitRef = 0;
 	sxi32 nPair = 0;
 	sxi32 iNest;
 	sxi32 rc;
@@ -862,31 +861,12 @@ PH7_PRIVATE sxi32 PH7_CompileArray(ph7_gen_state *pGen, sxi32 iCompileFlag) {
 			/* No available key,load NULL */
 			PH7_VmEmitInstr(pGen->pVm, 0, PH7_OP_LOADC, 0, 0 /* nil index */, 0, 0);
 		}
-		if(pCur->nType & PH7_TK_AMPER /*'&'*/) {
-			/* Insertion by reference, [i.e: $a = array(&$x);] */
-			xValidator = PH7_GenStateArrayNodeValidator; /* Only variable are allowed */
-			iEmitRef = 1;
-			pCur++; /* Jump the '&' token */
-			if(pCur >= pGen->pIn) {
-				/* Missing value */
-				rc = PH7_GenCompileError(&(*pGen), E_ERROR, pCur->nLine, "array(): Missing referenced variable");
-				if(rc == SXERR_ABORT) {
-					return SXERR_ABORT;
-				}
-				return SXRET_OK;
-			}
-		}
 		/* Compile indice value */
 		rc = PH7_GenStateCompileArrayEntry(&(*pGen), pCur, pGen->pIn, EXPR_FLAG_RDONLY_LOAD/*Do not create the variable if non-existent*/, xValidator);
 		if(rc == SXERR_ABORT) {
 			return SXERR_ABORT;
 		}
-		if(iEmitRef) {
-			/* Emit the load reference instruction */
-			PH7_VmEmitInstr(pGen->pVm, 0, PH7_OP_LOAD_REF, 0, 0, 0, 0);
-		}
 		xValidator = 0;
-		iEmitRef = 0;
 		nPair++;
 	}
 	/* Emit the load map instruction */
@@ -5071,21 +5051,6 @@ static sxi32 PH7_GenStateEmitExprCode(
 					}
 					/* POP the last dynamic load instruction */
 					(void)PH7_VmPopInstr(pGen->pVm);
-				}
-			}
-		} else if(iVmOp == PH7_OP_STORE_REF) {
-			pInstr = PH7_VmPopInstr(pGen->pVm);
-			if(pInstr) {
-				if(pInstr->iOp == PH7_OP_LOAD_IDX) {
-					/* Array insertion by reference [i.e: $pArray[] =& $some_var; ]
-					 * We have to convert the STORE_REF instruction into STORE_IDX_REF
-					 */
-					iVmOp = PH7_OP_STORE_IDX_REF;
-					iP1 = pInstr->iP1;
-					iP2 = pInstr->iP2;
-					p3  = pInstr->p3;
-				} else {
-					p3 = pInstr->p3;
 				}
 			}
 		}

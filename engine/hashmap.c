@@ -16,10 +16,6 @@
 /* Allowed node types */
 #define HASHMAP_INT_NODE   1  /* Node with an int [i.e: 64-bit integer] key */
 #define HASHMAP_BLOB_NODE  2  /* Node with a string/BLOB key */
-/* Node control flags */
-#define HASHMAP_NODE_FOREIGN_OBJ 0x001 /* Node hold a reference to a foreign ph7_value
-                                        * [i.e: array(&var)/$a[] =& $var ]
-										*/
 /*
  * Default hash function for int [i.e; 64-bit integer] keys.
  */
@@ -193,9 +189,7 @@ PH7_PRIVATE void PH7_HashmapUnlinkNode(ph7_hashmap_node *pNode, int bRestore) {
 		/* Remove the ph7_value associated with this node from the reference table */
 		PH7_VmRefObjRemove(pVm, pNode->nValIdx, 0, pNode);
 		/* Restore to the freelist */
-		if((pNode->iFlags & HASHMAP_NODE_FOREIGN_OBJ) == 0) {
-			PH7_VmUnsetMemObj(pVm, pNode->nValIdx, FALSE);
-		}
+		PH7_VmUnsetMemObj(pVm, pNode->nValIdx, FALSE);
 	}
 	if(pNode->iType == HASHMAP_BLOB_NODE) {
 		SyBlobRelease(&pNode->xKey.sKey);
@@ -271,36 +265,28 @@ static sxi32 HashmapGrowBucket(ph7_hashmap *pMap) {
  * Insert a 64-bit integer key and it's associated value (if any) in the given
  * hashmap.
  */
-static sxi32 HashmapInsertIntKey(ph7_hashmap *pMap, sxi64 iKey, ph7_value *pValue, sxu32 nRefIdx, int isForeign) {
+static sxi32 HashmapInsertIntKey(ph7_hashmap *pMap, sxi64 iKey, ph7_value *pValue, sxu32 nRefIdx) {
 	ph7_hashmap_node *pNode;
 	sxu32 nIdx;
 	sxu32 nHash;
 	sxi32 rc;
-	if(!isForeign) {
-		ph7_value *pObj;
-		/* Reserve a ph7_value for the value */
-		pObj = PH7_ReserveMemObj(pMap->pVm);
-		if(pObj == 0) {
-			return SXERR_MEM;
-		}
-		if(pValue) {
-			/* Duplicate the value */
-			PH7_MemObjStore(pValue, pObj);
-		}
-		nIdx = pObj->nIdx;
-	} else {
-		nIdx = nRefIdx;
+	ph7_value *pObj;
+	/* Reserve a ph7_value for the value */
+	pObj = PH7_ReserveMemObj(pMap->pVm);
+	if(pObj == 0) {
+		return SXERR_MEM;
 	}
+	if(pValue) {
+		/* Duplicate the value */
+		PH7_MemObjStore(pValue, pObj);
+	}
+	nIdx = pObj->nIdx;
 	/* Hash the key */
 	nHash = pMap->xIntHash(iKey);
 	/* Allocate a new int node */
 	pNode = HashmapNewIntNode(&(*pMap), iKey, nHash, nIdx);
 	if(pNode == 0) {
 		return SXERR_MEM;
-	}
-	if(isForeign) {
-		/* Mark as a foregin entry */
-		pNode->iFlags |= HASHMAP_NODE_FOREIGN_OBJ;
 	}
 	/* Make sure the bucket is big enough to hold the new entry */
 	rc = HashmapGrowBucket(&(*pMap));
@@ -319,36 +305,28 @@ static sxi32 HashmapInsertIntKey(ph7_hashmap *pMap, sxi64 iKey, ph7_value *pValu
  * Insert a BLOB key and it's associated value (if any) in the given
  * hashmap.
  */
-static sxi32 HashmapInsertBlobKey(ph7_hashmap *pMap, const void *pKey, sxu32 nKeyLen, ph7_value *pValue, sxu32 nRefIdx, int isForeign) {
+static sxi32 HashmapInsertBlobKey(ph7_hashmap *pMap, const void *pKey, sxu32 nKeyLen, ph7_value *pValue, sxu32 nRefIdx) {
 	ph7_hashmap_node *pNode;
 	sxu32 nHash;
 	sxu32 nIdx;
 	sxi32 rc;
-	if(!isForeign) {
-		ph7_value *pObj;
-		/* Reserve a ph7_value for the value */
-		pObj = PH7_ReserveMemObj(pMap->pVm);
-		if(pObj == 0) {
-			return SXERR_MEM;
-		}
-		if(pValue) {
-			/* Duplicate the value */
-			PH7_MemObjStore(pValue, pObj);
-		}
-		nIdx = pObj->nIdx;
-	} else {
-		nIdx = nRefIdx;
+	ph7_value *pObj;
+	/* Reserve a ph7_value for the value */
+	pObj = PH7_ReserveMemObj(pMap->pVm);
+	if(pObj == 0) {
+		return SXERR_MEM;
 	}
+	if(pValue) {
+		/* Duplicate the value */
+		PH7_MemObjStore(pValue, pObj);
+	}
+	nIdx = pObj->nIdx;
 	/* Hash the key */
 	nHash = pMap->xBlobHash(pKey, nKeyLen);
 	/* Allocate a new blob node */
 	pNode = HashmapNewBlobNode(&(*pMap), pKey, nKeyLen, nHash, nIdx);
 	if(pNode == 0) {
 		return SXERR_MEM;
-	}
-	if(isForeign) {
-		/* Mark as a foregin entry */
-		pNode->iFlags |= HASHMAP_NODE_FOREIGN_OBJ;
 	}
 	/* Make sure the bucket is big enough to hold the new entry */
 	rc = HashmapGrowBucket(&(*pMap));
@@ -553,7 +531,7 @@ static sxi32 HashmapInsert(
 			return SXRET_OK;
 		}
 		/* Perform a blob-key insertion */
-		rc = HashmapInsertBlobKey(&(*pMap), SyBlobData(&pKey->sBlob), SyBlobLength(&pKey->sBlob), &(*pVal), 0, FALSE);
+		rc = HashmapInsertBlobKey(&(*pMap), SyBlobData(&pKey->sBlob), SyBlobLength(&pKey->sBlob), &(*pVal), 0);
 		return rc;
 	}
 IntKey:
@@ -577,7 +555,7 @@ IntKey:
 			return SXRET_OK;
 		}
 		/* Perform a 64-bit-int-key insertion */
-		rc = HashmapInsertIntKey(&(*pMap), pKey->x.iVal, &(*pVal), 0, FALSE);
+		rc = HashmapInsertIntKey(&(*pMap), pKey->x.iVal, &(*pVal), 0);
 		if(rc == SXRET_OK) {
 			if(pKey->x.iVal >= pMap->iNextIdx) {
 				/* Increment the automatic index */
@@ -590,7 +568,7 @@ IntKey:
 		}
 	} else {
 		/* Assign an automatic index */
-		rc = HashmapInsertIntKey(&(*pMap), pMap->iNextIdx, &(*pVal), 0, FALSE);
+		rc = HashmapInsertIntKey(&(*pMap), pMap->iNextIdx, &(*pVal), 0);
 		if(rc == SXRET_OK) {
 			++pMap->iNextIdx;
 		}
@@ -598,101 +576,7 @@ IntKey:
 	/* Insertion result */
 	return rc;
 }
-/*
- * Insert a given key and it's associated value (foreign index) in the given
- * hashmap.
- * This is insertion by reference so be careful to mark the node
- * with the HASHMAP_NODE_FOREIGN_OBJ flag being set.
- * The insertion by reference is triggered when the following
- * expression is encountered.
- * $var = 10;
- *  $a = array(&var);
- * OR
- *  $a[] =& $var;
- * That is,$var is a foreign ph7_value and the $a array have no control
- * over it's contents.
- * Note that the node that hold the foreign ph7_value is automatically
- * removed when the foreign ph7_value is unset.
- * Example:
- *  $var = 10;
- *  $a[] =& $var;
- *  echo count($a).PHP_EOL; //1
- *  //Unset the foreign ph7_value now
- *  unset($var);
- *  echo count($a); //0
- * Note that this is a PH7 eXtension.
- * Refer to the official documentation for more information.
- * If a node with the given key already exists in the database
- * then this function overwrite the old value.
- */
-static sxi32 HashmapInsertByRef(
-	ph7_hashmap *pMap,   /* Target hashmap */
-	ph7_value *pKey,     /* Lookup key */
-	sxu32 nRefIdx        /* Foreign ph7_value index */
-) {
-	ph7_hashmap_node *pNode = 0;
-	sxi32 rc = SXRET_OK;
-	if(pKey && pKey->iFlags & (MEMOBJ_STRING | MEMOBJ_HASHMAP | MEMOBJ_OBJ | MEMOBJ_RES)) {
-		if((pKey->iFlags & MEMOBJ_STRING) == 0) {
-			/* Force a string cast */
-			PH7_MemObjToString(&(*pKey));
-		}
-		if(SyBlobLength(&pKey->sBlob) < 1 || HashmapIsIntKey(&pKey->sBlob)) {
-			if(SyBlobLength(&pKey->sBlob) < 1) {
-				/* Automatic index assign */
-				pKey = 0;
-			}
-			goto IntKey;
-		}
-		if(SXRET_OK == HashmapLookupBlobKey(&(*pMap), SyBlobData(&pKey->sBlob),
-											SyBlobLength(&pKey->sBlob), &pNode)) {
-			/* Overwrite */
-			PH7_VmRefObjRemove(pMap->pVm, pNode->nValIdx, 0, pNode);
-			pNode->nValIdx = nRefIdx;
-			/* Install in the reference table */
-			PH7_VmRefObjInstall(pMap->pVm, nRefIdx, 0, pNode, 0);
-			return SXRET_OK;
-		}
-		/* Perform a blob-key insertion */
-		rc = HashmapInsertBlobKey(&(*pMap), SyBlobData(&pKey->sBlob), SyBlobLength(&pKey->sBlob), 0, nRefIdx, TRUE);
-		return rc;
-	}
-IntKey:
-	if(pKey) {
-		if((pKey->iFlags & MEMOBJ_INT) == 0) {
-			/* Force an integer cast */
-			PH7_MemObjToInteger(pKey);
-		}
-		if(SXRET_OK == HashmapLookupIntKey(&(*pMap), pKey->x.iVal, &pNode)) {
-			/* Overwrite */
-			PH7_VmRefObjRemove(pMap->pVm, pNode->nValIdx, 0, pNode);
-			pNode->nValIdx = nRefIdx;
-			/* Install in the reference table */
-			PH7_VmRefObjInstall(pMap->pVm, nRefIdx, 0, pNode, 0);
-			return SXRET_OK;
-		}
-		/* Perform a 64-bit-int-key insertion */
-		rc = HashmapInsertIntKey(&(*pMap), pKey->x.iVal, 0, nRefIdx, TRUE);
-		if(rc == SXRET_OK) {
-			if(pKey->x.iVal >= pMap->iNextIdx) {
-				/* Increment the automatic index */
-				pMap->iNextIdx = pKey->x.iVal + 1;
-				/* Make sure the automatic index is not reserved */
-				while(SXRET_OK == HashmapLookupIntKey(&(*pMap), pMap->iNextIdx, 0)) {
-					pMap->iNextIdx++;
-				}
-			}
-		}
-	} else {
-		/* Assign an automatic index */
-		rc = HashmapInsertIntKey(&(*pMap), pMap->iNextIdx, 0, nRefIdx, TRUE);
-		if(rc == SXRET_OK) {
-			++pMap->iNextIdx;
-		}
-	}
-	/* Insertion result */
-	return rc;
-}
+
 /*
  * Extract node value.
  */
@@ -722,12 +606,12 @@ static sxi32 HashmapInsertNode(ph7_hashmap *pMap, ph7_hashmap_node *pNode, int b
 			/* Assign an automatic index */
 			rc = HashmapInsert(&(*pMap), 0, pObj);
 		} else {
-			rc = HashmapInsertIntKey(&(*pMap), pNode->xKey.iKey, pObj, 0, FALSE);
+			rc = HashmapInsertIntKey(&(*pMap), pNode->xKey.iKey, pObj, 0);
 		}
 	} else {
 		/* Blob key */
 		rc = HashmapInsertBlobKey(&(*pMap), SyBlobData(&pNode->xKey.sKey),
-								  SyBlobLength(&pNode->xKey.sKey), pObj, 0, FALSE);
+								  SyBlobLength(&pNode->xKey.sKey), pObj, 0);
 	}
 	return rc;
 }
@@ -821,8 +705,8 @@ static int HashmapFindValue(
 		pVal = HashmapExtractNodeValue(pEntry);
 		if(pVal) {
 			if((pVal->iFlags | pNeedle->iFlags) & MEMOBJ_NULL) {
-				sxi32 iF1 = pVal->iFlags & ~MEMOBJ_AUX;
-				sxi32 iF2 = pNeedle->iFlags & ~MEMOBJ_AUX;
+				sxi32 iF1 = pVal->iFlags;
+				sxi32 iF2 = pNeedle->iFlags;
 				if(iF1 == iF2) {
 					/* NULL values are equals */
 					if(ppNode) {
@@ -1144,7 +1028,7 @@ PH7_PRIVATE sxi32 PH7_HashmapDup(ph7_hashmap *pSrc, ph7_hashmap *pDest) {
 			PH7_MemObjRelease(&sKey);
 		} else {
 			/* Int key insertion */
-			rc = HashmapInsertIntKey(&(*pDest), pEntry->xKey.iKey, pVal, 0, FALSE);
+			rc = HashmapInsertIntKey(&(*pDest), pEntry->xKey.iKey, pVal, 0);
 		}
 		if(rc != SXRET_OK) {
 			return rc;
@@ -1214,7 +1098,7 @@ PH7_PRIVATE sxi32 PH7_HashmapUnion(ph7_hashmap *pLeft, ph7_hashmap *pRight) {
 				if(pObj) {
 					/* Perform the insertion */
 					rc = HashmapInsertBlobKey(&(*pLeft), SyBlobData(&pEntry->xKey.sKey), SyBlobLength(&pEntry->xKey.sKey),
-											  pObj, 0, FALSE);
+											  pObj, 0);
 					if(rc != SXRET_OK) {
 						return rc;
 					}
@@ -1226,7 +1110,7 @@ PH7_PRIVATE sxi32 PH7_HashmapUnion(ph7_hashmap *pLeft, ph7_hashmap *pRight) {
 				pObj = HashmapExtractNodeValue(pEntry);
 				if(pObj) {
 					/* Perform the insertion */
-					rc = HashmapInsertIntKey(&(*pLeft), pEntry->xKey.iKey, pObj, 0, FALSE);
+					rc = HashmapInsertIntKey(&(*pLeft), pEntry->xKey.iKey, pObj, 0);
 					if(rc != SXRET_OK) {
 						return rc;
 					}
@@ -1345,10 +1229,8 @@ PH7_PRIVATE sxi32 PH7_HashmapRelease(ph7_hashmap *pMap, int FreeDS) {
 		pNext = pEntry->pPrev; /* Reverse link */
 		/* Remove the reference from the foreign table */
 		PH7_VmRefObjRemove(pVm, pEntry->nValIdx, 0, pEntry);
-		if((pEntry->iFlags & HASHMAP_NODE_FOREIGN_OBJ) == 0) {
-			/* Restore the ph7_value to the free list */
-			PH7_VmUnsetMemObj(pVm, pEntry->nValIdx, FALSE);
-		}
+		/* Restore the ph7_value to the free list */
+		PH7_VmUnsetMemObj(pVm, pEntry->nValIdx, FALSE);
 		/* Release the node */
 		if(pEntry->iType == HASHMAP_BLOB_NODE) {
 			SyBlobRelease(&pEntry->xKey.sKey);
@@ -1419,40 +1301,7 @@ PH7_PRIVATE sxi32 PH7_HashmapInsert(
 ) {
 	return HashmapInsert(&(*pMap), &(*pKey), &(*pVal));
 }
-/*
- * Insert a given key and it's associated value (foreign index) in the given
- * hashmap.
- * This is insertion by reference so be careful to mark the node
- * with the HASHMAP_NODE_FOREIGN_OBJ flag being set.
- * The insertion by reference is triggered when the following
- * expression is encountered.
- * $var = 10;
- *  $a = array(&var);
- * OR
- *  $a[] =& $var;
- * That is,$var is a foreign ph7_value and the $a array have no control
- * over it's contents.
- * Note that the node that hold the foreign ph7_value is automatically
- * removed when the foreign ph7_value is unset.
- * Example:
- *  $var = 10;
- *  $a[] =& $var;
- *  echo count($a).PHP_EOL; //1
- *  //Unset the foreign ph7_value now
- *  unset($var);
- *  echo count($a); //0
- * Note that this is a PH7 eXtension.
- * Refer to the official documentation for more information.
- * If a node with the given key already exists in the database
- * then this function overwrite the old value.
- */
-PH7_PRIVATE sxi32 PH7_HashmapInsertByRef(
-	ph7_hashmap *pMap, /* Target hashmap */
-	ph7_value *pKey,   /* Lookup key */
-	sxu32 nRefIdx      /* Foreign ph7_value index */
-) {
-	return HashmapInsertByRef(&(*pMap), &(*pKey), nRefIdx);
-}
+
 /*
  * Reset the node cursor of a given hashmap.
  */
@@ -5500,7 +5349,6 @@ PH7_PRIVATE sxi32 PH7_HashmapDump(SyBlob *pOut, ph7_hashmap *pMap, int ShowType,
 	ph7_hashmap_node *pEntry;
 	ph7_value *pObj;
 	sxu32 n = 0;
-	int isRef;
 	sxi32 rc;
 	int i;
 	if(nDepth > 31) {
@@ -5547,13 +5395,8 @@ PH7_PRIVATE sxi32 PH7_HashmapDump(SyBlob *pOut, ph7_hashmap *pMap, int ShowType,
 #endif
 			/* Dump node value */
 			pObj = HashmapExtractNodeValue(pEntry);
-			isRef = 0;
 			if(pObj) {
-				if(pEntry->iFlags & HASHMAP_NODE_FOREIGN_OBJ) {
-					/* Referenced object */
-					isRef = 1;
-				}
-				rc = PH7_MemObjDump(&(*pOut), pObj, ShowType, nTab + 1, nDepth, isRef);
+				rc = PH7_MemObjDump(&(*pOut), pObj, ShowType, nTab + 1, nDepth);
 				if(rc == SXERR_LIMIT) {
 					break;
 				}

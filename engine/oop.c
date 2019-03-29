@@ -929,7 +929,7 @@ PH7_PRIVATE sxi32 PH7_ClassInstanceDump(SyBlob *pOut, ph7_class_instance *pThis,
 #else
 					SyBlobAppend(&(*pOut), "\n", sizeof(char));
 #endif
-					rc = PH7_MemObjDump(&(*pOut), pValue, ShowType, nTab + 1, nDepth, 0);
+					rc = PH7_MemObjDump(&(*pOut), pValue, ShowType, nTab + 1, nDepth);
 					if(rc == SXERR_LIMIT) {
 						break;
 					}

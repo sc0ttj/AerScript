@@ -641,7 +641,6 @@ struct ph7_value {
 #define MEMOBJ_STRING    0x0080  /* Memory value is a UTF-8 string */
 #define MEMOBJ_VOID      0x0100  /* Memory value is a void */
 #define MEMOBJ_MIXED     0x0200  /* Memory value is mixed */
-#define MEMOBJ_REFERENCE 0x0400  /* Memory value hold a reference (64-bit index) of another ph7_value */
 #define MEMOBJ_HASHMAP   0x0800  /* Memory value is a hashmap aka 'array' in the PHP jargon */
 #define MEMOBJ_NULL      0x1000  /* Memory value is NULL */
 /* Mask of all known types */
@@ -652,7 +651,6 @@ struct ph7_value {
  *  Types array, object and resource are not scalar.
  */
 #define MEMOBJ_SCALAR (MEMOBJ_STRING|MEMOBJ_INT|MEMOBJ_REAL|MEMOBJ_BOOL|MEMOBJ_CHAR|MEMOBJ_VOID|MEMOBJ_NULL)
-#define MEMOBJ_AUX (MEMOBJ_REFERENCE)
 /*
  * The following macro clear the current ph7_value type and replace
  * it with the given one.
@@ -1453,8 +1451,6 @@ enum ph7_vm_op {
 	PH7_OP_BOR_STORE,    /* Bitor and store '|=' */
 	PH7_OP_BXOR_STORE,   /* Bitxor and store '^=' */
 	PH7_OP_CONSUME,      /* Consume VM output */
-	PH7_OP_LOAD_REF,     /* Load reference */
-	PH7_OP_STORE_REF,    /* Store a reference to a variable*/
 	PH7_OP_MEMBER,       /* Class member run-time access */
 	PH7_OP_CVT_OBJ,      /* Object cast */
 	PH7_OP_CVT_CALL,     /* Callback cast */
@@ -1626,7 +1622,7 @@ enum json_err_code {
 	JSON_ERROR_UTF8       /* Malformed UTF-8 characters */
 };
 /* memobj.c function prototypes */
-PH7_PRIVATE sxi32 PH7_MemObjDump(SyBlob *pOut, ph7_value *pObj, int ShowType, int nTab, int nDepth, int isRef);
+PH7_PRIVATE sxi32 PH7_MemObjDump(SyBlob *pOut, ph7_value *pObj, int ShowType, int nTab, int nDepth);
 PH7_PRIVATE const char *PH7_MemObjTypeDump(ph7_value *pVal);
 PH7_PRIVATE sxi32 PH7_MemObjAdd(ph7_value *pObj1, ph7_value *pObj2, int bAddStore);
 PH7_PRIVATE sxi32 PH7_MemObjCmp(ph7_value *pObj1, ph7_value *pObj2, int bStrict, int iNest);
@@ -1739,7 +1735,6 @@ PH7_PRIVATE sxi32 PH7_HashmapRelease(ph7_hashmap *pMap, int FreeDS);
 PH7_PRIVATE void  PH7_HashmapUnref(ph7_hashmap *pMap);
 PH7_PRIVATE sxi32 PH7_HashmapLookup(ph7_hashmap *pMap, ph7_value *pKey, ph7_hashmap_node **ppNode);
 PH7_PRIVATE sxi32 PH7_HashmapInsert(ph7_hashmap *pMap, ph7_value *pKey, ph7_value *pVal);
-PH7_PRIVATE sxi32 PH7_HashmapInsertByRef(ph7_hashmap *pMap, ph7_value *pKey, sxu32 nRefIdx);
 PH7_PRIVATE sxi32 PH7_HashmapUnion(ph7_hashmap *pLeft, ph7_hashmap *pRight);
 PH7_PRIVATE void PH7_HashmapUnlinkNode(ph7_hashmap_node *pNode, int bRestore);
 PH7_PRIVATE sxi32 PH7_HashmapDup(ph7_hashmap *pSrc, ph7_hashmap *pDest);

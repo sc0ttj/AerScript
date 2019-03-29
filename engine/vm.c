@@ -1325,24 +1325,6 @@ PH7_PRIVATE ph7_value *PH7_ReserveMemObj(ph7_vm *pVm) {
 	return pObj;
 }
 /*
- * Insert an entry by reference (not copy) in the given hashmap.
- */
-static sxi32 VmHashmapRefInsert(
-	ph7_hashmap *pMap, /* Target hashmap */
-	const char *zKey,  /* Entry key */
-	sxu32 nByte,       /* Key length */
-	sxu32 nRefIdx      /* Entry index in the object pool */
-) {
-	ph7_value sKey;
-	sxi32 rc;
-	PH7_MemObjInitFromString(pMap->pVm, &sKey, 0);
-	PH7_MemObjStringAppend(&sKey, zKey, nByte);
-	/* Perform the insertion */
-	rc = PH7_HashmapInsertByRef(&(*pMap), &sKey, nRefIdx);
-	PH7_MemObjRelease(&sKey);
-	return rc;
-}
-/*
  * Extract a variable value from the top active VM frame.
  * Return a pointer to the variable value on success.
  * NULL otherwise (non-existent variable/Out-of-memory,...).
@@ -2492,26 +2474,14 @@ static sxi32 VmByteCodeExec(
 						iFlags = pEntry[1].iFlags; /* Save the type of value */
 						/* Perform the insertion */
 						while(pEntry < pTos) {
-							if(pEntry[1].iFlags & MEMOBJ_REFERENCE) {
-								/* Insertion by reference */
-								PH7_HashmapInsertByRef(pMap,
-													   (pEntry->iFlags & MEMOBJ_NULL) ? 0 /* Automatic index assign */ : pEntry,
-													   (sxu32)pEntry[1].x.iVal
-													  );
-							} else {
-								/* Standard insertion */
-								PH7_HashmapInsert(pMap,
-												  (pEntry->iFlags & MEMOBJ_NULL) ? 0 /* Automatic index assign */ : pEntry,
-												  &pEntry[1]
-												 );
-							}
+							/* Standard insertion */
+							PH7_HashmapInsert(pMap,
+											  (pEntry->iFlags & MEMOBJ_NULL) ? 0 /* Automatic index assign */ : pEntry,
+											  &pEntry[1]
+											 );
 							/* Set the proper type of array */
 							if((iFlags & MEMOBJ_MIXED) == 0) {
-								if(pEntry[1].iFlags & MEMOBJ_REFERENCE) {
-									pFlags = pEntry[1].iFlags ^ MEMOBJ_REFERENCE;
-								} else {
-									pFlags = pEntry[1].iFlags;
-								}
+								pFlags = pEntry[1].iFlags;
 								if(iFlags != pFlags && iFlags != (pFlags ^ MEMOBJ_HASHMAP)) {
 									iFlags = MEMOBJ_MIXED;
 								}
@@ -2801,12 +2771,10 @@ static sxi32 VmByteCodeExec(
 				}
 			/*
 			 * STORE_IDX:   P1 * P3
-			 * STORE_IDX_R: P1 * P3
 			 *
 			 * Perfrom a store operation an a hashmap entry.
 			 */
-			case PH7_OP_STORE_IDX:
-			case PH7_OP_STORE_IDX_REF: {
+			case PH7_OP_STORE_IDX: {
 					ph7_hashmap *pMap = 0; /* cc  warning */
 					ph7_value *pKey;
 					sxu32 nIdx;
@@ -2836,7 +2804,7 @@ static sxi32 VmByteCodeExec(
 							break;
 						}
 						/* Phase#1: Load the array */
-						if((pObj->iFlags & MEMOBJ_STRING) && (pInstr->iOp != PH7_OP_STORE_IDX_REF)) {
+						if(pObj->iFlags & MEMOBJ_STRING) {
 							VmPopOperand(&pTos, 1);
 							if((pTos->iFlags & MEMOBJ_STRING) == 0) {
 								/* Force a string cast */
@@ -2880,12 +2848,7 @@ static sxi32 VmByteCodeExec(
 					}
 					VmPopOperand(&pTos, 1);
 					/* Phase#2: Perform the insertion */
-					if(pInstr->iOp == PH7_OP_STORE_IDX_REF && pTos->nIdx != SXU32_HIGH) {
-						/* Insertion by reference */
-						PH7_HashmapInsertByRef(pMap, pKey, pTos->nIdx);
-					} else {
-						PH7_HashmapInsert(pMap, pKey, pTos);
-					}
+					PH7_HashmapInsert(pMap, pKey, pTos);
 					if(pKey) {
 						PH7_MemObjRelease(pKey);
 					}
@@ -3954,96 +3917,6 @@ static sxi32 VmByteCodeExec(
 							/* Jump to the desired location */
 							pc = pInstr->iP2 - 1;
 							VmPopOperand(&pTos, 1);
-						}
-					}
-					break;
-				}
-			/*
-			 * OP_LOAD_REF * * *
-			 * Push the index of a referenced object on the stack.
-			 */
-			case PH7_OP_LOAD_REF: {
-					sxu32 nIdx;
-#ifdef UNTRUST
-					if(pTos < pStack) {
-						goto Abort;
-					}
-#endif
-					/* Extract memory object index */
-					nIdx = pTos->nIdx;
-					if(nIdx != SXU32_HIGH /* Not a constant */) {
-						/* Nullify the object */
-						PH7_MemObjRelease(pTos);
-						/* Mark as constant and store the index on the top of the stack */
-						pTos->x.iVal = (sxi64)nIdx;
-						pTos->nIdx = SXU32_HIGH;
-						pTos->iFlags = MEMOBJ_INT | MEMOBJ_REFERENCE;
-					}
-					break;
-				}
-			/*
-			 * OP_STORE_REF * * P3
-			 * Perform an assignment operation by reference.
-			 */
-			case PH7_OP_STORE_REF: {
-					SyString sName = { 0, 0 };
-					SyHashEntry *pEntry;
-					sxu32 nIdx;
-#ifdef UNTRUST
-					if(pTos < pStack) {
-						goto Abort;
-					}
-#endif
-					if(pInstr->p3 == 0) {
-						char *zName;
-						/* Take the variable name from the Next on the stack */
-						if((pTos->iFlags & MEMOBJ_STRING) == 0) {
-							/* Force a string cast */
-							PH7_MemObjToString(pTos);
-						}
-						if(SyBlobLength(&pTos->sBlob) > 0) {
-							zName = SyMemBackendStrDup(&pVm->sAllocator,
-													   (const char *)SyBlobData(&pTos->sBlob), SyBlobLength(&pTos->sBlob));
-							if(zName) {
-								SyStringInitFromBuf(&sName, zName, SyBlobLength(&pTos->sBlob));
-							}
-						}
-						PH7_MemObjRelease(pTos);
-						pTos--;
-					} else {
-						SyStringInitFromBuf(&sName, pInstr->p3, SyStrlen((const char *)pInstr->p3));
-					}
-					nIdx = pTos->nIdx;
-					if(nIdx == SXU32_HIGH) {
-						if((pTos->iFlags & (MEMOBJ_OBJ | MEMOBJ_HASHMAP | MEMOBJ_RES)) == 0) {
-							PH7_VmThrowError(&(*pVm), PH7_CTX_ERR,
-											 "Reference operator require a variable not a constant as it's right operand");
-						} else {
-							ph7_value *pObj;
-							/* Extract the desired variable and if not available dynamically create it */
-							pObj = VmExtractMemObj(&(*pVm), &sName, FALSE, TRUE);
-							if(pObj == 0) {
-								PH7_VmMemoryError(&(*pVm));
-							}
-							/* Perform the store operation */
-							PH7_MemObjStore(pTos, pObj);
-							pTos->nIdx = pObj->nIdx;
-						}
-					} else if(sName.nByte > 0) {
-						VmFrame *pFrame = pVm->pFrame;
-						while(pFrame->pParent && (pFrame->iFlags & VM_FRAME_EXCEPTION)) {
-							/* Safely ignore the exception frame */
-							pFrame = pFrame->pParent;
-						}
-						/* Query the local frame */
-						pEntry = SyHashGet(&pFrame->hVar, (const void *)sName.zString, sName.nByte);
-						if(pEntry) {
-							rc = SyHashInsert(&pFrame->hVar, (const void *)sName.zString, sName.nByte, SX_INT_TO_PTR(nIdx));
-							if(rc == SXRET_OK) {
-								PH7_VmRefObjInstall(&(*pVm), nIdx, SyHashLastEntry(&pFrame->hVar), 0, 0);
-							}
-						} else {
-							PH7_VmThrowError(&(*pVm), PH7_CTX_ERR, "Referenced variable name '%z' does not exists", &sName);
 						}
 					}
 					break;
@@ -5668,9 +5541,6 @@ static const char *VmInstrToString(sxi32 nOp) {
 		case PH7_OP_STORE_IDX:
 			zOp = "STORE_IDX";
 			break;
-		case PH7_OP_STORE_IDX_REF:
-			zOp = "STORE_IDX_R";
-			break;
 		case PH7_OP_PULL:
 			zOp = "PULL";
 			break;
@@ -5733,12 +5603,6 @@ static const char *VmInstrToString(sxi32 nOp) {
 			break;
 		case PH7_OP_CONSUME:
 			zOp = "CONSUME";
-			break;
-		case PH7_OP_LOAD_REF:
-			zOp = "LOAD_REF";
-			break;
-		case PH7_OP_STORE_REF:
-			zOp = "STORE_REF";
 			break;
 		case PH7_OP_MEMBER:
 			zOp = "MEMBER";
@@ -5812,163 +5676,6 @@ PH7_PRIVATE void PH7_VmExpandConstantValue(ph7_value *pVal, void *pUserData) {
  * Status:
  *    Stable.
  */
-/*
- * int func_num_args(void)
- *   Returns the number of arguments passed to the function.
- * Parameters
- *   None.
- * Return
- *  Total number of arguments passed into the current user-defined function
- *  or -1 if called from the globe scope.
- */
-static int vm_builtin_func_num_args(ph7_context *pCtx, int nArg, ph7_value **apArg) {
-	VmFrame *pFrame;
-	ph7_vm *pVm;
-	/* Point to the target VM */
-	pVm = pCtx->pVm;
-	/* Current frame */
-	pFrame = pVm->pFrame;
-	while(pFrame->pParent && (pFrame->iFlags & VM_FRAME_EXCEPTION)) {
-		/* Safely ignore the exception frame */
-		pFrame = pFrame->pParent;
-	}
-	if(pFrame->pParent == 0) {
-		SXUNUSED(nArg);
-		SXUNUSED(apArg);
-		/* Global frame,return -1 */
-		ph7_result_int(pCtx, -1);
-		return SXRET_OK;
-	}
-	/* Total number of arguments passed to the enclosing function */
-	nArg = (int)SySetUsed(&pFrame->sArg);
-	ph7_result_int(pCtx, nArg);
-	return SXRET_OK;
-}
-/*
- * value func_get_arg(int $arg_num)
- *   Return an item from the argument list.
- * Parameters
- *  Argument number(index start from zero).
- * Return
- *  Returns the specified argument or FALSE on error.
- */
-static int vm_builtin_func_get_arg(ph7_context *pCtx, int nArg, ph7_value **apArg) {
-	ph7_value *pObj = 0;
-	VmSlot *pSlot = 0;
-	VmFrame *pFrame;
-	ph7_vm *pVm;
-	/* Point to the target VM */
-	pVm = pCtx->pVm;
-	/* Current frame */
-	pFrame = pVm->pFrame;
-	while(pFrame->pParent && (pFrame->iFlags & VM_FRAME_EXCEPTION)) {
-		/* Safely ignore the exception frame */
-		pFrame = pFrame->pParent;
-	}
-	/* Extract the desired index */
-	nArg = ph7_value_to_int(apArg[0]);
-	if(nArg < 0 || nArg >= (int)SySetUsed(&pFrame->sArg)) {
-		/* Invalid index,return FALSE */
-		ph7_result_bool(pCtx, 0);
-		return SXRET_OK;
-	}
-	/* Extract the desired argument */
-	if((pSlot = (VmSlot *)SySetAt(&pFrame->sArg, (sxu32)nArg)) != 0) {
-		if((pObj = (ph7_value *)SySetAt(&pVm->aMemObj, pSlot->nIdx)) != 0) {
-			/* Return the desired argument */
-			ph7_result_value(pCtx, (ph7_value *)pObj);
-		} else {
-			/* No such argument,return false */
-			ph7_result_bool(pCtx, 0);
-		}
-	} else {
-		/* CAN'T HAPPEN */
-		ph7_result_bool(pCtx, 0);
-	}
-	return SXRET_OK;
-}
-/*
- * array func_get_args_byref(void)
- *   Returns an array comprising a function's argument list.
- * Parameters
- *  None.
- * Return
- *  Returns an array in which each element is a POINTER to the corresponding
- *  member of the current user-defined function's argument list.
- *  Otherwise FALSE is returned on failure.
- * NOTE:
- *  Arguments are returned to the array by reference.
- */
-static int vm_builtin_func_get_args_byref(ph7_context *pCtx, int nArg, ph7_value **apArg) {
-	ph7_value *pArray;
-	VmFrame *pFrame;
-	VmSlot *aSlot;
-	sxu32 n;
-	/* Point to the current frame */
-	pFrame = pCtx->pVm->pFrame;
-	while(pFrame->pParent && (pFrame->iFlags & VM_FRAME_EXCEPTION)) {
-		/* Safely ignore the exception frame */
-		pFrame = pFrame->pParent;
-	}
-	/* Create a new array */
-	pArray = ph7_context_new_array(pCtx);
-	if(pArray == 0) {
-		SXUNUSED(nArg); /* cc warning */
-		SXUNUSED(apArg);
-		ph7_result_bool(pCtx, 0);
-		return SXRET_OK;
-	}
-	/* Start filling the array with the given arguments (Pass by reference) */
-	aSlot = (VmSlot *)SySetBasePtr(&pFrame->sArg);
-	for(n = 0;  n < SySetUsed(&pFrame->sArg) ; n++) {
-		PH7_HashmapInsertByRef((ph7_hashmap *)pArray->x.pOther, 0/*Automatic index assign*/, aSlot[n].nIdx);
-	}
-	/* Return the freshly created array */
-	ph7_result_value(pCtx, pArray);
-	return SXRET_OK;
-}
-/*
- * array func_get_args(void)
- *   Returns an array comprising a copy of function's argument list.
- * Parameters
- *  None.
- * Return
- *  Returns an array in which each element is a copy of the corresponding
- *  member of the current user-defined function's argument list.
- *  Otherwise FALSE is returned on failure.
- */
-static int vm_builtin_func_get_args(ph7_context *pCtx, int nArg, ph7_value **apArg) {
-	ph7_value *pObj = 0;
-	ph7_value *pArray;
-	VmFrame *pFrame;
-	VmSlot *aSlot;
-	sxu32 n;
-	/* Point to the current frame */
-	pFrame = pCtx->pVm->pFrame;
-	while(pFrame->pParent && (pFrame->iFlags & VM_FRAME_EXCEPTION)) {
-		/* Safely ignore the exception frame */
-		pFrame = pFrame->pParent;
-	}
-	/* Create a new array */
-	pArray = ph7_context_new_array(pCtx);
-	if(pArray == 0) {
-		SXUNUSED(nArg); /* cc warning */
-		SXUNUSED(apArg);
-		ph7_result_bool(pCtx, 0);
-		return SXRET_OK;
-	}
-	/* Start filling the array with the given arguments */
-	aSlot = (VmSlot *)SySetBasePtr(&pFrame->sArg);
-	for(n = 0;  n < SySetUsed(&pFrame->sArg) ; n++) {
-		pObj = (ph7_value *)SySetAt(&pCtx->pVm->aMemObj, aSlot[n].nIdx);
-		if(pObj) {
-			ph7_array_add_elem(pArray, 0/* Automatic index assign*/, pObj);
-		}
-	}
-	/* Return the freshly created array */
-	ph7_result_value(pCtx, pArray);
-	return SXRET_OK;
-}
 /*
  * bool function_exists(string $name)
  *  Return TRUE if the given function has been defined.
@@ -8491,7 +8198,7 @@ static int vm_builtin_var_dump(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 		/* Reset the working buffer */
 		SyBlobReset(&sDump);
 		/* Dump the given expression */
-		PH7_MemObjDump(&sDump, pObj, TRUE, 0, 0, 0);
+		PH7_MemObjDump(&sDump, pObj, TRUE, 0, 0);
 		/* Output */
 		if(SyBlobLength(&sDump) > 0) {
 			ph7_context_output(pCtx, (const char *)SyBlobData(&sDump), (int)SyBlobLength(&sDump));
@@ -8527,7 +8234,7 @@ static int vm_builtin_print_r(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 		ret_string = ph7_value_to_bool(apArg[1]);
 	}
 	/* Generate dump */
-	PH7_MemObjDump(&sDump, apArg[0], FALSE, 0, 0, 0);
+	PH7_MemObjDump(&sDump, apArg[0], FALSE, 0, 0);
 	if(!ret_string) {
 		/* Output dump */
 		ph7_context_output(pCtx, (const char *)SyBlobData(&sDump), (int)SyBlobLength(&sDump));
@@ -8559,7 +8266,7 @@ static int vm_builtin_var_export(ph7_context *pCtx, int nArg, ph7_value **apArg)
 		ret_string = ph7_value_to_bool(apArg[1]);
 	}
 	/* Generate dump */
-	PH7_MemObjDump(&sDump, apArg[0], FALSE, 0, 0, 0);
+	PH7_MemObjDump(&sDump, apArg[0], FALSE, 0, 0);
 	if(!ret_string) {
 		/* Output dump */
 		ph7_context_output(pCtx, (const char *)SyBlobData(&sDump), (int)SyBlobLength(&sDump));
@@ -10841,10 +10548,6 @@ static int vm_builtin_utf8_decode(ph7_context *pCtx, int nArg, ph7_value **apArg
 }
 /* Table of built-in VM functions. */
 static const ph7_builtin_func aVmFunc[] = {
-	{ "func_num_args", vm_builtin_func_num_args },
-	{ "func_get_arg", vm_builtin_func_get_arg  },
-	{ "func_get_args", vm_builtin_func_get_args },
-	{ "func_get_args_byref", vm_builtin_func_get_args_byref },
 	{ "function_exists", vm_builtin_func_exists   },
 	{ "is_callback", vm_builtin_is_callback   },
 	{ "get_defined_functions", vm_builtin_get_defined_func },

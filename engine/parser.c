@@ -209,8 +209,6 @@ static const ph7_expr_op aOpTable[] = {
 	{ {"!==", sizeof(char) * 3}, EXPR_OP_TNE, 11, EXPR_OP_NON_ASSOC, PH7_OP_TNE},
 	/* Precedence 12,left-associative */
 	{ {"&", sizeof(char)}, EXPR_OP_BAND, 12, EXPR_OP_ASSOC_LEFT, PH7_OP_BAND},
-	/* Precedence 12,left-associative */
-	{ {"=&", sizeof(char) * 2}, EXPR_OP_REF, 12, EXPR_OP_ASSOC_LEFT, PH7_OP_STORE_REF},
 	/* Binary operators */
 	/* Precedence 13,left-associative */
 	{ {"^", sizeof(char)}, EXPR_OP_XOR, 13, EXPR_OP_ASSOC_LEFT, PH7_OP_BXOR},
@@ -859,13 +857,6 @@ static sxi32 ExprProcessFuncArguments(ph7_gen_state *pGen, ph7_expr_node *pOp, p
 			iCur++;
 		}
 		if(iCur > iNode) {
-			if(apNode[iNode] && (apNode[iNode]->pStart->nType & PH7_TK_AMPER /*'&'*/) && ((iCur - iNode) == 2)
-					&& apNode[iNode + 1]->xCode == PH7_CompileVariable) {
-				PH7_GenCompileError(&(*pGen), E_WARNING, apNode[iNode]->pStart->nLine,
-									"call-time pass-by-reference is deprecated");
-				ExprFreeTree(&(*pGen), apNode[iNode]);
-				apNode[iNode] = 0;
-			}
 			ExprMakeTree(&(*pGen), &apNode[iNode], iCur - iNode);
 			if(apNode[iNode]) {
 				/* Put a pointer to the root of the tree in the arguments set */
