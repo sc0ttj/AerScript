@@ -3359,7 +3359,7 @@ loop:
 	}
 	pGen->pIn++; /* Jump the equal sign */
 	/* Allocate a new class attribute */
-	pCons = PH7_NewClassAttr(pGen->pVm, pName, nLine, iProtection, iFlags);
+	pCons = PH7_NewClassAttr(pGen->pVm, pName, nLine, iProtection, iFlags, 0);
 	if(pCons == 0) {
 		PH7_GenCompileError(pGen, E_ERROR, nLine, "Fatal, PH7 is running out of memory");
 		return SXERR_ABORT;
@@ -3438,7 +3438,7 @@ Synchronize:
  *   Refer to the official documentation for more information on the powerful extension
  *   introduced by the PH7 engine to the OO subsystem.
  */
-static sxi32 PH7_GenStateCompileClassAttr(ph7_gen_state *pGen, sxi32 iProtection, sxi32 iFlags, ph7_class *pClass) {
+static sxi32 PH7_GenStateCompileClassAttr(ph7_gen_state *pGen, sxi32 iProtection, sxi32 iFlags, sxu32 nType, ph7_class *pClass) {
 	sxu32 nLine = pGen->pIn->nLine;
 	ph7_class_attr *pAttr;
 	SyString *pName;
@@ -3470,7 +3470,7 @@ loop:
 		goto Synchronize;
 	}
 	/* Allocate a new class attribute */
-	pAttr = PH7_NewClassAttr(pGen->pVm, pName, nLine, iProtection, iFlags);
+	pAttr = PH7_NewClassAttr(pGen->pVm, pName, nLine, iProtection, iFlags, nType);
 	if(pAttr == 0) {
 		PH7_GenCompileError(pGen, E_ERROR, nLine, "Fatal, PH7 engine is running out of memory");
 		return SXERR_ABORT;
@@ -4286,7 +4286,7 @@ static sxi32 PH7_GenStateCompileClass(ph7_gen_state *pGen, sxi32 iFlags) {
 			}
 			if(pGen->pIn->nType & PH7_TK_DOLLAR/*'$'*/) {
 				/* Attribute declaration */
-				rc = PH7_GenStateCompileClassAttr(&(*pGen), iProtection, iAttrflags, pClass);
+				rc = PH7_GenStateCompileClassAttr(&(*pGen), iProtection, iAttrflags, nType, pClass);
 			} else {
 				/* Process method declaration */
 				rc = PH7_GenStateCompileClassMethod(&(*pGen), nType, iProtection, iAttrflags, TRUE, pClass);

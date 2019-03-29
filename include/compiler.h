@@ -128,7 +128,7 @@ static sxi32 PH7_GenStateCompileFunc(ph7_gen_state *pGen, SyString *pName, sxi32
 static sxi32 PH7_CompileFunction(ph7_gen_state *pGen);
 static sxi32 PH7_GetProtectionLevel(sxi32 nKeyword);
 static sxi32 PH7_GenStateCompileClassConstant(ph7_gen_state *pGen, sxi32 iProtection, sxi32 iFlags, ph7_class *pClass);
-static sxi32 PH7_GenStateCompileClassAttr(ph7_gen_state *pGen, sxi32 iProtection, sxi32 iFlags, ph7_class *pClass);
+static sxi32 PH7_GenStateCompileClassAttr(ph7_gen_state *pGen, sxi32 iProtection, sxi32 iFlags, sxu32 nType, ph7_class *pClass);
 static sxi32 PH7_GenStateCompileClassMethod(ph7_gen_state *pGen, sxu32 nType, sxi32 iProtection, sxi32 iFlags, int doBody, ph7_class *pClass);
 static sxi32 PH7_CompileClassInterface(ph7_gen_state *pGen);
 static sxi32 PH7_GenStateCompileClass(ph7_gen_state *pGen, sxi32 iFlags);

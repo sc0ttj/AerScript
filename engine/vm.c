@@ -695,6 +695,7 @@ PH7_PRIVATE sxi32 PH7_VmCreateClassInstanceFrame(
 				SyMemBackendPoolFree(&pVm->sAllocator, pVmAttr);
 				return SXERR_MEM;
 			}
+			MemObjSetType(pMemObj, pAttr->nType);
 			pVmAttr->nIdx = pMemObj->nIdx;
 			if(SySetUsed(&pAttr->aByteCode) > 0) {
 				/* Initialize attribute default value (any complex expression) */
