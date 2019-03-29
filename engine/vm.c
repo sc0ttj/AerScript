@@ -695,6 +695,15 @@ PH7_PRIVATE sxi32 PH7_VmCreateClassInstanceFrame(
 				SyMemBackendPoolFree(&pVm->sAllocator, pVmAttr);
 				return SXERR_MEM;
 			}
+			if(pAttr->nType & MEMOBJ_HASHMAP) {
+				ph7_hashmap *pMap;
+				pMap = PH7_NewHashmap(&(*pVm), 0, 0);
+				if(pMap == 0) {
+					SyMemBackendPoolFree(&pVm->sAllocator, pMap);
+					return SXERR_MEM;
+				}
+				pMemObj->x.pOther = pMap;
+			}
 			MemObjSetType(pMemObj, pAttr->nType);
 			pVmAttr->nIdx = pMemObj->nIdx;
 			if(SySetUsed(&pAttr->aByteCode) > 0) {
