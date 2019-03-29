@@ -4,7 +4,4 @@ Below list contains things that should be changed/fixed/implemented.
 
 1. The debug_backtrace() does not show information about arrays type.
 
-2. Array get a type of mixed, if there are at least 2 different types of value specified, even they are compatible, eg.
-	{4, 5.5} will result in mixed instead of float.
-
-3. References are completely broken.
+2. References are completely broken.
