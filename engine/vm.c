@@ -2716,7 +2716,25 @@ static sxi32 VmByteCodeExec(
 							pObj = (ph7_value *)SySetAt(&pVm->aMemObj, nIdx);
 							if(pObj) {
 								/* Perform the store operation */
-								PH7_MemObjStore(pTos, pObj);
+								if(pObj->iFlags == pTos->iFlags) {
+									PH7_MemObjStore(pTos, pObj);
+								} else if(pObj->iFlags & MEMOBJ_MIXED) {
+									PH7_MemObjStore(pTos, pObj);
+									pObj->iFlags |= MEMOBJ_MIXED;
+								} else if(PH7_CheckVarCompat(pTos, pObj->iFlags) == SXRET_OK) {
+									ProcMemObjCast xCast = PH7_MemObjCastMethod(pObj->iFlags);
+									xCast(pTos);
+									PH7_MemObjStore(pTos, pObj);
+								} else if((pObj->iFlags & MEMOBJ_HASHMAP) && (pTos->iFlags & MEMOBJ_HASHMAP)) {
+									if(PH7_HashmapCast(pTos, pObj->iFlags ^ MEMOBJ_HASHMAP) != SXRET_OK) {
+										PH7_VmThrowError(&(*pVm), PH7_CTX_ERR,
+														"Cannot assign a value of incompatible type to variable '$%z'", &sName);
+									}
+									PH7_MemObjStore(pTos, pObj);
+								} else {
+									PH7_VmThrowError(&(*pVm), PH7_CTX_ERR,
+													"Cannot assign a value of incompatible type to variable '$%z'", &sName);
+								}
 							}
 						}
 						break;
