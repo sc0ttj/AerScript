@@ -12,7 +12,7 @@ class StringTokenizer {
 	}
 
 	public bool hasMoreTokens() {
-		return ($this->token !== false);
+		return $this->token ? true : false;
 	}
 
 	public string nextToken() {
