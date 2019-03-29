@@ -8,5 +8,3 @@ Below list contains things that should be changed/fixed/implemented.
 	{4, 5.5} will result in mixed instead of float.
 
 3. References are completely broken.
-
-4. Class attributes do not comply their declared data types.
