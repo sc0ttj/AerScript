@@ -1406,7 +1406,7 @@ static sxi32 PH7_CompileConstant(ph7_gen_state *pGen) {
 	/* Compile constant value */
 	rc = PH7_CompileExpr(&(*pGen), 0, 0);
 	/* Emit the done instruction */
-	PH7_VmEmitInstr(pGen->pVm, nLine, PH7_OP_DONE, (rc != SXERR_EMPTY ? 1 : 0), 0, 0, 0);
+	PH7_VmEmitInstr(pGen->pVm, nLine, PH7_OP_DONE, (rc != SXERR_EMPTY ? 1 : 0), 1, 0, 0);
 	PH7_VmSetByteCodeContainer(pGen->pVm, pInstrContainer);
 	if(rc == SXERR_ABORT) {
 		/* Don't worry about freeing memory, everything will be released shortly */

@@ -2010,7 +2010,7 @@ static sxi32 VmByteCodeExec(
 		 */
 		switch(pInstr->iOp) {
 			/*
-			 * DONE: P1 * *
+			 * DONE: P1 P2 *
 			 *
 			 * Program execution completed: Clean up the mess left behind
 			 * and return immediately.
@@ -2028,7 +2028,7 @@ static sxi32 VmByteCodeExec(
 					if(pResult) {
 						/* Execution result */
 						PH7_MemObjStore(pTos, pResult);
-						if(pVm->pFrame->iFlags & VM_FRAME_ACTIVE) {
+						if(!pInstr->iP2 && pVm->pFrame->iFlags & VM_FRAME_ACTIVE) {
 							ph7_vm_func *pFunc = (ph7_vm_func *)pVm->pFrame->pUserData;
 							if(pFunc->nType) {
 								if((pFunc->nType & MEMOBJ_MIXED) == 0) {
