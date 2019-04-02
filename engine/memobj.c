@@ -382,6 +382,58 @@ PH7_PRIVATE sxi32 PH7_CheckVarCompat(ph7_value *pObj, int nType) {
 	return SXERR_NOMATCH;
 }
 /*
+ * Duplicate safely the contents of a ph7_value if source and
+ * destination are of the compatible data types.
+ */
+PH7_PRIVATE sxi32 PH7_MemObjSafeStore(ph7_value *pSrc, ph7_value *pDest) {
+	if(pDest->iFlags == pSrc->iFlags) {
+		PH7_MemObjStore(pSrc, pDest);
+	} else if(pDest->iFlags & MEMOBJ_MIXED) {
+		if(pDest->iFlags & MEMOBJ_HASHMAP) {
+			/* mixed[] */
+			if(pSrc->iFlags & MEMOBJ_HASHMAP) {
+				PH7_MemObjStore(pSrc, pDest);
+				pDest->iFlags |= MEMOBJ_MIXED;
+			} else if(pSrc->iFlags & MEMOBJ_NULL) {
+				/* Temporarily do no allow to assign a NULL value to array */
+				return SXERR_NOMATCH;
+			} else {
+				return SXERR_NOMATCH;
+			}
+		} else {
+			/* mixed */
+			if(pSrc->iFlags == MEMOBJ_NULL) {
+				MemObjSetType(pDest, MEMOBJ_MIXED | MEMOBJ_VOID);
+			} else if((pSrc->iFlags & MEMOBJ_HASHMAP) == 0) {
+				PH7_MemObjStore(pSrc, pDest);
+				pDest->iFlags |= MEMOBJ_MIXED;
+			} else {
+				return SXERR_NOMATCH;
+			}
+		}
+	} else if((pDest->iFlags & MEMOBJ_HASHMAP)) {
+		/* [] */
+		if(pSrc->iFlags & MEMOBJ_NULL) {
+			/* Temporarily do no allow to assign a NULL value to array */
+			return SXERR_NOMATCH;
+		} else if(pSrc->iFlags & MEMOBJ_HASHMAP) {
+			if(PH7_HashmapCast(pSrc, pDest->iFlags ^ MEMOBJ_HASHMAP) != SXRET_OK) {
+				return SXERR_NOMATCH;
+			}
+			PH7_MemObjStore(pSrc, pDest);
+		} else {
+			return SXERR_NOMATCH;
+		}
+	} else if(PH7_CheckVarCompat(pSrc, pDest->iFlags) == SXRET_OK) {
+		ProcMemObjCast xCast = PH7_MemObjCastMethod(pDest->iFlags);
+		xCast(pSrc);
+		PH7_MemObjStore(pSrc, pDest);
+	} else {
+		return SXERR_NOMATCH;
+	}
+	return SXRET_OK;
+}
+/*
  * Convert a ph7_value to type integer.Invalidate any prior representations.
  */
 PH7_PRIVATE sxi32 PH7_MemObjToInteger(ph7_value *pObj) {
