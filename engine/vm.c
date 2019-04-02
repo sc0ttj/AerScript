@@ -2736,7 +2736,7 @@ static sxi32 VmByteCodeExec(
 					} else {
 						SyStringInitFromBuf(&sName, pInstr->p3, SyStrlen((const char *)pInstr->p3));
 					}
-					/* Extract the desired variable and if not available dynamically create it */
+					/* Extract the desired variable if available */
 					pObj = VmExtractMemObj(&(*pVm), &sName, pInstr->p3 ? FALSE : TRUE, FALSE);
 					if(pObj == 0) {
 						PH7_VmThrowError(&(*pVm), PH7_CTX_ERR,
