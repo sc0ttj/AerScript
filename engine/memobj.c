@@ -395,8 +395,9 @@ PH7_PRIVATE sxi32 PH7_MemObjSafeStore(ph7_value *pSrc, ph7_value *pDest) {
 				PH7_MemObjStore(pSrc, pDest);
 				pDest->iFlags |= MEMOBJ_MIXED;
 			} else if(pSrc->iFlags & MEMOBJ_NULL) {
-				/* Temporarily do no allow to assign a NULL value to array */
-				return SXERR_NOMATCH;
+				PH7_MemObjToHashmap(pSrc);
+				MemObjSetType(pSrc, pDest->iFlags);
+				PH7_MemObjStore(pSrc, pDest);
 			} else {
 				return SXERR_NOMATCH;
 			}
@@ -414,8 +415,9 @@ PH7_PRIVATE sxi32 PH7_MemObjSafeStore(ph7_value *pSrc, ph7_value *pDest) {
 	} else if((pDest->iFlags & MEMOBJ_HASHMAP)) {
 		/* [] */
 		if(pSrc->iFlags & MEMOBJ_NULL) {
-			/* Temporarily do no allow to assign a NULL value to array */
-			return SXERR_NOMATCH;
+			PH7_MemObjToHashmap(pSrc);
+			MemObjSetType(pSrc, pDest->iFlags);
+			PH7_MemObjStore(pSrc, pDest);
 		} else if(pSrc->iFlags & MEMOBJ_HASHMAP) {
 			if(PH7_HashmapCast(pSrc, pDest->iFlags ^ MEMOBJ_HASHMAP) != SXRET_OK) {
 				return SXERR_NOMATCH;
