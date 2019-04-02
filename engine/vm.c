@@ -2657,12 +2657,6 @@ static sxi32 VmByteCodeExec(
 							sEnv.iFlags = pEnv->iFlags;
 							sEnv.nIdx = SXU32_HIGH;
 							PH7_MemObjInit(pVm, &sEnv.sValue);
-							if(sEnv.iFlags & VM_FUNC_ARG_BY_REF) {
-								/* Pass by reference */
-								PH7_VmThrowError(pVm, PH7_CTX_WARNING,
-												 "Pass by reference is disabled in the current release of the PH7 engine, PH7 is switching to pass by value");
-							}
-							/* Standard pass by value */
 							pValue = VmExtractMemObj(pVm, &sEnv.sName, FALSE, FALSE);
 							if(pValue) {
 								/* Copy imported value */
