@@ -5476,26 +5476,28 @@ PH7_PRIVATE sxi32 PH7_HashmapWalk(
 PH7_PRIVATE sxi32 PH7_HashmapCast(ph7_value *pObj, sxi32 nType) {
 	sxi32 rc;
 	if((pObj->iFlags & MEMOBJ_HASHMAP)) {
-		ph7_hashmap *pMap;
-		ph7_hashmap_node *pNode;
-		ph7_value pValue, pKey;
-		pMap = (ph7_hashmap *) pObj->x.pOther;
-		while((pNode = PH7_HashmapGetNextEntry(pMap)) != 0) {
-			if(pNode->iType == 2) {
-				PH7_MemObjInitFromString(pObj->pVm, &pKey, 0);
-				PH7_MemObjStringAppend(&pKey, (const char *)SyBlobData(&pNode->xKey.sKey), SyBlobLength(&pNode->xKey.sKey));
-			} else {
-				PH7_MemObjInitFromInt(pObj->pVm, &pKey, pNode->xKey.iKey);
+		if((pObj->iFlags & nType) == 0) {
+			ph7_hashmap *pMap;
+			ph7_hashmap_node *pNode;
+			ph7_value pValue, pKey;
+			pMap = (ph7_hashmap *) pObj->x.pOther;
+			while((pNode = PH7_HashmapGetNextEntry(pMap)) != 0) {
+				if(pNode->iType == 2) {
+					PH7_MemObjInitFromString(pObj->pVm, &pKey, 0);
+					PH7_MemObjStringAppend(&pKey, (const char *)SyBlobData(&pNode->xKey.sKey), SyBlobLength(&pNode->xKey.sKey));
+				} else {
+					PH7_MemObjInitFromInt(pObj->pVm, &pKey, pNode->xKey.iKey);
+				}
+				PH7_MemObjInit(pObj->pVm, &pValue);
+				PH7_HashmapExtractNodeValue(pNode, &pValue, FALSE);
+				rc = PH7_HashmapCast(&pValue, nType);
+				if(rc == SXERR_NOMATCH) {
+					return SXERR_NOMATCH;
+				}
+				PH7_HashmapInsert(pMap, &pKey, &pValue);
 			}
-			PH7_MemObjInit(pObj->pVm, &pValue);
-			PH7_HashmapExtractNodeValue(pNode, &pValue, FALSE);
-			rc = PH7_HashmapCast(&pValue, nType);
-			if(rc == SXERR_NOMATCH) {
-				return SXERR_NOMATCH;
-			}
-			PH7_HashmapInsert(pMap, &pKey, &pValue);
+			pObj->iFlags = MEMOBJ_HASHMAP | nType;
 		}
-		pObj->iFlags = MEMOBJ_HASHMAP | nType;
 	} else {
 		if(pObj->iFlags != nType && PH7_CheckVarCompat(pObj, nType) != SXRET_OK) {
 			return SXERR_NOMATCH;
