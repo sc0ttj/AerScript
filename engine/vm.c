@@ -696,28 +696,27 @@ PH7_PRIVATE sxi32 PH7_VmCreateClassInstanceFrame(
 		}
 		pVmAttr->pAttr = pAttr;
 		if((pAttr->iFlags & (PH7_CLASS_ATTR_CONSTANT | PH7_CLASS_ATTR_STATIC)) == 0) {
-			ph7_value *pMemObj;
+			ph7_value *pMemObj, *pResult;
 			/* Reserve a memory object for this attribute */
 			pMemObj = PH7_ReserveMemObj(&(*pVm));
-			if(pMemObj == 0) {
+			pResult = PH7_ReserveMemObj(&(*pVm));
+			if(pMemObj == 0 || pResult == 0) {
 				SyMemBackendPoolFree(&pVm->sAllocator, pVmAttr);
 				return SXERR_MEM;
 			}
-			if(pAttr->nType & MEMOBJ_HASHMAP) {
-				ph7_hashmap *pMap;
-				pMap = PH7_NewHashmap(&(*pVm), 0, 0);
-				if(pMap == 0) {
-					SyMemBackendPoolFree(&pVm->sAllocator, pMap);
-					return SXERR_MEM;
-				}
-				pMemObj->x.pOther = pMap;
-			}
-			MemObjSetType(pMemObj, pAttr->nType);
-			pVmAttr->nIdx = pMemObj->nIdx;
 			if(SySetUsed(&pAttr->aByteCode) > 0) {
 				/* Initialize attribute default value (any complex expression) */
-				VmLocalExec(&(*pVm), &pAttr->aByteCode, pMemObj);
+				VmLocalExec(&(*pVm), &pAttr->aByteCode, pResult);
 			}
+			MemObjSetType(pMemObj, pAttr->nType);
+			rc = PH7_MemObjSafeStore(pResult, pMemObj);
+			if(rc != SXRET_OK) {
+				PH7_VmThrowError(&(*pVm), PH7_CTX_ERR, "Cannot assign a value of incompatible type to variable '%z::$%z'", &pClass->sName, &pAttr->sName);
+			}
+			/* Free up memory */
+			PH7_MemObjRelease(pResult);
+			/* Record attribute index */
+			pVmAttr->nIdx = pMemObj->nIdx;
 			rc = SyHashInsert(&pObj->hAttr, SyStringData(&pAttr->sName), SyStringLength(&pAttr->sName), pVmAttr);
 			if(rc != SXRET_OK) {
 				VmSlot sSlot;
