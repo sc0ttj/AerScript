@@ -4836,14 +4836,14 @@ static sxi32 VmByteCodeExec(
 									if(pObj == 0 || pVal == 0) {
 										PH7_VmMemoryError(&(*pVm));
 									}
+									MemObjSetType(pObj, pStatic->iFlags);
 									if(SySetUsed(&pStatic->aByteCode) > 0) {
 										/* Evaluate initialization expression (Any complex expression) */
 										VmLocalExec(&(*pVm), &pStatic->aByteCode, pVal);
-									}
-									MemObjSetType(pObj, pStatic->iFlags);
-									rc = PH7_MemObjSafeStore(pVal, pObj);
-									if(rc != SXRET_OK) {
-										PH7_VmThrowError(&(*pVm), PH7_CTX_ERR, "Cannot assign a value of incompatible type to variable '$%z'", &pStatic->sName);
+										rc = PH7_MemObjSafeStore(pVal, pObj);
+										if(rc != SXRET_OK) {
+											PH7_VmThrowError(&(*pVm), PH7_CTX_ERR, "Cannot assign a value of incompatible type to variable '$%z'", &pStatic->sName);
+										}
 									}
 									pObj->nIdx = pStatic->nIdx;
 								}
