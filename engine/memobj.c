@@ -580,7 +580,12 @@ PH7_PRIVATE sxi32 PH7_MemObjToHashmap(ph7_value *pObj) {
  * Refer to the official documentation for more information.
  */
 PH7_PRIVATE sxi32 PH7_MemObjToObject(ph7_value *pObj) {
-	if((pObj->iFlags & MEMOBJ_OBJ) == 0) {
+	if(pObj->iFlags & MEMOBJ_NULL) {
+		/* Invalidate any prior representation */
+		PH7_MemObjRelease(pObj);
+		/* Typecast the value */
+		MemObjSetType(pObj, MEMOBJ_OBJ);
+	} else if((pObj->iFlags & MEMOBJ_OBJ) == 0) {
 		ph7_class_instance *pStd;
 		ph7_class_method *pCons;
 		ph7_class *pClass;
