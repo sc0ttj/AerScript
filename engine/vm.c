@@ -629,30 +629,24 @@ static sxi32 VmMountUserClass(
 		/* Extract the current attribute */
 		pAttr = (ph7_class_attr *)pEntry->pUserData;
 		if(pAttr->iFlags & (PH7_CLASS_ATTR_CONSTANT | PH7_CLASS_ATTR_STATIC)) {
-			ph7_value *pMemObj;
+			ph7_value *pMemObj, *pResult;
 			/* Reserve a memory object for this constant/static attribute */
 			pMemObj = PH7_ReserveMemObj(&(*pVm));
-			if(pMemObj == 0) {
+			pResult = PH7_ReserveMemObj(&(*pVm));
+			if(pMemObj == 0 || pResult == 0) {
 				PH7_VmMemoryError(&(*pVm));
 			}
 			if(SySetUsed(&pAttr->aByteCode) > 0) {
 				/* Initialize attribute default value (any complex expression) */
-				VmLocalExec(&(*pVm), &pAttr->aByteCode, pMemObj);
+				VmLocalExec(&(*pVm), &pAttr->aByteCode, pResult);
 			}
-			if((pAttr->nType & MEMOBJ_MIXED) == 0) {
-				if(pAttr->nType != pMemObj->iFlags) {
-					if(PH7_CheckVarCompat(pMemObj, pAttr->nType) == SXRET_OK) {
-						ProcMemObjCast xCast = PH7_MemObjCastMethod(pAttr->nType);
-						xCast(pMemObj);
-					} else if((pAttr->iFlags & MEMOBJ_HASHMAP) && (pMemObj->iFlags & MEMOBJ_HASHMAP)) {
-						if(PH7_HashmapCast(pMemObj, pAttr->iFlags ^ MEMOBJ_HASHMAP) != SXRET_OK) {
-							PH7_VmThrowError(&(*pVm), PH7_CTX_ERR, "Cannot assign a value of incompatible type to variable '%z::$%z'", &pClass->sName, &pAttr->sName);
-						}
-					} else {
-						PH7_VmThrowError(&(*pVm), PH7_CTX_ERR, "Cannot assign a value of incompatible type to variable '%z::$%z'", &pClass->sName, &pAttr->sName);
-					}
-				}
+			MemObjSetType(pMemObj, pAttr->nType);
+			rc = PH7_MemObjSafeStore(pResult, pMemObj);
+			if(rc != SXRET_OK) {
+				PH7_VmThrowError(&(*pVm), PH7_CTX_ERR, "Cannot assign a value of incompatible type to variable '%z::$%z'", &pClass->sName, &pAttr->sName);
 			}
+			/* Free up memory */
+			PH7_MemObjRelease(pResult);
 			/* Record attribute index */
 			pAttr->nIdx = pMemObj->nIdx;
 			/* Install static attribute in the reference table */
