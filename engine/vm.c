@@ -636,14 +636,14 @@ static sxi32 VmMountUserClass(
 			if(pMemObj == 0 || pResult == 0) {
 				PH7_VmMemoryError(&(*pVm));
 			}
+			MemObjSetType(pMemObj, pAttr->nType);
 			if(SySetUsed(&pAttr->aByteCode) > 0) {
 				/* Initialize attribute default value (any complex expression) */
 				VmLocalExec(&(*pVm), &pAttr->aByteCode, pResult);
-			}
-			MemObjSetType(pMemObj, pAttr->nType);
-			rc = PH7_MemObjSafeStore(pResult, pMemObj);
-			if(rc != SXRET_OK) {
-				PH7_VmThrowError(&(*pVm), PH7_CTX_ERR, "Cannot assign a value of incompatible type to variable '%z::$%z'", &pClass->sName, &pAttr->sName);
+				rc = PH7_MemObjSafeStore(pResult, pMemObj);
+				if(rc != SXRET_OK) {
+					PH7_VmThrowError(&(*pVm), PH7_CTX_ERR, "Cannot assign a value of incompatible type to variable '%z::$%z'", &pClass->sName, &pAttr->sName);
+				}
 			}
 			/* Free up memory */
 			PH7_MemObjRelease(pResult);
@@ -704,14 +704,14 @@ PH7_PRIVATE sxi32 PH7_VmCreateClassInstanceFrame(
 				SyMemBackendPoolFree(&pVm->sAllocator, pVmAttr);
 				return SXERR_MEM;
 			}
+			MemObjSetType(pMemObj, pAttr->nType);
 			if(SySetUsed(&pAttr->aByteCode) > 0) {
 				/* Initialize attribute default value (any complex expression) */
 				VmLocalExec(&(*pVm), &pAttr->aByteCode, pResult);
-			}
-			MemObjSetType(pMemObj, pAttr->nType);
-			rc = PH7_MemObjSafeStore(pResult, pMemObj);
-			if(rc != SXRET_OK) {
-				PH7_VmThrowError(&(*pVm), PH7_CTX_ERR, "Cannot assign a value of incompatible type to variable '%z::$%z'", &pClass->sName, &pAttr->sName);
+				rc = PH7_MemObjSafeStore(pResult, pMemObj);
+				if(rc != SXRET_OK) {
+					PH7_VmThrowError(&(*pVm), PH7_CTX_ERR, "Cannot assign a value of incompatible type to variable '%z::$%z'", &pClass->sName, &pAttr->sName);
+				}
 			}
 			/* Free up memory */
 			PH7_MemObjRelease(pResult);
