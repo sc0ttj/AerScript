@@ -386,7 +386,7 @@ PH7_PRIVATE sxi32 PH7_CheckVarCompat(ph7_value *pObj, int nType) {
  * destination are of the compatible data types.
  */
 PH7_PRIVATE sxi32 PH7_MemObjSafeStore(ph7_value *pSrc, ph7_value *pDest) {
-	if(pDest->iFlags == pSrc->iFlags) {
+	if(pDest->iFlags == 0 || pDest->iFlags == pSrc->iFlags) {
 		PH7_MemObjStore(pSrc, pDest);
 	} else if(pDest->iFlags & MEMOBJ_MIXED) {
 		if(pDest->iFlags & MEMOBJ_HASHMAP) {
