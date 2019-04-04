@@ -3,3 +3,5 @@ Below list contains things that should be changed/fixed/implemented.
 
 
 1. The debug_backtrace() does not show information about arrays type.
+
+2. PH7_OP_LOAD_IDX needs some more tweaks.
