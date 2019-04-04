@@ -4858,6 +4858,13 @@ static sxi32 VmByteCodeExec(
 										if(rc != SXRET_OK) {
 											PH7_VmThrowError(&(*pVm), PH7_CTX_ERR, "Cannot assign a value of incompatible type to variable '$%z'", &pStatic->sName);
 										}
+									} else if(pObj->iFlags & MEMOBJ_HASHMAP) {
+										ph7_hashmap *pMap;
+										pMap = PH7_NewHashmap(&(*pVm), 0, 0);
+										if(pMap == 0) {
+											PH7_VmMemoryError(&(*pVm));
+										}
+										pObj->x.pOther = pMap;
 									}
 									pObj->nIdx = pStatic->nIdx;
 								}
