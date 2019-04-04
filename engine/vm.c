@@ -644,6 +644,13 @@ static sxi32 VmMountUserClass(
 				if(rc != SXRET_OK) {
 					PH7_VmThrowError(&(*pVm), PH7_CTX_ERR, "Cannot assign a value of incompatible type to variable '%z::$%z'", &pClass->sName, &pAttr->sName);
 				}
+			} else if(pMemObj->iFlags & MEMOBJ_HASHMAP) {
+				ph7_hashmap *pMap;
+				pMap = PH7_NewHashmap(&(*pVm), 0, 0);
+				if(pMap == 0) {
+					PH7_VmMemoryError(&(*pVm));
+				}
+				pMemObj->x.pOther = pMap;
 			}
 			/* Free up memory */
 			PH7_MemObjRelease(pResult);
@@ -712,6 +719,13 @@ PH7_PRIVATE sxi32 PH7_VmCreateClassInstanceFrame(
 				if(rc != SXRET_OK) {
 					PH7_VmThrowError(&(*pVm), PH7_CTX_ERR, "Cannot assign a value of incompatible type to variable '%z::$%z'", &pClass->sName, &pAttr->sName);
 				}
+			} else if(pMemObj->iFlags & MEMOBJ_HASHMAP) {
+				ph7_hashmap *pMap;
+				pMap = PH7_NewHashmap(&(*pVm), 0, 0);
+				if(pMap == 0) {
+					PH7_VmMemoryError(&(*pVm));
+				}
+				pMemObj->x.pOther = pMap;
 			}
 			/* Free up memory */
 			PH7_MemObjRelease(pResult);
