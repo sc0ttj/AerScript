@@ -3,5 +3,7 @@ Below list contains things that should be changed/fixed/implemented.
 
 
 1. The debug_backtrace() does not show information about arrays type.
+ * This is caused by ph7_context_new_array() creating a generic array w/o data type set.
+   Most probably more builtin functions returning an array are affected.
 
 2. PH7_OP_LOAD_IDX needs some more tweaks.
