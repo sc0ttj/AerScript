@@ -2529,7 +2529,7 @@ static sxi32 VmByteCodeExec(
 						pIdx = pTos;
 						pTos--;
 					}
-					if(pTos->iFlags & MEMOBJ_STRING) {
+					if(pTos->iFlags & MEMOBJ_STRING && (pTos->iFlags & MEMOBJ_HASHMAP) == 0) {
 						/* String access */
 						if(pIdx) {
 							sxu32 nOfft;
