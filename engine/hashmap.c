@@ -1617,7 +1617,7 @@ static sxi32 HashmapCmpCallback4(ph7_hashmap_node *pA, ph7_hashmap_node *pB, voi
 	/* Invoke the callback */
 	rc = PH7_VmCallUserFunction(pA->pMap->pVm, pCallback, 2, apArg, &sResult);
 	if(rc != SXRET_OK) {
-		/* An error occured while calling user defined function [i.e: not defined] */
+		/* An error occurred while calling user defined function [i.e: not defined] */
 		rc = -1; /* Set a dummy result */
 	} else {
 		/* Extract callback result */
