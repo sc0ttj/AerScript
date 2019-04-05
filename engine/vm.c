@@ -1371,10 +1371,10 @@ static ph7_value *VmExtractMemObj(
 			char *zName = (char *)pName->zString;
 			VmSlot sLocal;
 			if(!bCreate) {
-				/* Do not create the variable,return NULL instead */
+				/* Do not create the variable, return NULL instead */
 				return 0;
 			}
-			/* No such variable,automatically create a new one and install
+			/* No such variable, automatically create a new one and install
 			 * it in the current frame.
 			 */
 			pObj = PH7_ReserveMemObj(&(*pVm));
@@ -4948,7 +4948,7 @@ static sxi32 VmByteCodeExec(
 										pObj = 0;
 									}
 								} else {
-									/* Pass by value,make a copy of the given argument */
+									/* Pass by value, make a copy of the given argument */
 									pObj = VmExtractMemObj(&(*pVm), &aFormalArg[n].sName, FALSE, TRUE);
 								}
 							} else {
