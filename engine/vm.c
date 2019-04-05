@@ -2513,7 +2513,7 @@ static sxi32 VmByteCodeExec(
 			/*
 			 * LOAD_IDX: P1 P2 *
 			 *
-			 * Load a hasmap entry where it's index (either numeric or string) is taken
+			 * Load a hashmap entry where it's index (either numeric or string) is taken
 			 * from the stack.
 			 * If the index does not refer to a valid element,then push the NULL constant
 			 * instead.
