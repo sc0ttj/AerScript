@@ -1,0 +1,17 @@
+class Program {
+
+	string[] testArray() {
+		return {'Machine' => 'Turing'};
+	}
+
+	callback[] testCallback() {
+		return {'callme' => void() { print("Hello world\n"); }};
+	}
+
+	void main() {
+		print($this->testArray()['Machine'] + "\n");
+		$this->testCallback()['callme']();
+		print(true ? "TRUE\n" : false ? "true\n" : "false\n");
+	}
+
+}
