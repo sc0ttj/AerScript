@@ -506,7 +506,9 @@ PH7_PRIVATE sxi32 PH7_MemObjToCallback(ph7_value *pObj) {
 }
 PH7_PRIVATE sxi32 PH7_MemObjToResource(ph7_value *pObj) {
 	sxi32 rc = SXRET_OK;
-	PH7_VmThrowError(&(*pObj->pVm), PH7_CTX_WARNING, "Unsafe type casting condition, assuming default value");
+	if((pObj->iFlags & MEMOBJ_NULL) == 0) {
+		PH7_VmThrowError(&(*pObj->pVm), PH7_CTX_WARNING, "Unsafe type casting condition, assuming default value");
+	}
 	if((pObj->iFlags & MEMOBJ_RES) == 0) {
 		pObj->x.iVal = 0;
 	}
