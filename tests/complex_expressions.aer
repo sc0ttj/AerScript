@@ -1,0 +1,43 @@
+class Program {
+	private const MY_CONST = 12 ^ 0x3FD;
+	private callback $callback_test = void(){ print("Welcome everyone!\n");};
+	private static int $value = 4 + 4 * 4;
+
+	void callable(callback $callback = void(){ print("Hello world!\n");}) {
+		$callback();
+	}
+
+	void complexArgs(string $name = 'AerScript' + $this->someStr(), int $age = 10*2+5) {
+		print("Name = $name\n");
+		print("Age = $age\n");
+	}
+
+	string someStr() {
+		return 'ABC';
+	}
+
+	bool someTrue() {
+		return true;
+	}
+
+	bool someFalse() {
+		return false;
+	}
+
+	int main() {
+		static float $f = 4 + 2.4 * 9.1;
+		var_dump($this->MY_CONST);
+		var_dump($this->callback_test);
+		var_dump($this->value);
+		var_dump($f);
+		$this->complexArgs();
+		$this->complexArgs('Me');
+		$this->callable();
+		$this->callable(void(){ print("Welcome guest!\n");});
+		$this->callable($this->callback_test);
+		$this->someTrue() || print("someTrue() failed\n");
+		$this->someFalse() || print("someFalse() failed\n");
+		return 0;
+	}
+
+}
