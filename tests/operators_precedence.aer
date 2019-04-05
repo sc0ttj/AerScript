@@ -9,10 +9,12 @@ class Program {
 	}
 
 	void main() {
+		callback[] $constr = {'print'};
 		print($this->testArray()['Machine'] + "\n");
 		$this->testCallback()['callme']();
 		print(true ? "TRUE\n" : false ? "true\n" : "false\n");
 		(void(string $name) { print("This should work too - $name.\n");})('AerScript');
+		$constr[0]('Test finished.' + "\n");
 	}
 
 }
