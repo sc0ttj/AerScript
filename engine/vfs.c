@@ -3454,7 +3454,7 @@ static int PH7_builtin_readdir(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	if(nArg < 1 || !ph7_value_is_resource(apArg[0])) {
 		/* Missing/Invalid arguments,return FALSE */
 		PH7_VmThrowError(pCtx->pVm, PH7_CTX_WARNING, "Expecting an IO handle");
-		ph7_result_bool(pCtx, 0);
+		ph7_result_string(pCtx, "", 0);
 		return PH7_OK;
 	}
 	/* Extract our private data */
@@ -3463,7 +3463,7 @@ static int PH7_builtin_readdir(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	if(IO_PRIVATE_INVALID(pDev)) {
 		/*Expecting an IO handle */
 		PH7_VmThrowError(pCtx->pVm, PH7_CTX_WARNING, "Expecting an IO handle");
-		ph7_result_bool(pCtx, 0);
+		ph7_result_string(pCtx, "", 0);
 		return PH7_OK;
 	}
 	/* Point to the target IO stream device */
@@ -3473,7 +3473,7 @@ static int PH7_builtin_readdir(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 									   "IO routine(%s) not implemented in the underlying stream(%s) device",
 									   ph7_function_name(pCtx), pStream ? pStream->zName : "null_stream"
 									  );
-		ph7_result_bool(pCtx, 0);
+		ph7_result_string(pCtx, "", 0);
 		return PH7_OK;
 	}
 	ph7_result_bool(pCtx, 0);
@@ -3481,7 +3481,7 @@ static int PH7_builtin_readdir(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	rc = pStream->xReadDir(pDev->pHandle, pCtx);
 	if(rc != PH7_OK) {
 		/* Return FALSE */
-		ph7_result_bool(pCtx, 0);
+		ph7_result_string(pCtx, "", 0);
 	}
 	return PH7_OK;
 }
