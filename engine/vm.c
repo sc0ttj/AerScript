@@ -4928,9 +4928,9 @@ static sxi32 VmByteCodeExec(
 									if(pArg->nIdx == SXU32_HIGH) {
 										/* Expecting a variable,not a constant,raise an exception */
 										if((pArg->iFlags & (MEMOBJ_HASHMAP | MEMOBJ_OBJ | MEMOBJ_RES | MEMOBJ_NULL)) == 0) {
-											PH7_VmThrowError(&(*pVm), PH7_CTX_WARNING,
-														  "Function '%z',%d argument: Pass by reference,expecting a variable not a "
-														  "constant, PH7 is switching to pass by value", &pVmFunc->sName, n + 1);
+											PH7_VmThrowError(&(*pVm), PH7_CTX_ERR,
+														  "Function '%z', %d argument: Pass by reference, expecting a variable not a "
+														  "constant", &pVmFunc->sName, n + 1);
 										}
 										/* Switch to pass by value */
 										pObj = VmExtractMemObj(&(*pVm), &aFormalArg[n].sName, FALSE, TRUE);
