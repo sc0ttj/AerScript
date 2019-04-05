@@ -5438,7 +5438,7 @@ static sxi32 PH7_CompileScript(
 			rc = PH7_CompileExpr(pGen, 0, 0);
 		}
 		/* Emit the DONE instruction */
-		PH7_VmEmitInstr(pGen->pVm, pGen->pIn->nLine, PH7_OP_DONE, (rc != SXERR_EMPTY ? 1 : 0), 0, 0, 0);
+		PH7_VmEmitInstr(pGen->pVm, pGen->pIn->nLine, PH7_OP_DONE, (rc != SXERR_EMPTY ? 1 : 0), 1, 0, 0);
 		return SXRET_OK;
 	} else if(iFlags & PH7_AERSCRIPT_CHNK) {
 		/* Compile a chunk of code */
