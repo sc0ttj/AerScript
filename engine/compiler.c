@@ -2554,7 +2554,7 @@ static sxi32 PH7_CompileVar(ph7_gen_state *pGen) {
 					PH7_GenCompileError(&(*pGen), E_ERROR, pGen->pIn->nLine, "Static variable '%z' is missing default value", &pName);
 				}
 				/* Emit the done instruction */
-				PH7_VmEmitInstr(pGen->pVm, pGen->pIn->nLine, PH7_OP_DONE, (rc != SXERR_EMPTY ? 1 : 0), 0, 0, 0);
+				PH7_VmEmitInstr(pGen->pVm, pGen->pIn->nLine, PH7_OP_DONE, (rc != SXERR_EMPTY ? 1 : 0), 1, 0, 0);
 				/* Restore default bytecode container */
 				PH7_VmSetByteCodeContainer(pGen->pVm, pInstrContainer);
 			}
@@ -2808,7 +2808,7 @@ static sxi32 PH7_GenStateProcessArgValue(ph7_gen_state *pGen, ph7_vm_func_arg *p
 	/* Compile the expression holding the argument value */
 	rc = PH7_CompileExpr(&(*pGen), 0, 0);
 	/* Emit the done instruction */
-	PH7_VmEmitInstr(pGen->pVm, pGen->pIn->nLine, PH7_OP_DONE, (rc != SXERR_EMPTY ? 1 : 0), 0, 0, 0);
+	PH7_VmEmitInstr(pGen->pVm, pGen->pIn->nLine, PH7_OP_DONE, (rc != SXERR_EMPTY ? 1 : 0), 1, 0, 0);
 	PH7_VmSetByteCodeContainer(pGen->pVm, pInstrContainer);
 	RE_SWAP_DELIMITER(pGen);
 	if(rc == SXERR_ABORT) {
@@ -3357,7 +3357,7 @@ loop:
 		}
 	}
 	/* Emit the done instruction */
-	PH7_VmEmitInstr(pGen->pVm, nLine, PH7_OP_DONE, 1, 0, 0, 0);
+	PH7_VmEmitInstr(pGen->pVm, nLine, PH7_OP_DONE, 1, 1, 0, 0);
 	PH7_VmSetByteCodeContainer(pGen->pVm, pInstrContainer);
 	if(rc == SXERR_ABORT) {
 		/* Don't worry about freeing memory, everything will be released shortly */
@@ -3471,7 +3471,7 @@ loop:
 			}
 		}
 		/* Emit the done instruction */
-		PH7_VmEmitInstr(pGen->pVm, nLine, PH7_OP_DONE, 1, 0, 0, 0);
+		PH7_VmEmitInstr(pGen->pVm, nLine, PH7_OP_DONE, 1, 1, 0, 0);
 		PH7_VmSetByteCodeContainer(pGen->pVm, pInstrContainer);
 	}
 	/* All done,install the attribute */
@@ -4685,7 +4685,7 @@ static sxi32 PH7_GenStateCompileCaseExpr(ph7_gen_state *pGen, ph7_case_expr *pEx
 	PH7_VmSetByteCodeContainer(pGen->pVm, &pExpr->aByteCode);
 	rc = PH7_CompileExpr(&(*pGen), 0, 0);
 	/* Emit the done instruction */
-	PH7_VmEmitInstr(pGen->pVm, pGen->pIn->nLine, PH7_OP_DONE, (rc != SXERR_EMPTY ? 1 : 0), 0, 0, 0);
+	PH7_VmEmitInstr(pGen->pVm, pGen->pIn->nLine, PH7_OP_DONE, (rc != SXERR_EMPTY ? 1 : 0), 1, 0, 0);
 	PH7_VmSetByteCodeContainer(pGen->pVm, pInstrContainer);
 	/* Update token stream */
 	pGen->pIn  = pEnd;
