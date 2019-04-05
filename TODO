@@ -7,3 +7,8 @@ Below list contains things that should be changed/fixed/implemented.
    Most probably more builtin functions returning an array are affected.
 
 2. PH7_OP_LOAD_IDX needs some more tweaks.
+
+3. PH7 pass and return arrays by reference. This behaviour should be changed and a copy of array should be made instead.
+
+4. All builtin functions should be reworked. Actually they can return any value, sometimes of different type than declared.
+   This causes errors during script execution.
