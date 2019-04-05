@@ -5003,16 +5003,15 @@ static sxi32 VmByteCodeExec(
 									if(rc == PH7_ABORT) {
 										goto Abort;
 									}
-									if((aFormalArg[n].nType & MEMOBJ_MIXED) == 0 && aFormalArg[n].nType > 0 && pObj->iFlags != aFormalArg[n].nType) {
-										if(aFormalArg[n].nType == MEMOBJ_REAL && (pObj->iFlags & MEMOBJ_INT)) {
-											/* Silently typecast integer value to float */
-											ProcMemObjCast xCast = PH7_MemObjCastMethod(aFormalArg[n].nType);
-											xCast(pObj);
-										} else {
-											PH7_VmThrowError(&(*pVm), PH7_CTX_ERR,
-															"Default value for argument %u of '%z()' does not match the data type", n + 1, &pVmFunc->sName);
-										}
+									ph7_value *pTmp = PH7_ReserveMemObj(&(*pVm));
+									pTmp->iFlags = aFormalArg[n].nType;
+									rc = PH7_MemObjSafeStore(pObj, pTmp);
+									if(rc != SXRET_OK) {
+										PH7_VmThrowError(&(*pVm), PH7_CTX_ERR,
+														"Default value for argument %u of '%z()' does not match the data type", n + 1, &pVmFunc->sName);
 									}
+									pObj->iFlags = pTmp->iFlags;
+									PH7_MemObjRelease(pTmp);
 									/* Insert argument index */
 									sArg.nIdx = pObj->nIdx;
 									sArg.pUserData = 0;
