@@ -491,7 +491,7 @@ PH7_PRIVATE sxi32 PH7_MemObjToChar(ph7_value *pObj) {
 PH7_PRIVATE sxi32 PH7_MemObjToVoid(ph7_value *pObj) {
 	if((pObj->iFlags & MEMOBJ_VOID) == 0) {
 		PH7_MemObjRelease(pObj);
-		MemObjSetType(pObj, MEMOBJ_VOID);
+		MemObjSetType(pObj, MEMOBJ_VOID | MEMOBJ_NULL);
 	}
 	return SXRET_OK;
 }
@@ -786,7 +786,7 @@ PH7_PRIVATE sxi32 PH7_MemObjInitFromVoid(ph7_vm *pVm, ph7_value *pObj, ph7_real 
 	pObj->pVm = pVm;
 	SyBlobInit(&pObj->sBlob, &pVm->sAllocator);
 	/* Set the desired type */
-	pObj->iFlags = MEMOBJ_VOID;
+	pObj->iFlags = MEMOBJ_VOID | MEMOBJ_NULL;
 	return SXRET_OK;
 }/*
  * Initialize a ph7_value to the array type.
@@ -1212,9 +1212,6 @@ PH7_PRIVATE sxi32 PH7_MemObjAdd(ph7_value *pObj1, ph7_value *pObj2, int bAddStor
  */
 PH7_PRIVATE const char *PH7_MemObjTypeDump(ph7_value *pVal) {
 	const char *zType = "";
-	if(pVal->iFlags & MEMOBJ_NULL) {
-		zType = "NULL";
-	} else {
 	if(pVal->iFlags & MEMOBJ_HASHMAP) {
 		if(pVal->iFlags & MEMOBJ_MIXED) {
 			zType = "array(mixed, ";
@@ -1234,7 +1231,7 @@ PH7_PRIVATE const char *PH7_MemObjTypeDump(ph7_value *pVal) {
 			zType = "array(resource, ";
 		} else if(pVal->iFlags & MEMOBJ_CALL) {
 			zType = "array(callback, ";
-		} else if(pVal->iFlags & MEMOBJ_VOID) {
+		} else if(pVal->iFlags & (MEMOBJ_VOID | MEMOBJ_NULL)) {
 			zType = "array(void, ";
 		}
 	} else if(pVal->iFlags & MEMOBJ_OBJ) {
@@ -1253,9 +1250,8 @@ PH7_PRIVATE const char *PH7_MemObjTypeDump(ph7_value *pVal) {
 		zType = "resource";
 	} else if(pVal->iFlags & MEMOBJ_CALL) {
 		zType = "callback";
-	} else if(pVal->iFlags & MEMOBJ_VOID) {
+	} else if(pVal->iFlags & (MEMOBJ_VOID | MEMOBJ_NULL)) {
 		zType = "void";
-	}
 	}
 	return zType;
 }
@@ -1281,40 +1277,38 @@ PH7_PRIVATE sxi32 PH7_MemObjDump(
 		zType = PH7_MemObjTypeDump(pObj);
 		SyBlobAppend(&(*pOut), zType, SyStrlen(zType));
 	}
-	if((pObj->iFlags & MEMOBJ_NULL) == 0) {
-		if(ShowType && (pObj->iFlags & MEMOBJ_HASHMAP) == 0) {
-			SyBlobAppend(&(*pOut), "(", sizeof(char));
-		}
-		if(pObj->iFlags & MEMOBJ_HASHMAP) {
-			/* Dump hashmap entries */
-			rc = PH7_HashmapDump(&(*pOut), (ph7_hashmap *)pObj->x.pOther, ShowType, nTab + 1, nDepth + 1);
-		} else if(pObj->iFlags & MEMOBJ_OBJ) {
-			/* Dump class instance attributes */
-			rc = PH7_ClassInstanceDump(&(*pOut), (ph7_class_instance *)pObj->x.pOther, ShowType, nTab + 1, nDepth + 1);
-		} else if(pObj->iFlags & MEMOBJ_VOID) {
-			SyBlobAppend(&(*pOut), "NULL", sizeof("NULL"));
+	if(ShowType && (pObj->iFlags & MEMOBJ_HASHMAP) == 0) {
+		SyBlobAppend(&(*pOut), "(", sizeof(char));
+	}
+	if(pObj->iFlags & MEMOBJ_HASHMAP) {
+		/* Dump hashmap entries */
+		rc = PH7_HashmapDump(&(*pOut), (ph7_hashmap *)pObj->x.pOther, ShowType, nTab + 1, nDepth + 1);
+	} else if(pObj->iFlags & MEMOBJ_OBJ) {
+		/* Dump class instance attributes */
+		rc = PH7_ClassInstanceDump(&(*pOut), (ph7_class_instance *)pObj->x.pOther, ShowType, nTab + 1, nDepth + 1);
+	} else if(pObj->iFlags & (MEMOBJ_VOID | MEMOBJ_NULL)) {
+		SyBlobAppend(&(*pOut), "NULL", sizeof("NULL"));
+	} else {
+		SyBlob *pContents = &pObj->sBlob;
+		/* Get a printable representation of the contents */
+		if((pObj->iFlags & (MEMOBJ_STRING | MEMOBJ_CALL)) == 0) {
+			MemObjStringValue(&(*pOut), &(*pObj), FALSE);
 		} else {
-			SyBlob *pContents = &pObj->sBlob;
-			/* Get a printable representation of the contents */
-			if((pObj->iFlags & (MEMOBJ_STRING | MEMOBJ_CALL)) == 0) {
-				MemObjStringValue(&(*pOut), &(*pObj), FALSE);
-			} else {
-				/* Append length first */
-				if(ShowType) {
-					SyBlobFormat(&(*pOut), "%u '", SyBlobLength(&pObj->sBlob));
-				}
-				if(SyBlobLength(pContents) > 0) {
-					SyBlobAppend(&(*pOut), SyBlobData(pContents), SyBlobLength(pContents));
-				}
-				if(ShowType) {
-					SyBlobAppend(&(*pOut), "'", sizeof(char));
-				}
+			/* Append length first */
+			if(ShowType) {
+				SyBlobFormat(&(*pOut), "%u '", SyBlobLength(&pObj->sBlob));
+			}
+			if(SyBlobLength(pContents) > 0) {
+				SyBlobAppend(&(*pOut), SyBlobData(pContents), SyBlobLength(pContents));
+			}
+			if(ShowType) {
+				SyBlobAppend(&(*pOut), "'", sizeof(char));
 			}
 		}
-		if(ShowType) {
-			if((pObj->iFlags & (MEMOBJ_HASHMAP | MEMOBJ_OBJ)) == 0) {
-				SyBlobAppend(&(*pOut), ")", sizeof(char));
-			}
+	}
+	if(ShowType) {
+		if((pObj->iFlags & (MEMOBJ_HASHMAP | MEMOBJ_OBJ)) == 0) {
+			SyBlobAppend(&(*pOut), ")", sizeof(char));
 		}
 	}
 #ifdef __WINNT__
