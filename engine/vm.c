@@ -4911,20 +4911,16 @@ static sxi32 VmByteCodeExec(
 												}
 											}
 										}
-									} else if((aFormalArg[n].nType & MEMOBJ_MIXED) == 0 && pArg->iFlags != aFormalArg[n].nType) {
-										if(PH7_CheckVarCompat(pArg, aFormalArg[n].nType) == SXRET_OK) {
-											/* Silently typecast compatible value to expected data type */
-											ProcMemObjCast xCast = PH7_MemObjCastMethod(aFormalArg[n].nType);
-											xCast(pArg);
-										} else if((aFormalArg[n].nType & MEMOBJ_HASHMAP) && (pArg->iFlags & MEMOBJ_HASHMAP)) {
-											if(PH7_HashmapCast(pArg, aFormalArg[n].nType ^ MEMOBJ_HASHMAP) != SXRET_OK) {
-												PH7_VmThrowError(&(*pVm), PH7_CTX_ERR,
-																"Argument %u of '%z()' does not match the data type", n + 1, &pVmFunc->sName);
-											}
-										} else {
+									} else {
+										ph7_value *pTmp = PH7_ReserveMemObj(&(*pVm));
+										pTmp->iFlags = aFormalArg[n].nType;
+										rc = PH7_MemObjSafeStore(pArg, pTmp);
+										if(rc != SXRET_OK) {
 											PH7_VmThrowError(&(*pVm), PH7_CTX_ERR,
 															"Argument %u of '%z()' does not match the data type", n + 1, &pVmFunc->sName);
 										}
+										pArg->iFlags = pTmp->iFlags;
+										PH7_MemObjRelease(pTmp);
 									}
 								}
 								if(aFormalArg[n].iFlags & VM_FUNC_ARG_BY_REF) {
