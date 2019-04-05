@@ -1,0 +1,62 @@
+interface IntA {
+
+	public void test_a();
+
+}
+
+interface IntB {
+
+	public void test_b();
+
+}
+
+class TestA {
+
+	public void test_a() {
+		print("Hello world from TestA::test_a().\n");
+	}
+
+}
+
+class TestB {
+
+        public void test_b() {
+                print("Hello world from TestB::test_b().\n");
+        }
+
+
+}
+
+class TestC {
+
+        public void test_c() {
+                print("Hello world from TestC::test_c().\n");
+        }
+
+}
+
+class TestD {
+
+        public void test_a() {
+                print("Hello world from TestD::test_a().\n");
+        }
+
+}
+
+class TestE {
+
+        public void test_b() {
+                print("Hello world from TestE::test_b().\n");
+        }
+
+}
+
+class Program extends TestE, TestD, TestC, TestB, TestA implements IntA, IntB {
+
+	void main() {
+		$this->test_a();
+		$this->test_b();
+		$this->test_c();
+	}
+
+}
