@@ -1292,7 +1292,7 @@ PH7_PRIVATE sxi32 PH7_MemObjDump(
 			/* Dump class instance attributes */
 			rc = PH7_ClassInstanceDump(&(*pOut), (ph7_class_instance *)pObj->x.pOther, ShowType, nTab + 1, nDepth + 1);
 		} else if(pObj->iFlags & MEMOBJ_VOID) {
-			SyBlobAppend(&(*pOut), "NULL", sizeof("NULL"));
+			SyBlobAppend(&(*pOut), "NULL", sizeof("NULL") - 1);
 		} else {
 			SyBlob *pContents = &pObj->sBlob;
 			/* Get a printable representation of the contents */
