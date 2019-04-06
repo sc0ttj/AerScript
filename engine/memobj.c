@@ -240,7 +240,9 @@ static sxi32 MemObjStringValue(SyBlob *pOut, ph7_value *pObj, sxu8 bStrictBool) 
 			}
 		}
 	} else if(pObj->iFlags & MEMOBJ_CHAR) {
-		SyBlobFormat(&(*pOut), "%c", pObj->x.iVal);
+		if(pObj->x.iVal > 0) {
+			SyBlobFormat(&(*pOut), "%c", pObj->x.iVal);
+		}
 	} else if(pObj->iFlags & MEMOBJ_HASHMAP) {
 		SyBlobAppend(&(*pOut), "Array", sizeof("Array") - 1);
 		PH7_HashmapUnref((ph7_hashmap *)pObj->x.pOther);
