@@ -2535,8 +2535,7 @@ static sxi32 VmByteCodeExec(
 								pTos->nIdx = SXU32_HIGH;
 							}
 							/* Emit a notice */
-							PH7_VmThrowError(&(*pVm), PH7_CTX_NOTICE,
-											 "Attempt to access an undefined array index, PH7 is loading NULL");
+							PH7_VmThrowError(&(*pVm), PH7_CTX_ERR, "Attempt to access an undefined array index");
 							break;
 						}
 					} else {
