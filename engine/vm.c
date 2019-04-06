@@ -2525,18 +2525,8 @@ static sxi32 VmByteCodeExec(
 					pIdx = 0;
 					if(pInstr->iP1 == 0) {
 						if(!pInstr->iP2) {
-							/* No available index,load NULL */
-							if(pTos >= pStack) {
-								PH7_MemObjRelease(pTos);
-							} else {
-								/* TICKET 1433-020: Empty stack */
-								pTos++;
-								MemObjSetType(pTos, MEMOBJ_NULL);
-								pTos->nIdx = SXU32_HIGH;
-							}
-							/* Emit a notice */
+							/* No available index, emit error */
 							PH7_VmThrowError(&(*pVm), PH7_CTX_ERR, "Attempt to access an undefined array index");
-							break;
 						}
 					} else {
 						pIdx = pTos;
@@ -2567,14 +2557,8 @@ static sxi32 VmByteCodeExec(
 						}
 						break;
 					}
-					if(pInstr->iP2 && (pTos->iFlags & MEMOBJ_HASHMAP) == 0) {
-						if(pTos->nIdx != SXU32_HIGH) {
-							ph7_value *pObj;
-							if((pObj = (ph7_value *)SySetAt(&pVm->aMemObj, pTos->nIdx)) != 0) {
-								PH7_MemObjToHashmap(pObj);
-								PH7_MemObjLoad(pObj, pTos);
-							}
-						}
+					if((pTos->iFlags & MEMOBJ_HASHMAP) == 0) {
+						PH7_VmThrowError(&(*pVm), PH7_CTX_ERR, "Subscripted value is neither array nor string");
 					}
 					rc = SXERR_NOTFOUND; /* Assume the index is invalid */
 					if(pTos->iFlags & MEMOBJ_HASHMAP) {
@@ -2610,7 +2594,7 @@ static sxi32 VmByteCodeExec(
 							PH7_HashmapUnref(pMap);
 						}
 					} else {
-						/* No such entry,load NULL */
+						/* No such entry, load NULL */
 						PH7_MemObjRelease(pTos);
 						pTos->nIdx = SXU32_HIGH;
 					}
