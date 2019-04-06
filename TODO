@@ -6,7 +6,5 @@ Below list contains things that should be changed/fixed/implemented.
  * This is caused by ph7_context_new_array() creating a generic array w/o data type set.
    Most probably more builtin functions returning an array are affected.
 
-2. PH7 pass and return arrays by reference. This behaviour should be changed and a copy of array should be made instead.
-
-3. All builtin functions should be reworked. Actually they can return any value, sometimes of different type than declared.
+2. All builtin functions should be reworked. Actually they can return any value, sometimes of different type than declared.
    This causes errors during script execution.
