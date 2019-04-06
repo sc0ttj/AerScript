@@ -1,0 +1,43 @@
+class Program {
+	private int $test = 7;
+
+	void testChar(char $value) {
+		var_dump($value);
+		var_dump(is_char($value));
+	}
+
+	void testFloat(float $value) {
+		var_dump($value);
+		var_dump(is_float($value));
+	}
+
+	void testObject(object $value) {
+		var_dump($value);
+		var_dump(is_object($value));
+	}
+
+	void testString(string $value) {
+		var_dump($value);
+		var_dump(is_string($value));
+	}
+
+	void testVoid(void $value) {
+		var_dump($value);
+		var_dump(is_void($value));
+	}
+
+	void main() {
+		object $objval;
+		void $voidval;
+		$this->testChar('c');
+		$this->testChar(NULL);
+		$this->testFloat(4);
+		$this->testFloat(56.3);
+		$this->testObject($objval);
+		$this->testObject($this);
+		$this->testString('sample text');
+		$this->testString(NULL);
+		$this->testVoid($voidval);
+		$this->testVoid(NULL);
+	}
+}
