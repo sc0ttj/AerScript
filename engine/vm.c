@@ -6811,7 +6811,7 @@ PH7_PRIVATE sxi32 PH7_VmCallUserFunction(
 	ph7_value *aStack;
 	VmInstr aInstr[2];
 	int i;
-	if((pFunc->iFlags & (MEMOBJ_STRING | MEMOBJ_HASHMAP)) == 0) {
+	if((pFunc->iFlags & (MEMOBJ_CALL | MEMOBJ_STRING | MEMOBJ_HASHMAP)) == 0) {
 		/* Don't bother processing,it's invalid anyway */
 		if(pResult) {
 			/* Assume a null return value */
@@ -6899,7 +6899,7 @@ PH7_PRIVATE sxi32 PH7_VmCallUserFunction(
 	/* Emit the DONE instruction */
 	aInstr[1].iOp = PH7_OP_DONE;
 	aInstr[1].iP1 = 1;   /* Extract function return value if available */
-	aInstr[1].iP2 = 0;
+	aInstr[1].iP2 = 1;
 	aInstr[1].p3  = 0;
 	aInstr[1].bExec = FALSE;
 	aInstr[1].iLine = 1;
