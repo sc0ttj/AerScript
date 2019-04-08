@@ -1,0 +1,41 @@
+class Button {
+	public callback $OnBeforeClick;
+	public callback $OnAfterClick;
+	public string $Name;
+
+	public void __construct() {
+		$this->Name = 'MyButton';
+	}
+
+	public void Click() {
+		$this->DoBeforeClick();
+		print('Click!');
+		$this->DoAfterClick();
+	}
+
+    private void DoBeforeClick() {
+		if($this->OnBeforeClick) {
+			callback $event = $this->OnBeforeClick;
+			$event($this);
+		}
+	}
+
+	private void DoAfterClick() {
+		if($this->OnAfterClick) {
+			callback $event = $this->OnAfterClick;
+			$event($this);
+		}
+	}
+
+}
+
+class Program {
+
+	void main() {
+		object $MyWidget = new Button();
+		$MyWidget->OnBeforeClick = void(object $Sender) { print($Sender->Name + ' (Before Click)'); };
+		$MyWidget->OnAfterClick = void(object $Sender) { print($Sender->Name + ' (After Click)'); };
+		$MyWidget->Click();
+	}
+
+}
