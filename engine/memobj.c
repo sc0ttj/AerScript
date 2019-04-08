@@ -307,7 +307,17 @@ static sxi32 MemObjBooleanValue(ph7_value *pObj) {
 			}
 			return zIn >= zEnd ? 0 : 1;
 		}
-	} else if(iFlags & (MEMOBJ_CALL | MEMOBJ_NULL | MEMOBJ_VOID)) {
+	} else if(iFlags & MEMOBJ_CALL) {
+		SyString sString;
+		SyStringInitFromBuf(&sString, SyBlobData(&pObj->sBlob), SyBlobLength(&pObj->sBlob));
+		if(sString.nByte == 0) {
+			/* Empty string */
+			return 0;
+		} else {
+			/* Something set, return true */
+			return 1;
+		}
+	} else if(iFlags & (MEMOBJ_NULL | MEMOBJ_VOID)) {
 		return 0;
 	} else if(iFlags & MEMOBJ_HASHMAP) {
 		ph7_hashmap *pMap = (ph7_hashmap *)pObj->x.pOther;
