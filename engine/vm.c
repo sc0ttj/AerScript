@@ -6783,7 +6783,7 @@ PH7_PRIVATE sxi32 PH7_VmCallClassMethod(
 	/* Emit the DONE instruction */
 	aInstr[1].iOp = PH7_OP_DONE;
 	aInstr[1].iP1 = 1;   /* Extract method return value */
-	aInstr[1].iP2 = 0;
+	aInstr[1].iP2 = 1;
 	aInstr[1].p3  = 0;
 	aInstr[1].bExec = FALSE;
 	aInstr[1].iLine = 1;
