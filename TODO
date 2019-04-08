@@ -12,3 +12,4 @@ Below list contains things that should be changed/fixed/implemented.
 3. Callback variable type is broken.
  * Builtin functions expect a string or hashmap instead of callback, thus closures are not executed at all.
  * Callback takes a string with function name or closure definition. How to call other methods?
+ * Class attribute of callback type cannot be called directly.
