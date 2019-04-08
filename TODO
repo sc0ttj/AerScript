@@ -8,3 +8,7 @@ Below list contains things that should be changed/fixed/implemented.
 
 2. All builtin functions should be reworked. Actually they can return any value, sometimes of different type than declared.
    This causes errors during script execution.
+
+3. Callback variable type is broken.
+ * Builtin functions expect a string or hashmap instead of callback, thus closures are not executed at all.
+ * Callback takes a string with function name or closure definition. How to call other methods?
