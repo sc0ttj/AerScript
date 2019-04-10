@@ -1,0 +1,33 @@
+class ExceptionHandler {
+
+	public static void printException(Exception $e) {
+		print('Uncaught ' + get_class($e) + ', code: ' + $e->getCode() + "\nMessage: " + htmlentities($e->getMessage()) + "\n");
+	}
+
+	public static void handleException(Exception $e) {
+		self::printException($e);
+	}
+
+}
+
+class NewException extends Exception {
+}
+
+class Program {
+
+	void main() {
+		callback $handler = void(Exception $e) {
+			ExceptionHandler::handleException($e);
+		};
+		set_exception_handler($handler);
+		try {
+			throw new NewException("Catch me once", 1);
+		} catch(Exception $e) {
+			ExceptionHandler::handleException($e);
+		}
+		throw new Exception("Catch me twice", 2);
+	}
+
+}
+
+
