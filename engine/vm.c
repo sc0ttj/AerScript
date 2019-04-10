@@ -5719,7 +5719,7 @@ PH7_PRIVATE int PH7_VmIsCallable(ph7_vm *pVm, ph7_value *pValue, int CallInvoke)
 				}
 			}
 		}
-	} else if(pValue->iFlags & MEMOBJ_STRING) {
+	} else if(pValue->iFlags & (MEMOBJ_CALL | MEMOBJ_STRING)) {
 		const char *zName;
 		int nLen;
 		/* Extract the name */
