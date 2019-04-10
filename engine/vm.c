@@ -818,17 +818,17 @@ static sxi32 VmEvalChunk(ph7_vm *pVm, ph7_context *pCtx, SyString *pChunk, int i
 	"protected int $code = 0;"\
 	"protected string $file;"\
 	"protected int $line;"\
-	"protected mixed $trace;"\
+	"protected mixed[] $trace;"\
 	"protected object $previous;"\
 	"public void __construct(string $message = '', int $code = 0, Exception $previous = null) {"\
-	"   if(isset($message)) {"\
+	"   if($message) {"\
 	"	  $this->message = $message;"\
 	"   }"\
 	"   $this->code = $code;"\
 	"   $this->file = __FILE__;"\
 	"   $this->line = __LINE__;"\
 	"   $this->trace = debug_backtrace();"\
-	"   if(isset($previous)) {"\
+	"   if($previous) {"\
 	"     $this->previous = $previous;"\
 	"   }"\
 	"}"\
@@ -861,7 +861,7 @@ static sxi32 VmEvalChunk(ph7_vm *pVm, ph7_context *pCtx, SyString *pChunk, int i
 	"protected int $severity;"\
 	"public void __construct(string $message = '',"\
 	"int $code = 0, int $severity = 1, string $filename = __FILE__ , int $lineno = __LINE__ , Exception $previous = null) {"\
-	"   if(isset($message)) {"\
+	"   if($message) {"\
 	"	  $this->message = $message;"\
 	"   }"\
 	"   $this->severity = $severity;"\
@@ -869,7 +869,7 @@ static sxi32 VmEvalChunk(ph7_vm *pVm, ph7_context *pCtx, SyString *pChunk, int i
 	"   $this->file = $filename;"\
 	"   $this->line = $lineno;"\
 	"   $this->trace = debug_backtrace();"\
-	"   if(isset($previous)) {"\
+	"   if($previous) {"\
 	"     $this->previous = $previous;"\
 	"   }"\
 	"}"\
