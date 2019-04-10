@@ -4886,7 +4886,7 @@ static sxi32 VmByteCodeExec(
 											} else {
 												ph7_class_instance *pThis = (ph7_class_instance *)pArg->x.pOther;
 												/* Make sure the object is an instance of the given class */
-												if(! VmInstanceOf(pThis->pClass, pClass)) {
+												if(pThis == 0 || !VmInstanceOf(pThis->pClass, pClass)) {
 													PH7_VmThrowError(&(*pVm), PH7_CTX_ERR,
 																  "Argument %u passed to function '%z()' must be an object of type '%z'",
 																  n+1, &pVmFunc->sName, pName);
@@ -4986,20 +4986,47 @@ static sxi32 VmByteCodeExec(
 									if(rc == PH7_ABORT) {
 										goto Abort;
 									}
-									ph7_value *pTmp = PH7_ReserveMemObj(&(*pVm));
-									pTmp->iFlags = aFormalArg[n].nType;
-									rc = PH7_MemObjSafeStore(pObj, pTmp);
-									if(rc != SXRET_OK) {
-										PH7_VmThrowError(&(*pVm), PH7_CTX_ERR,
-														"Default value for argument %u of '%z()' does not match the data type", n + 1, &pVmFunc->sName);
+									if(aFormalArg[n].nType == SXU32_HIGH) {
+										/* Argument must be a class instance [i.e: object] */
+										SyString *pName = &aFormalArg[n].sClass;
+										ph7_class *pClass;
+										/* Try to extract the desired class */
+										pClass = PH7_VmExtractClass(&(*pVm), pName->zString, pName->nByte, TRUE, 0);
+										if(pClass) {
+											if((pObj->iFlags & MEMOBJ_OBJ) == 0) {
+												if((pObj->iFlags & MEMOBJ_NULL) == 0) {
+													PH7_VmThrowError(&(*pVm), PH7_CTX_ERR,
+																  "Default value for argument %u of '%z()' must be an object of type '%z'",
+																  n+1, &pVmFunc->sName, pName);
+													PH7_MemObjRelease(pObj);
+												}
+											} else {
+												ph7_class_instance *pThis = (ph7_class_instance *)pObj->x.pOther;
+												/* Make sure the object is an instance of the given class */
+												if(pThis == 0 || !VmInstanceOf(pThis->pClass, pClass)) {
+													PH7_VmThrowError(&(*pVm), PH7_CTX_ERR,
+																  "Default value for argument %u of '%z()' must be an object of type '%z'",
+																  n+1, &pVmFunc->sName, pName);
+													PH7_MemObjRelease(pObj);
+												}
+											}
+										}
+									} else {
+										ph7_value *pTmp = PH7_ReserveMemObj(&(*pVm));
+										pTmp->iFlags = aFormalArg[n].nType;
+										/* Make sure the default argument is of the correct type */
+										rc = PH7_MemObjSafeStore(pObj, pTmp);
+										if(rc != SXRET_OK) {
+											PH7_VmThrowError(&(*pVm), PH7_CTX_ERR,
+															"Default value for argument %u of '%z()' does not match the data type", n + 1, &pVmFunc->sName);
+										}
+										pObj->iFlags = pTmp->iFlags;
+										PH7_MemObjRelease(pTmp);
+										/* Insert argument index */
+										sArg.nIdx = pObj->nIdx;
+										sArg.pUserData = 0;
+										SySetPut(&pFrame->sArg, (const void *)&sArg);
 									}
-									pObj->iFlags = pTmp->iFlags;
-									PH7_MemObjRelease(pTmp);
-									/* Insert argument index */
-									sArg.nIdx = pObj->nIdx;
-									sArg.pUserData = 0;
-									SySetPut(&pFrame->sArg, (const void *)&sArg);
-									/* Make sure the default argument is of the correct type */
 								}
 							}
 							++n;
