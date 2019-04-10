@@ -5739,16 +5739,10 @@ PH7_PRIVATE int PH7_VmIsCallable(ph7_vm *pVm, ph7_value *pValue, int CallInvoke)
  * Parameters
  * $name
  *    The callback function to check
- * $syntax_only
- *    If set to TRUE the function only verifies that name might be a function or method.
- *    It will only reject simple variables that are not strings, or an array that does
- *    not have a valid structure to be used as a callback. The valid ones are supposed
- *    to have only 2 entries, the first of which is an object or a string, and the second
- *    a string.
  * Return
  *  TRUE if name is callable, FALSE otherwise.
  */
-static int vm_builtin_is_callback(ph7_context *pCtx, int nArg, ph7_value **apArg) {
+static int vm_builtin_is_callable(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	ph7_vm *pVm;
 	int res;
 	if(nArg < 1) {
@@ -5759,7 +5753,7 @@ static int vm_builtin_is_callback(ph7_context *pCtx, int nArg, ph7_value **apArg
 	/* Point to the target VM */
 	pVm = pCtx->pVm;
 	/* Perform the requested operation */
-	res = PH7_VmIsCallable(pVm, apArg[0], TRUE);
+	res = PH7_VmIsCallable(pVm, apArg[0], FALSE);
 	ph7_result_bool(pCtx, res);
 	return SXRET_OK;
 }
@@ -10459,7 +10453,7 @@ static int vm_builtin_utf8_decode(ph7_context *pCtx, int nArg, ph7_value **apArg
 /* Table of built-in VM functions. */
 static const ph7_builtin_func aVmFunc[] = {
 	{ "function_exists", vm_builtin_func_exists   },
-	{ "is_callback", vm_builtin_is_callback   },
+	{ "is_callable", vm_builtin_is_callable   },
 	{ "get_defined_functions", vm_builtin_get_defined_func },
 	{ "register_autoload_handler", vm_builtin_register_autoload_handler },
 	{ "register_shutdown_function", vm_builtin_register_shutdown_function },

@@ -40,6 +40,23 @@ static int PH7_builtin_is_bool(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	return PH7_OK;
 }
 /*
+ * bool is_callback($var)
+ *  Finds out whether a variable is a callback.
+ * Parameters
+ *   $var: The variable being evaluated.
+ * Return
+ *  TRUE if var is a callback. False otherwise.
+ */
+static int PH7_builtin_is_callback(ph7_context *pCtx, int nArg, ph7_value **apArg) {
+        int res = 0; /* Assume false by default */
+        if(nArg > 0) {
+                res = ph7_value_is_callback(apArg[0]);
+        }
+        /* Query result */
+        ph7_result_bool(pCtx, res);
+        return PH7_OK;
+}
+/*
  * bool is_char($var)
  *  Finds out whether a variable is a character.
  * Parameters
@@ -7388,6 +7405,7 @@ static const ph7_builtin_func aBuiltInFunc[] = {
 	/* Variable handling functions */
 	{ "is_array", PH7_builtin_is_array    },
 	{ "is_bool", PH7_builtin_is_bool     },
+	{ "is_callback", PH7_builtin_is_callback },
 	{ "is_char", PH7_builtin_is_char     },
 	{ "is_float", PH7_builtin_is_float    },
 	{ "is_int", PH7_builtin_is_int      },

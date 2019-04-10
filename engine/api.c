@@ -1938,6 +1938,13 @@ int ph7_value_is_callable(ph7_value *pVal) {
 	return rc;
 }
 /*
+ * [CAPIREF: ph7_value_is_callback()]
+ * Please refer to the official documentation for function purpose and expected parameters.
+ */
+int ph7_value_is_callback(ph7_value *pVal) {
+	return (pVal->iFlags & MEMOBJ_CALL) ? TRUE : FALSE;
+}
+/*
  * [CAPIREF: ph7_value_is_scalar()]
  * Please refer to the official documentation for function purpose and expected parameters.
  */

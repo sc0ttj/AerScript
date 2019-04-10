@@ -641,6 +641,7 @@ PH7_APIEXPORT int ph7_value_is_float(ph7_value *pVal);
 PH7_APIEXPORT int ph7_value_is_bool(ph7_value *pVal);
 PH7_APIEXPORT int ph7_value_is_string(ph7_value *pVal);
 PH7_APIEXPORT int ph7_value_is_callback(ph7_value *pVal);
+PH7_APIEXPORT int ph7_value_is_callable(ph7_value *pVal);
 PH7_APIEXPORT int ph7_value_is_array(ph7_value *pVal);
 PH7_APIEXPORT int ph7_value_is_object(ph7_value *pVal);
 PH7_APIEXPORT int ph7_value_is_resource(ph7_value *pVal);
