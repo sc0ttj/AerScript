@@ -6811,64 +6811,13 @@ PH7_PRIVATE sxi32 PH7_VmCallUserFunction(
 	ph7_value *aStack;
 	VmInstr aInstr[2];
 	int i;
-	if((pFunc->iFlags & (MEMOBJ_CALL | MEMOBJ_STRING | MEMOBJ_HASHMAP)) == 0) {
+	if((pFunc->iFlags & (MEMOBJ_CALL | MEMOBJ_STRING)) == 0) {
 		/* Don't bother processing,it's invalid anyway */
 		if(pResult) {
 			/* Assume a null return value */
 			PH7_MemObjRelease(pResult);
 		}
 		return SXERR_INVALID;
-	}
-	if(pFunc->iFlags & MEMOBJ_HASHMAP) {
-		/* Class method */
-		ph7_hashmap *pMap = (ph7_hashmap *)pFunc->x.pOther;
-		ph7_class_method *pMethod = 0;
-		ph7_class_instance *pThis = 0;
-		ph7_class *pClass = 0;
-		ph7_value *pValue;
-		sxi32 rc;
-		if(pMap->nEntry < 2 /* Class name/instance + method name */) {
-			/* Empty hashmap,nothing to call */
-			if(pResult) {
-				/* Assume a null return value */
-				PH7_MemObjRelease(pResult);
-			}
-			return SXRET_OK;
-		}
-		/* Extract the class name or an instance of it */
-		pValue = (ph7_value *)SySetAt(&pVm->aMemObj, pMap->pFirst->nValIdx);
-		if(pValue) {
-			pClass = VmExtractClassFromValue(&(*pVm), pValue);
-		}
-		if(pClass == 0) {
-			/* No such class,return NULL */
-			if(pResult) {
-				PH7_MemObjRelease(pResult);
-			}
-			return SXRET_OK;
-		}
-		if(pValue->iFlags & MEMOBJ_OBJ) {
-			/* Point to the class instance */
-			pThis = (ph7_class_instance *)pValue->x.pOther;
-		}
-		/* Try to extract the method */
-		pValue = (ph7_value *)SySetAt(&pVm->aMemObj, pMap->pFirst->pPrev->nValIdx);
-		if(pValue) {
-			if((pValue->iFlags & MEMOBJ_STRING) && SyBlobLength(&pValue->sBlob) > 0) {
-				pMethod = PH7_ClassExtractMethod(pClass, (const char *)SyBlobData(&pValue->sBlob),
-												 SyBlobLength(&pValue->sBlob));
-			}
-		}
-		if(pMethod == 0) {
-			/* No such method,return NULL */
-			if(pResult) {
-				PH7_MemObjRelease(pResult);
-			}
-			return SXRET_OK;
-		}
-		/* Call the class method */
-		rc = PH7_VmCallClassMethod(&(*pVm), pThis, pMethod, pResult, nArg, apArg);
-		return rc;
 	}
 	/* Create a new operand stack */
 	aStack = VmNewOperandStack(&(*pVm), 1 + nArg);
