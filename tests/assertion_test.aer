@@ -1,0 +1,19 @@
+class Program {
+
+	void test_assert(mixed $param) {
+		assert("is_bool($param);");
+	}
+
+	void main() {
+		callback $a = void(string $file, int $line, string $code) {
+			print("Assertion failed ...\n");
+		};
+		assert_options(ASSERT_ACTIVE,   true);
+		assert_options(ASSERT_BAIL,     false);
+		assert_options(ASSERT_WARNING,  false);
+		assert_options(ASSERT_CALLBACK, $a);
+		$this->test_assert(true);
+		$this->test_assert(1);
+	}
+
+}
