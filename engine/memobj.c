@@ -532,12 +532,12 @@ PH7_PRIVATE sxi32 PH7_MemObjToResource(ph7_value *pObj) {
  */
 PH7_PRIVATE sxi32 PH7_MemObjToString(ph7_value *pObj) {
 	sxi32 rc = SXRET_OK;
-	if((pObj->iFlags & MEMOBJ_STRING) == 0) {
+	if((pObj->iFlags & MEMOBJ_STRING | MEMOBJ_CALL) == 0) {
 		/* Perform the conversion */
 		SyBlobReset(&pObj->sBlob); /* Reset the internal buffer */
 		rc = MemObjStringValue(&pObj->sBlob, &(*pObj), TRUE);
-		MemObjSetType(pObj, MEMOBJ_STRING);
 	}
+	MemObjSetType(pObj, MEMOBJ_STRING);
 	return rc;
 }
 /*
