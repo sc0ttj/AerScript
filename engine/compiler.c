@@ -2892,6 +2892,7 @@ static sxi32 PH7_GenStateCollectFuncArgs(ph7_vm_func *pFunc, ph7_gen_state *pGen
 					sArg.nType = SXU32_HIGH; /* 0xFFFFFFFF as sentinel */
 					SyStringInitFromBuf(&sArg.sClass, zDup, pName->nByte);
 				}
+				sArg.nType = MEMOBJ_OBJ;
 			}
 			pIn++;
 			if((pIn->nType & PH7_TK_OSB) && &pIn[1] < pEnd && (pIn[1].nType & PH7_TK_CSB)) {
