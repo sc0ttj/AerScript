@@ -795,7 +795,6 @@ PH7_PRIVATE sxi32 PH7_CompileArray(ph7_gen_state *pGen, sxi32 iCompileFlag) {
 	sxi32(*xValidator)(ph7_gen_state *, ph7_expr_node *); /* Expression tree validator callback */
 	SyToken *pKey, *pCur;
 	sxi32 nPair = 0;
-	sxi32 iNest;
 	sxi32 rc;
 	/* Jump the opening and the trailing parenthesis. */
 	pGen->pIn++;
@@ -817,18 +816,9 @@ PH7_PRIVATE sxi32 PH7_CompileArray(ph7_gen_state *pGen, sxi32 iCompileFlag) {
 		}
 		/* Compile the key if available */
 		pKey = pCur;
-		iNest = 0;
 		while(pCur < pGen->pIn) {
-			if((pCur->nType & PH7_TK_ARRAY_OP) && iNest <= 0) {
+			if(pCur->nType & PH7_TK_ARRAY_OP) {
 				break;
-			}
-			if(pCur->nType & PH7_TK_LPAREN /*'('*/) {
-				iNest++;
-			} else if(pCur->nType & PH7_TK_RPAREN /*')'*/) {
-				/* Don't worry about mismatched parenthesis here,the expression
-				 * parser will shortly detect any syntax error.
-				 */
-				iNest--;
 			}
 			pCur++;
 		}
