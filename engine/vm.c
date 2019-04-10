@@ -8408,7 +8408,7 @@ static int vm_builtin_assert(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 			}
 			/* Invoke the callback */
 			PH7_MemObjInitFromString(pVm, &sFile, pFile);
-			PH7_MemObjInitFromInt(pVm, &sLine, 0);
+			PH7_MemObjInitFromInt(pVm, &sLine, 1);
 			apCbArg[0] = &sFile;
 			apCbArg[1] = &sLine;
 			apCbArg[2] = pAssert;
