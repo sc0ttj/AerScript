@@ -19,7 +19,7 @@ class Luhn {
 		for(int $i = 0; $i < $len; $i++) {
 			$sum += $i & 1 ? $revNumber[$i] * 2 : $revNumber[$i];
 		}
-		return array_sum(str_split($sum)) % 10 === 0;
+		return array_sum(str_split($sum)) % 10 == 0;
 	}
 }
 

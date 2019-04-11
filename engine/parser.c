@@ -205,8 +205,6 @@ static const ph7_expr_op aOpTable[] = {
 	/* Precedence 11,non-associative */
 	{ {"==", sizeof(char) * 2},  EXPR_OP_EQ,  11, EXPR_OP_NON_ASSOC, PH7_OP_EQ},
 	{ {"!=", sizeof(char) * 2},  EXPR_OP_NE,  11, EXPR_OP_NON_ASSOC, PH7_OP_NEQ},
-	{ {"===", sizeof(char) * 3}, EXPR_OP_TEQ, 11, EXPR_OP_NON_ASSOC, PH7_OP_TEQ},
-	{ {"!==", sizeof(char) * 3}, EXPR_OP_TNE, 11, EXPR_OP_NON_ASSOC, PH7_OP_TNE},
 	/* Precedence 12,left-associative */
 	{ {"&", sizeof(char)}, EXPR_OP_BAND, 12, EXPR_OP_ASSOC_LEFT, PH7_OP_BAND},
 	/* Binary operators */

@@ -3717,72 +3717,6 @@ static sxi32 VmByteCodeExec(
 					}
 					break;
 				}
-			/* OP_TEQ P1 P2 *
-			 *
-			 * Pop the top two elements from the stack. If they have the same type and are equal
-			 * then jump to instruction P2. Otherwise, continue to the next instruction.
-			 * If P2 is zero, do not jump. Instead, push a boolean 1 (TRUE) onto the
-			 * stack if the jump would have been taken, or a 0 (FALSE) if not.
-			 */
-			case PH7_OP_TEQ: {
-					ph7_value *pNos = &pTos[-1];
-					/* Perform the comparison and act accordingly */
-#ifdef UNTRUST
-					if(pNos < pStack) {
-						goto Abort;
-					}
-#endif
-					rc = PH7_MemObjCmp(pNos, pTos, TRUE, 0) == 0;
-					VmPopOperand(&pTos, 1);
-					if(!pInstr->iP2) {
-						/* Push comparison result without taking the jump */
-						PH7_MemObjRelease(pTos);
-						pTos->x.iVal = rc;
-						/* Invalidate any prior representation */
-						MemObjSetType(pTos, MEMOBJ_BOOL);
-					} else {
-						if(rc) {
-							/* Jump to the desired location */
-							pc = pInstr->iP2 - 1;
-							VmPopOperand(&pTos, 1);
-						}
-					}
-					break;
-				}
-			/* OP_TNE P1 P2 *
-			 *
-			 * Pop the top two elements from the stack.If they are not equal an they are not
-			 * of the same type, then jump to instruction P2. Otherwise, continue to the next
-			 * instruction.
-			 * If P2 is zero, do not jump. Instead, push a boolean 1 (TRUE) onto the
-			 * stack if the jump would have been taken, or a 0 (FALSE) if not.
-			 *
-			 */
-			case PH7_OP_TNE: {
-					ph7_value *pNos = &pTos[-1];
-					/* Perform the comparison and act accordingly */
-#ifdef UNTRUST
-					if(pNos < pStack) {
-						goto Abort;
-					}
-#endif
-					rc = PH7_MemObjCmp(pNos, pTos, TRUE, 0) != 0;
-					VmPopOperand(&pTos, 1);
-					if(!pInstr->iP2) {
-						/* Push comparison result without taking the jump */
-						PH7_MemObjRelease(pTos);
-						pTos->x.iVal = rc;
-						/* Invalidate any prior representation */
-						MemObjSetType(pTos, MEMOBJ_BOOL);
-					} else {
-						if(rc) {
-							/* Jump to the desired location */
-							pc = pInstr->iP2 - 1;
-							VmPopOperand(&pTos, 1);
-						}
-					}
-					break;
-				}
 			/* OP_LT P1 P2 P3
 			 *
 			 * Pop the top two elements from the stack. If the second element (the top of stack)
@@ -5498,12 +5432,6 @@ static const char *VmInstrToString(sxi32 nOp) {
 			break;
 		case PH7_OP_NEQ:
 			zOp = "NEQ";
-			break;
-		case PH7_OP_TEQ:
-			zOp = "TEQ";
-			break;
-		case PH7_OP_TNE:
-			zOp = "TNE";
 			break;
 		case PH7_OP_BAND:
 			zOp = "BITAND";

@@ -1419,8 +1419,6 @@ enum ph7_vm_op {
 	PH7_OP_GE,           /* Greater or equal '>=' */
 	PH7_OP_EQ,           /* Equal '==' */
 	PH7_OP_NEQ,          /* Not equal '!=' */
-	PH7_OP_TEQ,          /* Type equal '===' */
-	PH7_OP_TNE,          /* Type not equal '!==' */
 	PH7_OP_BAND,         /* Bitwise and '&' */
 	PH7_OP_BXOR,         /* Bitwise xor '^' */
 	PH7_OP_BOR,          /* Bitwise or '|' */
@@ -1498,8 +1496,6 @@ enum ph7_expr_id {
 	EXPR_OP_GE,        /* Greater equal */
 	EXPR_OP_EQ,        /* Equal == */
 	EXPR_OP_NE,        /* Not equal != <> */
-	EXPR_OP_TEQ,       /* Type equal === */
-	EXPR_OP_TNE,       /* Type not equal !== */
 	EXPR_OP_BAND,      /* Bitwise and '&' */
 	EXPR_OP_REF,       /* Reference operator '&' */
 	EXPR_OP_XOR,       /* bitwise xor '^' */
