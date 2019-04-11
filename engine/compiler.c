@@ -2448,7 +2448,7 @@ static sxi32 PH7_CompileHalt(ph7_gen_state *pGen) {
  */
 static sxi32 PH7_CompileVar(ph7_gen_state *pGen) {
 	sxi32 rc;
-	rc = PH7_GenCompileVar(pGen, 1);
+	rc = PH7_GenStateCompileVar(pGen, 1);
 	return rc;
 }
 /*
