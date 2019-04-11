@@ -377,19 +377,25 @@ static ph7_real MemObjCharValue(ph7_value *pObj) {
 PH7_PRIVATE sxi32 PH7_CheckVarCompat(ph7_value *pObj, int nType) {
 	if(((nType & MEMOBJ_HASHMAP) == 0) && ((pObj->iFlags & MEMOBJ_HASHMAP) == 0)) {
 		if(pObj->iFlags & MEMOBJ_NULL) {
+			/* Always allow to store a NULL */
 			return SXRET_OK;
 		} else if((nType & MEMOBJ_REAL) && (pObj->iFlags & MEMOBJ_INT)) {
+			/* Allow to store INT to FLOAT variable */
 			return SXRET_OK;
 		} else if((nType & MEMOBJ_CHAR) && (pObj->iFlags & MEMOBJ_INT)) {
+			/* Allow to store INT to CHAR variable */
 			return SXRET_OK;
 		} else if((nType & MEMOBJ_STRING) && (pObj->iFlags & MEMOBJ_CHAR)) {
+			/* Allow to store CHAR to STRING variable */
 			return SXRET_OK;
 		} else if((nType & MEMOBJ_CHAR) && (pObj->iFlags & MEMOBJ_STRING)) {
+			/* Allow to store STRING to CHAR variable (if not too long) */
 			int len = SyBlobLength(&pObj->sBlob);
 			if(len == 0 || len == 1) {
 				return SXRET_OK;
 			}
 		} else if((nType & MEMOBJ_CALL) && (pObj->iFlags & MEMOBJ_STRING)) {
+			/* Allow to store STRING to CALLBACK variable */
 			return SXRET_OK;
 		}
 	}
