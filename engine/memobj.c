@@ -382,6 +382,8 @@ PH7_PRIVATE sxi32 PH7_CheckVarCompat(ph7_value *pObj, int nType) {
 			return SXRET_OK;
 		} else if((nType & MEMOBJ_CHAR) && (pObj->iFlags & MEMOBJ_INT)) {
 			return SXRET_OK;
+		} else if((nType & MEMOBJ_STRING) && (pObj->iFlags & MEMOBJ_CHAR)) {
+			return SXRET_OK;
 		} else if((nType & MEMOBJ_CHAR) && (pObj->iFlags & MEMOBJ_STRING)) {
 			int len = SyBlobLength(&pObj->sBlob);
 			if(len == 0 || len == 1) {
