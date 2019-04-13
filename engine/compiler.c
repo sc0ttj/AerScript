@@ -1896,7 +1896,7 @@ static sxi32 PH7_CompileFor(ph7_gen_state *pGen) {
 	pGen->pEnd = pEnd;
 	sxu32 nKey = (sxu32)(SX_PTR_TO_INT(pGen->pIn->pUserData));
 	if(nKey & PH7_KEYWORD_TYPEDEF) {
-		PH7_GenStateCompileVar(&(*pGen), 0);
+		PH7_CompileVar(&(*pGen));
 	}
 	/* Compile initialization expressions if available */
 	rc = PH7_CompileExpr(&(*pGen), 0, 0);
@@ -2447,14 +2447,6 @@ static sxi32 PH7_CompileHalt(ph7_gen_state *pGen) {
  * Compile the var statement.
  */
 static sxi32 PH7_CompileVar(ph7_gen_state *pGen) {
-	sxi32 rc;
-	rc = PH7_GenStateCompileVar(pGen, 1);
-	return rc;
-}
-/*
- * Compile the var statement.
- */
-static sxi32 PH7_GenStateCompileVar(ph7_gen_state *pGen, sxbool bStrict) {
 	sxu32 nLine = pGen->pIn->nLine;
 	sxbool bStatic = FALSE;
 	ph7_vm_func_static_var sStatic;
@@ -2565,7 +2557,7 @@ static sxi32 PH7_GenStateCompileVar(ph7_gen_state *pGen, sxbool bStrict) {
 			}
 			void *p3 = (void *) zDup;
 			/* Emit OP_LOAD instruction */
-			PH7_VmEmitInstr(pGen->pVm, pGen->pIn->nLine, PH7_OP_LOAD, bStrict, nType, p3, 0);
+			PH7_VmEmitInstr(pGen->pVm, pGen->pIn->nLine, PH7_OP_LOAD, 0, nType, p3, 0);
 			/* Check if we have an expression to compile */
 			if(pGen->pIn < pGen->pEnd && (pGen->pIn[2].nType & PH7_TK_EQUAL)) {
 				/* Compile the expression */

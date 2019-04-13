@@ -2402,11 +2402,10 @@ static sxi32 VmByteCodeExec(
 					break;
 				}
 			/*
-			 * LOAD: P1 P2 P3
+			 * LOAD: * P2 P3
 			 *
 			 * Load a variable where it's name is taken from the top of the stack or
 			 * from the P3 operand. If P2 is set, it will create a new variable.
-			 * If P1 is set, it will allow variable redeclaration.
 			 */
 			case PH7_OP_LOAD: {
 					ph7_value *pObj;
@@ -2431,7 +2430,7 @@ static sxi32 VmByteCodeExec(
 					/* Extract the requested memory object */
 					pObj = VmExtractMemObj(&(*pVm), &sName, pInstr->p3 ? FALSE : TRUE, FALSE);
 					if(pInstr->iP2) {
-						if(pObj && pInstr->iP1) {
+						if(pObj) {
 							PH7_VmThrowError(&(*pVm), PH7_CTX_ERR,
 											"Redeclaration of ‘$%z’ variable", &sName);
 						}
