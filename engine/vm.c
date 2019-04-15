@@ -1332,6 +1332,58 @@ PH7_PRIVATE ph7_value *PH7_ReserveMemObj(ph7_vm *pVm) {
 	return pObj;
 }
 /*
+ * Creates a variable value in the top active VM frame.
+ * Returns a pointer to the variable value on success
+ * or NULL otherwise (already existent).
+ */
+static ph7_value *VmCreateMemObj(
+	ph7_vm *pVm,			/* Target VM */
+	const SyString *pName,	/* Variable name */
+	sxbool bDup				/* True to duplicate variable name */
+) {
+	sxu32 nIdx;
+	sxi32 rc;
+	SyHashEntry *pEntry;
+	/* Query the top active frame */
+	pEntry = SyHashGet(&pVm->pFrame->hVar, (const void *)pName->zString, pName->nByte);
+	if(pEntry) {
+		/* Variable already exists */
+		return 0;
+	}
+	ph7_value *pObj;
+	VmSlot sLocal;
+	char *zName = (char *)pName->zString;
+	pObj = PH7_ReserveMemObj(&(*pVm));
+	if(pObj == 0) {
+		return 0;
+	}
+	nIdx = pObj->nIdx;
+	if(bDup) {
+		/* Duplicate name */
+		zName = SyMemBackendStrDup(&pVm->sAllocator, pName->zString, pName->nByte);
+		if(zName == 0) {
+			return 0;
+		}
+	}
+	/* Link to the top active VM frame */
+	rc = SyHashInsert(&pVm->pFrame->hVar, zName, pName->nByte, SX_INT_TO_PTR(nIdx));
+	if(rc != SXRET_OK) {
+		/* Return the slot to the free pool */
+		sLocal.nIdx = nIdx;
+		sLocal.pUserData = 0;
+		SySetPut(&pVm->aFreeObj, (const void *)&sLocal);
+		return 0;
+	}
+	/* Register local variable */
+	sLocal.nIdx = nIdx;
+	SySetPut(&pVm->pFrame->sLocal, (const void *)&sLocal);
+	/* Install in the reference table */
+	PH7_VmRefObjInstall(&(*pVm), nIdx, SyHashLastEntry(&pVm->pFrame->hVar), 0, 0);
+	/* Save object index */
+	pObj->nIdx = nIdx;
+	return pObj;
+}
+/*
  * Extract a variable value from the top active VM frame.
  * Return a pointer to the variable value on success.
  * NULL otherwise (non-existent variable/Out-of-memory,...).
