@@ -1353,26 +1353,23 @@ static ph7_value *VmCreateMemObj(
 	ph7_value *pObj;
 	VmSlot sLocal;
 	char *zName = (char *)pName->zString;
+	/* Reserve a memory object */
 	pObj = PH7_ReserveMemObj(&(*pVm));
 	if(pObj == 0) {
-		return 0;
+		PH7_VmMemoryError(&(*pVm));
 	}
 	nIdx = pObj->nIdx;
 	if(bDup) {
 		/* Duplicate name */
 		zName = SyMemBackendStrDup(&pVm->sAllocator, pName->zString, pName->nByte);
 		if(zName == 0) {
-			return 0;
+			PH7_VmMemoryError(&(*pVm));
 		}
 	}
 	/* Link to the top active VM frame */
 	rc = SyHashInsert(&pVm->pFrame->hVar, zName, pName->nByte, SX_INT_TO_PTR(nIdx));
 	if(rc != SXRET_OK) {
-		/* Return the slot to the free pool */
-		sLocal.nIdx = nIdx;
-		sLocal.pUserData = 0;
-		SySetPut(&pVm->aFreeObj, (const void *)&sLocal);
-		return 0;
+		PH7_VmMemoryError(&(*pVm));
 	}
 	/* Register local variable */
 	sLocal.nIdx = nIdx;
