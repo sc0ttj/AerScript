@@ -1414,8 +1414,24 @@ static ph7_value *VmExtractMemObj(
 	/* Check the superglobals table first */
 	pEntry = SyHashGet(&pVm->hSuper, (const void *)pName->zString, pName->nByte);
 	if(pEntry == 0) {
-		/* Query the top active frame */
-		pEntry = SyHashGet(&pFrame->hVar, (const void *)pName->zString, pName->nByte);
+		for(;;) {
+			/* Query the top active/loop frame(s) */
+			pEntry = SyHashGet(&pFrame->hVar, (const void *)pName->zString, pName->nByte);
+			if(pEntry) {
+				/* Extract variable contents */
+				nIdx = (sxu32)SX_PTR_TO_INT(pEntry->pUserData);
+				pObj = (ph7_value *)SySetAt(&pVm->aMemObj, nIdx);
+				if(bNullify && pObj) {
+					PH7_MemObjRelease(pObj);
+				}
+				break;
+			}
+			if(pFrame->iFlags & VM_FRAME_LOOP && pFrame->pParent) {
+				pFrame = pFrame->pParent;
+			} else {
+				break;
+			}
+		}
 		if(pEntry == 0) {
 			if(!bCreate) {
 				/* Do not create the variable, return NULL instead */
@@ -1425,16 +1441,9 @@ static ph7_value *VmExtractMemObj(
 			 * it in the current frame.
 			 */
 			pObj = VmCreateMemObj(pVm, pName, bDup);
-		} else {
-			/* Extract variable contents */
-			nIdx = (sxu32)SX_PTR_TO_INT(pEntry->pUserData);
-			pObj = (ph7_value *)SySetAt(&pVm->aMemObj, nIdx);
-			if(bNullify && pObj) {
-				PH7_MemObjRelease(pObj);
-			}
 		}
 	} else {
-		/* Superglobal */
+		/* Extract from superglobal */
 		nIdx = (sxu32)SX_PTR_TO_INT(pEntry->pUserData);
 		pObj = (ph7_value *)SySetAt(&pVm->aMemObj, nIdx);
 	}
