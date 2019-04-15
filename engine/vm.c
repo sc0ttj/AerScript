@@ -2464,10 +2464,10 @@ static sxi32 VmByteCodeExec(
 					break;
 				}
 			/*
-			 * LOAD: * P2 P3
+			 * LOAD: * * P3
 			 *
 			 * Load a variable where it's name is taken from the top of the stack or
-			 * from the P3 operand. If P2 is set, it will create a new variable.
+			 * from the P3 operand.
 			 */
 			case PH7_OP_LOAD: {
 					ph7_value *pObj;
@@ -2491,36 +2491,9 @@ static sxi32 VmByteCodeExec(
 					}
 					/* Extract the requested memory object */
 					pObj = VmExtractMemObj(&(*pVm), &sName, pInstr->p3 ? FALSE : TRUE, FALSE);
-					if(pInstr->iP2) {
-						if(pObj) {
-							PH7_VmThrowError(&(*pVm), PH7_CTX_ERR,
-											"Redeclaration of ‘$%z’ variable", &sName);
-						}
-						if(!pInstr->p3) {
-							PH7_MemObjRelease(pTos);
-						} else {
-							pObj = VmExtractMemObj(&(*pVm), &sName, FALSE, TRUE);
-							if(pInstr->iP2 & MEMOBJ_MIXED && (pInstr->iP2 & MEMOBJ_HASHMAP) == 0) {
-								pObj->iFlags = MEMOBJ_MIXED | MEMOBJ_VOID;
-							} else {
-								if(pInstr->iP2 & MEMOBJ_HASHMAP) {
-									ph7_hashmap *pMap;
-									pMap = PH7_NewHashmap(&(*pVm), 0, 0);
-									if(pMap == 0) {
-										PH7_VmMemoryError(&(*pVm));
-									}
-									pObj->x.pOther = pMap;
-								}
-								MemObjSetType(pObj, pInstr->iP2);
-							}
-						}
-						pTos->nIdx = SXU32_HIGH; /* Mark as constant */
-						break;
-					} else {
-						if(pObj == 0) {
-							/* Fatal error */
-							PH7_VmThrowError(&(*pVm), PH7_CTX_ERR, "Variable '$%z' undeclared (first use in this method/closure)", &sName);
-						}
+					if(pObj == 0) {
+						/* Fatal error */
+						PH7_VmThrowError(&(*pVm), PH7_CTX_ERR, "Variable '$%z' undeclared (first use in this method/closure)", &sName);
 					}
 					/* Load variable contents */
 					PH7_MemObjLoad(pObj, pTos);
