@@ -2557,7 +2557,7 @@ static sxi32 PH7_CompileVar(ph7_gen_state *pGen) {
 			}
 			void *p3 = (void *) zDup;
 			/* Emit OP_LOAD instruction */
-			PH7_VmEmitInstr(pGen->pVm, pGen->pIn->nLine, PH7_OP_LOAD, 0, nType, p3, 0);
+			PH7_VmEmitInstr(pGen->pVm, pGen->pIn->nLine, PH7_OP_DECLARE, 0, nType, p3, 0);
 			/* Check if we have an expression to compile */
 			if(pGen->pIn < pGen->pEnd && (pGen->pIn[2].nType & PH7_TK_EQUAL)) {
 				/* Compile the expression */

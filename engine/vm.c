@@ -2395,6 +2395,39 @@ static sxi32 VmByteCodeExec(
 					break;
 				}
 			/*
+			 * DECLARE: * P2 P3
+			 *
+			 * Create a variable where it's name is taken from the top of the stack or
+			 * from the P3 operand. It takes a variable type from P2 operand.
+			 */
+			case PH7_OP_DECLARE: {
+					ph7_value *pObj;
+					SyString sName;
+					SyStringInitFromBuf(&sName, pInstr->p3, SyStrlen((const char *)pInstr->p3));
+					/* Reserve a room for the target object */
+					pTos++;
+					/* Create a new variable */
+					pObj = VmCreateMemObj(&(*pVm), &sName, FALSE);
+					if(!pObj) {
+						PH7_VmThrowError(&(*pVm), PH7_CTX_ERR,
+										"Redeclaration of ‘$%z’ variable", &sName);
+					}
+					if(pInstr->iP2 & MEMOBJ_MIXED && (pInstr->iP2 & MEMOBJ_HASHMAP) == 0) {
+						pObj->iFlags = MEMOBJ_MIXED | MEMOBJ_VOID;
+					} else {
+						if(pInstr->iP2 & MEMOBJ_HASHMAP) {
+							ph7_hashmap *pMap;
+							pMap = PH7_NewHashmap(&(*pVm), 0, 0);
+							if(pMap == 0) {
+								PH7_VmMemoryError(&(*pVm));
+							}
+							pObj->x.pOther = pMap;
+						}
+						MemObjSetType(pObj, pInstr->iP2);
+					}
+					pTos->nIdx = SXU32_HIGH; /* Mark as constant */
+					break;
+				}			/*
 			 * LOADC P1 P2 *
 			 *
 			 * Load a constant [i.e: PHP_EOL,PHP_OS,__TIME__,...] indexed at P2 in the constant pool.
@@ -5368,6 +5401,9 @@ static const char *VmInstrToString(sxi32 nOp) {
 			break;
 		case PH7_OP_HALT:
 			zOp = "HALT";
+			break;
+		case PH7_OP_DECLARE:
+			zOp = "DECLARE";
 			break;
 		case PH7_OP_LOAD:
 			zOp = "LOAD";
