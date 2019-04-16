@@ -1458,9 +1458,12 @@ static sxi32 PH7_CompileContinue(ph7_gen_state *pGen) {
 				PH7_GenStateNewJumpFixup(pLoop, PH7_OP_JMP, nInstrIdx);
 			}
 		} else {
-			/* Emit the unconditional jump to the beginning of the target loop */
+			if(!pLoop->bPostContinue) {
+				/* Emit the OP_JMPLFE instruction to leave the loop frame */
+				PH7_VmEmitInstr(pGen->pVm, nLine, PH7_OP_JMPLFE, 0, 0, 0, 0);
+			}
 			PH7_VmEmitInstr(pGen->pVm, 0, PH7_OP_JMP, 0, pLoop->nFirstInstr, 0, &nInstrIdx);
-			if(pLoop->bPostContinue == TRUE) {
+			if(pLoop->bPostContinue) {
 				JumpFixup sJumpFix;
 				/* Post-continue */
 				sJumpFix.nJumpType = PH7_OP_JMP;
@@ -1501,6 +1504,8 @@ static sxi32 PH7_CompileBreak(ph7_gen_state *pGen) {
 		}
 	} else {
 		sxu32 nInstrIdx;
+		/* Emit the OP_JMPLFE instruction to leave the loop frame */
+		PH7_VmEmitInstr(pGen->pVm, nLine, PH7_OP_JMPLFE, 0, 0, 0, 0);
 		rc = PH7_VmEmitInstr(pGen->pVm, 0, PH7_OP_JMP, 0, 0, 0, &nInstrIdx);
 		if(rc == SXRET_OK) {
 			/* Fix the jump later when the jump destination is resolved */
@@ -1667,11 +1672,15 @@ static sxi32 PH7_CompileWhile(ph7_gen_state *pGen) {
 	PH7_VmEmitInstr(pGen->pVm, 0, PH7_OP_JMPZ, 0, 0, 0, &nFalseJump);
 	/* Save the instruction index so we can fix it later when the jump destination is resolved */
 	PH7_GenStateNewJumpFixup(pWhileBlock, PH7_OP_JMPZ, nFalseJump);
+	/* Emit the OP_JMPLFB instruction to enter a loop frame */
+	PH7_VmEmitInstr(pGen->pVm, nLine, PH7_OP_JMPLFB, 0, 0, 0, 0);
 	/* Compile the loop body */
 	rc = PH7_CompileBlock(&(*pGen));
 	if(rc == SXERR_ABORT) {
 		return SXERR_ABORT;
 	}
+	/* Emit the OP_JMPLFE instruction to leave the loop frame */
+	PH7_VmEmitInstr(pGen->pVm, nLine, PH7_OP_JMPLFE, 0, 0, 0, 0);
 	/* Emit the unconditional jump to the start of the loop */
 	PH7_VmEmitInstr(pGen->pVm, 0, PH7_OP_JMP, 0, pWhileBlock->nFirstInstr, 0, 0);
 	/* Fix all jumps now the destination is resolved */
@@ -1719,6 +1728,8 @@ static sxi32 PH7_CompileDoWhile(ph7_gen_state *pGen) {
 	}
 	/* Deffer 'continue;' jumps until we compile the block */
 	pDoBlock->bPostContinue = TRUE;
+	/* Emit the OP_JMPLFB instruction to enter a loop frame */
+	PH7_VmEmitInstr(pGen->pVm, nLine, PH7_OP_JMPLFB, 0, 0, 0, 0);
 	rc = PH7_CompileBlock(&(*pGen));
 	if(rc == SXERR_ABORT) {
 		return SXERR_ABORT;
@@ -1795,6 +1806,8 @@ static sxi32 PH7_CompileDoWhile(ph7_gen_state *pGen) {
 	}
 	pGen->pIn  = &pEnd[1];
 	pGen->pEnd = pTmp;
+	/* Emit the OP_JMPLFE instruction to leave the loop frame */
+	PH7_VmEmitInstr(pGen->pVm, nLine, PH7_OP_JMPLFE, 0, 0, 0, 0);
 	/* Emit the true jump to the beginning of the loop */
 	PH7_VmEmitInstr(pGen->pVm, 0, PH7_OP_JMPNZ, 0, pDoBlock->nFirstInstr, 0, 0);
 	/* Fix all jumps now the destination is resolved */
@@ -1923,6 +1936,8 @@ static sxi32 PH7_CompileFor(ph7_gen_state *pGen) {
 		}
 		return SXRET_OK;
 	}
+	/* Emit the OP_JMPLFB instruction to enter a loop frame */
+	PH7_VmEmitInstr(pGen->pVm, nLine, PH7_OP_JMPLFB, 0, 0, 0, 0);
 	/* Jump the trailing ';' */
 	pGen->pIn++;
 	/* Save the post condition stream */
@@ -1976,6 +1991,8 @@ static sxi32 PH7_CompileFor(ph7_gen_state *pGen) {
 			PH7_VmEmitInstr(pGen->pVm, nLine, PH7_OP_POP, 1, 0, 0, 0);
 		}
 	}
+	/* Emit the OP_JMPLFE instruction to leave the loop frame */
+	PH7_VmEmitInstr(pGen->pVm, nLine, PH7_OP_JMPLFE, 0, 0, 0, 0);
 	/* Emit the unconditional jump to the start of the loop */
 	PH7_VmEmitInstr(pGen->pVm, nLine, PH7_OP_JMP, 0, pForBlock->nFirstInstr, 0, 0);
 	/* Fix all jumps now the destination is resolved */
@@ -2189,6 +2206,8 @@ static sxi32 PH7_CompileForeach(ph7_gen_state *pGen) {
 	PH7_VmEmitInstr(pGen->pVm, 0, PH7_OP_FOREACH_STEP, 0, 0, pInfo, &nFalseJump);
 	/* Save the instruction index so we can fix it later when the jump destination is resolved */
 	PH7_GenStateNewJumpFixup(pForeachBlock, PH7_OP_FOREACH_STEP, nFalseJump);
+	/* Emit the OP_JMPLFB instruction to enter a loop frame */
+	PH7_VmEmitInstr(pGen->pVm, nLine, PH7_OP_JMPLFB, 0, 0, 0, 0);
 	/* Compile the loop body */
 	pGen->pIn = &pEnd[1];
 	pGen->pEnd = pTmp;
@@ -2197,6 +2216,8 @@ static sxi32 PH7_CompileForeach(ph7_gen_state *pGen) {
 		/* Don't worry about freeing memory, everything will be released shortly */
 		return SXERR_ABORT;
 	}
+	/* Emit the OP_JMPLFE instruction to leave the loop frame */
+	PH7_VmEmitInstr(pGen->pVm, nLine, PH7_OP_JMPLFE, 0, 0, 0, 0);
 	/* Emit the unconditional jump to the start of the loop */
 	PH7_VmEmitInstr(pGen->pVm, 0, PH7_OP_JMP, 0, pForeachBlock->nFirstInstr, 0, 0);
 	/* Fix all jumps now the destination is resolved */
