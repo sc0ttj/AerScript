@@ -2182,6 +2182,11 @@ static sxi32 VmByteCodeExec(
 					VmPopOperand(&pTos, 1);
 				}
 				break;
+			/*
+			 * JMPLFB: * * *
+			 *
+			 * Creates and enters the jump loop frame on the beginning of each iteration.
+			 */
 			case PH7_OP_JMPLFB: {
 					VmFrame *pFrame;
 					/* Enter the jump loop frame */
@@ -2192,6 +2197,10 @@ static sxi32 VmByteCodeExec(
 					pFrame->iFlags = VM_FRAME_LOOP;
 					break;
 				}
+			/*
+			 * Leaves and destroys the jump loop frame at the end of each iteration
+			 * as well as on 'break' and 'continue' instructions.
+			 */
 			case PH7_OP_JMPLFE: {
 					/* Leave the jump loop frame */
 					if(pVm->pFrame->iFlags & VM_FRAME_LOOP) {
