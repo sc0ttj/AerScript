@@ -1485,25 +1485,13 @@ static sxi32 PH7_CompileContinue(ph7_gen_state *pGen) {
  */
 static sxi32 PH7_CompileBreak(ph7_gen_state *pGen) {
 	GenBlock *pLoop; /* Target loop */
-	sxi32 iLevel;    /* How many nesting loop to skip */
 	sxu32 nLine;
 	sxi32 rc;
 	nLine = pGen->pIn->nLine;
-	iLevel = 0;
 	/* Jump the 'break' keyword */
 	pGen->pIn++;
-	if(pGen->pIn < pGen->pEnd && (pGen->pIn->nType & PH7_TK_NUM)) {
-		/* optional numeric argument which tells us how many levels
-		 * of enclosing loops we should skip to the end of.
-		 */
-		iLevel = (sxi32)PH7_TokenValueToInt64(&pGen->pIn->sData);
-		if(iLevel < 2) {
-			iLevel = 0;
-		}
-		pGen->pIn++; /* Jump the optional numeric argument */
-	}
 	/* Extract the target loop */
-	pLoop = PH7_GenStateFetchBlock(pGen->pCurrent, GEN_BLOCK_LOOP, iLevel);
+	pLoop = PH7_GenStateFetchBlock(pGen->pCurrent, GEN_BLOCK_LOOP, 0);
 	if(pLoop == 0) {
 		/* Illegal break */
 		rc = PH7_GenCompileError(pGen, E_ERROR, pGen->pIn->nLine, "A 'break' statement may only be used within a loop or switch");
@@ -1521,7 +1509,7 @@ static sxi32 PH7_CompileBreak(ph7_gen_state *pGen) {
 	}
 	if(pGen->pIn < pGen->pEnd && (pGen->pIn->nType & PH7_TK_SEMI) == 0) {
 		/* Not so fatal,emit a warning only */
-		PH7_GenCompileError(&(*pGen), E_WARNING, pGen->pIn->nLine, "Expected semi-colon ';' after 'break' statement");
+		PH7_GenCompileError(&(*pGen), E_ERROR, pGen->pIn->nLine, "Expected semi-colon ';' after 'break' statement");
 	}
 	/* Statement successfully compiled */
 	return SXRET_OK;
