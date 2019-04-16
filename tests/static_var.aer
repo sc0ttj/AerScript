@@ -10,12 +10,11 @@ class Program {
 	}
 
 	void main() {
-		int $i, $j, $k;
-		for($i = 1; $i < 3; $i++) {
+		for(int $i = 1; $i < 3; $i++) {
 			print($i + $this->cycle('a', 'b') + PHP_EOL);
-			for($j = 1; $j < 5; $j++) {
+			for(int $j = 1; $j < 5; $j++) {
 				print(' ' + $j + $this->cycle('a', 'b', 1) + PHP_EOL);
-				for($k = 1; $k < 3; $k++) {
+				for(int $k = 1; $k < 3; $k++) {
 					print('  ' + $k + $this->cycle('c', 'd', 2) + PHP_EOL);
 				}
 			}
