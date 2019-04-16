@@ -2182,6 +2182,23 @@ static sxi32 VmByteCodeExec(
 					VmPopOperand(&pTos, 1);
 				}
 				break;
+			case PH7_OP_JMPLFB: {
+					VmFrame *pFrame;
+					/* Enter the jump loop frame */
+					rc = VmEnterFrame(&(*pVm), pVm->pFrame->pUserData, pVm->pFrame->pThis, &pFrame);
+					if(rc != SXRET_OK) {
+						PH7_VmMemoryError(&(*pVm));
+					}
+					pFrame->iFlags = VM_FRAME_LOOP;
+					break;
+				}
+			case PH7_OP_JMPLFE: {
+					/* Leave the jump loop frame */
+					if(pVm->pFrame->iFlags & VM_FRAME_LOOP) {
+						VmLeaveFrame(&(*pVm));
+					}
+					break;
+				}
 			/*
 			 * NOOP: * * *
 			 *
@@ -5404,6 +5421,12 @@ static const char *VmInstrToString(sxi32 nOp) {
 			break;
 		case PH7_OP_JMPNZ:
 			zOp = "JMPNZ";
+			break;
+		case PH7_OP_JMPLFB:
+			zOp = "JMPLFB";
+			break;
+		case PH7_OP_JMPLFE:
+			zOp = "JMPLFB";
 			break;
 		case PH7_OP_POP:
 			zOp = "POP";
