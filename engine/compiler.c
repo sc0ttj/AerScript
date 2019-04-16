@@ -1688,9 +1688,9 @@ static sxi32 PH7_CompileWhile(ph7_gen_state *pGen) {
 	pGen->pIn  = &pEnd[1];
 	pGen->pEnd = pTmp;
 	/* Emit the false jump */
-	PH7_VmEmitInstr(pGen->pVm, 0, PH7_OP_JZ, 0, 0, 0, &nFalseJump);
+	PH7_VmEmitInstr(pGen->pVm, 0, PH7_OP_JMPZ, 0, 0, 0, &nFalseJump);
 	/* Save the instruction index so we can fix it later when the jump destination is resolved */
-	PH7_GenStateNewJumpFixup(pWhileBlock, PH7_OP_JZ, nFalseJump);
+	PH7_GenStateNewJumpFixup(pWhileBlock, PH7_OP_JMPZ, nFalseJump);
 	/* Compile the loop body */
 	rc = PH7_CompileBlock(&(*pGen));
 	if(rc == SXERR_ABORT) {
@@ -1820,7 +1820,7 @@ static sxi32 PH7_CompileDoWhile(ph7_gen_state *pGen) {
 	pGen->pIn  = &pEnd[1];
 	pGen->pEnd = pTmp;
 	/* Emit the true jump to the beginning of the loop */
-	PH7_VmEmitInstr(pGen->pVm, 0, PH7_OP_JNZ, 0, pDoBlock->nFirstInstr, 0, 0);
+	PH7_VmEmitInstr(pGen->pVm, 0, PH7_OP_JMPNZ, 0, pDoBlock->nFirstInstr, 0, 0);
 	/* Fix all jumps now the destination is resolved */
 	PH7_GenStateFixJumps(pDoBlock, -1, PH7_VmInstrLength(pGen->pVm));
 	/* Release the loop block */
@@ -1933,9 +1933,9 @@ static sxi32 PH7_CompileFor(ph7_gen_state *pGen) {
 		return SXERR_ABORT;
 	} else if(rc != SXERR_EMPTY) {
 		/* Emit the false jump */
-		PH7_VmEmitInstr(pGen->pVm, 0, PH7_OP_JZ, 0, 0, 0, &nFalseJump);
+		PH7_VmEmitInstr(pGen->pVm, 0, PH7_OP_JMPZ, 0, 0, 0, &nFalseJump);
 		/* Save the instruction index so we can fix it later when the jump destination is resolved */
-		PH7_GenStateNewJumpFixup(pForBlock, PH7_OP_JZ, nFalseJump);
+		PH7_GenStateNewJumpFixup(pForBlock, PH7_OP_JMPZ, nFalseJump);
 	}
 	if((pGen->pIn->nType & PH7_TK_SEMI) == 0) {
 		/* Syntax error */
@@ -2327,9 +2327,9 @@ static sxi32 PH7_CompileIf(ph7_gen_state *pGen) {
 			return SXERR_ABORT;
 		}
 		/* Emit the false jump */
-		PH7_VmEmitInstr(pGen->pVm, 0, PH7_OP_JZ, 0, 0, 0, &nJumpIdx);
+		PH7_VmEmitInstr(pGen->pVm, 0, PH7_OP_JMPZ, 0, 0, 0, &nJumpIdx);
 		/* Save the instruction index so we can fix it later when the jump destination is resolved */
-		PH7_GenStateNewJumpFixup(pCondBlock, PH7_OP_JZ, nJumpIdx);
+		PH7_GenStateNewJumpFixup(pCondBlock, PH7_OP_JMPZ, nJumpIdx);
 		/* Compile the body */
 		rc = PH7_CompileBlock(&(*pGen));
 		if(rc == SXERR_ABORT) {
@@ -2359,10 +2359,10 @@ static sxi32 PH7_CompileIf(ph7_gen_state *pGen) {
 		/* Synchronize cursors */
 		pToken = pGen->pIn;
 		/* Fix the false jump */
-		PH7_GenStateFixJumps(pCondBlock, PH7_OP_JZ, PH7_VmInstrLength(pGen->pVm));
+		PH7_GenStateFixJumps(pCondBlock, PH7_OP_JMPZ, PH7_VmInstrLength(pGen->pVm));
 	} /* For(;;) */
 	/* Fix the false jump */
-	PH7_GenStateFixJumps(pCondBlock, PH7_OP_JZ, PH7_VmInstrLength(pGen->pVm));
+	PH7_GenStateFixJumps(pCondBlock, PH7_OP_JMPZ, PH7_VmInstrLength(pGen->pVm));
 	if(pGen->pIn < pGen->pEnd && (pGen->pIn->nType & PH7_TK_KEYWORD) &&
 			(SX_PTR_TO_INT(pGen->pIn->pUserData) & PH7_KEYWORD_ELSE)) {
 		/* Compile the else block */
@@ -4922,7 +4922,7 @@ static sxi32 PH7_GenStateEmitExprCode(
 		}
 		nJz = nJmp = 0; /* cc -O6 warning */
 		/* Phase#2: Emit the false jump */
-		PH7_VmEmitInstr(pGen->pVm, 0, PH7_OP_JZ, 0, 0, 0, &nJz);
+		PH7_VmEmitInstr(pGen->pVm, 0, PH7_OP_JMPZ, 0, 0, 0, &nJz);
 		if(pNode->pLeft) {
 			/* Phase#3: Compile the 'then' expression  */
 			rc = PH7_GenStateEmitExprCode(&(*pGen), pNode->pLeft, iFlags);
@@ -5018,10 +5018,10 @@ static sxi32 PH7_GenStateEmitExprCode(
 	if(pNode->pRight) {
 		if(iVmOp == PH7_OP_LAND) {
 			/* Emit the false jump so we can short-circuit the logical and */
-			PH7_VmEmitInstr(pGen->pVm, 0, PH7_OP_JZ, 1/* Keep the value on the stack */, 0, 0, &nJmpIdx);
+			PH7_VmEmitInstr(pGen->pVm, 0, PH7_OP_JMPZ, 1/* Keep the value on the stack */, 0, 0, &nJmpIdx);
 		} else if(iVmOp == PH7_OP_LOR) {
 			/* Emit the true jump so we can short-circuit the logical or*/
-			PH7_VmEmitInstr(pGen->pVm, 0, PH7_OP_JNZ, 1/* Keep the value on the stack */, 0, 0, &nJmpIdx);
+			PH7_VmEmitInstr(pGen->pVm, 0, PH7_OP_JMPNZ, 1/* Keep the value on the stack */, 0, 0, &nJmpIdx);
 		} else if(pNode->pOp->iPrec == 18 /* Combined binary operators [i.e: =,'.=','+=',*=' ...] precedence */) {
 			iFlags |= EXPR_FLAG_LOAD_IDX_STORE;
 		}

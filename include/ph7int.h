@@ -1397,8 +1397,8 @@ enum ph7_vm_op {
 	PH7_OP_LOAD_CLOSURE, /* Load closure */
 	PH7_OP_NOOP,         /* NOOP */
 	PH7_OP_JMP,          /* Unconditional jump */
-	PH7_OP_JZ,           /* Jump on zero (FALSE jump) */
-	PH7_OP_JNZ,          /* Jump on non-zero (TRUE jump) */
+	PH7_OP_JMPZ,         /* Jump on zero (FALSE jump) */
+	PH7_OP_JMPNZ,        /* Jump on non-zero (TRUE jump) */
 	PH7_OP_POP,          /* Stack POP */
 	PH7_OP_CVT_INT,      /* Integer cast */
 	PH7_OP_CVT_STR,      /* String cast */

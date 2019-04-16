@@ -2135,12 +2135,12 @@ static sxi32 VmByteCodeExec(
 				pc = pInstr->iP2 - 1;
 				break;
 			/*
-			 * JZ: P1 P2 *
+			 * JMPZ: P1 P2 *
 			 *
 			 * Take the jump if the top value is zero (FALSE jump).Pop the top most
 			 * entry in the stack if P1 is zero.
 			 */
-			case PH7_OP_JZ:
+			case PH7_OP_JMPZ:
 #ifdef UNTRUST
 				if(pTos < pStack) {
 					goto Abort;
@@ -2159,12 +2159,12 @@ static sxi32 VmByteCodeExec(
 				}
 				break;
 			/*
-			 * JNZ: P1 P2 *
+			 * JMPNZ: P1 P2 *
 			 *
 			 * Take the jump if the top value is not zero (TRUE jump).Pop the top most
 			 * entry in the stack if P1 is zero.
 			 */
-			case PH7_OP_JNZ:
+			case PH7_OP_JMPNZ:
 #ifdef UNTRUST
 				if(pTos < pStack) {
 					goto Abort;
@@ -5399,11 +5399,11 @@ static const char *VmInstrToString(sxi32 nOp) {
 		case PH7_OP_JMP:
 			zOp = "JMP";
 			break;
-		case PH7_OP_JZ:
-			zOp = "JZ";
+		case PH7_OP_JMPZ:
+			zOp = "JMPZ";
 			break;
-		case PH7_OP_JNZ:
-			zOp = "JNZ";
+		case PH7_OP_JMPNZ:
+			zOp = "JMPNZ";
 			break;
 		case PH7_OP_POP:
 			zOp = "POP";
