@@ -1,0 +1,23 @@
+class Program {
+
+	private int test() {
+		static int $x = 9;
+		return $x--;
+	}
+
+	public void main() {
+		int $a;
+		int $b = 2;
+		while($a = $this->test()) {
+			int $b = $a;
+			if($b == 6) {
+				continue;
+			} else if($b == 3) {
+				break;
+			}
+			print("$b\n");
+		}
+		print("$b\n");
+	}
+
+}
