@@ -9,7 +9,7 @@ class Operations {
 				break;
 			case 'SUB':
 				return int() using ($x, $y) {
-					return $x - $y;                           
+					return $x - $y;
 				};
 				break;
 			default:

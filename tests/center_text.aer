@@ -4,7 +4,7 @@ class Program {
 		int $tot_width = 30;
 		char $symbol = '-';
 		int $middle = (int) round($tot_width/2);
-		int $length_word = strlen($word);	
+		int $length_word = strlen($word);
 		int $middle_word = (int) round($length_word / 2);
 		int $last_position = $middle + $middle_word;
 		int $number_of_spaces = $middle - $middle_word;
