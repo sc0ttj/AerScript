@@ -1,0 +1,18 @@
+class Test {
+	object __construct(string $a) {
+		print("$a\n");
+	}
+
+	object __construct(int $a, int $b) {
+		print("$a + $b = ", $a + $b, "\n");
+	}
+
+}
+
+class Program {
+	void main() {
+		object $a, $b;
+		$a = new Test('Hello world!');
+		$b = new Test(4, 7);
+	}
+}
