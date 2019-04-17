@@ -1,0 +1,28 @@
+class Program {
+
+	private string center_text(string $word){
+		int $tot_width = 30;
+		char $symbol = '-';
+		int $middle = (int) round($tot_width/2);
+		int $length_word = strlen($word);
+		int $middle_word = (int) round($length_word / 2);
+		int $last_position = $middle + $middle_word;
+		int $number_of_spaces = $middle - $middle_word;
+		string $result = sprintf("%'{$symbol}{$last_position}s", $word);
+		for(int $i = 0; $i < $number_of_spaces; $i++) {
+			$result += "$symbol";
+		}
+		return $result;
+	}
+
+	void main() {
+		string $str = 'Example text';
+		print($this->center_text($str));
+	}
+
+}
+
+
+/* Should output
+---------------This is some text------------
+*/

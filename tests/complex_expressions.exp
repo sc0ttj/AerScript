@@ -1,0 +1,12 @@
+int(1009)
+callback(11 '{closure_1}')
+int(20)
+float(25.84)
+Name = AerScriptABC
+Age = 25
+Name = Me
+Age = 25
+Hello world!
+Welcome guest!
+Welcome everyone!
+someFalse() failed

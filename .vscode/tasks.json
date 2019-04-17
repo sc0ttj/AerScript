@@ -4,7 +4,7 @@
    	"version": "2.0.0",
 	"tasks": [
 		{
-			"label": "Build P# Interpreter",
+			"label": "Build AerScript Interpreter",
 			"type": "shell",
 			"command": "make",
 			"group": {
@@ -16,7 +16,7 @@
 			}
 		},
 		{
-			"label": "Clean P# Interpreter",
+			"label": "Clean AerScript Interpreter",
 			"type": "shell",
 			"command": "make",
 			"args": [
@@ -31,7 +31,7 @@
 			}
 		},
 		{
-			"label": "Style P# Code",
+			"label": "Style AerScript Interpreter Code",
 			"type": "shell",
 			"command": "make",
 			"args": [

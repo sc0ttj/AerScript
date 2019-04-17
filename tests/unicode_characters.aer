@@ -1,7 +1,8 @@
 class Unicode {
 
-	public function unicon($str, $to_uni = true) {
-		$cp = array('А' => '&#x410;', 'а' => '&#x430;',
+	public string unicon(string $str, bool $to_uni = true) {
+		string $cpp;
+		string[] $cp = {'А' => '&#x410;', 'а' => '&#x430;',
 			"Б" => "&#x411;", "б" => "&#x431;",
 			"В" => "&#x412;", "в" => "&#x432;",
 			"Г" => "&#x413;", "г" => "&#x433;",
@@ -33,7 +34,7 @@ class Unicode {
 			"Ь" => "&#x42C;", "ь" => "&#x44C;",
 			"Э" => "&#x42D;", "э" => "&#x44D;",
 			"Ю" => "&#x42E;", "ю" => "&#x44E;",
-			"Я" => "&#x42F;", "я" => "&#x44F;");
+			"Я" => "&#x42F;", "я" => "&#x44F;"};
 		if($to_uni) {
 			$str = strtr($str, $cp);
 		} else {
@@ -49,8 +50,8 @@ class Unicode {
 
 final class Program {
 
-	public function main() {
-		$unicode = new Unicode();
+	public void main() {
+		object $unicode = new Unicode();
 		var_dump($unicode->unicon("ИфйжБЦ"));
 	}
 

@@ -1777,12 +1777,18 @@ int ph7_value_bool(ph7_value *pVal, int iBool) {
 	return PH7_OK;
 }
 /*
- * [CAPIREF: ph7_value_null()]
+ * [CAPIREF: ph7_value_char()]
  * Please refer to the official documentation for function purpose and expected parameters.
  */
-int ph7_value_null(ph7_value *pVal) {
-	/* Invalidate any prior representation and set the NULL flag */
+int ph7_value_char(ph7_value *pVal, int cValue) {
+	/* Invalidate any prior representation */
 	PH7_MemObjRelease(pVal);
+	if(cValue >= 0 && cValue <= 255) {
+		pVal->x.iVal = cValue;
+	} else {
+		pVal->x.iVal = 0;
+	}
+	MemObjSetType(pVal, MEMOBJ_CHAR);
 	return PH7_OK;
 }
 /*
@@ -1794,6 +1800,16 @@ int ph7_value_double(ph7_value *pVal, double Value) {
 	PH7_MemObjRelease(pVal);
 	pVal->x.rVal = (ph7_real)Value;
 	MemObjSetType(pVal, MEMOBJ_REAL);
+	return PH7_OK;
+}
+/*
+ * [CAPIREF: ph7_value_void()]
+ * Please refer to the official documentation for function purpose and expected parameters.
+ */
+int ph7_value_void(ph7_value *pVal) {
+	/* Invalidate any prior representation */
+	PH7_MemObjRelease(pVal);
+	MemObjSetType(pVal, MEMOBJ_VOID);
 	return PH7_OK;
 }
 /*
@@ -1883,18 +1899,25 @@ int ph7_value_is_bool(ph7_value *pVal) {
 	return (pVal->iFlags & MEMOBJ_BOOL) ? TRUE : FALSE;
 }
 /*
+ * [CAPIREF: ph7_value_is_char()]
+ * Please refer to the official documentation for function purpose and expected parameters.
+ */
+int ph7_value_is_char(ph7_value *pVal) {
+	return (pVal->iFlags & MEMOBJ_CHAR) ? TRUE : FALSE;
+}
+/*
+ * [CAPIREF: ph7_value_is_void()]
+ * Please refer to the official documentation for function purpose and expected parameters.
+ */
+int ph7_value_is_void(ph7_value *pVal) {
+	return (pVal->iFlags & MEMOBJ_VOID) ? TRUE : FALSE;
+}
+/*
  * [CAPIREF: ph7_value_is_string()]
  * Please refer to the official documentation for function purpose and expected parameters.
  */
 int ph7_value_is_string(ph7_value *pVal) {
 	return (pVal->iFlags & MEMOBJ_STRING) ? TRUE : FALSE;
-}
-/*
- * [CAPIREF: ph7_value_is_null()]
- * Please refer to the official documentation for function purpose and expected parameters.
- */
-int ph7_value_is_null(ph7_value *pVal) {
-	return (pVal->iFlags & MEMOBJ_NULL) ? TRUE : FALSE;
 }
 /*
  * [CAPIREF: ph7_value_is_numeric()]
@@ -1913,6 +1936,13 @@ int ph7_value_is_callable(ph7_value *pVal) {
 	int rc;
 	rc = PH7_VmIsCallable(pVal->pVm, pVal, FALSE);
 	return rc;
+}
+/*
+ * [CAPIREF: ph7_value_is_callback()]
+ * Please refer to the official documentation for function purpose and expected parameters.
+ */
+int ph7_value_is_callback(ph7_value *pVal) {
+	return (pVal->iFlags & MEMOBJ_CALL) ? TRUE : FALSE;
 }
 /*
  * [CAPIREF: ph7_value_is_scalar()]
@@ -1941,13 +1971,4 @@ int ph7_value_is_object(ph7_value *pVal) {
  */
 int ph7_value_is_resource(ph7_value *pVal) {
 	return (pVal->iFlags & MEMOBJ_RES) ? TRUE : FALSE;
-}
-/*
- * [CAPIREF: ph7_value_is_empty()]
- * Please refer to the official documentation for function purpose and expected parameters.
- */
-int ph7_value_is_empty(ph7_value *pVal) {
-	int rc;
-	rc = PH7_MemObjIsEmpty(pVal);
-	return rc;
 }

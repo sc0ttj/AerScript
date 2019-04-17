@@ -1,0 +1,29 @@
+class Circle {
+	void draw() {
+		print("Circle\n");
+	}
+}
+
+class Square {
+	void draw() {
+		print("Square\n");
+	}
+}
+
+class Program {
+
+	object ShapeFactoryMethod(string $shape) {
+		switch ($shape) {
+			case "Circle":
+				return new Circle();
+			case "Square":
+				return new Square();
+		}
+	}
+
+	void main() {
+		$this->ShapeFactoryMethod("Circle")->draw();
+		$this->ShapeFactoryMethod("Square")->draw();
+	}
+
+}

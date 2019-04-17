@@ -1,0 +1,20 @@
+class Program {
+
+	void main() {
+		int $a = 1;
+			switch($a) {
+				case 0:
+					print("very bad\n");
+					break;
+				case 1:
+					print("very good\n");
+				case 2:
+					print("good\n");
+					break;
+				default:
+					print("bad");
+					break;
+			}
+	}
+
+}

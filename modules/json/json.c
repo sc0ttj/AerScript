@@ -151,7 +151,7 @@ static sxi32 VmJsonEncode(
 	ph7_context *pCtx = pData->pCtx;
 	int iFlags = pData->iFlags;
 	int nByte;
-	if(ph7_value_is_null(pIn) || ph7_value_is_resource(pIn)) {
+	if(ph7_value_is_void(pIn) || ph7_value_is_resource(pIn)) {
 		/* null */
 		ph7_result_string(pCtx, "null", (int)sizeof("null") - 1);
 	} else if(ph7_value_is_bool(pIn)) {
@@ -620,7 +620,7 @@ static sxi32 VmJsonDecode(
 		/* Reflect the JSON image */
 		if(pDecoder->pIn->nType & JSON_TK_NULL) {
 			/* Nullify the value.*/
-			ph7_value_null(pWorker);
+			ph7_value_void(pWorker);
 		} else if(pDecoder->pIn->nType & (JSON_TK_TRUE | JSON_TK_FALSE)) {
 			/* Boolean value */
 			ph7_value_bool(pWorker, (pDecoder->pIn->nType & JSON_TK_TRUE) ? 1 : 0);

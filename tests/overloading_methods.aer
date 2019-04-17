@@ -1,0 +1,16 @@
+class Program {
+
+	void count(int $a, int $b) {
+		print("Counting 2 integers: $a + $b = ", $a + $b, "\n");
+	}
+
+	void count(float $a, float $b) {
+		print("Counting 2 floats: $a + $b = ", $a + $b, "\n");
+	}
+
+	void main() {
+		$this->count(4.3, 5.7);
+		$this->count(6, 4);
+	}
+
+}

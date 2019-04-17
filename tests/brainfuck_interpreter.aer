@@ -1,0 +1,107 @@
+class Brainfuck {
+	private string $code;
+	private int $code_pointer;
+	private int[] $cells;
+	private int $pointer;
+	private string $input;
+	private int $input_pointer;
+	private int[] $buffer;
+	private string $output;
+
+	public void __construct(string $code, string $input = NULL) {
+		$this->code = $code;
+		$this->input = $input;
+	}
+
+	public void run() {
+		while ($this->code_pointer < strlen($this->code)) {
+			$this->interpret($this->code[$this->code_pointer]);
+			$this->code_pointer++;
+		}
+		print($this->output);
+	}
+
+	private void interpret(string $command) {
+		if(!$this->cells[$this->pointer]) {
+			$this->cells[$this->pointer] = 0;
+		}
+		switch ($command) {
+			case '>' :
+				$this->pointer++;
+				break;
+			case '<' :
+				$this->pointer--;
+				break;
+			case '+' :
+				$this->cells[$this->pointer]++;
+				if($this->cells[$this->pointer] > 255) {
+					$this->cells[$this->pointer] = 0;
+				}
+				break;
+			case '-' :
+				$this->cells[$this->pointer]--;
+				if($this->cells[$this->pointer] < 0) {
+					$this->cells[$this->pointer] = 255;
+				}
+				break;
+			case '.' :
+				$this->output += chr($this->cells[$this->pointer]);
+				break;
+			case ',' :
+				$this->cells[$this->pointer] = $this->input[$this->input_pointer] ? ord($this->input[$this->input_pointer]) : 0;
+				$this->input_pointer++;
+				break;
+			case '[' :
+				if($this->cells[$this->pointer] == 0) {
+					int $delta = 1;
+					while($delta && $this->code_pointer++ < strlen($this->code)) {
+						switch ($this->code[$this->code_pointer]) {
+							case '[' :
+								$delta++;
+								break;
+							case ']' :
+								$delta--;
+								break;
+						}
+					}
+				} else {
+					$this->buffer[] = $this->code_pointer;
+				}
+				break;
+			case ']' :
+				$this->code_pointer = array_pop($this->buffer) - 1;
+		}
+	}
+
+}
+
+
+class Program {
+
+	void main() {
+		object $bf;
+		string $code;
+		resource $dir;
+		string $file;
+		string[] $files;
+		string $input;
+		$dir = opendir('tests/data/brainfuck');
+		while($file = readdir($dir)) {
+			if($file == '.' || $file == '..') {
+				continue;
+			}
+			$files[] = $file;
+		}
+		sort($files);
+		unset($file);
+		foreach($files as $file) {
+			print('Executing "' + $file + '"' + "\n");
+			$code = file_get_contents('tests/data/brainfuck/' + $file);
+			$bf = new Brainfuck($code, $input);
+			$bf->run();
+			print("\n");
+		}
+		closedir($dir);
+	}
+
+}

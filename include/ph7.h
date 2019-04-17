@@ -621,7 +621,6 @@ PH7_APIEXPORT void ph7_context_release_value(ph7_context *pCtx, ph7_value *pValu
 PH7_APIEXPORT int ph7_value_int(ph7_value *pVal, int iValue);
 PH7_APIEXPORT int ph7_value_int64(ph7_value *pVal, ph7_int64 iValue);
 PH7_APIEXPORT int ph7_value_bool(ph7_value *pVal, int iBool);
-PH7_APIEXPORT int ph7_value_null(ph7_value *pVal);
 PH7_APIEXPORT int ph7_value_double(ph7_value *pVal, double Value);
 PH7_APIEXPORT int ph7_value_string(ph7_value *pVal, const char *zString, int nLen);
 PH7_APIEXPORT int ph7_value_string_format(ph7_value *pVal, const char *zFormat, ...);
@@ -641,14 +640,11 @@ PH7_APIEXPORT int ph7_value_is_int(ph7_value *pVal);
 PH7_APIEXPORT int ph7_value_is_float(ph7_value *pVal);
 PH7_APIEXPORT int ph7_value_is_bool(ph7_value *pVal);
 PH7_APIEXPORT int ph7_value_is_string(ph7_value *pVal);
-PH7_APIEXPORT int ph7_value_is_null(ph7_value *pVal);
-PH7_APIEXPORT int ph7_value_is_numeric(ph7_value *pVal);
+PH7_APIEXPORT int ph7_value_is_callback(ph7_value *pVal);
 PH7_APIEXPORT int ph7_value_is_callable(ph7_value *pVal);
-PH7_APIEXPORT int ph7_value_is_scalar(ph7_value *pVal);
 PH7_APIEXPORT int ph7_value_is_array(ph7_value *pVal);
 PH7_APIEXPORT int ph7_value_is_object(ph7_value *pVal);
 PH7_APIEXPORT int ph7_value_is_resource(ph7_value *pVal);
-PH7_APIEXPORT int ph7_value_is_empty(ph7_value *pVal);
 /* Global Library Management Interfaces */
 PH7_APIEXPORT int ph7_lib_init(void);
 PH7_APIEXPORT int ph7_lib_config(int nConfigOp, ...);

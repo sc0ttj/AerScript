@@ -1,0 +1,17 @@
+class Program {
+
+	string fmt_binary(int $x, int $numbits = 8) {
+		string $bin;
+		string $rtnval = '';
+		$bin = decbin($x);
+		$bin = substr(str_repeat(0, $numbits), 0, $numbits - strlen($bin)) + $bin;
+		for($x = 0; $x < $numbits / 4; $x++) {
+			$rtnval += ' ' + substr($bin, $x * 4, 4);
+		}
+		return ltrim($rtnval);
+	}
+
+	void main() {
+		var_dump($this->fmt_binary(2541));
+	}
+}

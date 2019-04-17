@@ -1,7 +1,12 @@
+#!/usr/local/bin/aer
 class Program {
 
-	public function main() {
-		print('Hello world!');
+	/*
+	 * Program entry point.
+	 * It does not take any arguments.
+	 */
+	public void main() {
+		print('Hello world!'); // single line comment
 	}
 
 }

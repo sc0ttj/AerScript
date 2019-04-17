@@ -75,7 +75,7 @@ PH7_PRIVATE ph7_class *PH7_NewRawClass(ph7_vm *pVm, const SyString *pName) {
  * Allocate and initialize a new class attribute.
  * Return a pointer to the class attribute on success. NULL otherwise.
  */
-PH7_PRIVATE ph7_class_attr *PH7_NewClassAttr(ph7_vm *pVm, const SyString *pName, sxu32 nLine, sxi32 iProtection, sxi32 iFlags) {
+PH7_PRIVATE ph7_class_attr *PH7_NewClassAttr(ph7_vm *pVm, const SyString *pName, sxu32 nLine, sxi32 iProtection, sxi32 iFlags, sxu32 nType) {
 	ph7_class_attr *pAttr;
 	char *zName;
 	pAttr = (ph7_class_attr *)SyMemBackendPoolAlloc(&pVm->sAllocator, sizeof(ph7_class_attr));
@@ -96,6 +96,7 @@ PH7_PRIVATE ph7_class_attr *PH7_NewClassAttr(ph7_vm *pVm, const SyString *pName,
 	pAttr->iProtection = iProtection;
 	pAttr->nIdx = SXU32_HIGH;
 	pAttr->iFlags = iFlags;
+	pAttr->nType = nType;
 	pAttr->nLine = nLine;
 	return pAttr;
 }
@@ -383,7 +384,8 @@ PH7_PRIVATE sxi32 PH7_ClassInterfaceInherit(ph7_class *pSub, ph7_class *pBase) {
  * Any other return value indicates failure and the upper layer must generate an appropriate
  * error message.
  */
-PH7_PRIVATE sxi32 PH7_ClassImplement(ph7_class *pMain, ph7_class *pInterface) {
+PH7_PRIVATE sxi32 PH7_ClassImplement(ph7_vm *pVm, ph7_class *pMain, ph7_class *pInterface) {
+	ph7_class_method *pMeth;
 	ph7_class_attr *pAttr;
 	SyHashEntry *pEntry;
 	SyString *pName;
@@ -403,12 +405,22 @@ PH7_PRIVATE sxi32 PH7_ClassImplement(ph7_class *pMain, ph7_class *pInterface) {
 			}
 		}
 	}
+	SyHashResetLoopCursor(&pInterface->hMethod);
+	while((pEntry = SyHashGetNextEntry(&pInterface->hMethod)) != 0) {
+		pMeth = (ph7_class_method *)pEntry->pUserData;
+		pName = &pMeth->sFunc.sName;
+		if((pEntry = SyHashGet(&pMain->hMethod, (const void *)pName->zString, pName->nByte)) != 0) {
+			continue;
+		} else {
+			rc = PH7_VmThrowError(&(*pVm), PH7_CTX_ERR, "Method '%z:%z()' must be defined inside class '%z'", &pInterface->sName, pName, &pMain->sName);
+			if(rc == SXERR_ABORT) {
+				return SXERR_ABORT;
+			}
+			continue;
+		}
+	}
 	/* Install in the interface container */
 	SySetPut(&pMain->aInterface, (const void *)&pInterface);
-	/* TICKET 1433-49/1: Symisc eXtension
-	 *  A class may not implement all declared interface methods,so there
-	 *  is no need for a method installer loop here.
-	 */
 	return SXRET_OK;
 }
 /*
@@ -717,10 +729,12 @@ static void PH7_ClassInstanceRelease(ph7_class_instance *pThis) {
  * If the reference count reaches zero,release the whole instance.
  */
 PH7_PRIVATE void PH7_ClassInstanceUnref(ph7_class_instance *pThis) {
-	pThis->iRef--;
-	if(pThis->iRef < 1) {
-		/* No more reference to this instance */
-		PH7_ClassInstanceRelease(&(*pThis));
+	if(pThis) {
+		pThis->iRef--;
+		if(pThis->iRef < 1) {
+			/* No more reference to this instance */
+			PH7_ClassInstanceRelease(&(*pThis));
+		}
 	}
 }
 /*
@@ -890,41 +904,45 @@ PH7_PRIVATE sxi32 PH7_ClassInstanceDump(SyBlob *pOut, ph7_class_instance *pThis,
 	if(!ShowType) {
 		SyBlobAppend(&(*pOut), "Object(", sizeof("Object(") - 1);
 	}
-	/* Append class name */
-	SyBlobFormat(&(*pOut), "%z) {", &pThis->pClass->sName);
+	if(pThis) {
+		/* Append class name */
+		SyBlobFormat(&(*pOut), "%z) {", &pThis->pClass->sName);
 #ifdef __WINNT__
-	SyBlobAppend(&(*pOut), "\r\n", sizeof("\r\n") - 1);
+		SyBlobAppend(&(*pOut), "\r\n", sizeof("\r\n") - 1);
 #else
-	SyBlobAppend(&(*pOut), "\n", sizeof(char));
+		SyBlobAppend(&(*pOut), "\n", sizeof(char));
 #endif
-	/* Dump object attributes */
-	SyHashResetLoopCursor(&pThis->hAttr);
-	while((pEntry = SyHashGetNextEntry(&pThis->hAttr)) != 0) {
-		VmClassAttr *pVmAttr = (VmClassAttr *)pEntry->pUserData;
-		if((pVmAttr->pAttr->iFlags & (PH7_CLASS_ATTR_CONSTANT | PH7_CLASS_ATTR_STATIC)) == 0) {
-			/* Dump non-static/constant attribute only */
-			for(i = 0 ; i < nTab ; i++) {
-				SyBlobAppend(&(*pOut), " ", sizeof(char));
-			}
-			pValue = ExtractClassAttrValue(pThis->pVm, pVmAttr);
-			if(pValue) {
-				SyBlobFormat(&(*pOut), "['%z'] =>", &pVmAttr->pAttr->sName);
+		/* Dump object attributes */
+		SyHashResetLoopCursor(&pThis->hAttr);
+		while((pEntry = SyHashGetNextEntry(&pThis->hAttr)) != 0) {
+			VmClassAttr *pVmAttr = (VmClassAttr *)pEntry->pUserData;
+			if((pVmAttr->pAttr->iFlags & (PH7_CLASS_ATTR_CONSTANT | PH7_CLASS_ATTR_STATIC)) == 0) {
+				/* Dump non-static/constant attribute only */
+				for(i = 0 ; i < nTab ; i++) {
+					SyBlobAppend(&(*pOut), " ", sizeof(char));
+				}
+				pValue = ExtractClassAttrValue(pThis->pVm, pVmAttr);
+				if(pValue) {
+					SyBlobFormat(&(*pOut), "['%z'] =>", &pVmAttr->pAttr->sName);
 #ifdef __WINNT__
-				SyBlobAppend(&(*pOut), "\r\n", sizeof("\r\n") - 1);
+					SyBlobAppend(&(*pOut), "\r\n", sizeof("\r\n") - 1);
 #else
-				SyBlobAppend(&(*pOut), "\n", sizeof(char));
+					SyBlobAppend(&(*pOut), "\n", sizeof(char));
 #endif
-				rc = PH7_MemObjDump(&(*pOut), pValue, ShowType, nTab + 1, nDepth, 0);
-				if(rc == SXERR_LIMIT) {
-					break;
+					rc = PH7_MemObjDump(&(*pOut), pValue, ShowType, nTab + 1, nDepth);
+					if(rc == SXERR_LIMIT) {
+						break;
+					}
 				}
 			}
 		}
+		for(i = 0 ; i < nTab ; i++) {
+			SyBlobAppend(&(*pOut), " ", sizeof(char));
+		}
+		SyBlobAppend(&(*pOut), "}", sizeof(char));
+	} else {
+		SyBlobAppend(&(*pOut), ")", sizeof(char));
 	}
-	for(i = 0 ; i < nTab ; i++) {
-		SyBlobAppend(&(*pOut), " ", sizeof(char));
-	}
-	SyBlobAppend(&(*pOut), "}", sizeof(char));
 	return rc;
 }
 /*

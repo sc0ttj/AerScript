@@ -1,0 +1,44 @@
+class Luhn {
+	private string $number;
+
+	string getNumber() {
+		return $this->number;
+	}
+
+	void setNumber(string $number) {
+		$this->number = $number;
+	}
+
+	bool validate() {
+		string $sum;
+		string $revNumber;
+		int $len;
+
+		$revNumber = strrev($this->number);
+		$len = strlen($this->number);
+		for(int $i = 0; $i < $len; $i++) {
+			$sum += $i & 1 ? $revNumber[$i] * 2 : $revNumber[$i];
+		}
+		return array_sum(str_split($sum)) % 10 == 0;
+	}
+}
+
+class Program {
+	private const NUMBERS = {'3788803280', '6487308345', '5443489710530865', '5539266155200609', '4024007151066296', '4345234978'};
+
+	void main() {
+		int $i, $nums = sizeof($this->NUMBERS);
+		object $luhn = new Luhn();
+
+		while($i < $nums) {
+			$luhn->setNumber($this->NUMBERS[$i]);
+			if($luhn->validate()) {
+				print('The number ' + $luhn->getNumber() + ' has passed the Luhn validation.' + "\n");
+			} else {
+				print('The number ' + $luhn->getNumber() + ' has NOT passed the Luhn validation.' + "\n");
+			}
+			$i++;
+		}
+	}
+}
+

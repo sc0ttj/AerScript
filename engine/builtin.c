@@ -40,9 +40,41 @@ static int PH7_builtin_is_bool(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	return PH7_OK;
 }
 /*
+ * bool is_callback($var)
+ *  Finds out whether a variable is a callback.
+ * Parameters
+ *   $var: The variable being evaluated.
+ * Return
+ *  TRUE if var is a callback. False otherwise.
+ */
+static int PH7_builtin_is_callback(ph7_context *pCtx, int nArg, ph7_value **apArg) {
+        int res = 0; /* Assume false by default */
+        if(nArg > 0) {
+                res = ph7_value_is_callback(apArg[0]);
+        }
+        /* Query result */
+        ph7_result_bool(pCtx, res);
+        return PH7_OK;
+}
+/*
+ * bool is_char($var)
+ *  Finds out whether a variable is a character.
+ * Parameters
+ *   $var: The variable being evaluated.
+ * Return
+ *  TRUE if var is a character. False otherwise.
+ */
+static int PH7_builtin_is_char(ph7_context *pCtx, int nArg, ph7_value **apArg) {
+	int res = 0; /* Assume false by default */
+	if(nArg > 0) {
+		res = ph7_value_is_char(apArg[0]);
+	}
+	/* Query result */
+	ph7_result_bool(pCtx, res);
+	return PH7_OK;
+}
+/*
  * bool is_float($var)
- * bool is_real($var)
- * bool is_double($var)
  *  Finds out whether a variable is a float.
  * Parameters
  *   $var: The variable being evaluated.
@@ -60,8 +92,6 @@ static int PH7_builtin_is_float(ph7_context *pCtx, int nArg, ph7_value **apArg) 
 }
 /*
  * bool is_int($var)
- * bool is_integer($var)
- * bool is_long($var)
  *  Finds out whether a variable is an integer.
  * Parameters
  *   $var: The variable being evaluated.
@@ -95,17 +125,17 @@ static int PH7_builtin_is_string(ph7_context *pCtx, int nArg, ph7_value **apArg)
 	return PH7_OK;
 }
 /*
- * bool is_null($var)
- *  Finds out whether a variable is NULL.
+ * bool is_void($var)
+ *  Finds out whether a variable is a void.
  * Parameters
  *   $var: The variable being evaluated.
  * Return
- *  TRUE if var is NULL. False otherwise.
+ *  TRUE if var is void. False otherwise.
  */
-static int PH7_builtin_is_null(ph7_context *pCtx, int nArg, ph7_value **apArg) {
+static int PH7_builtin_is_void(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	int res = 0; /* Assume false by default */
 	if(nArg > 0) {
-		res = ph7_value_is_null(apArg[0]);
+		res = ph7_value_is_void(apArg[0]);
 	}
 	/* Query result */
 	ph7_result_bool(pCtx, res);
@@ -123,23 +153,6 @@ static int PH7_builtin_is_numeric(ph7_context *pCtx, int nArg, ph7_value **apArg
 	int res = 0; /* Assume false by default */
 	if(nArg > 0) {
 		res = ph7_value_is_numeric(apArg[0]);
-	}
-	/* Query result */
-	ph7_result_bool(pCtx, res);
-	return PH7_OK;
-}
-/*
- * bool is_scalar($var)
- *  Find out whether a variable is a scalar.
- * Parameters
- *  $var: The variable being evaluated.
- * Return
- *  True if var is scalar. False otherwise.
- */
-static int PH7_builtin_is_scalar(ph7_context *pCtx, int nArg, ph7_value **apArg) {
-	int res = 0; /* Assume false by default */
-	if(nArg > 0) {
-		res = ph7_value_is_scalar(apArg[0]);
 	}
 	/* Query result */
 	ph7_result_bool(pCtx, res);
@@ -196,83 +209,6 @@ static int PH7_builtin_is_resource(ph7_context *pCtx, int nArg, ph7_value **apAr
 	return PH7_OK;
 }
 /*
- * float floatval($var)
- *  Get float value of a variable.
- * Parameter
- *  $var: The variable being processed.
- * Return
- *  the float value of a variable.
- */
-static int PH7_builtin_floatval(ph7_context *pCtx, int nArg, ph7_value **apArg) {
-	if(nArg < 1) {
-		/* return 0.0 */
-		ph7_result_double(pCtx, 0);
-	} else {
-		double dval;
-		/* Perform the cast */
-		dval = ph7_value_to_double(apArg[0]);
-		ph7_result_double(pCtx, dval);
-	}
-	return PH7_OK;
-}
-/*
- * int intval($var)
- *  Get integer value of a variable.
- * Parameter
- *  $var: The variable being processed.
- * Return
- *  the int value of a variable.
- */
-static int PH7_builtin_intval(ph7_context *pCtx, int nArg, ph7_value **apArg) {
-	if(nArg < 1) {
-		/* return 0 */
-		ph7_result_int(pCtx, 0);
-	} else {
-		sxi64 iVal;
-		/* Perform the cast */
-		iVal = ph7_value_to_int64(apArg[0]);
-		ph7_result_int64(pCtx, iVal);
-	}
-	return PH7_OK;
-}
-/*
- * string strval($var)
- *  Get the string representation of a variable.
- * Parameter
- *  $var: The variable being processed.
- * Return
- *  the string value of a variable.
- */
-static int PH7_builtin_strval(ph7_context *pCtx, int nArg, ph7_value **apArg) {
-	if(nArg < 1) {
-		/* return NULL */
-		ph7_result_null(pCtx);
-	} else {
-		const char *zVal;
-		int iLen = 0; /* cc -O6 warning */
-		/* Perform the cast */
-		zVal = ph7_value_to_string(apArg[0], &iLen);
-		ph7_result_string(pCtx, zVal, iLen);
-	}
-	return PH7_OK;
-}
-/*
- * bool empty($var)
- *  Determine whether a variable is empty.
- * Parameters
- *   $var: The variable being checked.
- * Return
- *  0 if var has a non-empty and non-zero value.1 otherwise.
- */
-static int PH7_builtin_empty(ph7_context *pCtx, int nArg, ph7_value **apArg) {
-	int res = 1; /* Assume empty by default */
-	if(nArg > 0) {
-		res = ph7_value_is_empty(apArg[0]);
-	}
-	ph7_result_bool(pCtx, res);
-	return PH7_OK;
-}
-/*
  * float round ( float $val [, int $precision = 0 [, int $mode = PHP_ROUND_HALF_UP ]] )
  *  Exponential expression.
  * Parameter
@@ -307,7 +243,7 @@ static int PH7_builtin_round(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	r = ph7_value_to_double(apArg[0]);
 	/* If Y==0 and X will fit in a 64-bit int,
 	 * handle the rounding directly.Otherwise
-	 * use our own cutsom printf [i.e:SyBufferFormat()].
+	 * use our own custom printf [i.e:SyBufferFormat()].
 	 */
 	if(n == 0 && r >= 0 && r < LARGEST_INT64 - 1) {
 		r = (double)((ph7_int64)(r + 0.5));
@@ -4330,8 +4266,6 @@ static int PH7_builtin_str_getcsv(ph7_context *pCtx, int nArg, ph7_value **apArg
 	pArray = ph7_context_new_array(pCtx);
 	if(pArray == 0) {
 		PH7_VmMemoryError(pCtx->pVm);
-		ph7_result_null(pCtx);
-		return PH7_OK;
 	}
 	/* Parse the raw input */
 	PH7_ProcessCsv(zInput, nLen, delim, encl, escape, PH7_CsvConsumer, pArray);
@@ -5189,7 +5123,7 @@ static int PH7_builtin_strtok(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 		pAux = (strtok_aux_data *)ph7_context_peek_aux_data(pCtx);
 		if(pAux == 0) {
 			/* No aux data,return FALSE */
-			ph7_result_bool(pCtx, 0);
+			ph7_result_string(pCtx, "", 0);
 			return PH7_OK;
 		}
 		nMasklen = 0;
@@ -5203,7 +5137,7 @@ static int PH7_builtin_strtok(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 			ph7_context_free_chunk(pCtx, (void *)pAux->zDup);
 			ph7_context_free_chunk(pCtx, pAux);
 			(void)ph7_context_pop_aux_data(pCtx);
-			ph7_result_bool(pCtx, 0);
+			ph7_result_string(pCtx, "", 0);
 			return PH7_OK;
 		}
 		/* Extract the token */
@@ -5213,7 +5147,7 @@ static int PH7_builtin_strtok(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 			ph7_context_free_chunk(pCtx, (void *)pAux->zDup);
 			ph7_context_free_chunk(pCtx, pAux);
 			(void)ph7_context_pop_aux_data(pCtx);
-			ph7_result_bool(pCtx, 0);
+			ph7_result_string(pCtx, "", 0);
 		} else {
 			/* Return the extracted token */
 			ph7_result_string(pCtx, sToken.zString, (int)sToken.nByte);
@@ -5226,7 +5160,7 @@ static int PH7_builtin_strtok(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 		zCur = zInput = ph7_value_to_string(apArg[0], &nLen);
 		if(nLen < 1) {
 			/* Empty input,return FALSE */
-			ph7_result_bool(pCtx, 0);
+			ph7_result_string(pCtx, "", 0);
 			return PH7_OK;
 		}
 		/* Extract the mask */
@@ -5242,7 +5176,7 @@ static int PH7_builtin_strtok(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 		rc = ExtractToken(&zInput, &zInput[nLen], zMask, nMasklen, &sToken);
 		if(rc != SXRET_OK) {
 			/* Empty input */
-			ph7_result_bool(pCtx, 0);
+			ph7_result_string(pCtx, "", 0);
 			return PH7_OK;
 		} else {
 			/* Return the extracted token */
@@ -5501,9 +5435,8 @@ static int StrReplaceWalker(ph7_value *pKey, ph7_value *pData, void *pUserData) 
 											   TRUE /* Release the chunk automatically,upon this context is destroyed */
 											  );
 		if(zDup == 0) {
-			/* Ignore any memory failure problem */
+			/* Memory failure problem */
 			PH7_VmMemoryError(pRep->pCtx->pVm);
-			return PH7_OK;
 		}
 		SyMemcpy(zIn, zDup, (sxu32)nByte);
 		/* Save the chunk */
@@ -5777,9 +5710,6 @@ PH7_PRIVATE sxi32 PH7_ParseIniString(ph7_context *pCtx, const char *zIn, sxu32 n
 	if(pArray == 0 || pWorker == 0 || pValue == 0) {
 		/* Out of memory */
 		PH7_VmMemoryError(pCtx->pVm);
-		/* Return FALSE */
-		ph7_result_bool(pCtx, 0);
-		return PH7_OK;
 	}
 	SyHashInit(&sHash, &pCtx->pVm->sAllocator, 0, 0);
 	pCur = pArray;
@@ -7473,20 +7403,17 @@ static int PH7_builtin_urldecode(ph7_context *pCtx, int nArg, ph7_value **apArg)
 /* Table of the built-in functions */
 static const ph7_builtin_func aBuiltInFunc[] = {
 	/* Variable handling functions */
+	{ "is_array", PH7_builtin_is_array    },
 	{ "is_bool", PH7_builtin_is_bool     },
+	{ "is_callback", PH7_builtin_is_callback },
+	{ "is_char", PH7_builtin_is_char     },
 	{ "is_float", PH7_builtin_is_float    },
 	{ "is_int", PH7_builtin_is_int      },
-	{ "is_string", PH7_builtin_is_string   },
-	{ "is_null", PH7_builtin_is_null     },
-	{ "is_numeric", PH7_builtin_is_numeric  },
-	{ "is_scalar", PH7_builtin_is_scalar   },
-	{ "is_array", PH7_builtin_is_array    },
 	{ "is_object", PH7_builtin_is_object   },
 	{ "is_resource", PH7_builtin_is_resource },
-	{ "floatval", PH7_builtin_floatval    },
-	{ "intval", PH7_builtin_intval      },
-	{ "stringval", PH7_builtin_strval      },
-	{ "empty", PH7_builtin_empty       },
+	{ "is_string", PH7_builtin_is_string   },
+	{ "is_void", PH7_builtin_is_void     },
+	{ "is_numeric", PH7_builtin_is_numeric  },
 	{ "round",    PH7_builtin_round        },
 	{ "dechex", PH7_builtin_dechex         },
 	{ "decoct", PH7_builtin_decoct         },

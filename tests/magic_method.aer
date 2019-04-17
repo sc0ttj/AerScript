@@ -1,0 +1,16 @@
+class Dog {
+
+    void __invoke() {
+         print("I am a dog!\n");
+    }
+}
+
+
+class Program {
+
+	void main() {
+		object $dog = new Dog();
+		$dog();
+	}
+
+}

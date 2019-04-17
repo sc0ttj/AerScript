@@ -1,0 +1,28 @@
+class Program {
+	private callback $condition = bool(int $x) { return ($x > 100); };
+	private int[] $numbers = {34, 56, 22, 1, 5, 67, 897, 123, 55, 101};
+
+	int[] filter(callback $condition, int[] $numbers) {
+		int $len = sizeof($numbers);
+		int[] $filtered;
+		for(int $i = 0; $i < $len; $i++) {
+			if($condition($numbers[$i])) {
+				$filtered[] = $numbers[$i];
+			}
+		}
+		return $filtered;
+	}
+
+	void main() {
+		int[] $filtered = $this->filter($this->condition, $this->numbers);
+		var_dump($filtered);
+	}
+
+}
+ 
+ 
+/*
+ * Should output
+
+Array ( [0] => 897 [1] => 123 ) 
+*/

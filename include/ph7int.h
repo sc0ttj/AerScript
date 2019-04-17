@@ -631,24 +631,26 @@ struct ph7_value {
 };
 /* Allowed value types.
  */
-#define MEMOBJ_STRING    0x001  /* Memory value is a UTF-8 string */
-#define MEMOBJ_INT       0x002  /* Memory value is an integer */
-#define MEMOBJ_REAL      0x004  /* Memory value is a real number */
-#define MEMOBJ_BOOL      0x008  /* Memory value is a boolean */
-#define MEMOBJ_NULL      0x020  /* Memory value is NULL */
-#define MEMOBJ_HASHMAP   0x040  /* Memory value is a hashmap aka 'array' in the PHP jargon */
-#define MEMOBJ_OBJ       0x080  /* Memory value is an object [i.e: class instance] */
-#define MEMOBJ_RES       0x100  /* Memory value is a resource [User private data] */
-#define MEMOBJ_REFERENCE 0x400  /* Memory value hold a reference (64-bit index) of another ph7_value */
+#define MEMOBJ_BOOL      0x0001  /* Memory value is a boolean */
+#define MEMOBJ_CALL      0x0002  /* Memory value is a callback */
+#define MEMOBJ_CHAR      0x0004  /* Memory value is a char */
+#define MEMOBJ_INT       0x0008  /* Memory value is an integer */
+#define MEMOBJ_OBJ       0x0010  /* Memory value is an object [i.e: class instance] */
+#define MEMOBJ_REAL      0x0020  /* Memory value is a real number */
+#define MEMOBJ_RES       0x0040  /* Memory value is a resource [User private data] */
+#define MEMOBJ_STRING    0x0080  /* Memory value is a UTF-8 string */
+#define MEMOBJ_VOID      0x0100  /* Memory value is a void */
+#define MEMOBJ_MIXED     0x0200  /* Memory value is mixed */
+#define MEMOBJ_HASHMAP   0x0800  /* Memory value is a hashmap aka 'array' in the PHP jargon */
+#define MEMOBJ_NULL      0x1000  /* Memory value is NULL */
 /* Mask of all known types */
-#define MEMOBJ_ALL (MEMOBJ_STRING|MEMOBJ_INT|MEMOBJ_REAL|MEMOBJ_BOOL|MEMOBJ_NULL|MEMOBJ_HASHMAP|MEMOBJ_OBJ|MEMOBJ_RES)
+#define MEMOBJ_ALL (MEMOBJ_STRING|MEMOBJ_INT|MEMOBJ_REAL|MEMOBJ_BOOL|MEMOBJ_NULL|MEMOBJ_HASHMAP|MEMOBJ_OBJ|MEMOBJ_RES|MEMOBJ_CALL|MEMOBJ_CHAR|MEMOBJ_VOID)
 /* Scalar variables
  * According to the PHP language reference manual
  *  Scalar variables are those containing an integer, float, string or boolean.
  *  Types array, object and resource are not scalar.
  */
-#define MEMOBJ_SCALAR (MEMOBJ_STRING|MEMOBJ_INT|MEMOBJ_REAL|MEMOBJ_BOOL|MEMOBJ_NULL)
-#define MEMOBJ_AUX (MEMOBJ_REFERENCE)
+#define MEMOBJ_SCALAR (MEMOBJ_STRING|MEMOBJ_INT|MEMOBJ_REAL|MEMOBJ_BOOL|MEMOBJ_CHAR|MEMOBJ_VOID|MEMOBJ_NULL)
 /*
  * The following macro clear the current ph7_value type and replace
  * it with the given one.
@@ -955,6 +957,7 @@ struct ph7_vm_func_arg {
  */
 struct ph7_vm_func_static_var {
 	SyString sName;   /* Static variable name */
+	sxi32 iFlags;     /* Control flags */
 	SySet aByteCode;  /* Compiled initialization expression  */
 	sxu32 nIdx;       /* Object index in the global memory object container */
 };
@@ -996,6 +999,7 @@ struct ph7_vm_func {
 	SySet aByteCode;     /* Compiled function body */
 	SySet aClosureEnv;   /* Closure environment (ph7_vm_func_closure_env instace) */
 	sxi32 iFlags;        /* VM function configuration */
+	sxu32 nType;         /* Return data type expected by this function */
 	SyString sSignature; /* Function signature used to implement function overloading
 						  * (Refer to the official documentation for more information
 						  *  on this powerfull feature)
@@ -1069,6 +1073,7 @@ struct ph7_class_attr {
 	sxi32 iFlags;        /* Attribute configuration [i.e: static, variable, constant, etc.] */
 	sxi32 iProtection;   /* Protection level [i.e: public, private, protected] */
 	SySet aByteCode;     /* Compiled attribute body */
+	sxu32 nType;         /* Class attribute data type */
 	sxu32 nIdx;          /* Attribute index */
 	sxu32 nLine;         /* Line number on which this attribute was defined */
 };
@@ -1227,7 +1232,7 @@ struct ph7_vm {
 	int nMaxDepth;             /* Maximum allowed recursion depth */
 	int nExceptDepth;          /* Exception depth */
 	int closure_cnt;           /* Loaded closures counter */
-	int json_rc;               /* JSON return status [refer to json_encode()/json_decode()]*/
+	int json_rc;               /* JSON return status [refer to json_encode()/json_decode()] */
 	ph7_output_consumer sVmConsumer; /* Registered output consumer callback */
 	int iAssertFlags;          /* Assertion flags */
 	ph7_value sAssertCallback; /* Callback to call on failed assertions */
@@ -1254,12 +1259,14 @@ struct VmFrame {
 	SyHash hVar;      /* Variable hashtable for fast lookup */
 	SySet sArg;       /* Function arguments container */
 	SySet sRef;       /* Local reference table (VmSlot instance) */
-	sxi32 iFlags;     /* Frame configuration flags (See below)*/
+	sxi32 iFlags;     /* Frame configuration flags (See below) */
 	sxu32 iExceptionJump; /* Exception jump destination */
 };
-#define VM_FRAME_EXCEPTION  0x01 /* Special Exception frame */
-#define VM_FRAME_THROW      0x02 /* An exception was thrown */
-#define VM_FRAME_CATCH      0x04 /* Catch frame */
+#define VM_FRAME_ACTIVE     0x01 /* Active call frame */
+#define VM_FRAME_LOOP       0x02 /* Active loop frame */
+#define VM_FRAME_EXCEPTION  0x04 /* Special Exception frame */
+#define VM_FRAME_THROW      0x08 /* An exception was thrown */
+#define VM_FRAME_CATCH      0x10 /* Catch frame */
 /*
  * When a debug stacktrace is extracted from Virtual Machine, all information about
  * calls (file, line, class, method, arguments) are stored in this structure.
@@ -1382,16 +1389,18 @@ enum iErrCode {
 enum ph7_vm_op {
 	PH7_OP_DONE =   1,   /* Done */
 	PH7_OP_HALT,         /* Halt */
+	PH7_OP_DECLARE,      /* Declare a variable */
 	PH7_OP_LOAD,         /* Load memory object */
 	PH7_OP_LOADC,        /* Load constant */
 	PH7_OP_LOAD_IDX,     /* Load array entry */
 	PH7_OP_LOAD_MAP,     /* Load hashmap('array') */
-	PH7_OP_LOAD_LIST,    /* Load list */
 	PH7_OP_LOAD_CLOSURE, /* Load closure */
 	PH7_OP_NOOP,         /* NOOP */
 	PH7_OP_JMP,          /* Unconditional jump */
-	PH7_OP_JZ,           /* Jump on zero (FALSE jump) */
-	PH7_OP_JNZ,          /* Jump on non-zero (TRUE jump) */
+	PH7_OP_JMPZ,         /* Jump on zero (FALSE jump) */
+	PH7_OP_JMPNZ,        /* Jump on non-zero (TRUE jump) */
+	PH7_OP_JMPLFB,       /* Jump loop frame begin */
+	PH7_OP_JMPLFE,       /* Jump loop frame end */
 	PH7_OP_POP,          /* Stack POP */
 	PH7_OP_CVT_INT,      /* Integer cast */
 	PH7_OP_CVT_STR,      /* String cast */
@@ -1414,8 +1423,6 @@ enum ph7_vm_op {
 	PH7_OP_GE,           /* Greater or equal '>=' */
 	PH7_OP_EQ,           /* Equal '==' */
 	PH7_OP_NEQ,          /* Not equal '!=' */
-	PH7_OP_TEQ,          /* Type equal '===' */
-	PH7_OP_TNE,          /* Type not equal '!==' */
 	PH7_OP_BAND,         /* Bitwise and '&' */
 	PH7_OP_BXOR,         /* Bitwise xor '^' */
 	PH7_OP_BOR,          /* Bitwise or '|' */
@@ -1429,6 +1436,7 @@ enum ph7_vm_op {
 	PH7_OP_SWAP,         /* Stack swap */
 	PH7_OP_YIELD,        /* Stack yield */
 	PH7_OP_CVT_BOOL,     /* Boolean cast */
+	PH7_OP_CVT_CHAR,     /* Char cast */
 	PH7_OP_CVT_NUMC,     /* Numeric (integer,real or both) type cast */
 	PH7_OP_INCR,         /* Increment ++ */
 	PH7_OP_DECR,         /* Decrement -- */
@@ -1445,12 +1453,11 @@ enum ph7_vm_op {
 	PH7_OP_BOR_STORE,    /* Bitor and store '|=' */
 	PH7_OP_BXOR_STORE,   /* Bitxor and store '^=' */
 	PH7_OP_CONSUME,      /* Consume VM output */
-	PH7_OP_LOAD_REF,     /* Load reference */
-	PH7_OP_STORE_REF,    /* Store a reference to a variable*/
 	PH7_OP_MEMBER,       /* Class member run-time access */
-	PH7_OP_CVT_NULL,     /* NULL cast */
-	PH7_OP_CVT_ARRAY,    /* Array cast */
 	PH7_OP_CVT_OBJ,      /* Object cast */
+	PH7_OP_CVT_CALL,     /* Callback cast */
+	PH7_OP_CVT_RES,      /* Resource cast */
+	PH7_OP_CVT_VOID,     /* Void cast */
 	PH7_OP_CLASS_INIT,    /* Class init */
 	PH7_OP_INTERFACE_INIT,/* Interface init */
 	PH7_OP_FOREACH_INIT, /* For each init */
@@ -1460,7 +1467,6 @@ enum ph7_vm_op {
 	PH7_OP_POP_EXCEPTION, /* POP an exception */
 	PH7_OP_THROW,         /* Throw exception */
 	PH7_OP_SWITCH,        /* Switch operation */
-	PH7_OP_ERR_CTRL      /* Error control */
 };
 /* -- END-OF INSTRUCTIONS -- */
 /*
@@ -1479,7 +1485,6 @@ enum ph7_expr_id {
 	EXPR_OP_UMINUS,    /* Unary minus  */
 	EXPR_OP_UPLUS,     /* Unary plus */
 	EXPR_OP_TYPECAST,  /* Type cast [i.e: (int),(float),(string)...] */
-	EXPR_OP_ALT,       /* @ */
 	EXPR_OP_INSTOF,    /* instanceof */
 	EXPR_OP_LOGNOT,    /* logical not ! */
 	EXPR_OP_MUL,       /* Multiplication */
@@ -1495,8 +1500,6 @@ enum ph7_expr_id {
 	EXPR_OP_GE,        /* Greater equal */
 	EXPR_OP_EQ,        /* Equal == */
 	EXPR_OP_NE,        /* Not equal != <> */
-	EXPR_OP_TEQ,       /* Type equal === */
-	EXPR_OP_TNE,       /* Type not equal !== */
 	EXPR_OP_BAND,      /* Bitwise and '&' */
 	EXPR_OP_REF,       /* Reference operator '&' */
 	EXPR_OP_XOR,       /* bitwise xor '^' */
@@ -1561,15 +1564,12 @@ enum ph7_expr_id {
 /* The number '8' is reserved for PH7_TK_ID */
 #define PH7_KEYWORD_IMPORT       9 /* import */
 #define PH7_KEYWORD_REQUIRE      10 /* require */
-#define PH7_KEYWORD_ELIF         0x4000000 /* elseif: MUST BE A POWER OF TWO */
-#define PH7_KEYWORD_ELSE         0x8000000 /* else:  MUST BE A POWER OF TWO */
+#define PH7_KEYWORD_ELSE         12 /* else */
 #define PH7_KEYWORD_IF           13 /* if */
 #define PH7_KEYWORD_FINAL        14 /* final */
-#define PH7_KEYWORD_LIST         15 /* list */
 #define PH7_KEYWORD_STATIC       16 /* static */
 #define PH7_KEYWORD_CASE         17 /* case */
 #define PH7_KEYWORD_SELF         18 /* self */
-#define PH7_KEYWORD_FUNCTION     19 /* function */
 #define PH7_KEYWORD_NAMESPACE    20 /* namespace */
 #define PH7_KEYWORD_CLONE        0x80 /* clone: MUST BE A POWER OF TWO  */
 #define PH7_KEYWORD_NEW          0x100 /* new: MUST BE A POWER OF TWO  */
@@ -1578,8 +1578,6 @@ enum ph7_expr_id {
 #define PH7_KEYWORD_USING        24 /* using */
 #define PH7_KEYWORD_WHILE        26 /* while */
 #define PH7_KEYWORD_EVAL         27 /* eval */
-#define PH7_KEYWORD_VAR          28 /* var */
-#define PH7_KEYWORD_ARRAY        0x200 /* array: MUST BE A POWER OF TWO */
 #define PH7_KEYWORD_VIRTUAL      29 /* virtual */
 #define PH7_KEYWORD_TRY          30 /* try */
 #define PH7_KEYWORD_DEFAULT      31 /* default */
@@ -1590,9 +1588,7 @@ enum ph7_expr_id {
 #define PH7_KEYWORD_FINALLY      36 /* finally */
 #define PH7_KEYWORD_IMPLEMENTS   39 /* implements */
 #define PH7_KEYWORD_INCLUDE      41 /* include */
-#define PH7_KEYWORD_EMPTY        42 /* empty */
 #define PH7_KEYWORD_INSTANCEOF   0x400 /* instanceof: MUST BE A POWER OF TWO  */
-#define PH7_KEYWORD_ISSET        43 /* isset */
 #define PH7_KEYWORD_PARENT       44 /* parent */
 #define PH7_KEYWORD_PRIVATE      45 /* private */
 #define PH7_KEYWORD_FOR          48 /* for */
@@ -1603,7 +1599,6 @@ enum ph7_expr_id {
 #define PH7_KEYWORD_CATCH        53 /* catch */
 #define PH7_KEYWORD_RETURN       54 /* return */
 #define PH7_KEYWORD_BREAK        55 /* break */
-#define PH7_KEYWORD_UNSET        0x800    /* unset: MUST BE A POWER OF TWO  */
 #define PH7_KEYWORD_VOID         0x1000   /* void: MUST BE A POWER OF TWO */
 #define PH7_KEYWORD_CHAR         0x2000   /* char: MUST BE A POWER OF TWO */
 #define PH7_KEYWORD_BOOL         0x4000   /* bool: MUST BE A POWER OF TWO */
@@ -1614,6 +1609,8 @@ enum ph7_expr_id {
 #define PH7_KEYWORD_CALLBACK     0x80000  /* callback: MUST BE A POWER OF TWO */
 #define PH7_KEYWORD_RESOURCE     0x100000 /* resource: MUST BE A POWER OF TWO */
 #define PH7_KEYWORD_MIXED        0x200000 /* mixed: MUST BE A POWER OF TWO */
+
+#define PH7_KEYWORD_TYPEDEF (PH7_KEYWORD_VOID|PH7_KEYWORD_CHAR|PH7_KEYWORD_BOOL|PH7_KEYWORD_INT|PH7_KEYWORD_FLOAT|PH7_KEYWORD_STRING|PH7_KEYWORD_OBJECT|PH7_KEYWORD_CALLBACK|PH7_KEYWORD_RESOURCE|PH7_KEYWORD_MIXED)
 /* JSON encoding/decoding related definition */
 enum json_err_code {
 	JSON_ERROR_NONE = 0,  /* No error has occurred. */
@@ -1624,7 +1621,7 @@ enum json_err_code {
 	JSON_ERROR_UTF8       /* Malformed UTF-8 characters */
 };
 /* memobj.c function prototypes */
-PH7_PRIVATE sxi32 PH7_MemObjDump(SyBlob *pOut, ph7_value *pObj, int ShowType, int nTab, int nDepth, int isRef);
+PH7_PRIVATE sxi32 PH7_MemObjDump(SyBlob *pOut, ph7_value *pObj, int ShowType, int nTab, int nDepth);
 PH7_PRIVATE const char *PH7_MemObjTypeDump(ph7_value *pVal);
 PH7_PRIVATE sxi32 PH7_MemObjAdd(ph7_value *pObj1, ph7_value *pObj2, int bAddStore);
 PH7_PRIVATE sxi32 PH7_MemObjCmp(ph7_value *pObj1, ph7_value *pObj2, int bStrict, int iNest);
@@ -1646,10 +1643,13 @@ PH7_PRIVATE sxi32 PH7_MemObjIsEmpty(ph7_value *pObj);
 PH7_PRIVATE sxi32 PH7_MemObjToHashmap(ph7_value *pObj);
 PH7_PRIVATE sxi32 PH7_MemObjToObject(ph7_value *pObj);
 PH7_PRIVATE sxi32 PH7_MemObjToString(ph7_value *pObj);
-PH7_PRIVATE sxi32 PH7_MemObjToNull(ph7_value *pObj);
 PH7_PRIVATE sxi32 PH7_MemObjToReal(ph7_value *pObj);
 PH7_PRIVATE sxi32 PH7_MemObjToInteger(ph7_value *pObj);
 PH7_PRIVATE sxi32 PH7_MemObjToBool(ph7_value *pObj);
+PH7_PRIVATE sxi32 PH7_MemObjToCallback(ph7_value *pObj);
+PH7_PRIVATE sxi32 PH7_MemObjToResource(ph7_value *pObj);
+PH7_PRIVATE sxi32 PH7_CheckVarCompat(ph7_value *pObj, int nType);
+PH7_PRIVATE sxi32 PH7_MemObjSafeStore(ph7_value *pSrc, ph7_value *pDest);
 PH7_PRIVATE sxi64 PH7_TokenValueToInt64(SyString *pData);
 /* lex.c function prototypes */
 PH7_PRIVATE sxi32 PH7_TokenizeRawText(const char *zInput, sxu32 nLen, SySet *pOut);
@@ -1719,7 +1719,6 @@ PH7_PRIVATE sxi32 PH7_CompileLiteral(ph7_gen_state *pGen, sxi32 iCompileFlag);
 PH7_PRIVATE sxi32 PH7_CompileSimpleString(ph7_gen_state *pGen, sxi32 iCompileFlag);
 PH7_PRIVATE sxi32 PH7_CompileString(ph7_gen_state *pGen, sxi32 iCompileFlag);
 PH7_PRIVATE sxi32 PH7_CompileArray(ph7_gen_state *pGen, sxi32 iCompileFlag);
-PH7_PRIVATE sxi32 PH7_CompileList(ph7_gen_state *pGen, sxi32 iCompileFlag);
 PH7_PRIVATE sxi32 PH7_CompileClosure(ph7_gen_state *pGen, sxi32 iCompileFlag);
 PH7_PRIVATE sxi32 PH7_InitCodeGenerator(ph7_vm *pVm, ProcConsumer xErr, void *pErrData);
 PH7_PRIVATE sxi32 PH7_ResetCodeGenerator(ph7_vm *pVm, ProcConsumer xErr, void *pErrData);
@@ -1736,7 +1735,6 @@ PH7_PRIVATE sxi32 PH7_HashmapRelease(ph7_hashmap *pMap, int FreeDS);
 PH7_PRIVATE void  PH7_HashmapUnref(ph7_hashmap *pMap);
 PH7_PRIVATE sxi32 PH7_HashmapLookup(ph7_hashmap *pMap, ph7_value *pKey, ph7_hashmap_node **ppNode);
 PH7_PRIVATE sxi32 PH7_HashmapInsert(ph7_hashmap *pMap, ph7_value *pKey, ph7_value *pVal);
-PH7_PRIVATE sxi32 PH7_HashmapInsertByRef(ph7_hashmap *pMap, ph7_value *pKey, sxu32 nRefIdx);
 PH7_PRIVATE sxi32 PH7_HashmapUnion(ph7_hashmap *pLeft, ph7_hashmap *pRight);
 PH7_PRIVATE void PH7_HashmapUnlinkNode(ph7_hashmap_node *pNode, int bRestore);
 PH7_PRIVATE sxi32 PH7_HashmapDup(ph7_hashmap *pSrc, ph7_hashmap *pDest);
@@ -1748,6 +1746,7 @@ PH7_PRIVATE void PH7_HashmapExtractNodeKey(ph7_hashmap_node *pNode, ph7_value *p
 PH7_PRIVATE void PH7_RegisterHashmapFunctions(ph7_vm *pVm);
 PH7_PRIVATE sxi32 PH7_HashmapDump(SyBlob *pOut, ph7_hashmap *pMap, int ShowType, int nTab, int nDepth);
 PH7_PRIVATE sxi32 PH7_HashmapWalk(ph7_hashmap *pMap, int (*xWalk)(ph7_value *, ph7_value *, void *), void *pUserData);
+PH7_PRIVATE sxi32 PH7_HashmapCast(ph7_value *pObj, sxi32 nType);
 PH7_PRIVATE int PH7_HashmapValuesToSet(ph7_hashmap *pMap, SySet *pOut);
 /* builtin.c function prototypes */
 PH7_PRIVATE sxi32 PH7_InputFormat(int (*xConsumer)(ph7_context *, const char *, int, void *),
@@ -1760,7 +1759,7 @@ PH7_PRIVATE sxi32 PH7_ParseIniString(ph7_context *pCtx, const char *zIn, sxu32 n
 /* oo.c function prototypes */
 PH7_PRIVATE ph7_class_info *PH7_NewClassInfo(ph7_vm *pVm, const SyString *pName);
 PH7_PRIVATE ph7_class *PH7_NewRawClass(ph7_vm *pVm, const SyString *pName);
-PH7_PRIVATE ph7_class_attr *PH7_NewClassAttr(ph7_vm *pVm, const SyString *pName, sxu32 nLine, sxi32 iProtection, sxi32 iFlags);
+PH7_PRIVATE ph7_class_attr *PH7_NewClassAttr(ph7_vm *pVm, const SyString *pName, sxu32 nLine, sxi32 iProtection, sxi32 iFlags, sxu32 nType);
 PH7_PRIVATE ph7_class_method *PH7_NewClassMethod(ph7_vm *pVm, ph7_class *pClass, const SyString *pName, sxu32 nLine,
 		sxi32 iProtection, sxi32 iFlags, sxi32 iFuncFlags);
 PH7_PRIVATE ph7_class_method *PH7_ClassExtractMethod(ph7_class *pClass, const char *zName, sxu32 nByte);
@@ -1769,7 +1768,7 @@ PH7_PRIVATE sxi32 PH7_ClassInstallAttr(ph7_class *pClass, ph7_class_attr *pAttr)
 PH7_PRIVATE sxi32 PH7_ClassInstallMethod(ph7_class *pClass, ph7_class_method *pMeth);
 PH7_PRIVATE sxi32 PH7_ClassInherit(ph7_vm *pVm, ph7_class *pSub, ph7_class *pBase);
 PH7_PRIVATE sxi32 PH7_ClassInterfaceInherit(ph7_class *pSub, ph7_class *pBase);
-PH7_PRIVATE sxi32 PH7_ClassImplement(ph7_class *pMain, ph7_class *pInterface);
+PH7_PRIVATE sxi32 PH7_ClassImplement(ph7_vm *pVm, ph7_class *pMain, ph7_class *pInterface);
 PH7_PRIVATE ph7_class_instance *PH7_NewClassInstance(ph7_vm *pVm, ph7_class *pClass);
 PH7_PRIVATE ph7_class_instance *PH7_CloneClassInstance(ph7_class_instance *pSrc);
 PH7_PRIVATE sxi32 PH7_ClassInstanceCmp(ph7_class_instance *pLeft, ph7_class_instance *pRight, int bStrict, int iNest);

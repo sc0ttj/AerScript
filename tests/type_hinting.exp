@@ -1,0 +1,23 @@
+char(c)
+bool(TRUE)
+char()
+bool(TRUE)
+float(4)
+bool(TRUE)
+float(56.3)
+bool(TRUE)
+object()
+bool(TRUE)
+object(Program) {
+ ['test'] =>
+  int(7)
+ }
+bool(TRUE)
+string(11 'sample text')
+bool(TRUE)
+string(0 '')
+bool(TRUE)
+void(NULL)
+bool(TRUE)
+void(NULL)
+bool(TRUE)

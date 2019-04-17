@@ -1,33 +1,33 @@
 class Program {
-	private $概要 = "AerScript Interpreter";
+	private string $概要 = "AerScript Interpreter";
 
-	public function main() {
+	public void main() {
 		$this->ダウンロード();
 		var_dump($this->概要);
 		var_dump($this->isUTF8('hello'));
 		var_dump($this->isUTF8("すが、基本的な使い方は単純です。かしながら使い方を身につけていきましょう"));
 	}
 
-	private function ダウンロード(){
+	private void ダウンロード(){
 		print($this->概要 + "\n");
 	}
 
-	private function isUTF8($str) {
-		$b = 0;
-		$c = 0;
-		$bits = 0;
-		$len = strlen($str);
-		for($i = 0; $i < $len; $i++) {
+	private bool isUTF8(string $str) {
+		int $b = 0;
+		int $c = 0;
+		int $bits = 0;
+		int $len = strlen($str);
+		for(int $i = 0; $i < $len; $i++) {
 			$c = ord($str[$i]);
 			if($c >= 128) {
 				if(($c >= 254)) return false;
-				elseif($c >= 252) $bits=6;
-				elseif($c >= 248) $bits=5;
-				elseif($c >= 240) $bits=4;
-				elseif($c >= 224) $bits=3;
-				elseif($c >= 192) $bits=2;
+				else if($c >= 252) $bits=6;
+				else if($c >= 248) $bits=5;
+				else if($c >= 240) $bits=4;
+				else if($c >= 224) $bits=3;
+				else if($c >= 192) $bits=2;
 				else return false;
-				if(($i+$bits) > $len) return false;
+				if(($i + $bits) > $len) return false;
 				while($bits > 1) {
 					$i++;
 					$b=ord($str[$i]);

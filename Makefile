@@ -117,7 +117,7 @@ TESTS := $(subst .$(TEST_EXT),.test,$(wildcard $(TEST_DIR)/*.$(TEST_EXT)))
 
 
 .SUFFIXES:
-.PHONY: clean debug install release style test
+.PHONY: clean debug install release style tests
 
 debug: export CFLAGS := $(CFLAGS) $(DCFLAGS)
 debug: engine sapi modules
@@ -183,4 +183,4 @@ install: engine modules sapi
 style:
 	astyle $(ASTYLE_FLAGS) --recursive ./*.c,*.h
 
-test: $(TESTS)
+tests: $(TESTS)

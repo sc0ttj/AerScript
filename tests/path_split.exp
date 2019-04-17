@@ -1,0 +1,32 @@
+Array(5) {
+ [my] =>
+  my/
+ [stupid] =>
+  my/stupid/
+ [path] =>
+  my/stupid/path/
+ [to] =>
+  my/stupid/path/to/
+ [some] =>
+  my/stupid/path/to/some/
+ }
+Array(3) {
+ [my] =>
+  my
+ [other] =>
+  my/other
+ [path] =>
+  my/other/path
+ }
+Array(5) {
+ [my] =>
+  my/
+ [other] =>
+  my/other/
+ [path] =>
+  my/other/path/
+ [to] =>
+  my/other/path/to/
+ [file.php] =>
+  my/other/path/to/file.php
+ }

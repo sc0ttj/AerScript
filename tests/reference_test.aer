@@ -1,0 +1,13 @@
+class Program {
+
+	void add_by_ref(int &$val) {
+		$val += 7;
+	}
+
+	void main() {
+		int $num = 7;
+		$this->add_by_ref($num);
+		var_dump($num);
+	}
+
+}

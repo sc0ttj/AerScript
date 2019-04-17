@@ -225,7 +225,7 @@ static sxi32 TokenizeAerScript(SyStream *pStream, SyToken *pToken, void *pUserDa
 						pTmp = (SyToken *)SySetPeek(pTokSet);
 						if(pTmp->nType & PH7_TK_KEYWORD) {
 							sxi32 nID = SX_PTR_TO_INT(pTmp->pUserData);
-							if((sxu32)nID & (PH7_KEYWORD_ARRAY | PH7_KEYWORD_INT | PH7_KEYWORD_FLOAT | PH7_KEYWORD_STRING | PH7_KEYWORD_OBJECT | PH7_KEYWORD_BOOL | PH7_KEYWORD_UNSET)) {
+							if((sxu32)nID & (PH7_KEYWORD_INT | PH7_KEYWORD_FLOAT | PH7_KEYWORD_STRING | PH7_KEYWORD_OBJECT | PH7_KEYWORD_BOOL | PH7_KEYWORD_CHAR | PH7_KEYWORD_CALLBACK | PH7_KEYWORD_RESOURCE | PH7_KEYWORD_VOID)) {
 								pTmp = (SyToken *)SySetAt(pTokSet, pTokSet->nUsed - 2);
 								if(pTmp->nType & PH7_TK_LPAREN) {
 									/* Merge the three tokens '(' 'TYPE' ')' into a single one */
@@ -234,14 +234,18 @@ static sxi32 TokenizeAerScript(SyStream *pStream, SyToken *pToken, void *pUserDa
 										zTypeCast = "(float)";
 									} else if(nID & PH7_KEYWORD_BOOL) {
 										zTypeCast = "(bool)";
+									} else if(nID & PH7_KEYWORD_CHAR) {
+										zTypeCast = "(char)";
 									} else if(nID & PH7_KEYWORD_STRING) {
 										zTypeCast = "(string)";
-									} else if(nID & PH7_KEYWORD_ARRAY) {
-										zTypeCast = "(array)";
 									} else if(nID & PH7_KEYWORD_OBJECT) {
 										zTypeCast = "(object)";
-									} else if(nID & PH7_KEYWORD_UNSET) {
-										zTypeCast = "(unset)";
+									} else if(nID & PH7_KEYWORD_CALLBACK) {
+										zTypeCast = "(callback)";
+									} else if(nID & PH7_KEYWORD_RESOURCE) {
+										zTypeCast = "(resource)";
+									} else if(nID & PH7_KEYWORD_VOID) {
+										zTypeCast = "(void)";
 									}
 									/* Reflect the change */
 									pToken->nType = PH7_TK_OP;
@@ -619,24 +623,15 @@ static sxu32 KeywordCode(const char *z, int n) {
 		{"foreach", PH7_KEYWORD_FOREACH},
 		{"switch", PH7_KEYWORD_SWITCH},
 		{"else", PH7_KEYWORD_ELSE},
-		{"elseif", PH7_KEYWORD_ELIF},
 		{"if", PH7_KEYWORD_IF},
 		{"while", PH7_KEYWORD_WHILE},
 		/* Reserved keywords */
-		{"empty", PH7_KEYWORD_EMPTY},
 		{"eval", PH7_KEYWORD_EVAL},
 		{"exit", PH7_KEYWORD_EXIT},
 		{"import", PH7_KEYWORD_IMPORT},
 		{"include", PH7_KEYWORD_INCLUDE},
-		{"isset", PH7_KEYWORD_ISSET},
-		{"list", PH7_KEYWORD_LIST},
 		{"require", PH7_KEYWORD_REQUIRE},
 		{"return", PH7_KEYWORD_RETURN},
-		{"unset", PH7_KEYWORD_UNSET},
-		/* Other keywords */
-		{"array", PH7_KEYWORD_ARRAY},
-		{"function", PH7_KEYWORD_FUNCTION},
-		{"var", PH7_KEYWORD_VAR}
 	};
 	if(n < 2) {
 		return PH7_TK_ID;

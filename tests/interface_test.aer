@@ -1,0 +1,42 @@
+interface iVehicle {
+
+	public void drive();
+	public void stop();
+
+}
+
+class Car implements iVehicle {
+
+	public void drive() {
+		print("Driving...\n");
+	}
+
+	public void stop() {
+		print("Stopping...\n");
+	}
+
+}
+
+class MyCar extends Car {
+
+	public void drive() {
+		print("Driving my car...\n");
+	}
+
+} 
+
+class Program {
+
+	public void driveCar(iVehicle $vehicle) {
+		$vehicle->drive();
+		$vehicle->stop();
+	}
+
+	public void main() {
+		object $car = new Car();
+		object $mycar = new MyCar();
+		$this->driveCar($car);
+		$this->driveCar($mycar);
+	}
+
+}

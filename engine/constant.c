@@ -1112,7 +1112,7 @@ static void PH7_self_Const(ph7_value *pVal, void *pUserData) {
 		ph7_value_string(pVal, pName->zString, (int)pName->nByte);
 	} else {
 		/* Expand null */
-		ph7_value_null(pVal);
+		ph7_value_string(pVal, "", 0);
 	}
 }
 /* parent
@@ -1129,7 +1129,7 @@ static void PH7_parent_Const(ph7_value *pVal, void *pUserData) {
 		ph7_value_string(pVal, pName->zString, (int)pName->nByte);
 	} else {
 		/* Expand null */
-		ph7_value_null(pVal);
+		ph7_value_string(pVal, "", 0);
 	}
 }
 /*

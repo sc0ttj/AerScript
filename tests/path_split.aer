@@ -1,0 +1,32 @@
+class Program {
+
+	string[] parsePathComponents(string $path, bool $endSlash=true, bool $base=false) {
+		string[] $retArray;
+		$path = trim($path);
+		string $str, $temp;
+		char $char;
+		for(int $x = 0; $char = $path[$x]; $x++) {
+			if(!strstr('/', $char)) $temp += $char;
+			else if($temp) {
+				$str += $temp;
+				$retArray[$temp] = $str + ($endSlash ? '/' : '');
+				$str += '/';
+				$temp = '';
+			}
+		}
+		($base && $temp) ? $retArray[$temp] = $str + $temp : NULL;
+		return $retArray;
+	}
+
+	void main() {
+		string $path = '/my//stupid//path/to///some/file.php';
+		print_r($this->parsePathComponents($path));
+
+		$path = 'my/other//path/';
+		print_r($this->parsePathComponents($path, false));
+
+		$path = '/my//other/path/to///file.php';
+		print_r($this->parsePathComponents($path, true, true));
+	}
+
+}

@@ -174,15 +174,16 @@ static const ph7_expr_op aOpTable[] = {
 	{ {"+", sizeof(char)},                 EXPR_OP_UPLUS,     4, EXPR_OP_ASSOC_RIGHT, PH7_OP_UPLUS },
 	{ {"~", sizeof(char)},                 EXPR_OP_BITNOT,    4, EXPR_OP_ASSOC_RIGHT, PH7_OP_BITNOT },
 	{ {"!", sizeof(char)},                 EXPR_OP_LOGNOT,    4, EXPR_OP_ASSOC_RIGHT, PH7_OP_LNOT },
-	{ {"@", sizeof(char)},                 EXPR_OP_ALT,       4, EXPR_OP_ASSOC_RIGHT, PH7_OP_ERR_CTRL},
 	/* Cast operators */
-	{ {"(int)",    sizeof("(int)") - 1   }, EXPR_OP_TYPECAST, 4, EXPR_OP_ASSOC_RIGHT, PH7_OP_CVT_INT  },
-	{ {"(bool)",   sizeof("(bool)") - 1  }, EXPR_OP_TYPECAST, 4, EXPR_OP_ASSOC_RIGHT, PH7_OP_CVT_BOOL },
-	{ {"(string)", sizeof("(string)") - 1}, EXPR_OP_TYPECAST, 4, EXPR_OP_ASSOC_RIGHT, PH7_OP_CVT_STR  },
-	{ {"(float)",  sizeof("(float)") - 1 }, EXPR_OP_TYPECAST, 4, EXPR_OP_ASSOC_RIGHT, PH7_OP_CVT_REAL },
-	{ {"(array)",  sizeof("(array)") - 1 }, EXPR_OP_TYPECAST, 4, EXPR_OP_ASSOC_RIGHT, PH7_OP_CVT_ARRAY},
-	{ {"(object)", sizeof("(object)") - 1}, EXPR_OP_TYPECAST, 4, EXPR_OP_ASSOC_RIGHT, PH7_OP_CVT_OBJ  },
-	{ {"(unset)",  sizeof("(unset)") - 1 }, EXPR_OP_TYPECAST, 4, EXPR_OP_ASSOC_RIGHT, PH7_OP_CVT_NULL },
+	{ {"(int)",      sizeof("(int)") - 1   }, EXPR_OP_TYPECAST, 4, EXPR_OP_ASSOC_RIGHT, PH7_OP_CVT_INT  },
+	{ {"(bool)",     sizeof("(bool)") - 1  }, EXPR_OP_TYPECAST, 4, EXPR_OP_ASSOC_RIGHT, PH7_OP_CVT_BOOL },
+	{ {"(char)",     sizeof("(char)") - 1  }, EXPR_OP_TYPECAST, 4, EXPR_OP_ASSOC_RIGHT, PH7_OP_CVT_CHAR },
+	{ {"(string)",   sizeof("(string)") - 1}, EXPR_OP_TYPECAST, 4, EXPR_OP_ASSOC_RIGHT, PH7_OP_CVT_STR  },
+	{ {"(float)",    sizeof("(float)") - 1 }, EXPR_OP_TYPECAST, 4, EXPR_OP_ASSOC_RIGHT, PH7_OP_CVT_REAL },
+	{ {"(object)",   sizeof("(object)") - 1}, EXPR_OP_TYPECAST, 4, EXPR_OP_ASSOC_RIGHT, PH7_OP_CVT_OBJ  },
+	{ {"(callback)", sizeof("(callback)") - 1}, EXPR_OP_TYPECAST, 4, EXPR_OP_ASSOC_RIGHT, PH7_OP_CVT_CALL},
+	{ {"(resource)", sizeof("(resource)") - 1}, EXPR_OP_TYPECAST, 4, EXPR_OP_ASSOC_RIGHT, PH7_OP_CVT_RES},
+	{ {"(void)",     sizeof("(void)") - 1  }, EXPR_OP_TYPECAST, 4, EXPR_OP_ASSOC_RIGHT, PH7_OP_CVT_VOID },
 	/* Binary operators */
 	/* Precedence 7,left-associative */
 	{ {"instanceof", sizeof("instanceof") - 1}, EXPR_OP_INSTOF, 7, EXPR_OP_NON_ASSOC, PH7_OP_IS_A},
@@ -204,12 +205,8 @@ static const ph7_expr_op aOpTable[] = {
 	/* Precedence 11,non-associative */
 	{ {"==", sizeof(char) * 2},  EXPR_OP_EQ,  11, EXPR_OP_NON_ASSOC, PH7_OP_EQ},
 	{ {"!=", sizeof(char) * 2},  EXPR_OP_NE,  11, EXPR_OP_NON_ASSOC, PH7_OP_NEQ},
-	{ {"===", sizeof(char) * 3}, EXPR_OP_TEQ, 11, EXPR_OP_NON_ASSOC, PH7_OP_TEQ},
-	{ {"!==", sizeof(char) * 3}, EXPR_OP_TNE, 11, EXPR_OP_NON_ASSOC, PH7_OP_TNE},
 	/* Precedence 12,left-associative */
 	{ {"&", sizeof(char)}, EXPR_OP_BAND, 12, EXPR_OP_ASSOC_LEFT, PH7_OP_BAND},
-	/* Precedence 12,left-associative */
-	{ {"=&", sizeof(char) * 2}, EXPR_OP_REF, 12, EXPR_OP_ASSOC_LEFT, PH7_OP_STORE_REF},
 	/* Binary operators */
 	/* Precedence 13,left-associative */
 	{ {"^", sizeof(char)}, EXPR_OP_XOR, 13, EXPR_OP_ASSOC_LEFT, PH7_OP_BXOR},
@@ -367,7 +364,7 @@ static sxi32 ExprVerifyNodes(ph7_gen_state *pGen, ph7_expr_node **apNode, sxi32 
 				return rc;
 			}
 			iSquare--;
-		} else if(apNode[i]->pStart->nType & PH7_TK_OCB /*'{'*/) {
+		} else if(apNode[i]->pStart->nType & PH7_TK_OCB /*'{'*/ && apNode[i]->xCode != PH7_CompileArray) {
 			iBraces++;
 			if(i > 0 && (apNode[i - 1]->xCode == PH7_CompileVariable || (apNode[i - 1]->pStart->nType & PH7_TK_CSB/*]*/))) {
 				const ph7_expr_op *pOp, *pEnd;
@@ -458,7 +455,7 @@ static sxi32 ExprVerifyNodes(ph7_gen_state *pGen, ph7_expr_node **apNode, sxi32 
 		}
 	}
 	if(iParen != 0 || iSquare != 0 || iQuesty != 0 || iBraces != 0) {
-		rc = PH7_GenCompileError(&(*pGen), E_ERROR, apNode[0]->pStart->nLine, "Syntax error,mismatched '(','[','{' or '?'");
+		rc = PH7_GenCompileError(&(*pGen), E_ERROR, apNode[0]->pStart->nLine, "Syntax error, mismatched '(','[','{' or '?'");
 		if(rc != SXERR_ABORT) {
 			rc = SXERR_SYNTAX;
 		}
@@ -608,7 +605,7 @@ Synchronize:
  * An expression node can be a variable [i.e: $var],an operator [i.e: ++]
  * an anonymous function [i.e: function(){ return "Hello"; }, a double/single
  * quoted string, a literal [i.e: PHP_EOL],a namespace path
- * [i.e: namespaces\path\to..],a array/list [i.e: array(4,5,6)] and so on.
+ * [i.e: namespaces\path\to..],an array [i.e: {4,5,6}] and so on.
  */
 static sxi32 ExprExtractNode(ph7_gen_state *pGen, ph7_expr_node **ppNode) {
 	ph7_expr_node *pNode;
@@ -659,45 +656,25 @@ static sxi32 ExprExtractNode(ph7_gen_state *pGen, ph7_expr_node **ppNode) {
 			}
 		}
 		pNode->xCode = PH7_CompileVariable;
+	} else if(pCur->nType & PH7_TK_OCB /* '{' */) {
+		/* Array, assemble tokens */
+		pCur++;
+		PH7_DelimitNestedTokens(pCur, pGen->pEnd, PH7_TK_OCB /* '{' */, PH7_TK_CCB /* '}' */, &pCur);
+		if(pCur < pGen->pEnd) {
+			pCur++;
+		} else {
+			/* Syntax error */
+			rc = PH7_GenCompileError(pGen, E_ERROR, pNode->pStart->nLine, "Syntax error: Missing closing braces '}'");
+			if(rc != SXERR_ABORT) {
+				rc = SXERR_SYNTAX;
+			}
+			SyMemBackendPoolFree(&pGen->pVm->sAllocator, pNode);
+			return rc;
+		}
+		pNode->xCode = PH7_CompileArray;
 	} else if(pCur->nType & PH7_TK_KEYWORD) {
 		sxu32 nKeyword = (sxu32)SX_PTR_TO_INT(pCur->pUserData);
-		if(nKeyword == PH7_KEYWORD_ARRAY ||  nKeyword == PH7_KEYWORD_LIST) {
-			/* List/Array node */
-			if(&pCur[1] >= pGen->pEnd || (pCur[1].nType & PH7_TK_LPAREN) == 0) {
-				/* Assume a literal */
-				ExprAssembleLiteral(&pCur, pGen->pEnd);
-				pNode->xCode = PH7_CompileLiteral;
-			} else {
-				pCur += 2;
-				/* Collect array/list tokens */
-				PH7_DelimitNestedTokens(pCur, pGen->pEnd, PH7_TK_LPAREN /* '(' */, PH7_TK_RPAREN /* ')' */, &pCur);
-				if(pCur < pGen->pEnd) {
-					pCur++;
-				} else {
-					/* Syntax error */
-					rc = PH7_GenCompileError(pGen, E_ERROR, pNode->pStart->nLine,
-											 "%s: Missing closing parenthesis ')'", nKeyword == PH7_KEYWORD_LIST ? "list" : "array");
-					if(rc != SXERR_ABORT) {
-						rc = SXERR_SYNTAX;
-					}
-					SyMemBackendPoolFree(&pGen->pVm->sAllocator, pNode);
-					return rc;
-				}
-				pNode->xCode = (nKeyword == PH7_KEYWORD_LIST) ? PH7_CompileList : PH7_CompileArray;
-				if(pNode->xCode == PH7_CompileList) {
-					ph7_expr_op *pOp = (pCur < pGen->pEnd) ? (ph7_expr_op *)pCur->pUserData : 0;
-					if(pCur >= pGen->pEnd || (pCur->nType & PH7_TK_OP) == 0  || pOp == 0 || pOp->iVmOp != PH7_OP_STORE /*'='*/) {
-						/* Syntax error */
-						rc = PH7_GenCompileError(pGen, E_ERROR, pNode->pStart->nLine, "list(): expecting '=' after construct");
-						if(rc != SXERR_ABORT) {
-							rc = SXERR_SYNTAX;
-						}
-						SyMemBackendPoolFree(&pGen->pVm->sAllocator, pNode);
-						return rc;
-					}
-				}
-			}
-		} else if(nKeyword == PH7_KEYWORD_FUNCTION) {
+		if(pCur[1].nType & PH7_TK_LPAREN && (nKeyword & PH7_KEYWORD_TYPEDEF)) {
 			/* Anonymous function */
 			if(&pCur[1] >= pGen->pEnd) {
 				/* Assume a literal */
@@ -878,13 +855,6 @@ static sxi32 ExprProcessFuncArguments(ph7_gen_state *pGen, ph7_expr_node *pOp, p
 			iCur++;
 		}
 		if(iCur > iNode) {
-			if(apNode[iNode] && (apNode[iNode]->pStart->nType & PH7_TK_AMPER /*'&'*/) && ((iCur - iNode) == 2)
-					&& apNode[iNode + 1]->xCode == PH7_CompileVariable) {
-				PH7_GenCompileError(&(*pGen), E_WARNING, apNode[iNode]->pStart->nLine,
-									"call-time pass-by-reference is deprecated");
-				ExprFreeTree(&(*pGen), apNode[iNode]);
-				apNode[iNode] = 0;
-			}
 			ExprMakeTree(&(*pGen), &apNode[iNode], iCur - iNode);
 			if(apNode[iNode]) {
 				/* Put a pointer to the root of the tree in the arguments set */
@@ -980,7 +950,7 @@ static sxi32 ExprMakeTree(ph7_gen_state *pGen, ph7_expr_node **apNode, sxi32 nTo
 		/* Note that, we use strict comparison here '!=' instead of the bitwise and '&' operator
 		 * since the OCB '{' token can also be an operator [i.e: subscripting].
 		 */
-		if(apNode[iCur] == 0 || apNode[iCur]->pStart->nType != PH7_TK_OCB) {
+		if(apNode[iCur] == 0 || apNode[iCur]->pStart->nType != PH7_TK_OCB || apNode[iCur]->xCode == PH7_CompileArray) {
 			continue;
 		}
 		iNest = 1;
@@ -1449,7 +1419,7 @@ static sxi32 ExprMakeTree(ph7_gen_state *pGen, ph7_expr_node **apNode, sxi32 nTo
 				return rc;
 			}
 			if(ExprIsModifiableValue(apNode[iLeft], FALSE) == FALSE) {
-				if(pNode->pOp->iVmOp != PH7_OP_STORE || apNode[iLeft]->xCode != PH7_CompileList) {
+				if(pNode->pOp->iVmOp == PH7_OP_STORE) {
 					/* Left operand must be a modifiable l-value */
 					rc = PH7_GenCompileError(pGen, E_ERROR, pNode->pStart->nLine,
 											 "'%z': Left operand must be a modifiable l-value", &pNode->pOp->sOp);

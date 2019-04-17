@@ -1,32 +1,32 @@
 final class Test {
-	private $value;
+	private int $value;
 
-	private function __construct() {
+	private void __construct() {
 	}
 
 	/* This is singleton */
-	public function getInstance() {
-		static $instance;
+	public object getInstance() {
+		static object $instance;
 		if(!$instance) {
 			$instance = new Test();
 		}
 		return $instance;
 	}
 
-	public function get() {
+	public int get() {
 		return $this->value;
 	}
 
-	public function set($value = 0) {
+	public int set(int $value = 0) {
 		$this->value = $value;
 	}
 }
 
 final class Program {
-	public function main() {
-		$testA = Test::getInstance();
+	public void main() {
+		object $testA = Test::getInstance();
 		$testA->set(5);
-		$testB = Test::getInstance();
+		object $testB = Test::getInstance();
 		var_dump($testB->get());
 	}
 } /* class */

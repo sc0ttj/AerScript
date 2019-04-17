@@ -1,0 +1,36 @@
+class Operations {
+
+	public callback ops(int $x, int $y, string $op){
+		switch($op) {
+			case 'ADD':
+				return int() using ($x, $y) {
+					return $x + $y;
+				};
+				break;
+			case 'SUB':
+				return int() using ($x, $y) {
+					return $x - $y;
+				};
+				break;
+			default:
+				return string() {
+					return 'Operation is not supported by class.';
+				};
+		}           
+	}
+}
+
+class Program {
+
+	void main() {
+		callback $fn;
+		object $op =  new Operations();
+		$fn = $op->ops(6, 7, 'ADD');
+		print($fn() + "\n");
+		$fn = $op->ops(6, 2, 'SUB');
+		print($fn() + "\n");
+		$fn = $op->ops(6, 7, 'MUL');
+		print($fn() + "\n");
+	}
+
+}
