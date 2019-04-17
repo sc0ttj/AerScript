@@ -1438,38 +1438,26 @@ static sxi32 PH7_CompileContinue(ph7_gen_state *pGen) {
 	pGen->pIn++;
 	/* Point to the target loop */
 	pLoop = PH7_GenStateFetchBlock(pGen->pCurrent, GEN_BLOCK_LOOP, 0);
-	if(pLoop == 0) {
+	if(pLoop == 0 || pLoop->iFlags & GEN_BLOCK_SWITCH) {
 		/* Illegal continue */
-		rc = PH7_GenCompileError(pGen, E_ERROR, nLine, "A 'continue' statement may only be used within a loop or switch");
+		rc = PH7_GenCompileError(pGen, E_ERROR, nLine, "A 'continue' statement may only be used within a loop");
 		if(rc == SXERR_ABORT) {
 			/* Error count limit reached,abort immediately */
 			return SXERR_ABORT;
 		}
 	} else {
 		sxu32 nInstrIdx = 0;
-		if(pLoop->iFlags & GEN_BLOCK_SWITCH) {
-			/*
-			 * Note that unlike some other languages, the continue statement applies to switch
-			 * and acts similar to break. If you have a switch inside a loop and wish to continue
-			 * to the next iteration of the outer loop, use continue 2.
-			 */
-			rc = PH7_VmEmitInstr(pGen->pVm, 0, PH7_OP_JMP, 0, 0, 0, &nInstrIdx);
-			if(rc == SXRET_OK) {
-				PH7_GenStateNewJumpFixup(pLoop, PH7_OP_JMP, nInstrIdx);
-			}
-		} else {
-			if(!pLoop->bPostContinue) {
-				/* Emit the OP_JMPLFE instruction to leave the loop frame */
-				PH7_VmEmitInstr(pGen->pVm, nLine, PH7_OP_JMPLFE, 0, 0, 0, 0);
-			}
-			PH7_VmEmitInstr(pGen->pVm, 0, PH7_OP_JMP, 0, pLoop->nFirstInstr, 0, &nInstrIdx);
-			if(pLoop->bPostContinue) {
-				JumpFixup sJumpFix;
-				/* Post-continue */
-				sJumpFix.nJumpType = PH7_OP_JMP;
-				sJumpFix.nInstrIdx = nInstrIdx;
-				SySetPut(&pLoop->aPostContFix, (const void *)&sJumpFix);
-			}
+		if(!pLoop->bPostContinue) {
+			/* Emit the OP_JMPLFE instruction to leave the loop frame */
+			PH7_VmEmitInstr(pGen->pVm, nLine, PH7_OP_JMPLFE, 0, 0, 0, 0);
+		}
+		PH7_VmEmitInstr(pGen->pVm, 0, PH7_OP_JMP, 0, pLoop->nFirstInstr, 0, &nInstrIdx);
+		if(pLoop->bPostContinue) {
+			JumpFixup sJumpFix;
+			/* Post-continue */
+			sJumpFix.nJumpType = PH7_OP_JMP;
+			sJumpFix.nInstrIdx = nInstrIdx;
+			SySetPut(&pLoop->aPostContFix, (const void *)&sJumpFix);
 		}
 	}
 	if(pGen->pIn < pGen->pEnd && (pGen->pIn->nType & PH7_TK_SEMI) == 0) {
