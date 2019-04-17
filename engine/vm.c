@@ -4536,22 +4536,6 @@ static sxi32 VmByteCodeExec(
 								SySetPut(&aArg, (const void *)&pArg);
 								pArg++;
 							}
-							if(pVm->bErrReport) {
-								ph7_vm_func_arg *pFuncArg;
-								sxu32 n;
-								n = SySetUsed(&aArg);
-								/* Emit a notice for missing arguments */
-								while(n < SySetUsed(&pCons->sFunc.aArgs)) {
-									pFuncArg = (ph7_vm_func_arg *)SySetAt(&pCons->sFunc.aArgs, n);
-									if(pFuncArg) {
-										if(SySetUsed(&pFuncArg->aByteCode) < 1) {
-											PH7_VmThrowError(&(*pVm), PH7_CTX_NOTICE, "Missing constructor argument %u($%z) for class '%z'",
-														  n + 1, &pFuncArg->sName, &pClass->sName);
-										}
-									}
-									n++;
-								}
-							}
 							PH7_VmCallClassMethod(&(*pVm), pNew, pCons, 0, (int)SySetUsed(&aArg), (ph7_value **)SySetBasePtr(&aArg));
 							/* TICKET 1433-52: Unsetting $this in the constructor body */
 							if(pNew->iRef < 1) {
