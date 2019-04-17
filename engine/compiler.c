@@ -753,37 +753,6 @@ static sxi32 PH7_GenStateCompileArrayEntry(
 	return rc;
 }
 /*
- * Expression tree validator callback for the 'array' language construct.
- * Return SXRET_OK if the tree is valid. Any other return value indicates
- * an invalid expression tree and this function will generate the appropriate
- * error message.
- * See the routine responsible of compiling the array language construct
- * for more inforation.
- */
-static sxi32 PH7_GenStateArrayNodeValidator(ph7_gen_state *pGen, ph7_expr_node *pRoot) {
-	sxi32 rc = SXRET_OK;
-	if(pRoot->pOp) {
-		if(pRoot->pOp->iOp != EXPR_OP_SUBSCRIPT /* $a[] */ &&
-				pRoot->pOp->iOp != EXPR_OP_FUNC_CALL /* function() [Symisc extension: i.e: array(&foo())] */
-				&& pRoot->pOp->iOp != EXPR_OP_ARROW /* -> */ && pRoot->pOp->iOp != EXPR_OP_DC /* :: */) {
-			/* Unexpected expression */
-			rc = PH7_GenCompileError(&(*pGen), E_ERROR, pRoot->pStart ? pRoot->pStart->nLine : 0,
-									 "array(): Expecting a variable/array member/function call after reference operator '&'");
-			if(rc != SXERR_ABORT) {
-				rc = SXERR_INVALID;
-			}
-		}
-	} else if(pRoot->xCode != PH7_CompileVariable) {
-		/* Unexpected expression */
-		rc = PH7_GenCompileError(&(*pGen), E_ERROR, pRoot->pStart ? pRoot->pStart->nLine : 0,
-								 "array(): Expecting a variable after reference operator '&'");
-		if(rc != SXERR_ABORT) {
-			rc = SXERR_INVALID;
-		}
-	}
-	return rc;
-}
-/*
  * Compile the 'array' language construct.
  *   An array in Aer is actually an ordered map. A map is a type that associates
  *   values to keys. This type is optimized for several different uses; it can
@@ -863,36 +832,6 @@ PH7_PRIVATE sxi32 PH7_CompileArray(ph7_gen_state *pGen, sxi32 iCompileFlag) {
 	PH7_VmEmitInstr(pGen->pVm, 0, PH7_OP_LOAD_MAP, nPair * 2, 0, 0, 0);
 	/* Node successfully compiled */
 	return SXRET_OK;
-}
-/*
- * Expression tree validator callback for the 'list' language construct.
- * Return SXRET_OK if the tree is valid. Any other return value indicates
- * an invalid expression tree and this function will generate the appropriate
- * error message.
- * See the routine responsible of compiling the list language construct
- * for more inforation.
- */
-static sxi32 PH7_GenStateListNodeValidator(ph7_gen_state *pGen, ph7_expr_node *pRoot) {
-	sxi32 rc = SXRET_OK;
-	if(pRoot->pOp) {
-		if(pRoot->pOp->iOp != EXPR_OP_SUBSCRIPT /* $a[] */ && pRoot->pOp->iOp != EXPR_OP_ARROW  /* -> */
-				&& pRoot->pOp->iOp != EXPR_OP_DC /* :: */) {
-			/* Unexpected expression */
-			rc = PH7_GenCompileError(&(*pGen), E_ERROR, pRoot->pStart ? pRoot->pStart->nLine : 0,
-									 "list(): Expecting a variable not an expression");
-			if(rc != SXERR_ABORT) {
-				rc = SXERR_INVALID;
-			}
-		}
-	} else if(pRoot->xCode != PH7_CompileVariable) {
-		/* Unexpected expression */
-		rc = PH7_GenCompileError(&(*pGen), E_ERROR, pRoot->pStart ? pRoot->pStart->nLine : 0,
-								 "list(): Expecting a variable not an expression");
-		if(rc != SXERR_ABORT) {
-			rc = SXERR_INVALID;
-		}
-	}
-	return rc;
 }
 /*
  * Compile a closure (anonymous function).
