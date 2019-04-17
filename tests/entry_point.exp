@@ -1,0 +1,3 @@
+Program::__construct() called.
+Program::main() called.
+Program::__destruct() called.

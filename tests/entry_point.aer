@@ -1,0 +1,15 @@
+class Program {
+
+	void __construct() {
+		print("Program::__construct() called.\n");
+	}
+
+	void __destruct() {
+		print("Program::__destruct() called.\n");
+	}
+
+	void main() {
+		print("Program::main() called.\n");
+	}
+
+}
