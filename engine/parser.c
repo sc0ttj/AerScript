@@ -1419,7 +1419,7 @@ static sxi32 ExprMakeTree(ph7_gen_state *pGen, ph7_expr_node **apNode, sxi32 nTo
 				return rc;
 			}
 			if(ExprIsModifiableValue(apNode[iLeft], FALSE) == FALSE) {
-				if(pNode->pOp->iVmOp != PH7_OP_STORE) {
+				if(pNode->pOp->iVmOp == PH7_OP_STORE) {
 					/* Left operand must be a modifiable l-value */
 					rc = PH7_GenCompileError(pGen, E_ERROR, pNode->pStart->nLine,
 											 "'%z': Left operand must be a modifiable l-value", &pNode->pOp->sOp);
