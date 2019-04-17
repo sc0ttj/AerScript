@@ -2335,16 +2335,16 @@ static sxi32 PH7_CompileIf(ph7_gen_state *pGen) {
 		if(pGen->pIn >= pGen->pEnd || (pGen->pIn->nType & PH7_TK_KEYWORD) == 0) {
 			break;
 		}
-		/* Ensure that the keyword ID is 'else if' or 'else' */
+		/* Ensure that the keyword ID is 'else' */
 		nKeyID = (sxu32)SX_PTR_TO_INT(pGen->pIn->pUserData);
-		if((nKeyID & (PH7_KEYWORD_ELSE | PH7_KEYWORD_ELIF)) == 0) {
+		if(nKeyID != PH7_KEYWORD_ELSE) {
 			break;
 		}
 		/* Emit the unconditional jump */
 		PH7_VmEmitInstr(pGen->pVm, 0, PH7_OP_JMP, 0, 0, 0, &nJumpIdx);
 		/* Save the instruction index so we can fix it later when the jump destination is resolved */
 		PH7_GenStateNewJumpFixup(pCondBlock, PH7_OP_JMP, nJumpIdx);
-		if(nKeyID & PH7_KEYWORD_ELSE) {
+		if(nKeyID == PH7_KEYWORD_ELSE) {
 			pToken = &pGen->pIn[1];
 			if(pToken >= pGen->pEnd || (pToken->nType & PH7_TK_KEYWORD) == 0 ||
 					SX_PTR_TO_INT(pToken->pUserData) != PH7_KEYWORD_IF) {
@@ -2352,7 +2352,7 @@ static sxi32 PH7_CompileIf(ph7_gen_state *pGen) {
 			}
 			pGen->pIn++; /* Jump the 'else' keyword */
 		}
-		pGen->pIn++; /* Jump the 'elseif/if' keyword */
+		pGen->pIn++; /* Jump the 'if' keyword */
 		/* Synchronize cursors */
 		pToken = pGen->pIn;
 		/* Fix the false jump */
@@ -2361,7 +2361,7 @@ static sxi32 PH7_CompileIf(ph7_gen_state *pGen) {
 	/* Fix the false jump */
 	PH7_GenStateFixJumps(pCondBlock, PH7_OP_JMPZ, PH7_VmInstrLength(pGen->pVm));
 	if(pGen->pIn < pGen->pEnd && (pGen->pIn->nType & PH7_TK_KEYWORD) &&
-			(SX_PTR_TO_INT(pGen->pIn->pUserData) & PH7_KEYWORD_ELSE)) {
+			(SX_PTR_TO_INT(pGen->pIn->pUserData) == PH7_KEYWORD_ELSE)) {
 		/* Compile the else block */
 		pGen->pIn++;
 		rc = PH7_CompileBlock(&(*pGen));

@@ -623,7 +623,6 @@ static sxu32 KeywordCode(const char *z, int n) {
 		{"foreach", PH7_KEYWORD_FOREACH},
 		{"switch", PH7_KEYWORD_SWITCH},
 		{"else", PH7_KEYWORD_ELSE},
-		{"elseif", PH7_KEYWORD_ELIF},
 		{"if", PH7_KEYWORD_IF},
 		{"while", PH7_KEYWORD_WHILE},
 		/* Reserved keywords */
