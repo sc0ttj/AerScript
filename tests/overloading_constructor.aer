@@ -1,9 +1,9 @@
 class Test {
-	object __construct(string $a) {
+	void __construct(string $a) {
 		print("$a\n");
 	}
 
-	object __construct(int $a, int $b) {
+	void __construct(int $a, int $b) {
 		print("$a + $b = ", $a + $b, "\n");
 	}
 
