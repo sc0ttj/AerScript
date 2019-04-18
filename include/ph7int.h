@@ -1545,7 +1545,6 @@ enum ph7_expr_id {
 #define PH7_TK_SSTR      0x0004000 /* Single quoted string 'str' */
 #define PH7_TK_COMMA     0x0020000 /* Comma ',' */
 #define PH7_TK_SEMI      0x0040000 /* Semi-colon ";" */
-#define PH7_TK_BSTR      0x0080000 /* Backtick quoted string [i.e: Shell command `date`] */
 #define PH7_TK_COLON     0x0100000 /* single Colon ':' */
 #define PH7_TK_AMPER     0x0200000 /* Ampersand '&' */
 #define PH7_TK_EQUAL     0x0400000 /* Equal '=' */

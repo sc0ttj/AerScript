@@ -347,25 +347,6 @@ static sxi32 TokenizeAerScript(SyStream *pStream, SyToken *pToken, void *pUserDa
 					pStream->zText++;
 					return SXRET_OK;
 				}
-			case '`': {
-					/* Backtick quoted string */
-					pStr->zString++;
-					while(pStream->zText < pStream->zEnd) {
-						if(pStream->zText[0] == '`' && pStream->zText[-1] != '\\') {
-							break;
-						}
-						if(pStream->zText[0] == '\n') {
-							pStream->nLine++;
-						}
-						pStream->zText++;
-					}
-					/* Record token length and type */
-					pStr->nByte = (sxu32)((const char *)pStream->zText - pStr->zString);
-					pToken->nType = PH7_TK_BSTR;
-					/* Jump the trailing backtick */
-					pStream->zText++;
-					return SXRET_OK;
-				}
 			case '\\':
 				pToken->nType = PH7_TK_NSSEP;
 				break;
