@@ -383,7 +383,7 @@ static sxi32 TokenizeAerScript(SyStream *pStream, SyToken *pToken, void *pUserDa
 			case ';':
 				pToken->nType = PH7_TK_SEMI;
 				break;
-			/* Handle combined operators [i.e: +=,===,!=== ...] */
+			/* Handle combined operators [i.e: +=,==,!= ...] */
 			case '=':
 				pToken->nType |= PH7_TK_EQUAL;
 				if(pStream->zText < pStream->zEnd) {
@@ -391,32 +391,10 @@ static sxi32 TokenizeAerScript(SyStream *pStream, SyToken *pToken, void *pUserDa
 						pToken->nType &= ~PH7_TK_EQUAL;
 						/* Current operator: == */
 						pStream->zText++;
-						if(pStream->zText < pStream->zEnd && pStream->zText[0] == '=') {
-							/* Current operator: === */
-							pStream->zText++;
-						}
 					} else if(pStream->zText[0] == '>') {
 						/* Array operator: => */
 						pToken->nType = PH7_TK_ARRAY_OP;
 						pStream->zText++;
-					} else {
-						/* TICKET 1433-0010: Reference operator '=&' */
-						const unsigned char *zCur = pStream->zText;
-						sxu32 nLine = 0;
-						while(zCur < pStream->zEnd && zCur[0] < 0xc0 && SyisSpace(zCur[0])) {
-							if(zCur[0] == '\n') {
-								nLine++;
-							}
-							zCur++;
-						}
-						if(zCur < pStream->zEnd && zCur[0] == '&') {
-							/* Current operator: =& */
-							pToken->nType &= ~PH7_TK_EQUAL;
-							SyStringInitFromBuf(pStr, "=&", sizeof("=&") - 1);
-							/* Update token stream */
-							pStream->zText = &zCur[1];
-							pStream->nLine += nLine;
-						}
 					}
 				}
 				break;
@@ -424,10 +402,6 @@ static sxi32 TokenizeAerScript(SyStream *pStream, SyToken *pToken, void *pUserDa
 				if(pStream->zText < pStream->zEnd && pStream->zText[0] == '=') {
 					/* Current operator: != */
 					pStream->zText++;
-					if(pStream->zText < pStream->zEnd && pStream->zText[0] == '=') {
-						/* Current operator: !== */
-						pStream->zText++;
-					}
 				}
 				break;
 			case '&':
@@ -520,9 +494,6 @@ static sxi32 TokenizeAerScript(SyStream *pStream, SyToken *pToken, void *pUserDa
 								pStream->zText++;
 							}
 						}
-					} else if(pStream->zText[0] == '>') {
-						/* Current operator: <> */
-						pStream->zText++;
 					} else if(pStream->zText[0] == '=') {
 						/* Current operator: <= */
 						pStream->zText++;
