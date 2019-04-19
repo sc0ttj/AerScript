@@ -1,7 +1,7 @@
 class Program {
 
 	string cycle(char $a, char $b, int $i = 0) {
-		static char[] $switches;
+		static bool[] $switches;
 		if($switches[$i])
 			$switches[$i] = !$switches[$i];
 		else
