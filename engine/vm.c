@@ -2867,8 +2867,25 @@ static sxi32 VmByteCodeExec(
 						}
 						pMap = (ph7_hashmap *)pObj->x.pOther;
 					}
+					sxu32 pArrType = pTos->iFlags ^ MEMOBJ_HASHMAP;
 					VmPopOperand(&pTos, 1);
-					/* Phase#2: Perform the insertion */
+					/* Phase#2: Perform the type validation */
+					if((pArrType & MEMOBJ_MIXED) == 0 && (pTos->iFlags & pArrType) == 0) {
+						sxu32 rc = SXRET_OK;
+						if(pTos->iFlags & MEMOBJ_HASHMAP) {
+							rc = PH7_HashmapCast(pTos, pArrType);
+						} else {
+							if((rc = PH7_CheckVarCompat(pTos, pArrType)) == SXRET_OK) {
+								ProcMemObjCast xCast = PH7_MemObjCastMethod(pArrType);
+								xCast(pTos);
+							}
+						}
+						if(rc != SXRET_OK) {
+							PH7_VmThrowError(&(*pVm), PH7_CTX_ERR,
+											"Cannot insert a value of incompatible type to array");
+						}
+					}
+					/* Phase#3: Perform the insertion */
 					PH7_HashmapInsert(pMap, pKey, pTos);
 					if(pKey) {
 						PH7_MemObjRelease(pKey);
