@@ -1,0 +1,50 @@
+array(int, 9) {
+ [0] =>
+  int(1)
+ [1] =>
+  int(2)
+ [2] =>
+  int(3)
+ [3] =>
+  int(4)
+ [4] =>
+  int(5)
+ [5] =>
+  int(6)
+ [6] =>
+  array(int, 1) {
+   [0] =>
+    int(7)
+   }
+ [7] =>
+  array(int, 1) {
+   [test] =>
+    int(8)
+   }
+ [8] =>
+  array(int, 2) {
+   [0] =>
+    int(0)
+   [1] =>
+    int(0)
+   }
+ }
+array(float, 5) {
+ [0] =>
+  float(1)
+ [1] =>
+  float(4.5)
+ [2] =>
+  array(float, 3) {
+   [0] =>
+    float(4)
+   [1] =>
+    float(5)
+   [2] =>
+    float(6.5)
+   }
+ [3] =>
+  float(7.2)
+ [4] =>
+  float(9)
+ }
