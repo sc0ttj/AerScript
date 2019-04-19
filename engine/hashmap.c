@@ -1036,6 +1036,8 @@ PH7_PRIVATE sxi32 PH7_HashmapDup(ph7_hashmap *pSrc, ph7_hashmap *pDest) {
 		/* Point to the next entry */
 		pEntry = pEntry->pPrev; /* Reverse link */
 	}
+	/* Save the next array index */
+	pDest->iNextIdx = pSrc->iNextIdx;
 	return SXRET_OK;
 }
 /*
