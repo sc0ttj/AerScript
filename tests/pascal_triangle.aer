@@ -1,0 +1,25 @@
+class Program {
+
+	private int fun(int $y) {
+		int $result = 1;
+		for(int $z = 1; $z <= $y; $z++) {
+			$result *= $z;
+		}
+		return $result;
+	}
+
+	void main() {
+		int $z;
+		int $y = 5;
+		for(int $x = 0; $x < $y; $x++) {
+			for($z = 0; $z <= ($y - $x - 2); $z++) {
+				print(' ');
+			}
+			for($z = 0; $z <= $x; $z++) {
+				print($this->fun($x) / ($this->fun($z) * $this->fun($x - $z)), ' ');
+			}
+			print("\n");
+		}
+	}
+
+}
