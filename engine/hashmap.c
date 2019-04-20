@@ -2943,46 +2943,6 @@ static int ph7_hashmap_merge(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	return PH7_OK;
 }
 /*
- * array array_copy(array $source)
- *  Make a blind copy of the target array.
- * Parameters
- *  $source
- *   Target array
- * Return
- *  Copy of the target array on success.NULL otherwise.
- * Note
- *  This function is a symisc eXtension.
- */
-static int ph7_hashmap_copy(ph7_context *pCtx, int nArg, ph7_value **apArg) {
-	ph7_hashmap *pMap;
-	ph7_value *pArray;
-	if(nArg < 1) {
-		/* Missing arguments,return NULL */
-		ph7_result_null(pCtx);
-		return PH7_OK;
-	}
-	/* Create a new array */
-	pArray = ph7_context_new_array(pCtx);
-	if(pArray == 0) {
-		ph7_result_null(pCtx);
-		return PH7_OK;
-	}
-	/* Point to the internal representation of the hashmap */
-	pMap = (ph7_hashmap *)pArray->x.pOther;
-	if(ph7_value_is_array(apArg[0])) {
-		/* Point to the internal representation of the source */
-		ph7_hashmap *pSrc = (ph7_hashmap *)apArg[0]->x.pOther;
-		/* Perform the copy */
-		PH7_HashmapDup(pSrc, pMap);
-	} else {
-		/* Simple insertion */
-		PH7_HashmapInsert(pMap, 0/* Automatic index assign*/, apArg[0]);
-	}
-	/* Return the duplicated array */
-	ph7_result_value(pCtx, pArray);
-	return PH7_OK;
-}
-/*
  * bool array_erase(array $source)
  *  Remove all elements from a given array.
  * Parameters
@@ -5286,7 +5246,6 @@ static const ph7_builtin_func aHashmapFunc[] = {
 	{"array_intersect_assoc", ph7_hashmap_intersect_assoc},
 	{"array_uintersect",  ph7_hashmap_uintersect},
 	{"array_intersect_key",   ph7_hashmap_intersect_key},
-	{"array_copy",        ph7_hashmap_copy    },
 	{"array_erase",       ph7_hashmap_erase   },
 	{"array_fill",        ph7_hashmap_fill    },
 	{"array_fill_keys",   ph7_hashmap_fill_keys},
