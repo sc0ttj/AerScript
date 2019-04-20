@@ -880,23 +880,27 @@ PH7_PRIVATE sxi32 PH7_MemObjStringFormat(ph7_value *pObj, const char *zFormat, v
  */
 PH7_PRIVATE sxi32 PH7_MemObjStore(ph7_value *pSrc, ph7_value *pDest) {
 	ph7_class_instance *pObj = 0;
-	ph7_hashmap *pMap = 0;
+	ph7_hashmap *pSrcMap = 0;
 	sxi32 rc;
 	if(pSrc->x.pOther) {
 		if(pSrc->iFlags & MEMOBJ_HASHMAP) {
-			/* Increment reference count */
-			((ph7_hashmap *)pSrc->x.pOther)->iRef++;
+			/* Dump source hashmap */
+			pSrcMap = (ph7_hashmap *)pSrc->x.pOther;
 		} else if(pSrc->iFlags & MEMOBJ_OBJ) {
 			/* Increment reference count */
 			((ph7_class_instance *)pSrc->x.pOther)->iRef++;
 		}
 	}
-	if(pDest->iFlags & MEMOBJ_HASHMAP) {
-		pMap = (ph7_hashmap *)pDest->x.pOther;
-	} else if(pDest->iFlags & MEMOBJ_OBJ) {
+	if(pDest->iFlags & MEMOBJ_OBJ) {
 		pObj = (ph7_class_instance *)pDest->x.pOther;
 	}
 	SyMemcpy((const void *) & (*pSrc), &(*pDest), sizeof(ph7_value) - (sizeof(ph7_vm *) + sizeof(SyBlob) + sizeof(sxu32)));
+	if(pSrcMap) {
+		ph7_hashmap *pMap;
+		pMap = PH7_NewHashmap(&(*pDest->pVm), 0, 0);
+		PH7_HashmapDup(pSrcMap, pMap);
+		pDest->x.pOther = pMap;
+	}
 	rc = SXRET_OK;
 	if(SyBlobLength(&pSrc->sBlob) > 0) {
 		SyBlobReset(&pDest->sBlob);
@@ -906,9 +910,7 @@ PH7_PRIVATE sxi32 PH7_MemObjStore(ph7_value *pSrc, ph7_value *pDest) {
 			SyBlobRelease(&pDest->sBlob);
 		}
 	}
-	if(pMap) {
-		PH7_HashmapUnref(pMap);
-	} else if(pObj) {
+	if(pObj) {
 		PH7_ClassInstanceUnref(pObj);
 	}
 	return rc;

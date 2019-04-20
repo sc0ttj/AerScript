@@ -1008,12 +1008,6 @@ PH7_PRIVATE sxi32 PH7_HashmapDup(ph7_hashmap *pSrc, ph7_hashmap *pDest) {
 	ph7_value sKey, *pVal;
 	sxi32 rc;
 	sxu32 n;
-	if(pSrc == pDest) {
-		/* Same map. This can easily happen since hashmaps are passed by reference.
-		 * Unlike the zend engine.
-		 */
-		return SXRET_OK;
-	}
 	/* Point to the first inserted entry in the source */
 	pEntry = pSrc->pFirst;
 	/* Perform the duplication */
