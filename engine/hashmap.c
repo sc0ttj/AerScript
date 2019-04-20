@@ -2868,37 +2868,6 @@ static int ph7_hashmap_keys(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	return PH7_OK;
 }
 /*
- * bool array_same(array $arr1,array $arr2)
- *  Return TRUE if the given arrays are the same instance.
- *  This function is useful under PH7 since arrays are passed
- *  by reference unlike the zend engine which use pass by values.
- * Parameters
- *  $arr1
- *   First array
- *  $arr2
- *   Second array
- * Return
- *  TRUE if the arrays are the same instance.FALSE otherwise.
- * Note
- *  This function is a symisc eXtension.
- */
-static int ph7_hashmap_same(ph7_context *pCtx, int nArg, ph7_value **apArg) {
-	ph7_hashmap *p1, *p2;
-	int rc;
-	if(nArg < 2 || !ph7_value_is_array(apArg[0]) || !ph7_value_is_array(apArg[1])) {
-		/* Missing or invalid arguments,return FALSE*/
-		ph7_result_bool(pCtx, 0);
-		return PH7_OK;
-	}
-	/* Point to the hashmaps */
-	p1 = (ph7_hashmap *)apArg[0]->x.pOther;
-	p2 = (ph7_hashmap *)apArg[1]->x.pOther;
-	rc = (p1 == p2);
-	/* Same instance? */
-	ph7_result_bool(pCtx, rc);
-	return PH7_OK;
-}
-/*
  * array array_merge(array $array1,...)
  *  Merge one or more arrays.
  * Parameters
@@ -5232,7 +5201,6 @@ static const ph7_builtin_func aHashmapFunc[] = {
 	{"array_sum",         ph7_hashmap_sum     },
 	{"array_keys",        ph7_hashmap_keys    },
 	{"array_values",      ph7_hashmap_values  },
-	{"array_same",        ph7_hashmap_same    },  /* Symisc eXtension */
 	{"array_merge",       ph7_hashmap_merge   },
 	{"array_slice",       ph7_hashmap_slice   },
 	{"array_splice",      ph7_hashmap_splice  },
