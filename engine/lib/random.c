@@ -1,14 +1,13 @@
+/**
+ * @PROJECT     PH7 Engine for the AerScript Interpreter
+ * @COPYRIGHT   See COPYING in the top level directory
+ * @FILE        engine/lib/random.c
+ * @DESCRIPTION Psuedo Random Number Generator (PRNG) for the PH7 Engine
+ * @DEVELOPERS  Symisc Systems <devel@symisc.net>
+ *              Rafal Kupiec <belliash@codingworkshop.eu.org>
+ */
 #include "ph7int.h"
 
-/*
- * Psuedo Random Number Generator (PRNG)
- * @authors: SQLite authors <http://www.sqlite.org/>
- * @status: Public Domain
- * NOTE:
- *  Nothing in this file or anywhere else in the library does any kind of
- *  encryption.The RC4 algorithm is being used as a PRNG (pseudo-random
- *  number generator) not as an encryption device.
- */
 #define SXPRNG_MAGIC	0x13C4
 #ifdef __UNIXES__
 	#include <sys/types.h>

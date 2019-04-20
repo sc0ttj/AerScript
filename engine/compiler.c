@@ -1,16 +1,11 @@
-/*
- * Symisc PH7: An embeddable bytecode compiler and a virtual machine for the PHP(5) programming language.
- * Copyright (C) 2011-2012, Symisc Systems http://ph7.symisc.net/
- * Version 2.1.4
- * For information on licensing,redistribution of this file,and for a DISCLAIMER OF ALL WARRANTIES
- * please contact Symisc Systems via:
- *       legal@symisc.net
- *       licensing@symisc.net
- *       contact@symisc.net
- * or visit:
- *      http://ph7.symisc.net/
+/**
+ * @PROJECT     PH7 Engine for the AerScript Interpreter
+ * @COPYRIGHT   See COPYING in the top level directory
+ * @FILE        engine/compiler.c
+ * @DESCRIPTION PH7 Engine Compiler for the Aer language
+ * @DEVELOPERS  Symisc Systems <devel@symisc.net>
+ *              Rafal Kupiec <belliash@codingworkshop.eu.org>
  */
-/* $SymiscID: compile.c v6.0 Win7 2012-08-18 05:11 stable <chm@symisc.net> $ */
 #include "compiler.h"
 
 /*

@@ -1,16 +1,11 @@
-/*
- * Symisc PH7: An embeddable bytecode compiler and a virtual machine for the PHP(5) programming language.
- * Copyright (C) 2011-2012, Symisc Systems http://ph7.symisc.net/
- * Version 2.1.4
- * For information on licensing,redistribution of this file,and for a DISCLAIMER OF ALL WARRANTIES
- * please contact Symisc Systems via:
- *       legal@symisc.net
- *       licensing@symisc.net
- *       contact@symisc.net
- * or visit:
- *      http://ph7.symisc.net/
+/**
+ * @PROJECT     PH7 Engine for the AerScript Interpreter
+ * @COPYRIGHT   See COPYING in the top level directory
+ * @FILE        engine/memobj.c
+ * @DESCRIPTION Low-level indexed memory objects for the PH7 Engine
+ * @DEVELOPERS  Symisc Systems <devel@symisc.net>
+ *              Rafal Kupiec <belliash@codingworkshop.eu.org>
  */
-/* $SymiscID: memobj.c v2.7 FreeBSD 2012-08-09 03:40 stable <chm@symisc.net> $ */
 #include "ph7int.h"
 /* This file handle low-level stuff related to indexed memory objects [i.e: ph7_value] */
 /*

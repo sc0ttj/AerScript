@@ -1,3 +1,11 @@
+/**
+ * @PROJECT     PH7 Engine for the AerScript Interpreter
+ * @COPYRIGHT   See COPYING in the top level directory
+ * @FILE        engine/lib/hash.c
+ * @DESCRIPTION Hashing algorithms for the PH7 Engine
+ * @DEVELOPERS  Symisc Systems <devel@symisc.net>
+ *              Rafal Kupiec <belliash@codingworkshop.eu.org>
+ */
 #include "ph7int.h"
 
 sxu32 SyBinHash(const void *pSrc, sxu32 nLen) {

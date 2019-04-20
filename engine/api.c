@@ -1,21 +1,13 @@
-/*
- * Symisc PH7: An embeddable bytecode compiler and a virtual machine for the PHP(5) programming language.
- * Copyright (C) 2011-2012, Symisc Systems http://ph7.symisc.net/
- * Version 2.1.4
- * For information on licensing,redistribution of this file,and for a DISCLAIMER OF ALL WARRANTIES
- * please contact Symisc Systems via:
- *       legal@symisc.net
- *       licensing@symisc.net
- *       contact@symisc.net
- * or visit:
- *      http://ph7.symisc.net/
+/**
+ * @PROJECT     PH7 Engine for the AerScript Interpreter
+ * @COPYRIGHT   See COPYING in the top level directory
+ * @FILE        engine/api.c
+ * @DESCRIPTION PH7 Engine public Interfaces to AerScript SAPI
+ * @DEVELOPERS  Symisc Systems <devel@symisc.net>
+ *              Rafal Kupiec <belliash@codingworkshop.eu.org>
  */
-/* $SymiscID: api.c v2.0 FreeBSD 2012-08-18 06:54 stable <chm@symisc.net> $ */
 #include "ph7int.h"
-/* This file implement the public interfaces presented to host-applications.
- * Routines in other files are for internal use by PH7 and should not be
- * accessed by users of the library.
- */
+
 #define PH7_ENGINE_MAGIC 0xF874BCD7
 #define PH7_ENGINE_MISUSE(ENGINE) (ENGINE == 0 || ENGINE->nMagic != PH7_ENGINE_MAGIC)
 #define PH7_VM_MISUSE(VM) (VM == 0 || VM->nMagic == PH7_VM_STALE)

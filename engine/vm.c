@@ -1,42 +1,13 @@
-/*
- * Symisc PH7: An embeddable bytecode compiler and a virtual machine for the PHP(5) programming language.
- * Copyright (C) 2011-2012, Symisc Systems http://ph7.symisc.net/
- * Version 2.1.4
- * For information on licensing,redistribution of this file,and for a DISCLAIMER OF ALL WARRANTIES
- * please contact Symisc Systems via:
- *       legal@symisc.net
- *       licensing@symisc.net
- *       contact@symisc.net
- * or visit:
- *      http://ph7.symisc.net/
+/**
+ * @PROJECT     PH7 Engine for the AerScript Interpreter
+ * @COPYRIGHT   See COPYING in the top level directory
+ * @FILE        engine/vm.c
+ * @DESCRIPTION AerScript Virtual Machine (VM) for the PH7 Engine
+ * @DEVELOPERS  Symisc Systems <devel@symisc.net>
+ *              Rafal Kupiec <belliash@codingworkshop.eu.org>
  */
-/* $SymiscID: vm.c v1.4 FreeBSD 2012-09-10 00:06 stable <chm@symisc.net> $ */
 #include "ph7int.h"
-/*
- * The code in this file implements execution method of the PH7 Virtual Machine.
- * The PH7 compiler (implemented in 'compiler.c' and 'parse.c') generates a bytecode program
- * which is then executed by the virtual machine implemented here to do the work of the PHP
- * statements.
- * PH7 bytecode programs are similar in form to assembly language. The program consists
- * of a linear sequence of operations .Each operation has an opcode and 3 operands.
- * Operands P1 and P2 are integers where the first is signed while the second is unsigned.
- * Operand P3 is an arbitrary pointer specific to each instruction. The P2 operand is usually
- * the jump destination used by the OP_JMP,OP_JZ,OP_JNZ,... instructions.
- * Opcodes will typically ignore one or more operands. Many opcodes ignore all three operands.
- * Computation results are stored on a stack. Each entry on the stack is of type ph7_value.
- * PH7 uses the ph7_value object to represent all values that can be stored in a PHP variable.
- * Since PHP uses dynamic typing for the values it stores. Values stored in ph7_value objects
- * can be integers,floating point values,strings,arrays,class instances (object in the PHP jargon)
- * and so on.
- * Internally,the PH7 virtual machine manipulates nearly all PHP values as ph7_values structures.
- * Each ph7_value may cache multiple representations(string,integer etc.) of the same value.
- * An implicit conversion from one type to the other occurs as necessary.
- * Most of the code in this file is taken up by the [VmByteCodeExec()] function which does
- * the work of interpreting a PH7 bytecode program. But other routines are also provided
- * to help in building up a program instruction by instruction. Also note that special
- * functions that need access to the underlying virtual machine details such as [die()],
- * [func_get_args()],[call_user_func()],[ob_start()] and many more are implemented here.
- */
+
 /*
  * Each parsed URI is recorded and stored in an instance of the following structure.
  * This structure and it's related routines are taken verbatim from the xHT project

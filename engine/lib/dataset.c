@@ -1,3 +1,11 @@
+/**
+ * @PROJECT     PH7 Engine for the AerScript Interpreter
+ * @COPYRIGHT   See COPYING in the top level directory
+ * @FILE        engine/lib/dataset.c
+ * @DESCRIPTION Hash maps and dataset storages for the PH7 Engine 
+ * @DEVELOPERS  Symisc Systems <devel@symisc.net>
+ *              Rafal Kupiec <belliash@codingworkshop.eu.org>
+ */
 #include "ph7int.h"
 
 PH7_PRIVATE sxi32 SySetInit(SySet *pSet, SyMemBackend *pAllocator, sxu32 ElemSize) {

@@ -1,3 +1,11 @@
+/**
+ * @PROJECT     PH7 Engine for the AerScript Interpreter
+ * @COPYRIGHT   See COPYING in the top level directory
+ * @FILE        engine/lib/mutex.c
+ * @DESCRIPTION Thread safe MUTEX implementation for the PH7 Engine
+ * @DEVELOPERS  Symisc Systems <devel@symisc.net>
+ *              Rafal Kupiec <belliash@codingworkshop.eu.org>
+ */
 #include "ph7int.h"
 #if defined(__WINNT__)
 	#include <Windows.h>
