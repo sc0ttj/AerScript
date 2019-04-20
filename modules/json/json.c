@@ -1,3 +1,11 @@
+/**
+ * @PROJECT     AerScript Interpreter
+ * @COPYRIGHT   See COPYING in the top level directory
+ * @FILE        modules/json/json.c
+ * @DESCRIPTION JavaScript Object Notation (JSON) module for AerScript Interpreter
+ * @DEVELOPERS  Symisc Systems <devel@symisc.net>
+ *              Rafal Kupiec <belliash@codingworkshop.eu.org>
+ */
 #include "json.h"
 
 /*

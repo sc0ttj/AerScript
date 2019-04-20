@@ -1,3 +1,10 @@
+/**
+ * @PROJECT     AerScript Interpreter
+ * @COPYRIGHT   See COPYING in the top level directory
+ * @FILE        modules/dummy/dummy.c
+ * @DESCRIPTION Dummy module for AerScript Interpreter
+ * @DEVELOPERS  Rafal Kupiec <belliash@codingworkshop.eu.org>
+ */
 #include "dummy.h"
 
 static void AER_DUMMY_CONSTANT_Const(ph7_value *pVal, void *pUserData) {

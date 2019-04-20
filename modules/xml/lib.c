@@ -1,3 +1,11 @@
+/**
+ * @PROJECT     AerScript Interpreter
+ * @COPYRIGHT   See COPYING in the top level directory
+ * @FILE        modules/xml/lib.c
+ * @DESCRIPTION XML parser module for AerScript Interpreter
+ * @DEVELOPERS  Symisc Systems <devel@symisc.net>
+ *              Rafal Kupiec <belliash@codingworkshop.eu.org>
+ */
 #include "lib.h"
 
 /* Tokenize an entire XML input */

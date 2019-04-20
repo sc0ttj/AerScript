@@ -1,3 +1,10 @@
+/**
+ * @PROJECT     AerScript Interpreter
+ * @COPYRIGHT   See COPYING in the top level directory
+ * @FILE        modules/dummy/dummy.h
+ * @DESCRIPTION Dummy module for AerScript Interpreter
+ * @DEVELOPERS  Rafal Kupiec <belliash@codingworkshop.eu.org>
+ */
 #ifndef __DUMMY_H__
 #define __DUMMY_H__
 

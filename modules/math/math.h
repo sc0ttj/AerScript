@@ -1,3 +1,11 @@
+/**
+ * @PROJECT     AerScript Interpreter
+ * @COPYRIGHT   See COPYING in the top level directory
+ * @FILE        modules/math/math.h
+ * @DESCRIPTION Mathematical functions module for AerScript Interpreter
+ * @DEVELOPERS  Symisc Systems <devel@symisc.net>
+ *              Rafal Kupiec <belliash@codingworkshop.eu.org>
+ */
 #ifndef __MATH_H__
 #define __MATH_H__
 

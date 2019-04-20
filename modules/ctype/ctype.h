@@ -1,3 +1,11 @@
+/**
+ * @PROJECT     AerScript Interpreter
+ * @COPYRIGHT   See COPYING in the top level directory
+ * @FILE        modules/ctype/ctype.h
+ * @DESCRIPTION Character type checking module for AerScript Interpreter
+ * @DEVELOPERS  Symisc Systems <devel@symisc.net>
+ *              Rafal Kupiec <belliash@codingworkshop.eu.org>
+ */
 #ifndef __CTYPE_H__
 #define __CTYPE_H__
 

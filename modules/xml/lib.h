@@ -1,3 +1,11 @@
+/**
+ * @PROJECT     AerScript Interpreter
+ * @COPYRIGHT   See COPYING in the top level directory
+ * @FILE        modules/xml/lib.h
+ * @DESCRIPTION XML parser module for AerScript Interpreter
+ * @DEVELOPERS  Symisc Systems <devel@symisc.net>
+ *              Rafal Kupiec <belliash@codingworkshop.eu.org>
+ */
 #ifndef __LIB_H__
 #define __LIB_H__
 
