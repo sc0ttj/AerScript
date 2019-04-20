@@ -5,6 +5,7 @@
  * @DESCRIPTION PH7 Engine public Interfaces to AerScript SAPI
  * @DEVELOPERS  Symisc Systems <devel@symisc.net>
  *              Rafal Kupiec <belliash@codingworkshop.eu.org>
+ *              David Carlier <devnexen@gmail.com>
  */
 #include "ph7int.h"
 

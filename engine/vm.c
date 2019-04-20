@@ -5,6 +5,7 @@
  * @DESCRIPTION AerScript Virtual Machine (VM) for the PH7 Engine
  * @DEVELOPERS  Symisc Systems <devel@symisc.net>
  *              Rafal Kupiec <belliash@codingworkshop.eu.org>
+ *              David Carlier <devnexen@gmail.com>
  */
 #include "ph7int.h"
 

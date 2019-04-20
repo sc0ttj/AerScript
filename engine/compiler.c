@@ -5,6 +5,7 @@
  * @DESCRIPTION PH7 Engine Compiler for the Aer language
  * @DEVELOPERS  Symisc Systems <devel@symisc.net>
  *              Rafal Kupiec <belliash@codingworkshop.eu.org>
+ *              Piotr Likoski <likoski@codingworkshop.eu.org>
  */
 #include "compiler.h"
 

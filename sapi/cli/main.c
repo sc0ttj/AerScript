@@ -1,31 +1,10 @@
-/*
- * Compile this file together with the ph7 engine source code to generate
- * the simple PH7 interpreter executable. For example:
- *  gcc -W -Wall -O6 -D PH7_ENABLE_MATH_FUNC -o ph7 ph7_interp.c ph7.c
- */
-/*
- * The PH7 interpreter is a simple stand-alone PHP interpreter that allows
- * the user to enter and execute PHP files against a PH7 engine.
- * To start the ph7 program, just type "ph7" followed by the name of the PHP file
- * to compile and execute. That is, the first argument is to the interpreter, the rest
- * are scripts arguments, press "Enter" and the PHP code will be executed.
- * If something goes wrong while processing the PHP script due to a compile-time error
- * your error output (STDOUT) should display the compile-time error messages.
- *
- * Usage example of the ph7 interpreter:
- *   ph7 scripts/hello_world.php
- * Running the interpreter with script arguments
- *    ph7 scripts/mp3_tag.php /usr/local/path/to/my_mp3s
- *
- * The PH7 interpreter package includes more than 70 PHP scripts to test ranging from
- * simple hello world programs to XML processing, ZIP archive extracting, MP3 tag extracting,
- * UUID generation, JSON encoding/decoding, INI processing, Base32 encoding/decoding and many
- * more. These scripts are available in the scripts directory from the zip archive.
- */
-/* $SymiscID: ph7_interp.c v1.7.4 Win7 2012-10-06 03:22 stable <devel@symisc.net> $ */
-/* Make sure you have the latest release of the PH7 engine
- * from:
- *  http://ph7.symisc.net/downloads.html
+/**
+ * @PROJECT     AerScript Interpreter
+ * @COPYRIGHT   See COPYING in the top level directory
+ * @FILE        sapi/cli/main.c
+ * @DESCRIPTION Command line SAPI for the AerScript Interpreter
+ * @DEVELOPERS  Symisc Systems <devel@symisc.net>
+ *              Rafal Kupiec <belliash@codingworkshop.eu.org>
  */
 #include <stdio.h>
 #include <stdlib.h>

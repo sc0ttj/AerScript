@@ -5,6 +5,7 @@
  * @DESCRIPTION Implements a virtual file systems (VFS) for the PH7 engine
  * @DEVELOPERS  Symisc Systems <devel@symisc.net>
  *              Rafal Kupiec <belliash@codingworkshop.eu.org>
+ *              David Carlier <devnexen@gmail.com>
  */ 
 #include "ph7int.h"
 /*
