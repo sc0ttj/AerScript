@@ -981,15 +981,11 @@ PH7_PRIVATE sxi32 PH7_CompileLangConstruct(ph7_gen_state *pGen, sxi32 iCompileFl
  */
 PH7_PRIVATE sxi32 PH7_CompileVariable(ph7_gen_state *pGen, sxi32 iCompileFlag) {
 	sxu32 nLine = pGen->pIn->nLine;
-	sxi32 iVv;
 	void *p3;
 	sxi32 rc;
-	iVv = -1; /* Variable variable counter */
-	while(pGen->pIn < pGen->pEnd && (pGen->pIn->nType & PH7_TK_DOLLAR)) {
-		pGen->pIn++;
-		iVv++;
-	}
-	if(pGen->pIn >= pGen->pEnd || (pGen->pIn->nType & (PH7_TK_ID | PH7_TK_KEYWORD | PH7_TK_OCB/*'{'*/)) == 0) {
+	/* Jump the dollar sign */
+	pGen->pIn++;
+	if(pGen->pIn >= pGen->pEnd || (pGen->pIn->nType & (PH7_TK_ID | PH7_TK_KEYWORD)) == 0) {
 		/* Invalid variable name */
 		rc = PH7_GenCompileError(pGen, E_ERROR, nLine, "Invalid variable name");
 		if(rc == SXERR_ABORT) {
@@ -999,53 +995,30 @@ PH7_PRIVATE sxi32 PH7_CompileVariable(ph7_gen_state *pGen, sxi32 iCompileFlag) {
 		return SXRET_OK;
 	}
 	p3  = 0;
-	if(pGen->pIn->nType & PH7_TK_OCB/*'{'*/) {
-		/* Dynamic variable creation */
-		pGen->pIn++;  /* Jump the open curly */
-		pGen->pEnd--; /* Ignore the trailing curly */
-		if(pGen->pIn >= pGen->pEnd) {
-			/* Empty expression */
-			PH7_GenCompileError(&(*pGen), E_ERROR, nLine, "Invalid variable name");
-			return SXRET_OK;
-		}
-		/* Compile the expression holding the variable name */
-		rc = PH7_CompileExpr(&(*pGen), 0, 0);
-		if(rc == SXERR_ABORT) {
+	SyHashEntry *pEntry;
+	SyString *pName;
+	char *zName = 0;
+	/* Extract variable name */
+	pName = &pGen->pIn->sData;
+	/* Advance the stream cursor */
+	pGen->pIn++;
+	pEntry = SyHashGet(&pGen->hVar, (const void *)pName->zString, pName->nByte);
+	if(pEntry == 0) {
+		/* Duplicate name */
+		zName = SyMemBackendStrDup(&pGen->pVm->sAllocator, pName->zString, pName->nByte);
+		if(zName == 0) {
+			PH7_GenCompileError(pGen, E_ERROR, nLine, "Fatal, PH7 engine is running out of memory");
 			return SXERR_ABORT;
-		} else if(rc == SXERR_EMPTY) {
-			PH7_GenCompileError(&(*pGen), E_ERROR, nLine, "Missing variable name");
-			return SXRET_OK;
 		}
+		/* Install in the hashtable */
+		SyHashInsert(&pGen->hVar, zName, pName->nByte, zName);
 	} else {
-		SyHashEntry *pEntry;
-		SyString *pName;
-		char *zName = 0;
-		/* Extract variable name */
-		pName = &pGen->pIn->sData;
-		/* Advance the stream cursor */
-		pGen->pIn++;
-		pEntry = SyHashGet(&pGen->hVar, (const void *)pName->zString, pName->nByte);
-		if(pEntry == 0) {
-			/* Duplicate name */
-			zName = SyMemBackendStrDup(&pGen->pVm->sAllocator, pName->zString, pName->nByte);
-			if(zName == 0) {
-				PH7_GenCompileError(pGen, E_ERROR, nLine, "Fatal, PH7 engine is running out of memory");
-				return SXERR_ABORT;
-			}
-			/* Install in the hashtable */
-			SyHashInsert(&pGen->hVar, zName, pName->nByte, zName);
-		} else {
-			/* Name already available */
-			zName = (char *)pEntry->pUserData;
-		}
-		p3 = (void *)zName;
+		/* Name already available */
+		zName = (char *)pEntry->pUserData;
 	}
+	p3 = (void *)zName;
 	/* Emit the load instruction */
 	PH7_VmEmitInstr(pGen->pVm, 0, PH7_OP_LOAD, 0, 0, p3, 0);
-	while(iVv > 0) {
-		PH7_VmEmitInstr(pGen->pVm, 0, PH7_OP_LOAD, 0, 0, 0, 0);
-		iVv--;
-	}
 	/* Node successfully compiled */
 	return SXRET_OK;
 }
