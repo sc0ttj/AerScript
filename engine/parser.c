@@ -189,7 +189,7 @@ PH7_PRIVATE void PH7_DelimitNestedTokens(SyToken *pIn, SyToken *pEnd, sxu32 nTok
  */
 static sxi32 ExprVerifyNodes(ph7_gen_state *pGen, ph7_expr_node **apNode, sxi32 nNode) {
 	sxi32 iParen, iSquare, iQuesty, iBraces;
-	sxi32 i, rc;
+	sxi32 i;
 	if(nNode > 0 && apNode[0]->pOp && (apNode[0]->pOp->iOp == EXPR_OP_ADD || apNode[0]->pOp->iOp == EXPR_OP_SUB)) {
 		/* Fix and mark as an unary not binary plus/minus operator */
 		apNode[0]->pOp = PH7_ExprExtractOperator(&apNode[0]->pStart->sData, 0);
@@ -213,22 +213,14 @@ static sxi32 ExprVerifyNodes(ph7_gen_state *pGen, ph7_expr_node **apNode, sxi32 
 			iParen++;
 		} else if(apNode[i]->pStart->nType & PH7_TK_RPAREN/*')*/) {
 			if(iParen <= 0) {
-				rc = PH7_GenCompileError(&(*pGen), E_ERROR, apNode[i]->pStart->nLine, "Syntax error: Unexpected token ')'");
-				if(rc != SXERR_ABORT) {
-					rc = SXERR_SYNTAX;
-				}
-				return rc;
+				PH7_GenCompileError(&(*pGen), E_ERROR, apNode[i]->pStart->nLine, "Syntax error: Unexpected token ')'");
 			}
 			iParen--;
 		} else if(apNode[i]->pStart->nType & PH7_TK_OSB /*'['*/) {
 			iSquare++;
 		} else if(apNode[i]->pStart->nType & PH7_TK_CSB /*']'*/) {
 			if(iSquare <= 0) {
-				rc = PH7_GenCompileError(&(*pGen), E_ERROR, apNode[i]->pStart->nLine, "Syntax error: Unexpected token ']'");
-				if(rc != SXERR_ABORT) {
-					rc = SXERR_SYNTAX;
-				}
-				return rc;
+				PH7_GenCompileError(&(*pGen), E_ERROR, apNode[i]->pStart->nLine, "Syntax error: Unexpected token ']'");
 			}
 			iSquare--;
 		} else if(apNode[i]->pStart->nType & PH7_TK_OCB /*'{'*/ && apNode[i]->xCode != PH7_CompileArray) {
@@ -279,20 +271,12 @@ static sxi32 ExprVerifyNodes(ph7_gen_state *pGen, ph7_expr_node **apNode, sxi32 
 			}
 		} else if(apNode[i]->pStart->nType & PH7_TK_CCB /*'}'*/) {
 			if(iBraces <= 0) {
-				rc = PH7_GenCompileError(&(*pGen), E_ERROR, apNode[i]->pStart->nLine, "Syntax error: Unexpected token '}'");
-				if(rc != SXERR_ABORT) {
-					rc = SXERR_SYNTAX;
-				}
-				return rc;
+				PH7_GenCompileError(&(*pGen), E_ERROR, apNode[i]->pStart->nLine, "Syntax error: Unexpected token '}'");
 			}
 			iBraces--;
 		} else if(apNode[i]->pStart->nType & PH7_TK_COLON) {
 			if(iQuesty <= 0) {
-				rc = PH7_GenCompileError(&(*pGen), E_ERROR, apNode[i]->pStart->nLine, "Syntax error: Unexpected token ':'");
-				if(rc != SXERR_ABORT) {
-					rc = SXERR_SYNTAX;
-				}
-				return rc;
+				PH7_GenCompileError(&(*pGen), E_ERROR, apNode[i]->pStart->nLine, "Syntax error: Unexpected token ':'");
 			}
 			iQuesty--;
 		} else if(apNode[i]->pStart->nType & PH7_TK_OP) {
@@ -322,11 +306,7 @@ static sxi32 ExprVerifyNodes(ph7_gen_state *pGen, ph7_expr_node **apNode, sxi32 
 		}
 	}
 	if(iParen != 0 || iSquare != 0 || iQuesty != 0 || iBraces != 0) {
-		rc = PH7_GenCompileError(&(*pGen), E_ERROR, apNode[0]->pStart->nLine, "Syntax error, mismatched '(','[','{' or '?'");
-		if(rc != SXERR_ABORT) {
-			rc = SXERR_SYNTAX;
-		}
-		return rc;
+		PH7_GenCompileError(&(*pGen), E_ERROR, apNode[0]->pStart->nLine, "Syntax error, mismatched '(','[','{' or '?'");
 	}
 	return SXRET_OK;
 }
@@ -387,8 +367,7 @@ static void ExprAssembleLiteral(SyToken **ppCur, SyToken *pEnd) {
 static sxi32 ExprAssembleClosure(ph7_gen_state *pGen, SyToken **ppCur, SyToken *pEnd) {
 	SyToken *pIn = *ppCur;
 	sxu32 nLine;
-	sxi32 rc;
-	/* Jump the 'function' keyword */
+	/* Jump the data type keyword */
 	nLine = pIn->nLine;
 	pIn++;
 	if(pIn < pEnd && (pIn->nType & (PH7_TK_ID | PH7_TK_KEYWORD))) {
@@ -396,21 +375,13 @@ static sxi32 ExprAssembleClosure(ph7_gen_state *pGen, SyToken **ppCur, SyToken *
 	}
 	if(pIn >= pEnd || (pIn->nType & PH7_TK_LPAREN) == 0) {
 		/* Syntax error */
-		rc = PH7_GenCompileError(&(*pGen), E_ERROR, nLine, "Missing opening parenthesis '(' while declaring anonymous function");
-		if(rc != SXERR_ABORT) {
-			rc = SXERR_SYNTAX;
-		}
-		goto Synchronize;
+		PH7_GenCompileError(&(*pGen), E_ERROR, nLine, "Missing opening parenthesis '(' while declaring anonymous function");
 	}
 	pIn++; /* Jump the leading parenthesis '(' */
 	PH7_DelimitNestedTokens(pIn, pEnd, PH7_TK_LPAREN/*'('*/, PH7_TK_RPAREN/*')'*/, &pIn);
 	if(pIn >= pEnd || &pIn[1] >= pEnd) {
 		/* Syntax error */
-		rc = PH7_GenCompileError(&(*pGen), E_ERROR, nLine, "Syntax error while declaring anonymous function");
-		if(rc != SXERR_ABORT) {
-			rc = SXERR_SYNTAX;
-		}
-		goto Synchronize;
+		PH7_GenCompileError(&(*pGen), E_ERROR, nLine, "Syntax error while declaring anonymous function");
 	}
 	pIn++; /* Jump the trailing parenthesis */
 	if(pIn->nType & PH7_TK_KEYWORD) {
@@ -420,30 +391,18 @@ static sxi32 ExprAssembleClosure(ph7_gen_state *pGen, SyToken **ppCur, SyToken *
 			pIn++; /* Jump the 'using' keyword */
 			if(pIn >= pEnd || (pIn->nType & PH7_TK_LPAREN) == 0) {
 				/* Syntax error */
-				rc = PH7_GenCompileError(&(*pGen), E_ERROR, nLine, "Syntax error while declaring anonymous function");
-				if(rc != SXERR_ABORT) {
-					rc = SXERR_SYNTAX;
-				}
-				goto Synchronize;
+				PH7_GenCompileError(&(*pGen), E_ERROR, nLine, "Syntax error while declaring anonymous function");
 			}
 			pIn++; /* Jump the leading parenthesis '(' */
 			PH7_DelimitNestedTokens(pIn, pEnd, PH7_TK_LPAREN/*'('*/, PH7_TK_RPAREN/*')'*/, &pIn);
 			if(pIn >= pEnd || &pIn[1] >= pEnd) {
 				/* Syntax error */
-				rc = PH7_GenCompileError(&(*pGen), E_ERROR, nLine, "Syntax error while declaring anonymous function");
-				if(rc != SXERR_ABORT) {
-					rc = SXERR_SYNTAX;
-				}
-				goto Synchronize;
+				PH7_GenCompileError(&(*pGen), E_ERROR, nLine, "Syntax error while declaring anonymous function");
 			}
 			pIn++;
 		} else {
 			/* Syntax error */
-			rc = PH7_GenCompileError(&(*pGen), E_ERROR, nLine, "Syntax error while declaring anonymous function");
-			if(rc != SXERR_ABORT) {
-				rc = SXERR_SYNTAX;
-			}
-			goto Synchronize;
+			PH7_GenCompileError(&(*pGen), E_ERROR, nLine, "Syntax error while declaring anonymous function");
 		}
 	}
 	if(pIn->nType & PH7_TK_OCB /*'{'*/) {
@@ -454,16 +413,11 @@ static sxi32 ExprAssembleClosure(ph7_gen_state *pGen, SyToken **ppCur, SyToken *
 		}
 	} else {
 		/* Syntax error */
-		rc = PH7_GenCompileError(&(*pGen), E_ERROR, nLine, "Syntax error while declaring anonymous function,missing '{'");
-		if(rc == SXERR_ABORT) {
-			return SXERR_ABORT;
-		}
+		PH7_GenCompileError(&(*pGen), E_ERROR, nLine, "Syntax error while declaring anonymous function,missing '{'");
 	}
-	rc = SXRET_OK;
-Synchronize:
 	/* Synchronize pointers */
 	*ppCur = pIn;
-	return rc;
+	return SXRET_OK;
 }
 /*
  * Extract a single expression node from the input.
@@ -513,12 +467,7 @@ static sxi32 ExprExtractNode(ph7_gen_state *pGen, ph7_expr_node **ppNode) {
 				if(pCur < pGen->pEnd) {
 					pCur++;
 				} else {
-					rc = PH7_GenCompileError(pGen, E_ERROR, pNode->pStart->nLine, "Syntax error: Missing closing brace '}'");
-					if(rc != SXERR_ABORT) {
-						rc = SXERR_SYNTAX;
-					}
-					SyMemBackendPoolFree(&pGen->pVm->sAllocator, pNode);
-					return rc;
+					PH7_GenCompileError(pGen, E_ERROR, pNode->pStart->nLine, "Syntax error: Missing closing brace '}'");
 				}
 			}
 		}
@@ -531,12 +480,7 @@ static sxi32 ExprExtractNode(ph7_gen_state *pGen, ph7_expr_node **ppNode) {
 			pCur++;
 		} else {
 			/* Syntax error */
-			rc = PH7_GenCompileError(pGen, E_ERROR, pNode->pStart->nLine, "Syntax error: Missing closing braces '}'");
-			if(rc != SXERR_ABORT) {
-				rc = SXERR_SYNTAX;
-			}
-			SyMemBackendPoolFree(&pGen->pVm->sAllocator, pNode);
-			return rc;
+			PH7_GenCompileError(pGen, E_ERROR, pNode->pStart->nLine, "Syntax error: Missing closing braces '}'");
 		}
 		pNode->xCode = PH7_CompileArray;
 	} else if(pCur->nType & PH7_TK_KEYWORD) {
@@ -570,12 +514,7 @@ static sxi32 ExprExtractNode(ph7_gen_state *pGen, ph7_expr_node **ppNode) {
 			/* Point to the code generator routine */
 			pNode->xCode = PH7_GetNodeHandler(pCur->nType);
 			if(pNode->xCode == 0) {
-				rc = PH7_GenCompileError(pGen, E_ERROR, pNode->pStart->nLine, "Syntax error: Unexpected token '%z'", &pNode->pStart->sData);
-				if(rc != SXERR_ABORT) {
-					rc = SXERR_SYNTAX;
-				}
-				SyMemBackendPoolFree(&pGen->pVm->sAllocator, pNode);
-				return rc;
+				PH7_GenCompileError(pGen, E_ERROR, pNode->pStart->nLine, "Syntax error: Unexpected token '%z'", &pNode->pStart->sData);
 			}
 		}
 		/* Advance the stream cursor */
@@ -699,7 +638,6 @@ static sxi32 ExprMakeTree(ph7_gen_state *pGen, ph7_expr_node **apNode, sxi32 nTo
  */
 static sxi32 ExprProcessFuncArguments(ph7_gen_state *pGen, ph7_expr_node *pOp, ph7_expr_node **apNode, sxi32 nToken) {
 	sxi32 iNest, iCur, iNode;
-	sxi32 rc;
 	/* Process function arguments from left to right */
 	iCur = 0;
 	for(;;) {
@@ -728,29 +666,17 @@ static sxi32 ExprProcessFuncArguments(ph7_gen_state *pGen, ph7_expr_node *pOp, p
 				SySetPut(&pOp->aNodeArgs, (const void *)&apNode[iNode]);
 			} else {
 				/* Empty function argument */
-				rc = PH7_GenCompileError(&(*pGen), E_ERROR, pOp->pStart->nLine, "Empty function argument");
-				if(rc != SXERR_ABORT) {
-					rc = SXERR_SYNTAX;
-				}
-				return rc;
+				PH7_GenCompileError(&(*pGen), E_ERROR, pOp->pStart->nLine, "Empty function argument");
 			}
 		} else {
-			rc = PH7_GenCompileError(&(*pGen), E_ERROR, pOp->pStart->nLine, "Missing function argument");
-			if(rc != SXERR_ABORT) {
-				rc = SXERR_SYNTAX;
-			}
-			return rc;
+			PH7_GenCompileError(&(*pGen), E_ERROR, pOp->pStart->nLine, "Missing function argument");
 		}
 		/* Jump trailing comma */
 		if(iCur < nToken && apNode[iCur] && (apNode[iCur]->pStart->nType & PH7_TK_COMMA)) {
 			iCur++;
 			if(iCur >= nToken) {
 				/* missing function argument */
-				rc = PH7_GenCompileError(&(*pGen), E_ERROR, pOp->pStart->nLine, "Missing function argument");
-				if(rc != SXERR_ABORT) {
-					rc = SXERR_SYNTAX;
-				}
-				return rc;
+				PH7_GenCompileError(&(*pGen), E_ERROR, pOp->pStart->nLine, "Missing function argument");
 			}
 		}
 	}
@@ -879,19 +805,11 @@ static sxi32 ExprMakeTree(ph7_gen_state *pGen, ph7_expr_node **apNode, sxi32 nTo
 				}
 				if(nFuncTok + iCur >= nToken) {
 					/* Syntax error */
-					rc = PH7_GenCompileError(pGen, E_ERROR, pNode->pStart->nLine, "Missing right parenthesis ')'");
-					if(rc != SXERR_ABORT) {
-						rc = SXERR_SYNTAX;
-					}
-					return rc;
+					PH7_GenCompileError(pGen, E_ERROR, pNode->pStart->nLine, "Missing right parenthesis ')'");
 				}
 				if(iLeft < 0 || !NODE_ISTERM(iLeft) /*|| ( apNode[iLeft]->pOp && apNode[iLeft]->pOp->iPrec != 2)*/) {
 					/* Syntax error */
-					rc = PH7_GenCompileError(pGen, E_ERROR, pNode->pStart->nLine, "Invalid function name");
-					if(rc != SXERR_ABORT) {
-						rc = SXERR_SYNTAX;
-					}
-					return rc;
+					PH7_GenCompileError(pGen, E_ERROR, pNode->pStart->nLine, "Invalid function name");
 				}
 				if(nFuncTok > 1) {
 					/* Process function arguments */
@@ -914,11 +832,7 @@ static sxi32 ExprMakeTree(ph7_gen_state *pGen, ph7_expr_node **apNode, sxi32 nTo
 													   apNode[iLeft]->xCode != PH7_CompileSimpleString && apNode[iLeft]->xCode != PH7_CompileString)) ||
 						(apNode[iLeft]->pOp && apNode[iLeft]->pOp->iPrec != 2 /* postfix */)) {
 					/* Syntax error */
-					rc = PH7_GenCompileError(pGen, E_ERROR, pNode->pStart->nLine, "Invalid array name");
-					if(rc != SXERR_ABORT) {
-						rc = SXERR_SYNTAX;
-					}
-					return rc;
+					PH7_GenCompileError(pGen, E_ERROR, pNode->pStart->nLine, "Invalid array name");
 				}
 				/* Collect index tokens */
 				while(iArrTok < nToken) {
@@ -960,23 +874,15 @@ static sxi32 ExprMakeTree(ph7_gen_state *pGen, ph7_expr_node **apNode, sxi32 nTo
 				}
 				if(iRight >= nToken || iLeft < 0 || !NODE_ISTERM(iRight) || !NODE_ISTERM(iLeft)) {
 					/* Syntax error */
-					rc = PH7_GenCompileError(pGen, E_ERROR, pNode->pStart->nLine, "'%z': Missing/Invalid member name", &pNode->pOp->sOp);
-					if(rc != SXERR_ABORT) {
-						rc = SXERR_SYNTAX;
-					}
-					return rc;
+					PH7_GenCompileError(pGen, E_ERROR, pNode->pStart->nLine, "'%z': Missing/Invalid member name", &pNode->pOp->sOp);
 				}
 				/* Link the node to the tree */
 				pNode->pLeft = apNode[iLeft];
 				if(pNode->pOp->iOp == EXPR_OP_ARROW /*'->'*/ && pNode->pLeft->pOp == 0 &&
 						pNode->pLeft->xCode != PH7_CompileVariable) {
 					/* Syntax error */
-					rc = PH7_GenCompileError(pGen, E_ERROR, pNode->pStart->nLine,
+					PH7_GenCompileError(pGen, E_ERROR, pNode->pStart->nLine,
 											 "'%z': Expecting a variable as left operand", &pNode->pOp->sOp);
-					if(rc != SXERR_ABORT) {
-						rc = SXERR_SYNTAX;
-					}
-					return rc;
 				}
 				pNode->pRight = apNode[iRight];
 				apNode[iLeft] = apNode[iRight] = 0;
@@ -999,12 +905,8 @@ static sxi32 ExprMakeTree(ph7_gen_state *pGen, ph7_expr_node **apNode, sxi32 nTo
 			}
 			if(iLeft >= nToken || !NODE_ISTERM(iLeft)) {
 				/* Syntax error */
-				rc = PH7_GenCompileError(pGen, E_ERROR, pNode->pStart->nLine, "'%z': Expecting class constructor call",
+				PH7_GenCompileError(pGen, E_ERROR, pNode->pStart->nLine, "'%z': Expecting class constructor call",
 										 &pNode->pOp->sOp);
-				if(rc != SXERR_ABORT) {
-					rc = SXERR_SYNTAX;
-				}
-				return rc;
 			}
 			/* Make sure the operand are of a valid type */
 			if(pNode->pOp->iOp == EXPR_OP_CLONE) {
@@ -1021,12 +923,8 @@ static sxi32 ExprMakeTree(ph7_gen_state *pGen, ph7_expr_node **apNode, sxi32 nTo
 				if(apNode[iLeft]->pOp == 0) {
 					if(apNode[iLeft]->xCode != PH7_CompileVariable) {
 						pToken = apNode[iLeft]->pStart;
-						rc = PH7_GenCompileError(pGen, E_ERROR, pNode->pStart->nLine, "'%z': Unexpected token '%z'",
+						PH7_GenCompileError(pGen, E_ERROR, pNode->pStart->nLine, "'%z': Unexpected token '%z'",
 												 &pNode->pOp->sOp, &pToken->sData);
-						if(rc != SXERR_ABORT) {
-							rc = SXERR_SYNTAX;
-						}
-						return rc;
 					}
 				}
 			} else {
@@ -1036,13 +934,9 @@ static sxi32 ExprMakeTree(ph7_gen_state *pGen, ph7_expr_node **apNode, sxi32 nTo
 					if(xCons != PH7_CompileVariable && xCons != PH7_CompileLiteral && xCons != PH7_CompileSimpleString) {
 						pToken = apNode[iLeft]->pStart;
 						/* Syntax error */
-						rc = PH7_GenCompileError(pGen, E_ERROR, pNode->pStart->nLine,
+						PH7_GenCompileError(pGen, E_ERROR, pNode->pStart->nLine,
 												 "'%z': Unexpected token '%z', expecting literal, variable or constructor call",
 												 &pNode->pOp->sOp, &pToken->sData);
-						if(rc != SXERR_ABORT) {
-							rc = SXERR_SYNTAX;
-						}
-						return rc;
 					}
 				}
 			}
@@ -1079,11 +973,7 @@ static sxi32 ExprMakeTree(ph7_gen_state *pGen, ph7_expr_node **apNode, sxi32 nTo
 			if(iLeft < 0 || (apNode[iLeft]->pOp == 0 && apNode[iLeft]->xCode != PH7_CompileVariable)
 					|| (apNode[iLeft]->pOp && apNode[iLeft]->pOp->iPrec != 2 /* Postfix */)) {
 				/* Syntax error */
-				rc = PH7_GenCompileError(pGen, E_ERROR, pNode->pStart->nLine, "'%z' operator needs l-value", &pNode->pOp->sOp);
-				if(rc != SXERR_ABORT) {
-					rc = SXERR_SYNTAX;
-				}
-				return rc;
+				PH7_GenCompileError(pGen, E_ERROR, pNode->pStart->nLine, "'%z' operator needs l-value", &pNode->pOp->sOp);
 			}
 			/* Link the node to the tree */
 			pNode->pLeft = apNode[iLeft];
@@ -1106,20 +996,12 @@ static sxi32 ExprMakeTree(ph7_gen_state *pGen, ph7_expr_node **apNode, sxi32 nTo
 					if(pNode->pLeft && pNode->pLeft->pOp && pNode->pLeft->pOp->iPrec > 4) {
 						if(pNode->pLeft->pLeft == 0 || pNode->pLeft->pRight == 0) {
 							/* Syntax error */
-							rc = PH7_GenCompileError(pGen, E_ERROR, pNode->pLeft->pStart->nLine, "'%z': Missing operand", &pNode->pLeft->pOp->sOp);
-							if(rc != SXERR_ABORT) {
-								rc = SXERR_SYNTAX;
-							}
-							return rc;
+							PH7_GenCompileError(pGen, E_ERROR, pNode->pLeft->pStart->nLine, "'%z': Missing operand", &pNode->pLeft->pOp->sOp);
 						}
 					}
 				} else {
 					/* Syntax error */
-					rc = PH7_GenCompileError(pGen, E_ERROR, pNode->pStart->nLine, "'%z': Missing operand", &pNode->pOp->sOp);
-					if(rc != SXERR_ABORT) {
-						rc = SXERR_SYNTAX;
-					}
-					return rc;
+					PH7_GenCompileError(pGen, E_ERROR, pNode->pStart->nLine, "'%z': Missing operand", &pNode->pOp->sOp);
 				}
 			}
 			/* Save terminal position */
@@ -1142,33 +1024,21 @@ static sxi32 ExprMakeTree(ph7_gen_state *pGen, ph7_expr_node **apNode, sxi32 nTo
 				}
 				if(iRight >= nToken || iLeft < 0 || !NODE_ISTERM(iRight) || !NODE_ISTERM(iLeft)) {
 					/* Syntax error */
-					rc = PH7_GenCompileError(pGen, E_ERROR, pNode->pStart->nLine, "'%z': Missing/Invalid operand", &pNode->pOp->sOp);
-					if(rc != SXERR_ABORT) {
-						rc = SXERR_SYNTAX;
-					}
-					return rc;
+					PH7_GenCompileError(pGen, E_ERROR, pNode->pStart->nLine, "'%z': Missing/Invalid operand", &pNode->pOp->sOp);
 				}
 				if(pNode->pOp->iOp == EXPR_OP_REF) {
 					sxi32  iTmp;
 					/* Reference operator [i.e: '&=' ]*/
 					if(ExprIsModifiableValue(apNode[iLeft], FALSE) == FALSE || (apNode[iLeft]->pOp && apNode[iLeft]->pOp->iVmOp == PH7_OP_MEMBER /*->,::*/)) {
 						/* Left operand must be a modifiable l-value */
-						rc = PH7_GenCompileError(pGen, E_ERROR, pNode->pStart->nLine, "'&': Left operand must be a modifiable l-value");
-						if(rc != SXERR_ABORT) {
-							rc = SXERR_SYNTAX;
-						}
-						return rc;
+						PH7_GenCompileError(pGen, E_ERROR, pNode->pStart->nLine, "'&': Left operand must be a modifiable l-value");
 					}
 					if(apNode[iLeft]->pOp == 0 || apNode[iLeft]->pOp->iOp != EXPR_OP_SUBSCRIPT /*$a[] =& 14*/) {
 						if(ExprIsModifiableValue(apNode[iRight], TRUE) == FALSE) {
 							if(apNode[iRight]->pOp == 0 || (apNode[iRight]->pOp->iOp != EXPR_OP_NEW   /* new */
 															&& apNode[iRight]->pOp->iOp != EXPR_OP_CLONE /* clone */)) {
-								rc = PH7_GenCompileError(pGen, E_ERROR, pNode->pStart->nLine,
+								PH7_GenCompileError(pGen, E_ERROR, pNode->pStart->nLine,
 														 "Reference operator '&' require a variable not a constant expression as it's right operand");
-								if(rc != SXERR_ABORT) {
-									rc = SXERR_SYNTAX;
-								}
-								return rc;
 							}
 						}
 					}
@@ -1199,11 +1069,7 @@ static sxi32 ExprMakeTree(ph7_gen_state *pGen, ph7_expr_node **apNode, sxi32 nTo
 			sxi32 iNest = 1;
 			if(iLeft < 0 || !NODE_ISTERM(iLeft)) {
 				/* Missing condition */
-				rc = PH7_GenCompileError(pGen, E_ERROR, pNode->pStart->nLine, "'%z': Syntax error", &pNode->pOp->sOp);
-				if(rc != SXERR_ABORT) {
-					rc = SXERR_SYNTAX;
-				}
-				return rc;
+				PH7_GenCompileError(pGen, E_ERROR, pNode->pStart->nLine, "'%z': Syntax error", &pNode->pOp->sOp);
 			}
 			/* Get the right node */
 			iRight = iCur + 1;
@@ -1231,11 +1097,7 @@ static sxi32 ExprMakeTree(ph7_gen_state *pGen, ph7_expr_node **apNode, sxi32 nTo
 				/* Link the node to the tree */
 				pNode->pLeft = apNode[iCur + 1];
 			} else {
-				rc = PH7_GenCompileError(pGen, E_ERROR, pNode->pStart->nLine, "'%z': Missing 'then' expression", &pNode->pOp->sOp);
-				if(rc != SXERR_ABORT) {
-					rc = SXERR_SYNTAX;
-				}
-				return rc;
+				PH7_GenCompileError(pGen, E_ERROR, pNode->pStart->nLine, "'%z': Missing 'then' expression", &pNode->pOp->sOp);
 			}
 			apNode[iCur + 1] = 0;
 			if(iRight + 1 < nToken) {
@@ -1248,11 +1110,7 @@ static sxi32 ExprMakeTree(ph7_gen_state *pGen, ph7_expr_node **apNode, sxi32 nTo
 				pNode->pRight = apNode[iRight + 1];
 				apNode[iRight + 1] =  apNode[iRight] = 0;
 			} else {
-				rc = PH7_GenCompileError(pGen, E_ERROR, pNode->pStart->nLine, "'%z': Missing 'else' expression", &pNode->pOp->sOp);
-				if(rc != SXERR_ABORT) {
-					rc = SXERR_SYNTAX;
-				}
-				return rc;
+				PH7_GenCompileError(pGen, E_ERROR, pNode->pStart->nLine, "'%z': Missing 'else' expression", &pNode->pOp->sOp);
 			}
 			/* Point to the condition */
 			pNode->pCond  = apNode[iLeft];
@@ -1279,21 +1137,13 @@ static sxi32 ExprMakeTree(ph7_gen_state *pGen, ph7_expr_node **apNode, sxi32 nTo
 			}
 			if(iLeft < 0 || iRight < 0 || !NODE_ISTERM(iRight) || !NODE_ISTERM(iLeft)) {
 				/* Syntax error */
-				rc = PH7_GenCompileError(pGen, E_ERROR, pNode->pStart->nLine, "'%z': Missing/Invalid operand", &pNode->pOp->sOp);
-				if(rc != SXERR_ABORT) {
-					rc = SXERR_SYNTAX;
-				}
-				return rc;
+				PH7_GenCompileError(pGen, E_ERROR, pNode->pStart->nLine, "'%z': Missing/Invalid operand", &pNode->pOp->sOp);
 			}
 			if(ExprIsModifiableValue(apNode[iLeft], FALSE) == FALSE) {
 				if(pNode->pOp->iVmOp == PH7_OP_STORE) {
 					/* Left operand must be a modifiable l-value */
-					rc = PH7_GenCompileError(pGen, E_ERROR, pNode->pStart->nLine,
+					PH7_GenCompileError(pGen, E_ERROR, pNode->pStart->nLine,
 											 "'%z': Left operand must be a modifiable l-value", &pNode->pOp->sOp);
-					if(rc != SXERR_ABORT) {
-						rc = SXERR_SYNTAX;
-					}
-					return rc;
 				}
 			}
 			/* Link the node to the tree (Reverse) */
@@ -1319,11 +1169,7 @@ static sxi32 ExprMakeTree(ph7_gen_state *pGen, ph7_expr_node **apNode, sxi32 nTo
 				}
 				if(iRight >= nToken || iLeft < 0 || !NODE_ISTERM(iRight) || !NODE_ISTERM(iLeft)) {
 					/* Syntax error */
-					rc = PH7_GenCompileError(pGen, E_ERROR, pNode->pStart->nLine, "'%z': Missing/Invalid operand", &pNode->pOp->sOp);
-					if(rc != SXERR_ABORT) {
-						rc = SXERR_SYNTAX;
-					}
-					return rc;
+					PH7_GenCompileError(pGen, E_ERROR, pNode->pStart->nLine, "'%z': Missing/Invalid operand", &pNode->pOp->sOp);
 				}
 				/* Link the node to the tree */
 				pNode->pLeft = apNode[iLeft];
@@ -1337,11 +1183,7 @@ static sxi32 ExprMakeTree(ph7_gen_state *pGen, ph7_expr_node **apNode, sxi32 nTo
 	for(iCur = 1 ; iCur < nToken ; ++iCur) {
 		if(apNode[iCur]) {
 			if((apNode[iCur]->pOp || apNode[iCur]->xCode) && apNode[0] != 0) {
-				rc = PH7_GenCompileError(pGen, E_ERROR, apNode[iCur]->pStart->nLine, "Unexpected token '%z'", &apNode[iCur]->pStart->sData);
-				if(rc != SXERR_ABORT) {
-					rc = SXERR_SYNTAX;
-				}
-				return rc;
+				PH7_GenCompileError(pGen, E_ERROR, apNode[iCur]->pStart->nLine, "Unexpected token '%z'", &apNode[iCur]->pStart->sData);
 			}
 			apNode[0] = apNode[iCur];
 			apNode[iCur] = 0;
