@@ -102,7 +102,6 @@ PH7_PRIVATE sxi32 PH7_CompileVariable(ph7_gen_state *pGen, sxi32 iCompileFlag);
 static sxi32 PH7_GenStateLoadLiteral(ph7_gen_state *pGen);
 static sxi32 PH7_GenStateResolveNamespaceLiteral(ph7_gen_state *pGen);
 PH7_PRIVATE sxi32 PH7_CompileLiteral(ph7_gen_state *pGen, sxi32 iCompileFlag);
-static sxi32 PH7_ErrorRecover(ph7_gen_state *pGen);
 static int PH7_GenStateIsReservedConstant(SyString *pName);
 static sxi32 PH7_CompileConstant(ph7_gen_state *pGen);
 static sxi32 PH7_CompileContinue(ph7_gen_state *pGen);

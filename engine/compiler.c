@@ -1175,17 +1175,6 @@ PH7_PRIVATE sxi32 PH7_CompileLiteral(ph7_gen_state *pGen, sxi32 iCompileFlag) {
 	return SXRET_OK;
 }
 /*
- * Recover from a compile-time error. In other words synchronize
- * the token stream cursor with the first semi-colon seen.
- */
-static sxi32 PH7_ErrorRecover(ph7_gen_state *pGen) {
-	/* Synchronize with the next-semi-colon and avoid compiling this erroneous statement */
-	while(pGen->pIn < pGen->pEnd && (pGen->pIn->nType & PH7_TK_SEMI /*';'*/) == 0) {
-		pGen->pIn++;
-	}
-	return SXRET_OK;
-}
-/*
  * Check if the given identifier name is reserved or not.
  * Return TRUE if reserved.FALSE otherwise.
  */
