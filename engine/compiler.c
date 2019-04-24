@@ -1483,7 +1483,7 @@ static sxi32 PH7_CompileWhile(ph7_gen_state *pGen) {
 		return SXERR_ABORT;
 	}
 	/* Update token stream */
-	while(pGen->pIn < pEnd) {
+	if(pGen->pIn < pEnd) {
 		PH7_GenCompileError(&(*pGen), E_ERROR, pGen->pIn->nLine, "Unexpected token '%z'", &pGen->pIn->sData);
 	}
 	/* Synchronize pointers */
@@ -1603,7 +1603,7 @@ static sxi32 PH7_CompileDoWhile(ph7_gen_state *pGen) {
 		return SXERR_ABORT;
 	}
 	/* Update token stream */
-	while(pGen->pIn < pEnd) {
+	if(pGen->pIn < pEnd) {
 		PH7_GenCompileError(&(*pGen), E_ERROR, pGen->pIn->nLine, "Unexpected token '%z'", &pGen->pIn->sData);
 	}
 	pGen->pIn  = &pEnd[1];
@@ -1865,7 +1865,7 @@ static sxi32 PH7_CompileForeach(ph7_gen_state *pGen) {
 		return SXERR_ABORT;
 	}
 	/* Update token stream */
-	while(pGen->pIn < pCur) {
+	if(pGen->pIn < pCur) {
 		PH7_GenCompileError(&(*pGen), E_ERROR, pGen->pIn->nLine, "foreach: Unexpected token '%z'", &pGen->pIn->sData);
 	}
 	pCur++; /* Jump the 'as' keyword */
@@ -2027,7 +2027,7 @@ static sxi32 PH7_CompileIf(ph7_gen_state *pGen) {
 		/* Compile the condition */
 		rc = PH7_CompileExpr(&(*pGen), 0, 0);
 		/* Update token stream */
-		while(pGen->pIn < pEnd) {
+		if(pGen->pIn < pEnd) {
 			PH7_GenCompileError(&(*pGen), E_ERROR, pGen->pIn->nLine, "Unexpected token '%z'", &pGen->pIn->sData);
 		}
 		pGen->pIn  = &pEnd[1];
@@ -4033,7 +4033,7 @@ static sxi32 PH7_CompileTry(ph7_gen_state *pGen) {
  */
 static sxi32 PH7_GenStateCompileSwitchBlock(ph7_gen_state *pGen, sxu32 *pBlockStart) {
 	sxi32 rc = SXRET_OK;
-	while(pGen->pIn < pGen->pEnd && (pGen->pIn->nType & (PH7_TK_SEMI/*';'*/ | PH7_TK_COLON/*':'*/)) == 0) {
+	if(pGen->pIn < pGen->pEnd && (pGen->pIn->nType & (PH7_TK_SEMI/*';'*/ | PH7_TK_COLON/*':'*/)) == 0) {
 		/* Unexpected token */
 		PH7_GenCompileError(&(*pGen), E_ERROR, pGen->pIn->nLine, "Unexpected token '%z'", &pGen->pIn->sData);
 	}
@@ -4173,7 +4173,7 @@ static sxi32 PH7_CompileSwitch(ph7_gen_state *pGen) {
 		return SXERR_ABORT;
 	}
 	/* Update token stream */
-	while(pGen->pIn < pEnd) {
+	if(pGen->pIn < pEnd) {
 		PH7_GenCompileError(&(*pGen), E_ERROR, pGen->pIn->nLine,
 								 "Switch: Unexpected token '%z'", &pGen->pIn->sData);
 	}
