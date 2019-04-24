@@ -2236,7 +2236,7 @@ static sxi32 PH7_CompileVar(ph7_gen_state *pGen) {
 			/* Duplicate variable name */
 			zDup = SyMemBackendStrDup(&pGen->pVm->sAllocator, pName->zString, pName->nByte);
 			if(zDup == 0) {
-				PH7_GenCompileError(&(*pGen), E_ERROR, nLine, "Fatal, PH7 engine is running out of memory");
+				PH7_GenCompileError(&(*pGen), E_ERROR, nLine, "PH7 engine is running out-of-memory");
 			}
 			SyStringInitFromBuf(&sStatic.sName, zDup, pName->nByte);
 			/* Check if we have an expression to compile */
@@ -2263,7 +2263,7 @@ static sxi32 PH7_CompileVar(ph7_gen_state *pGen) {
 		} else {
 			zDup = SyMemBackendStrDup(&pGen->pVm->sAllocator, pName->zString, pName->nByte);
 			if(zDup == 0) {
-				PH7_GenCompileError(&(*pGen), E_ERROR, nLine, "Fatal, PH7 engine is running out of memory");
+				PH7_GenCompileError(&(*pGen), E_ERROR, nLine, "PH7 engine is running out-of-memory");
 			}
 			void *p3 = (void *) zDup;
 			/* Emit OP_DECLARE instruction */
