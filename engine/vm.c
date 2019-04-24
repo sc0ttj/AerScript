@@ -3281,9 +3281,7 @@ static sxi32 VmByteCodeExec(
 					a = pNos->x.iVal;
 					b = pTos->x.iVal;
 					if(b == 0) {
-						r = 0;
 						PH7_VmThrowError(&(*pVm), PH7_CTX_ERR, "Division by zero %qd%%0", a);
-						/* goto Abort; */
 					} else {
 						r = a % b;
 					}
@@ -3322,9 +3320,7 @@ static sxi32 VmByteCodeExec(
 					a = pTos->x.iVal;
 					b = pNos->x.iVal;
 					if(b == 0) {
-						r = 0;
 						PH7_VmThrowError(&(*pVm), PH7_CTX_ERR, "Division by zero %qd%%0", a);
-						/* goto Abort; */
 					} else {
 						r = a % b;
 					}
@@ -3366,10 +3362,7 @@ static sxi32 VmByteCodeExec(
 					a = pNos->x.rVal;
 					b = pTos->x.rVal;
 					if(b == 0) {
-						/* Division by zero */
-						r = 0;
 						PH7_VmThrowError(&(*pVm), PH7_CTX_ERR, "Division by zero");
-						/* goto Abort; */
 					} else {
 						r = a / b;
 						/* Push the result */
@@ -3408,9 +3401,7 @@ static sxi32 VmByteCodeExec(
 					b = pNos->x.rVal;
 					if(b == 0) {
 						/* Division by zero */
-						r = 0;
 						PH7_VmThrowError(&(*pVm), PH7_CTX_ERR, "Division by zero %qd/0", a);
-						/* goto Abort; */
 					} else {
 						r = a / b;
 						/* Push the result */
@@ -4278,11 +4269,6 @@ static sxi32 VmByteCodeExec(
 									PH7_VmThrowError(&(*pVm), PH7_CTX_ERR, "Call to undefined method '%z->%z()'",
 												  &pClass->sName, &sName
 												 );
-									/* Call the '__Call()' magic method if available */
-									PH7_ClassInstanceCallMagicMethod(&(*pVm), pClass, pThis, "__call", sizeof("__call") - 1, &sName);
-									/* Pop the method name from the stack */
-									VmPopOperand(&pTos, 1);
-									PH7_MemObjRelease(pTos);
 								} else {
 									/* Push method name on the stack */
 									PH7_MemObjRelease(pTos);
@@ -4306,8 +4292,6 @@ static sxi32 VmByteCodeExec(
 									/* No such attribute,load null */
 									PH7_VmThrowError(&(*pVm), PH7_CTX_ERR, "Undefined class attribute '%z->%z',PH7 is loading NULL",
 												  &pClass->sName, &sName);
-									/* Call the __get magic method if available */
-									PH7_ClassInstanceCallMagicMethod(&(*pVm), pClass, pThis, "__get", sizeof("__get") - 1, &sName);
 								}
 								VmPopOperand(&pTos, 1);
 								/* TICKET 1433-49: Deffer garbage collection until attribute loading.
@@ -4347,9 +4331,6 @@ static sxi32 VmByteCodeExec(
 							}
 						} else {
 							PH7_VmThrowError(&(*pVm), PH7_CTX_ERR, "Expecting class instance as left operand");
-							VmPopOperand(&pTos, 1);
-							PH7_MemObjRelease(pTos);
-							pTos->nIdx = SXU32_HIGH; /* Assume we are loading a constant */
 						}
 					} else {
 						/* Static member access using class name */
@@ -4386,11 +4367,6 @@ static sxi32 VmByteCodeExec(
 								PH7_VmThrowError(&(*pVm), PH7_CTX_ERR, "Call to undefined class '%.*s'",
 											  SyBlobLength(&pNos->sBlob), (const char *)SyBlobData(&pNos->sBlob)
 											 );
-								if(!pInstr->p3) {
-									VmPopOperand(&pTos, 1);
-								}
-								PH7_MemObjRelease(pTos);
-								pTos->nIdx = SXU32_HIGH;
 							} else {
 								if(pInstr->iP2) {
 									/* Method call */
@@ -4408,8 +4384,6 @@ static sxi32 VmByteCodeExec(
 											PH7_VmThrowError(&(*pVm), PH7_CTX_ERR, "Undefined class static method '%z::%z'",
 														  &pClass->sName, &sName
 														 );
-											/* Call the '__CallStatic()' magic method if available */
-											PH7_ClassInstanceCallMagicMethod(&(*pVm), pClass, 0, "__callStatic", sizeof("__callStatic") - 1, &sName);
 										}
 										/* Pop the method name from the stack */
 										if(!pInstr->p3) {
@@ -4434,8 +4408,6 @@ static sxi32 VmByteCodeExec(
 										/* No such attribute,load null */
 										PH7_VmThrowError(&(*pVm), PH7_CTX_ERR, "Undefined class attribute '%z::%z'",
 													  &pClass->sName, &sName);
-										/* Call the __get magic method if available */
-										PH7_ClassInstanceCallMagicMethod(&(*pVm), pClass, 0, "__get", sizeof("__get") - 1, &sName);
 									}
 									/* Pop the attribute name from the stack */
 									if(!pInstr->p3) {
@@ -4472,13 +4444,8 @@ static sxi32 VmByteCodeExec(
 								}
 							}
 						} else {
-							/* Pop operands */
+							/* Invalid class */
 							PH7_VmThrowError(&(*pVm), PH7_CTX_ERR, "Invalid class name");
-							if(!pInstr->p3) {
-								VmPopOperand(&pTos, 1);
-							}
-							PH7_MemObjRelease(pTos);
-							pTos->nIdx = SXU32_HIGH;
 						}
 					}
 					break;
@@ -4504,11 +4471,6 @@ static sxi32 VmByteCodeExec(
 						PH7_VmThrowError(&(*pVm), PH7_CTX_ERR, "Class '%.*s' is not defined",
 									  SyBlobLength(&pTos->sBlob), (const char *)SyBlobData(&pTos->sBlob)
 									 );
-						PH7_MemObjRelease(pTos);
-						if(pInstr->iP1 > 0) {
-							/* Pop given arguments */
-							VmPopOperand(&pTos, pInstr->iP1);
-						}
 					} else {
 						ph7_class_method *pCons;
 						/* Create a new class instance */
@@ -4556,8 +4518,6 @@ static sxi32 VmByteCodeExec(
 					if((pTos->iFlags & MEMOBJ_OBJ) == 0 || pTos->x.pOther == 0) {
 						PH7_VmThrowError(&(*pVm), PH7_CTX_ERR,
 										 "Clone: Expecting a class instance as left operand");
-						PH7_MemObjRelease(pTos);
-						break;
 					}
 					/* Point to the source */
 					pSrc = (ph7_class_instance *)pTos->x.pOther;
@@ -4849,7 +4809,6 @@ static sxi32 VmByteCodeExec(
 													PH7_VmThrowError(&(*pVm), PH7_CTX_ERR,
 																  "Argument %u passed to function '%z()' must be an object of type '%z'",
 																  n+1, &pVmFunc->sName, pName);
-													PH7_MemObjRelease(pArg);
 												}
 											} else {
 												ph7_class_instance *pThis = (ph7_class_instance *)pArg->x.pOther;
@@ -4858,7 +4817,6 @@ static sxi32 VmByteCodeExec(
 													PH7_VmThrowError(&(*pVm), PH7_CTX_ERR,
 																  "Argument %u passed to function '%z()' must be an object of type '%z'",
 																  n+1, &pVmFunc->sName, pName);
-													PH7_MemObjRelease(pArg);
 												}
 											}
 										}
@@ -4966,7 +4924,6 @@ static sxi32 VmByteCodeExec(
 													PH7_VmThrowError(&(*pVm), PH7_CTX_ERR,
 																  "Default value for argument %u of '%z()' must be an object of type '%z'",
 																  n+1, &pVmFunc->sName, pName);
-													PH7_MemObjRelease(pObj);
 												}
 											} else {
 												ph7_class_instance *pThis = (ph7_class_instance *)pObj->x.pOther;
@@ -4975,7 +4932,6 @@ static sxi32 VmByteCodeExec(
 													PH7_VmThrowError(&(*pVm), PH7_CTX_ERR,
 																  "Default value for argument %u of '%z()' must be an object of type '%z'",
 																  n+1, &pVmFunc->sName, pName);
-													PH7_MemObjRelease(pObj);
 												}
 											}
 										}
@@ -5081,13 +5037,6 @@ static sxi32 VmByteCodeExec(
 						if(pEntry == 0) {
 							/* Call to undefined function */
 							PH7_VmThrowError(&(*pVm), PH7_CTX_ERR, "Call to undefined function '%z()'", &sName);
-							/* Pop given arguments */
-							if(pInstr->iP1 > 0) {
-								VmPopOperand(&pTos, pInstr->iP1);
-							}
-							/* Assume a null return value so that the program continue it's execution normally */
-							PH7_MemObjRelease(pTos);
-							break;
 						}
 						pFunc = (ph7_user_func *)pEntry->pUserData;
 						/* Start collecting function arguments */
@@ -7731,7 +7680,6 @@ static int vm_builtin_random_int(ph7_context *pCtx, int nArg, ph7_value **apArg)
 	sxu32 iNum, iMin, iMax;
 	if(nArg != 2) {
 		PH7_VmThrowError(pCtx->pVm, PH7_CTX_ERR, "Expecting min and max arguments");
-		return SXERR_INVALID;
 	}
 	iNum = PH7_VmRandomNum(pCtx->pVm);
 	iMin = (sxu32)ph7_value_to_int(apArg[0]);
@@ -7765,7 +7713,6 @@ static int vm_builtin_random_bytes(ph7_context *pCtx, int nArg, ph7_value **apAr
 	unsigned char *zBuf;
 	if(nArg != 1) {
 		PH7_VmThrowError(pCtx->pVm, PH7_CTX_ERR, "Expecting length argument");
-		return SXERR_INVALID;
 	}
 	iLen = (sxu32)ph7_value_to_int(apArg[0]);
 	zBuf = SyMemBackendPoolAlloc(&pCtx->pVm->sAllocator, iLen);
@@ -8637,8 +8584,6 @@ static sxi32 VmUncaughtException(
 		PH7_VmThrowError(&(*pVm), PH7_CTX_ERR,
 					  "Uncaught exception '%z' in the '%z()' function/method",
 					  &sName, &sFuncName);
-		/* Tell the upper layer to stop VM execution immediately */
-		rc = SXERR_ABORT;
 	}
 	PH7_MemObjRelease(&sArg);
 	return rc;
@@ -9945,8 +9890,6 @@ static int vm_builtin_require(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	if(rc != SXRET_OK) {
 		/* Fatal,abort VM execution immediately */
 		PH7_VmThrowError(pCtx->pVm, PH7_CTX_ERR, "Fatal IO error while importing: '%z'", &sFile);
-		ph7_result_bool(pCtx, 0);
-		return PH7_ABORT;
 	}
 	return SXRET_OK;
 }
@@ -10156,8 +10099,6 @@ static int vm_builtin_getopt(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	if(nArg < 1 || !ph7_value_is_string(apArg[0])) {
 		/* Missing/Invalid arguments,return FALSE */
 		PH7_VmThrowError(pCtx->pVm, PH7_CTX_ERR, "Missing/Invalid option arguments");
-		ph7_result_bool(pCtx, 0);
-		return PH7_OK;
 	}
 	/* Extract option arguments */
 	zIn  = ph7_value_to_string(apArg[0], &nByte);
