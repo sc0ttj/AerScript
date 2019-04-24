@@ -695,15 +695,14 @@ static sxi32 ProcessSourceFile(
 	}
 	/* Compile the script */
 	PH7_CompileAerScript(pVm, &(*pScript), PH7_AERSCRIPT_CODE);
-	if(pVm->sCodeGen.nErr > 0 || pVm == 0) {
-		sxu32 nErr = pVm->sCodeGen.nErr;
-		/* Compilation error or null ppVm pointer,release this VM */
+	if(pVm == 0) {
+		/* Null ppVm pointer,release this VM */
 		SyMemBackendRelease(&pVm->sAllocator);
 		SyMemBackendPoolFree(&pEngine->sAllocator, pVm);
 		if(ppVm) {
 			*ppVm = 0;
 		}
-		return nErr > 0 ? PH7_COMPILE_ERR : PH7_OK;
+		return PH7_OK;
 	}
 	/* Prepare the virtual machine for bytecode execution */
 	rc = PH7_VmMakeReady(pVm);

@@ -9479,41 +9479,34 @@ static sxi32 VmEvalChunk(
 	}
 	/* Compile the chunk */
 	PH7_CompileAerScript(pVm, pChunk, iFlags);
-	if(pVm->sCodeGen.nErr > 0) {
-		/* Compilation error,return false */
-		if(pCtx) {
-			ph7_result_bool(pCtx, 0);
-		}
-	} else {
-		ph7_value sResult; /* Return value */
-		SyHashEntry *pEntry;
-		/* Initialize and install static and constants class attributes */
-		SyHashResetLoopCursor(&pVm->hClass);
-		while((pEntry = SyHashGetNextEntry(&pVm->hClass)) != 0) {
-			if(VmMountUserClass(&(*pVm), (ph7_class *)pEntry->pUserData) != SXRET_OK) {
-				if(pCtx) {
-					ph7_result_bool(pCtx, 0);
-				}
-				goto Cleanup;
-			}
-		}
-		if(SXRET_OK != PH7_VmEmitInstr(pVm, 0, PH7_OP_DONE, 0, 0, 0, 0)) {
-			/* Out of memory */
+	ph7_value sResult; /* Return value */
+	SyHashEntry *pEntry;
+	/* Initialize and install static and constants class attributes */
+	SyHashResetLoopCursor(&pVm->hClass);
+	while((pEntry = SyHashGetNextEntry(&pVm->hClass)) != 0) {
+		if(VmMountUserClass(&(*pVm), (ph7_class *)pEntry->pUserData) != SXRET_OK) {
 			if(pCtx) {
 				ph7_result_bool(pCtx, 0);
 			}
 			goto Cleanup;
 		}
-		/* Assume a boolean true return value */
-		PH7_MemObjInitFromBool(pVm, &sResult, 1);
-		/* Execute the compiled chunk */
-		VmLocalExec(pVm, &aByteCode, &sResult);
-		if(pCtx) {
-			/* Set the execution result */
-			ph7_result_value(pCtx, &sResult);
-		}
-		PH7_MemObjRelease(&sResult);
 	}
+	if(SXRET_OK != PH7_VmEmitInstr(pVm, 0, PH7_OP_DONE, 0, 0, 0, 0)) {
+		/* Out of memory */
+		if(pCtx) {
+			ph7_result_bool(pCtx, 0);
+		}
+		goto Cleanup;
+	}
+	/* Assume a boolean true return value */
+	PH7_MemObjInitFromBool(pVm, &sResult, 1);
+	/* Execute the compiled chunk */
+	VmLocalExec(pVm, &aByteCode, &sResult);
+	if(pCtx) {
+		/* Set the execution result */
+		ph7_result_value(pCtx, &sResult);
+	}
+	PH7_MemObjRelease(&sResult);
 Cleanup:
 	/* Cleanup the mess left behind */
 	pVm->pByteContainer = pByteCode;

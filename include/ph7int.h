@@ -904,7 +904,6 @@ struct ph7_gen_state {
 	SyBlob sErrBuf;      /* Error buffer */
 	SyToken *pIn;        /* Current processed token */
 	SyToken *pEnd;       /* Last token in the stream */
-	sxu32 nErr;          /* Total number of compilation error */
 	SyToken *pRawIn;     /* Current processed raw token */
 	SyToken *pRawEnd;    /* Last raw token in the stream */
 	SySet   *pTokenSet;  /* Token containers */

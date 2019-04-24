@@ -4953,7 +4953,6 @@ PH7_PRIVATE sxi32 PH7_ResetCodeGenerator(
 	pGen->pCurrent = &pGen->sGlobal;
 	pGen->pRawIn = pGen->pRawEnd = 0;
 	pGen->pIn = pGen->pEnd = 0;
-	pGen->nErr = 0;
 	return SXRET_OK;
 }
 /*
@@ -4972,22 +4971,6 @@ PH7_PRIVATE sxi32 PH7_GenCompileError(ph7_gen_state *pGen, sxi32 nErrType, sxu32
 	SyBlobReset(pWorker);
 	/* Peek the processed file path if available */
 	pFile = (SyString *)SySetPeek(&pGen->pVm->aFiles);
-	if(nErrType == E_ERROR) {
-		/* Increment the error counter */
-		pGen->nErr++;
-		if(pGen->nErr > 15) {
-			/* Error count limit reached */
-			if(pGen->xErr) {
-				SyBlobFormat(pWorker, "%u Error count limit reached,PH7 is aborting compilation\n", nLine);
-				if(SyBlobLength(pWorker) > 0) {
-					/* Consume the generated error message */
-					pGen->xErr(SyBlobData(pWorker), SyBlobLength(pWorker), pGen->pErrData);
-				}
-			}
-			/* Abort immediately */
-			return SXERR_ABORT;
-		}
-	}
 	if(pGen->xErr == 0) {
 		/* No available error consumer,return immediately */
 		return SXRET_OK;
