@@ -4553,7 +4553,7 @@ static sxi32 VmByteCodeExec(
 					}
 #endif
 					/* Make sure we are dealing with a class instance */
-					if((pTos->iFlags & MEMOBJ_OBJ) == 0) {
+					if((pTos->iFlags & MEMOBJ_OBJ) == 0 || pTos->x.pOther == 0) {
 						PH7_VmThrowError(&(*pVm), PH7_CTX_ERR,
 										 "Clone: Expecting a class instance as left operand");
 						PH7_MemObjRelease(pTos);
