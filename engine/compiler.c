@@ -2289,7 +2289,7 @@ static sxi32 PH7_CompileVar(ph7_gen_state *pGen) {
 			break;
 		} else if(pGen->pIn->nType & PH7_TK_COMMA) {
 			pGen->pIn++;
-		} else {
+		} else if(pGen->pIn < pGen->pEnd) {
 			PH7_GenCompileError(&(*pGen), E_ERROR, pGen->pIn->nLine, "Unexpected token '%z'", &pGen->pIn->sData);
 		}
 	}
