@@ -2402,23 +2402,6 @@ static sxi32 PH7_CompileUsing(ph7_gen_state *pGen) {
 			break;
 		}
 	}
-	if(pGen->pIn < pGen->pEnd && (pGen->pIn->nType & PH7_TK_KEYWORD) && PH7_KEYWORD_AS == SX_PTR_TO_INT(pGen->pIn->pUserData)) {
-		pGen->pIn++; /* Jump the 'as' keyword */
-		/* Compile one or more aliasses */
-		for(;;) {
-			if(pGen->pIn >= pGen->pEnd) {
-				break;
-			}
-			while(pGen->pIn < pGen->pEnd && (pGen->pIn->nType & (PH7_TK_NSSEP | PH7_TK_ID))) {
-				pGen->pIn++;
-			}
-			if(pGen->pIn < pGen->pEnd && (pGen->pIn->nType & PH7_TK_COMMA/*','*/)) {
-				pGen->pIn++; /* Jump the comma and process the next alias */
-			} else {
-				break;
-			}
-		}
-	}
 	if(pGen->pIn < pGen->pEnd && (pGen->pIn->nType & PH7_TK_SEMI/*';'*/) == 0) {
 		/* Unexpected token */
 		PH7_GenCompileError(&(*pGen), E_ERROR, nLine, "using statement: Unexpected token '%z',expecting ';'",
