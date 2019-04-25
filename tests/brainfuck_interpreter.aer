@@ -94,9 +94,9 @@ class Program {
 		}
 		sort($files);
 		unset($file);
-		foreach($files as $file) {
-			print('Executing "' + $file + '"' + "\n");
-			$code = file_get_contents('tests/data/brainfuck/' + $file);
+		for(int $n = 0; $n < sizeof($files); $n++) {
+			print('Executing "' + $files[$n] + '"' + "\n");
+			$code = file_get_contents('tests/data/brainfuck/' + $files[$n]);
 			$bf = new Brainfuck($code, $input);
 			$bf->run();
 			print("\n");
