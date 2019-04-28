@@ -6766,91 +6766,6 @@ PH7_PRIVATE sxi32 PH7_VmCallUserFunctionAp(
 	return rc;
 }
 /*
- * value call_user_func(callable $callback[,value $parameter[, value $... ]])
- *  Call the callback given by the first parameter.
- * Parameter
- *  $callback
- *   The callable to be called.
- *  ...
- *    Zero or more parameters to be passed to the callback.
- * Return
- *  Th return value of the callback, or FALSE on error.
- */
-static int vm_builtin_call_user_func(ph7_context *pCtx, int nArg, ph7_value **apArg) {
-	ph7_value sResult; /* Store callback return value here */
-	sxi32 rc;
-	if(nArg < 1) {
-		/* Missing arguments,return FALSE */
-		ph7_result_bool(pCtx, 0);
-		return PH7_OK;
-	}
-	PH7_MemObjInit(pCtx->pVm, &sResult);
-	sResult.nIdx = SXU32_HIGH; /* Mark as constant */
-	/* Try to invoke the callback */
-	rc = PH7_VmCallUserFunction(pCtx->pVm, apArg[0], nArg - 1, &apArg[1], &sResult);
-	if(rc != SXRET_OK) {
-		/* An error ocurred while invoking the given callback [i.e: not defined] */
-		ph7_result_bool(pCtx, 0); /* return false */
-	} else {
-		/* Callback result */
-		ph7_result_value(pCtx, &sResult); /* Will make it's own copy */
-	}
-	PH7_MemObjRelease(&sResult);
-	return PH7_OK;
-}
-/*
- * value call_user_func_array(callable $callback,array $param_arr)
- *  Call a callback with an array of parameters.
- * Parameter
- *  $callback
- *   The callable to be called.
- * $param_arr
- *  The parameters to be passed to the callback, as an indexed array.
- * Return
- *  Returns the return value of the callback, or FALSE on error.
- */
-static int vm_builtin_call_user_func_array(ph7_context *pCtx, int nArg, ph7_value **apArg) {
-	ph7_hashmap_node *pEntry; /* Current hashmap entry */
-	ph7_value *pValue, sResult; /* Store callback return value here */
-	ph7_hashmap *pMap;        /* Target hashmap */
-	SySet aArg;               /* Arguments containers */
-	sxi32 rc;
-	sxu32 n;
-	if(nArg < 2 || !ph7_value_is_array(apArg[1])) {
-		/* Missing/Invalid arguments,return FALSE */
-		ph7_result_bool(pCtx, 0);
-		return PH7_OK;
-	}
-	PH7_MemObjInit(pCtx->pVm, &sResult);
-	sResult.nIdx = SXU32_HIGH; /* Mark as constant */
-	/* Initialize the arguments container */
-	SySetInit(&aArg, &pCtx->pVm->sAllocator, sizeof(ph7_value *));
-	/* Turn hashmap entries into callback arguments */
-	pMap = (ph7_hashmap *)apArg[1]->x.pOther;
-	pEntry = pMap->pFirst; /* First inserted entry */
-	for(n = 0 ; n < pMap->nEntry ; n++) {
-		/* Extract node value */
-		if((pValue = (ph7_value *)SySetAt(&pCtx->pVm->aMemObj, pEntry->nValIdx)) != 0) {
-			SySetPut(&aArg, (const void *)&pValue);
-		}
-		/* Point to the next entry */
-		pEntry = pEntry->pPrev; /* Reverse link */
-	}
-	/* Try to invoke the callback */
-	rc = PH7_VmCallUserFunction(pCtx->pVm, apArg[0], (int)SySetUsed(&aArg), (ph7_value **)SySetBasePtr(&aArg), &sResult);
-	if(rc != SXRET_OK) {
-		/* An error ocurred while invoking the given callback [i.e: not defined] */
-		ph7_result_bool(pCtx, 0); /* return false */
-	} else {
-		/* Callback result */
-		ph7_result_value(pCtx, &sResult); /* Will make it's own copy */
-	}
-	/* Cleanup the mess left behind */
-	PH7_MemObjRelease(&sResult);
-	SySetRelease(&aArg);
-	return PH7_OK;
-}
-/*
  * bool defined(string $name)
  *  Checks whether a given named constant exists.
  * Parameter:
@@ -10166,10 +10081,6 @@ static const ph7_builtin_func aVmFunc[] = {
 	{ "is_callable", vm_builtin_is_callable   },
 	{ "register_autoload_handler", vm_builtin_register_autoload_handler },
 	{ "register_shutdown_function", vm_builtin_register_shutdown_function },
-	{ "call_user_func",        vm_builtin_call_user_func   },
-	{ "call_user_func_array",  vm_builtin_call_user_func_array    },
-	{ "forward_static_call",   vm_builtin_call_user_func   },
-	{ "forward_static_call_array", vm_builtin_call_user_func_array },
 	/* Constants management */
 	{ "defined",  vm_builtin_defined              },
 	{ "define",   vm_builtin_define               },
