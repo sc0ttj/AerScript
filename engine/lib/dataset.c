@@ -352,7 +352,7 @@ static sxi32 HashGrowTable(SyHash *pHash) {
 }
 static sxi32 HashInsert(SyHash *pHash, SyHashEntry_Pr *pEntry) {
 	sxu32 iBucket = pEntry->nHash & (pHash->nBucketSize - 1);
-	/* Insert the entry in its corresponding bcuket */
+	/* Insert the entry in its corresponding bucket */
 	pEntry->pNextCollide = pHash->apBucket[iBucket];
 	if(pHash->apBucket[iBucket] != 0) {
 		pHash->apBucket[iBucket]->pPrevCollide = pEntry;
