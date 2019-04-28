@@ -8328,56 +8328,6 @@ static int vm_builtin_assert(ph7_context *pCtx, int nArg, ph7_value **apArg) {
  *    Stable.
  */
 /*
- * bool trigger_error(string $error_msg[,int $error_type = E_USER_NOTICE ])
- *  Generates a user-level error/warning/notice message.
- * Parameters
- *  $error_msg
- *   The designated error message for this error. It's limited to 1024 characters
- *   in length. Any additional characters beyond 1024 will be truncated.
- * $error_type
- *  The designated error type for this error. It only works with the E_USER family
- *  of constants, and will default to E_USER_NOTICE.
- * Return
- *  This function returns FALSE if wrong error_type is specified, TRUE otherwise.
- */
-static int vm_builtin_trigger_error(ph7_context *pCtx, int nArg, ph7_value **apArg) {
-	int nErr = PH7_CTX_NOTICE;
-	int rc = PH7_OK;
-	if(nArg > 0) {
-		const char *zErr;
-		int nLen;
-		/* Extract the error message */
-		zErr = ph7_value_to_string(apArg[0], &nLen);
-		if(nArg > 1) {
-			/* Extract the error type */
-			nErr = ph7_value_to_int(apArg[1]);
-			switch(nErr) {
-				case E_ERROR:
-					nErr = PH7_CTX_ERR;
-					rc = PH7_ABORT;
-					break;
-				case E_WARNING:
-					nErr = PH7_CTX_WARNING;
-					break;
-				case E_DEPRECATED:
-					nErr = PH7_CTX_DEPRECATED;
-					break;
-				default:
-					nErr = PH7_CTX_NOTICE;
-					break;
-			}
-		}
-		/* Report error */
-		PH7_VmThrowError(pCtx->pVm, nErr, "%.*s", nLen, zErr);
-		/* Return true */
-		ph7_result_bool(pCtx, 1);
-	} else {
-		/* Missing arguments,return FALSE */
-		ph7_result_bool(pCtx, 0);
-	}
-	return rc;
-}
-/*
  * bool restore_exception_handler(void)
  *  Restores the previously defined exception handler function.
  * Parameter
@@ -10351,7 +10301,6 @@ static const ph7_builtin_func aVmFunc[] = {
 	{ "assert_options",  vm_builtin_assert_options },
 	{ "assert",          vm_builtin_assert         },
 	/* Error reporting functions */
-	{ "trigger_error", vm_builtin_trigger_error     },
 	{ "restore_exception_handler", vm_builtin_restore_exception_handler },
 	{ "set_exception_handler",     vm_builtin_set_exception_handler     },
 	{ "debug_backtrace",  vm_builtin_debug_backtrace},
