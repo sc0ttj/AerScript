@@ -2450,6 +2450,9 @@ static sxi32 VmByteCodeExec(
 								/* Mark as constant */
 								pTos->nIdx = SXU32_HIGH;
 								break;
+							} else if(pInstr[1].iOp != PH7_OP_MEMBER && pInstr[1].iOp != PH7_OP_NEW && pInstr[2].iOp != PH7_OP_MEMBER && pInstr[1].iOp != PH7_OP_NEW) {
+								PH7_VmThrowError(&(*pVm), PH7_CTX_ERR,
+												"Call to undefined constant ‘%s’", SyBlobData(&pObj->sBlob));
 							}
 						}
 						PH7_MemObjLoad(pObj, pTos);
