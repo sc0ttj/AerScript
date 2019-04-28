@@ -122,9 +122,6 @@ PH7_PRIVATE sxi32 SyStrnicmp(const char *zLeft, const char *zRight, sxu32 SLen) 
 	}
 	return (sxi32)(SyCharToLower(p[0]) - SyCharToLower(q[0]));
 }
-PH7_PRIVATE sxi32 SyStrnmicmp(const void *pLeft, const void *pRight, sxu32 SLen) {
-	return SyStrnicmp((const char *)pLeft, (const char *)pRight, SLen);
-}
 sxu32 Systrcpy(char *zDest, sxu32 nDestLen, const char *zSrc, sxu32 nLen) {
 	unsigned char *zBuf = (unsigned char *)zDest;
 	unsigned char *zIn = (unsigned char *)zSrc;
