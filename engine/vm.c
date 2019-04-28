@@ -9346,110 +9346,6 @@ static int VmExtractCallback(ph7_value *pKey, ph7_value *pValue, void *pUserData
 	return SXRET_OK;
 }
 /*
- * Worker callback for the [import_request_variables()] function
- * defined below.
- */
-static int VmImportRequestCallback(ph7_value *pKey, ph7_value *pValue, void *pUserData) {
-	extract_aux_data *pAux = (extract_aux_data *)pUserData;
-	ph7_vm *pVm = pAux->pVm;
-	ph7_value *pObj;
-	SyString sVar;
-	/* Perform a string cast */
-	PH7_MemObjToString(pKey);
-	if(SyBlobLength(&pKey->sBlob) < 1) {
-		/* Unavailable variable name */
-		return SXRET_OK;
-	}
-	sVar.nByte = 0; /* cc warning */
-	if(pAux->Prefixlen > 0) {
-		sVar.nByte = (sxu32)SyBufferFormat(pAux->zWorker, sizeof(pAux->zWorker), "%.*s%.*s",
-										   pAux->Prefixlen, pAux->zPrefix,
-										   SyBlobLength(&pKey->sBlob), SyBlobData(&pKey->sBlob)
-										  );
-	} else {
-		sVar.nByte = (sxu32) SyMemcpy(SyBlobData(&pKey->sBlob), pAux->zWorker,
-									  SXMIN(SyBlobLength(&pKey->sBlob), sizeof(pAux->zWorker)));
-	}
-	sVar.zString = pAux->zWorker;
-	/* Extract the variable */
-	pObj = VmExtractMemObj(pVm, &sVar, TRUE, TRUE);
-	if(pObj) {
-		PH7_MemObjStore(pValue, pObj);
-	}
-	return SXRET_OK;
-}
-/*
- * bool import_request_variables(string $types[,string $prefix])
- *  Import GET/POST/Cookie variables into the global scope.
- * Parameters
- * $types
- *  Using the types parameter, you can specify which request variables to import.
- *  You can use 'G', 'P' and 'C' characters respectively for GET, POST and Cookie.
- *  These characters are not case sensitive, so you can also use any combination of 'g', 'p' and 'c'.
- *  POST includes the POST uploaded file information.
- *  Note:
- *  Note that the order of the letters matters, as when using "GP", the POST variables will overwrite
- *  GET variables with the same name. Any other letters than GPC are discarded.
- * $prefix
- *  Variable name prefix, prepended before all variable's name imported into the global scope.
- *  So if you have a GET value named "userid", and provide a prefix "pref_", then you'll get a global
- *  variable named $pref_userid.
- * Return
- *  TRUE on success or FALSE on failure.
- */
-static int vm_builtin_import_request_variables(ph7_context *pCtx, int nArg, ph7_value **apArg) {
-	const char *zPrefix, *zEnd, *zImport;
-	extract_aux_data sAux;
-	int nLen, nPrefixLen;
-	ph7_value *pSuper;
-	ph7_vm *pVm;
-	/* By default import only $_GET variables  */
-	zImport = "G";
-	nLen = (int)sizeof(char);
-	zPrefix = 0;
-	nPrefixLen = 0;
-	if(nArg > 0) {
-		if(ph7_value_is_string(apArg[0])) {
-			zImport = ph7_value_to_string(apArg[0], &nLen);
-		}
-		if(nArg > 1 && ph7_value_is_string(apArg[1])) {
-			zPrefix = ph7_value_to_string(apArg[1], &nPrefixLen);
-		}
-	}
-	/* Point to the underlying VM */
-	pVm = pCtx->pVm;
-	/* Initialize the aux data */
-	SyZero(&sAux, sizeof(sAux) - sizeof(sAux.zWorker));
-	sAux.zPrefix = zPrefix;
-	sAux.Prefixlen = nPrefixLen;
-	sAux.pVm = pVm;
-	/* Extract */
-	zEnd = &zImport[nLen];
-	while(zImport < zEnd) {
-		int c = zImport[0];
-		pSuper = 0;
-		if(c == 'G' || c == 'g') {
-			/* Import $_GET variables */
-			pSuper = VmExtractSuper(pVm, "_GET", sizeof("_GET") - 1);
-		} else if(c == 'P' || c == 'p') {
-			/* Import $_POST variables */
-			pSuper = VmExtractSuper(pVm, "_POST", sizeof("_POST") - 1);
-		} else if(c == 'c' || c == 'C') {
-			/* Import $_COOKIE variables */
-			pSuper = VmExtractSuper(pVm, "_COOKIE", sizeof("_COOKIE") - 1);
-		}
-		if(pSuper) {
-			/* Iterate throw array entries */
-			ph7_array_walk(pSuper, VmImportRequestCallback, &sAux);
-		}
-		/* Advance the cursor */
-		zImport++;
-	}
-	/* All done,return TRUE*/
-	ph7_result_bool(pCtx, 0);
-	return PH7_OK;
-}
-/*
  * Compile and evaluate a PHP chunk at run-time.
  * Refer to the eval() language construct implementation for more
  * information.
@@ -10465,7 +10361,6 @@ static const ph7_builtin_func aVmFunc[] = {
 	/* hashmap */
 	{"compact",          vm_builtin_compact       },
 	{"extract",          vm_builtin_extract       },
-	{"import_request_variables", vm_builtin_import_request_variables},
 	/* URL related function */
 	{"parse_url",        vm_builtin_parse_url     },
 	/* Refer to 'builtin.c' for others string processing functions. */
