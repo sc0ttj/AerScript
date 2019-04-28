@@ -5705,74 +5705,6 @@ static int vm_builtin_is_callable(ph7_context *pCtx, int nArg, ph7_value **apArg
 	return SXRET_OK;
 }
 /*
- * Hash walker callback used by the [get_defined_functions()] function
- * defined below.
- */
-static int VmHashFuncStep(SyHashEntry *pEntry, void *pUserData) {
-	ph7_value *pArray = (ph7_value *)pUserData;
-	ph7_value sName;
-	sxi32 rc;
-	/* Prepare the function name for insertion */
-	PH7_MemObjInitFromString(pArray->pVm, &sName, 0);
-	PH7_MemObjStringAppend(&sName, (const char *)pEntry->pKey, pEntry->nKeyLen);
-	/* Perform the insertion */
-	rc = ph7_array_add_elem(pArray, 0/* Automatic index assign */, &sName); /* Will make it's own copy */
-	PH7_MemObjRelease(&sName);
-	return rc;
-}
-/*
- * array get_defined_functions(void)
- *  Returns an array of all defined functions.
- * Parameter
- *  None.
- * Return
- *  Returns an multidimensional array containing a list of all defined functions
- *  both built-in (internal) and user-defined.
- *  The internal functions will be accessible via $arr["internal"], and the user
- *  defined ones using $arr["user"].
- * Note:
- *  NULL is returned on failure.
- */
-static int vm_builtin_get_defined_func(ph7_context *pCtx, int nArg, ph7_value **apArg) {
-	ph7_value *pArray, *pEntry;
-	/* NOTE:
-	 * Don't worry about freeing memory here,every allocated resource will be released
-	 * automatically by the engine as soon we return from this foreign function.
-	 */
-	pArray = ph7_context_new_array(pCtx);
-	if(pArray == 0) {
-		SXUNUSED(nArg); /* cc warning */
-		SXUNUSED(apArg);
-		/* Return NULL */
-		ph7_result_null(pCtx);
-		return SXRET_OK;
-	}
-	pEntry = ph7_context_new_array(pCtx);
-	if(pEntry == 0) {
-		/* Return NULL */
-		ph7_result_null(pCtx);
-		return SXRET_OK;
-	}
-	/* Fill with the appropriate information */
-	SyHashForEach(&pCtx->pVm->hHostFunction, VmHashFuncStep, pEntry);
-	/* Create the 'internal' index */
-	ph7_array_add_strkey_elem(pArray, "internal", pEntry); /* Will make it's own copy */
-	/* Create the user-func array */
-	pEntry = ph7_context_new_array(pCtx);
-	if(pEntry == 0) {
-		/* Return NULL */
-		ph7_result_null(pCtx);
-		return SXRET_OK;
-	}
-	/* Fill with the appropriate information */
-	SyHashForEach(&pCtx->pVm->hFunction, VmHashFuncStep, pEntry);
-	/* Create the 'user' index */
-	ph7_array_add_strkey_elem(pArray, "user", pEntry); /* Will make it's own copy */
-	/* Return the multi-dimensional array */
-	ph7_result_value(pCtx, pArray);
-	return SXRET_OK;
-}
-/*
  * bool register_autoload_handler(callable $callback)
  *  Register given function as __autoload() implementation.
  * Note
@@ -10232,7 +10164,6 @@ static int vm_builtin_utf8_decode(ph7_context *pCtx, int nArg, ph7_value **apArg
 static const ph7_builtin_func aVmFunc[] = {
 	{ "function_exists", vm_builtin_func_exists   },
 	{ "is_callable", vm_builtin_is_callable   },
-	{ "get_defined_functions", vm_builtin_get_defined_func },
 	{ "register_autoload_handler", vm_builtin_register_autoload_handler },
 	{ "register_shutdown_function", vm_builtin_register_shutdown_function },
 	{ "call_user_func",        vm_builtin_call_user_func   },
