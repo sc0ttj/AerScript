@@ -4150,7 +4150,7 @@ static sxi32 VmByteCodeExec(
 							PH7_HashmapUnref(pMap);
 						} else {
 							if((pStep->iFlags & PH7_4EACH_STEP_KEY) && SyStringLength(&pInfo->sKey) > 0) {
-								ph7_value *pKey = VmExtractMemObj(&(*pVm), &pInfo->sKey, FALSE, TRUE);
+								ph7_value *pKey = VmExtractMemObj(&(*pVm), &pInfo->sKey, FALSE, FALSE);
 								if(pKey) {
 									PH7_HashmapExtractNodeKey(pNode, pKey);
 								}
@@ -4167,7 +4167,7 @@ static sxi32 VmByteCodeExec(
 								}
 							} else {
 								/* Make a copy of the entry value */
-								pValue = VmExtractMemObj(&(*pVm), &pInfo->sValue, FALSE, TRUE);
+								pValue = VmExtractMemObj(&(*pVm), &pInfo->sValue, FALSE, FALSE);
 								if(pValue) {
 									PH7_HashmapExtractNodeValue(pNode, pValue, TRUE);
 								}
@@ -4201,7 +4201,7 @@ static sxi32 VmByteCodeExec(
 							ph7_value *pAttrValue;
 							if((pStep->iFlags & PH7_4EACH_STEP_KEY) && SyStringLength(&pInfo->sKey) > 0) {
 								/* Fill with the current attribute name */
-								ph7_value *pKey = VmExtractMemObj(&(*pVm), &pInfo->sKey, FALSE, TRUE);
+								ph7_value *pKey = VmExtractMemObj(&(*pVm), &pInfo->sKey, FALSE, FALSE);
 								if(pKey) {
 									SyBlobReset(&pKey->sBlob);
 									SyBlobAppend(&pKey->sBlob, pAttrName->zString, pAttrName->nByte);
@@ -4222,7 +4222,7 @@ static sxi32 VmByteCodeExec(
 									}
 								} else {
 									/* Make a copy of the attribute value */
-									pValue = VmExtractMemObj(&(*pVm), &pInfo->sValue, FALSE, TRUE);
+									pValue = VmExtractMemObj(&(*pVm), &pInfo->sValue, FALSE, FALSE);
 									if(pValue) {
 										PH7_MemObjStore(pAttrValue, pValue);
 									}
