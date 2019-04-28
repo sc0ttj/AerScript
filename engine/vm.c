@@ -936,7 +936,7 @@ PH7_PRIVATE sxi32 PH7_VmInit(
 	SySetAlloc(&pVm->aLitObj, 0xFF);
 	SyHashInit(&pVm->hHostFunction, &pVm->sAllocator, 0, 0);
 	SyHashInit(&pVm->hFunction, &pVm->sAllocator, 0, 0);
-	SyHashInit(&pVm->hClass, &pVm->sAllocator, SyStrHash, SyStrnmicmp);
+	SyHashInit(&pVm->hClass, &pVm->sAllocator, SyStrHash, SyStrncmp);
 	SyHashInit(&pVm->hConstant, &pVm->sAllocator, 0, 0);
 	SyHashInit(&pVm->hSuper, &pVm->sAllocator, 0, 0);
 	SyHashInit(&pVm->hDBAL, &pVm->sAllocator, 0, 0);
