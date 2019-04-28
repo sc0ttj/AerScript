@@ -9364,7 +9364,7 @@ static sxi32 VmExecIncludedFile(
 }
 /*
  * bool import(string $library)
- *  Loads a P# module library at runtime
+ *  Loads an AerScript module library at runtime
  * Parameters
  *  $library
  *    This parameter is only the module library name that should be loaded.
