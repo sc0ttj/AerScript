@@ -4049,31 +4049,6 @@ static sxi32 VmByteCodeExec(
 						goto Abort;
 					}
 #endif
-					if(SyStringLength(&pInfo->sValue) < 1) {
-						/* Take the variable name from the top of the stack */
-						if((pTos->iFlags & MEMOBJ_STRING) == 0) {
-							/* Force a string cast */
-							PH7_MemObjToString(pTos);
-						}
-						/* Duplicate name */
-						if(SyBlobLength(&pTos->sBlob) > 0) {
-							pName = SyMemBackendDup(&pVm->sAllocator, SyBlobData(&pTos->sBlob), SyBlobLength(&pTos->sBlob));
-							SyStringInitFromBuf(&pInfo->sValue, pName, SyBlobLength(&pTos->sBlob));
-						}
-						VmPopOperand(&pTos, 1);
-					}
-					if((pInfo->iFlags & PH7_4EACH_STEP_KEY) && SyStringLength(&pInfo->sKey) < 1) {
-						if((pTos->iFlags & MEMOBJ_STRING) == 0) {
-							/* Force a string cast */
-							PH7_MemObjToString(pTos);
-						}
-						/* Duplicate name */
-						if(SyBlobLength(&pTos->sBlob) > 0) {
-							pName = SyMemBackendDup(&pVm->sAllocator, SyBlobData(&pTos->sBlob), SyBlobLength(&pTos->sBlob));
-							SyStringInitFromBuf(&pInfo->sKey, pName, SyBlobLength(&pTos->sBlob));
-						}
-						VmPopOperand(&pTos, 1);
-					}
 					/* Make sure we are dealing with a hashmap aka 'array' or an object */
 					if((pTos->iFlags & (MEMOBJ_HASHMAP | MEMOBJ_OBJ)) == 0 || SyStringLength(&pInfo->sValue) < 1) {
 						/* Jump out of the loop */
