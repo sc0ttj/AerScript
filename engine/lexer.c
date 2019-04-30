@@ -556,7 +556,6 @@ static sxu32 KeywordCode(const char *z, int n) {
 		{"string", PH7_KEYWORD_STRING},
 		{"void", PH7_KEYWORD_VOID},
 		/* Loops & Controls */
-		{"as", PH7_KEYWORD_AS},
 		{"break", PH7_KEYWORD_BREAK},
 		{"case", PH7_KEYWORD_CASE},
 		{"continue", PH7_KEYWORD_CONTINUE},
@@ -567,6 +566,7 @@ static sxu32 KeywordCode(const char *z, int n) {
 		{"switch", PH7_KEYWORD_SWITCH},
 		{"else", PH7_KEYWORD_ELSE},
 		{"if", PH7_KEYWORD_IF},
+		{"in", PH7_KEYWORD_IN},
 		{"while", PH7_KEYWORD_WHILE},
 		/* Reserved keywords */
 		{"eval", PH7_KEYWORD_EVAL},

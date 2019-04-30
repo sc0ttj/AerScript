@@ -4049,11 +4049,11 @@ static sxi32 VmByteCodeExec(
 						goto Abort;
 					}
 #endif
-					/* Make sure we are dealing with a hashmap aka 'array' or an object */
-					if((pTos->iFlags & (MEMOBJ_HASHMAP | MEMOBJ_OBJ)) == 0 || SyStringLength(&pInfo->sValue) < 1) {
+					/* Make sure we are dealing with an array or an object */
+					if((pTos->iFlags & MEMOBJ_HASHMAP) == 0 || SyStringLength(&pInfo->sValue) < 1) {
 						/* Jump out of the loop */
 						if((pTos->iFlags & MEMOBJ_NULL) == 0) {
-							PH7_VmThrowError(&(*pVm), PH7_CTX_WARNING, "Invalid argument supplied for the foreach statement, expecting array or class instance");
+							PH7_VmThrowError(&(*pVm), PH7_CTX_WARNING, "Invalid argument supplied for the foreach statement, expecting an array");
 						}
 						pc = pInstr->iP2 - 1;
 					} else {
@@ -4065,24 +4065,12 @@ static sxi32 VmByteCodeExec(
 							/* Zero the structure */
 							SyZero(pStep, sizeof(ph7_foreach_step));
 							/* Prepare the step */
-							pStep->iFlags = pInfo->iFlags;
-							if(pTos->iFlags & MEMOBJ_HASHMAP) {
-								ph7_hashmap *pMap = (ph7_hashmap *)pTos->x.pOther;
-								/* Reset the internal loop cursor */
-								PH7_HashmapResetLoopCursor(pMap);
-								/* Mark the step */
-								pStep->iFlags |= PH7_4EACH_STEP_HASHMAP;
-								pStep->xIter.pMap = pMap;
-								pMap->iRef++;
-							} else {
-								ph7_class_instance *pThis = (ph7_class_instance *)pTos->x.pOther;
-								/* Reset the loop cursor */
-								SyHashResetLoopCursor(&pThis->hAttr);
-								/* Mark the step */
-								pStep->iFlags |= PH7_4EACH_STEP_OBJECT;
-								pStep->xIter.pThis = pThis;
-								pThis->iRef++;
-							}
+							ph7_hashmap *pMap = (ph7_hashmap *)pTos->x.pOther;
+							/* Reset the internal loop cursor */
+							PH7_HashmapResetLoopCursor(pMap);
+							/* Mark the step */
+							pStep->xIter.pMap = pMap;
+							pMap->iRef++;
 						}
 						if(SXRET_OK != SySetPut(&pInfo->aStep, (const void *)&pStep)) {
 							PH7_VmMemoryError(&(*pVm));
@@ -4108,104 +4096,30 @@ static sxi32 VmByteCodeExec(
 						/* Safely ignore the exception frame */
 						pFrame = pFrame->pParent;
 					}
-					if(pStep->iFlags & PH7_4EACH_STEP_HASHMAP) {
-						ph7_hashmap *pMap = pStep->xIter.pMap;
-						ph7_hashmap_node *pNode;
-						/* Extract the current node value */
-						pNode = PH7_HashmapGetNextEntry(pMap);
-						if(pNode == 0) {
-							/* No more entry to process */
-							pc = pInstr->iP2 - 1; /* Jump to this destination */
-							if(pStep->iFlags & PH7_4EACH_STEP_REF) {
-								/* Break the reference with the last element */
-								SyHashDeleteEntry(&pFrame->hVar, SyStringData(&pInfo->sValue), SyStringLength(&pInfo->sValue), 0);
-							}
-							/* Automatically reset the loop cursor */
-							PH7_HashmapResetLoopCursor(pMap);
-							/* Cleanup the mess left behind */
-							SyMemBackendPoolFree(&pVm->sAllocator, pStep);
-							SySetPop(&pInfo->aStep);
-							PH7_HashmapUnref(pMap);
-						} else {
-							if((pStep->iFlags & PH7_4EACH_STEP_KEY) && SyStringLength(&pInfo->sKey) > 0) {
-								ph7_value *pKey = VmExtractMemObj(&(*pVm), &pInfo->sKey, FALSE, FALSE);
-								if(pKey) {
-									PH7_HashmapExtractNodeKey(pNode, pKey);
-								}
-							}
-							if(pStep->iFlags & PH7_4EACH_STEP_REF) {
-								SyHashEntry *pEntry;
-								/* Pass by reference */
-								pEntry = SyHashGet(&pFrame->hVar, SyStringData(&pInfo->sValue), SyStringLength(&pInfo->sValue));
-								if(pEntry) {
-									pEntry->pUserData = SX_INT_TO_PTR(pNode->nValIdx);
-								} else {
-									SyHashInsert(&pFrame->hVar, SyStringData(&pInfo->sValue), SyStringLength(&pInfo->sValue),
-												 SX_INT_TO_PTR(pNode->nValIdx));
-								}
-							} else {
-								/* Make a copy of the entry value */
-								pValue = VmExtractMemObj(&(*pVm), &pInfo->sValue, FALSE, FALSE);
-								if(pValue) {
-									PH7_HashmapExtractNodeValue(pNode, pValue, TRUE);
-								}
-							}
-						}
+					ph7_hashmap *pMap = pStep->xIter.pMap;
+					ph7_hashmap_node *pNode;
+					/* Extract the current node value */
+					pNode = PH7_HashmapGetNextEntry(pMap);
+					if(pNode == 0) {
+						/* No more entry to process */
+						pc = pInstr->iP2 - 1; /* Jump to this destination */
+						/* Automatically reset the loop cursor */
+						PH7_HashmapResetLoopCursor(pMap);
+						/* Cleanup the mess left behind */
+						SyMemBackendPoolFree(&pVm->sAllocator, pStep);
+						SySetPop(&pInfo->aStep);
+						PH7_HashmapUnref(pMap);
 					} else {
-						ph7_class_instance *pThis = pStep->xIter.pThis;
-						VmClassAttr *pVmAttr = 0; /* Stupid cc -06 warning */
-						SyHashEntry *pEntry;
-						/* Point to the next attribute */
-						while((pEntry = SyHashGetNextEntry(&pThis->hAttr)) != 0) {
-							pVmAttr = (VmClassAttr *)pEntry->pUserData;
-							/* Check access permission */
-							if(VmClassMemberAccess(&(*pVm), pThis->pClass, &pVmAttr->pAttr->sName,
-												   pVmAttr->pAttr->iProtection, FALSE)) {
-								break; /* Access is granted */
+						if(SyStringLength(&pInfo->sKey) > 0) {
+							ph7_value *pKey = VmExtractMemObj(&(*pVm), &pInfo->sKey, FALSE, FALSE);
+							if(pKey) {
+								PH7_HashmapExtractNodeKey(pNode, pKey);
 							}
 						}
-						if(pEntry == 0) {
-							/* Clean up the mess left behind */
-							pc = pInstr->iP2 - 1; /* Jump to this destination */
-							if(pStep->iFlags & PH7_4EACH_STEP_REF) {
-								/* Break the reference with the last element */
-								SyHashDeleteEntry(&pFrame->hVar, SyStringData(&pInfo->sValue), SyStringLength(&pInfo->sValue), 0);
-							}
-							SyMemBackendPoolFree(&pVm->sAllocator, pStep);
-							SySetPop(&pInfo->aStep);
-							PH7_ClassInstanceUnref(pThis);
-						} else {
-							SyString *pAttrName = &pVmAttr->pAttr->sName;
-							ph7_value *pAttrValue;
-							if((pStep->iFlags & PH7_4EACH_STEP_KEY) && SyStringLength(&pInfo->sKey) > 0) {
-								/* Fill with the current attribute name */
-								ph7_value *pKey = VmExtractMemObj(&(*pVm), &pInfo->sKey, FALSE, FALSE);
-								if(pKey) {
-									SyBlobReset(&pKey->sBlob);
-									SyBlobAppend(&pKey->sBlob, pAttrName->zString, pAttrName->nByte);
-									MemObjSetType(pKey, MEMOBJ_STRING);
-								}
-							}
-							/* Extract attribute value */
-							pAttrValue = PH7_ClassInstanceExtractAttrValue(pThis, pVmAttr);
-							if(pAttrValue) {
-								if(pStep->iFlags & PH7_4EACH_STEP_REF) {
-									/* Pass by reference */
-									pEntry = SyHashGet(&pFrame->hVar, SyStringData(&pInfo->sValue), SyStringLength(&pInfo->sValue));
-									if(pEntry) {
-										pEntry->pUserData = SX_INT_TO_PTR(pVmAttr->nIdx);
-									} else {
-										SyHashInsert(&pFrame->hVar, SyStringData(&pInfo->sValue), SyStringLength(&pInfo->sValue),
-													 SX_INT_TO_PTR(pVmAttr->nIdx));
-									}
-								} else {
-									/* Make a copy of the attribute value */
-									pValue = VmExtractMemObj(&(*pVm), &pInfo->sValue, FALSE, FALSE);
-									if(pValue) {
-										PH7_MemObjStore(pAttrValue, pValue);
-									}
-								}
-							}
+						/* Make a copy of the entry value */
+						pValue = VmExtractMemObj(&(*pVm), &pInfo->sValue, FALSE, FALSE);
+						if(pValue) {
+							PH7_HashmapExtractNodeValue(pNode, pValue, TRUE);
 						}
 					}
 					break;

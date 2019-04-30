@@ -1789,12 +1789,12 @@ static sxi32 GenStateForEachNodeValidator(ph7_gen_state *pGen, ph7_expr_node *pR
 /*
  * Compile the 'foreach' statement.
  *  The foreach construct simply gives an easy way to iterate over arrays. foreach works
- *  only on arrays (and objects), and will issue an error when you try to use it on a variable
+ *  only on arrays, and will issue an error when you try to use it on a variable
  *  with a different data type or an uninitialized variable. There are two syntaxes; the second
  *  is a minor but useful extension of the first:
- *  foreach (array_expression as $value)
+ *  foreach ($value in array_expression)
  *    statement
- *  foreach (array_expression as $key => $value)
+ *  foreach ($key => $value in array_expression)
  *   statement
  *  The first form loops over the array given by array_expression. On each loop, the value
  *  of the current element is assigned to $value and the internal array pointer is advanced
@@ -1804,12 +1804,6 @@ static sxi32 GenStateForEachNodeValidator(ph7_gen_state *pGen, ph7_expr_node *pR
  *  Note:
  *  When foreach first starts executing, the internal array pointer is automatically reset to the
  *  first element of the array. This means that you do not need to call reset() before a foreach loop.
- *  Note:
- *  Unless the array is referenced, foreach operates on a copy of the specified array and not the array
- *  itself. foreach has some side effects on the array pointer. Don't rely on the array pointer during
- *  or after the foreach without resetting it.
- *  You can easily modify array's elements by preceding $value with &. This will assign reference instead
- *  of copying the value.
  */
 static sxi32 PH7_CompileForeach(ph7_gen_state *pGen) {
 	SyToken *pCur, *pTmp, *pEnd = 0;
@@ -1839,40 +1833,6 @@ static sxi32 PH7_CompileForeach(ph7_gen_state *pGen) {
 		/* Empty expression */
 		PH7_GenCompileError(pGen, E_ERROR, nLine, "foreach: Missing expression");
 	}
-	/* Compile the array expression */
-	pCur = pGen->pIn;
-	while(pCur < pEnd) {
-		if(pCur->nType & PH7_TK_KEYWORD) {
-			sxi32 nKeywrd = SX_PTR_TO_INT(pCur->pUserData);
-			if(nKeywrd == PH7_KEYWORD_AS) {
-				/* Break with the first 'as' found */
-				break;
-			}
-		}
-		/* Advance the stream cursor */
-		pCur++;
-	}
-	if(pCur <= pGen->pIn) {
-		PH7_GenCompileError(&(*pGen), E_ERROR, pGen->pIn->nLine,
-								 "foreach: Missing array/object expression");
-	}
-	/* Swap token streams */
-	pTmp = pGen->pEnd;
-	pGen->pEnd = pCur;
-	rc = PH7_CompileExpr(&(*pGen), 0, 0);
-	if(rc == SXERR_ABORT) {
-		/* Expression handler request an operation abort [i.e: Out-of-memory] */
-		return SXERR_ABORT;
-	}
-	/* Update token stream */
-	if(pGen->pIn < pCur) {
-		PH7_GenCompileError(&(*pGen), E_ERROR, pGen->pIn->nLine, "foreach: Unexpected token '%z'", &pGen->pIn->sData);
-	}
-	pCur++; /* Jump the 'as' keyword */
-	pGen->pIn = pCur;
-	if(pGen->pIn >= pEnd) {
-		PH7_GenCompileError(&(*pGen), E_ERROR, pGen->pIn->nLine, "foreach: Missing $key => $value pair");
-	}
 	/* Create the foreach context */
 	pInfo = (ph7_foreach_info *)SyMemBackendAlloc(&pGen->pVm->sAllocator, sizeof(ph7_foreach_info));
 	if(pInfo == 0) {
@@ -1882,49 +1842,76 @@ static sxi32 PH7_CompileForeach(ph7_gen_state *pGen) {
 	SyZero(pInfo, sizeof(ph7_foreach_info));
 	/* Initialize structure fields */
 	SySetInit(&pInfo->aStep, &pGen->pVm->sAllocator, sizeof(ph7_foreach_step *));
-	/* Check if we have a key field */
+
+	pCur = pGen->pIn;
 	while(pCur < pEnd && (pCur->nType & PH7_TK_ARRAY_OP) == 0) {
 		pCur++;
 	}
 	if(pCur < pEnd) {
-		/* Compile the expression holding the key name */
-		if(pGen->pIn >= pCur) {
+		if(pCur <= pGen->pIn) {
 			PH7_GenCompileError(&(*pGen), E_ERROR, pGen->pIn->nLine, "foreach: Missing $key");
-		} else {
-			pGen->pEnd = pCur;
-			rc = PH7_CompileExpr(&(*pGen), 0, GenStateForEachNodeValidator);
-			if(rc == SXERR_ABORT) {
-				/* Don't worry about freeing memory, everything will be released shortly */
-				return SXERR_ABORT;
-			}
-			pInstr = PH7_VmPopInstr(pGen->pVm);
-			if(pInstr->p3) {
-				/* Record key name */
-				SyStringInitFromBuf(&pInfo->sKey, pInstr->p3, SyStrlen((const char *)pInstr->p3));
-			}
-			pInfo->iFlags |= PH7_4EACH_STEP_KEY;
 		}
-		pGen->pIn = &pCur[1]; /* Jump the arrow */
+		pTmp = pGen->pEnd;
+		pGen->pEnd = pCur;
+		rc = PH7_CompileExpr(&(*pGen), 0, GenStateForEachNodeValidator);
+		if(rc == SXERR_ABORT) {
+			/* Expression handler request an operation abort [i.e: Out-of-memory] */
+			return SXERR_ABORT;
+		}
+		pInstr = PH7_VmPopInstr(pGen->pVm);
+		if(pInstr->p3) {
+			/* Record key name */
+			SyStringInitFromBuf(&pInfo->sKey, pInstr->p3, SyStrlen((const char *)pInstr->p3));
+		}
+		pCur++; /* Jump the array operator */
+		pGen->pIn = pCur;
+		pGen->pEnd = pTmp;
 	}
-	pGen->pEnd = pEnd;
-	if(pGen->pIn >= pEnd) {
+	pCur = pGen->pIn;
+	while(pCur < pEnd) {
+		if(pCur->nType & PH7_TK_KEYWORD) {
+			sxi32 nKeyword = SX_PTR_TO_INT(pCur->pUserData);
+			if(nKeyword == PH7_KEYWORD_IN) {
+				/* Break with the first 'in' found */
+				break;
+			}
+		}
+		/* Advance the stream cursor */
+		pCur++;
+	}
+	if(pCur <= pGen->pIn) {
 		PH7_GenCompileError(&(*pGen), E_ERROR, pGen->pIn->nLine, "foreach: Missing $value");
+	} else if(pCur->nType == PH7_TK_RPAREN) {
+		PH7_GenCompileError(&(*pGen), E_ERROR, pGen->pIn->nLine, "foreach: Expecting 'in' keyword");
 	}
-	if(pGen->pIn->nType & PH7_TK_AMPER /*'&'*/) {
-		pGen->pIn++;
-		/* Pass by reference  */
-		pInfo->iFlags |= PH7_4EACH_STEP_REF;
-	}
+	/* Swap token streams */
+	pTmp = pGen->pEnd;
+	pGen->pEnd = pCur;
 	/* Compile the expression holding the value name */
 	rc = PH7_CompileExpr(&(*pGen), 0, GenStateForEachNodeValidator);
 	if(rc == SXERR_ABORT) {
-		/* Don't worry about freeing memory, everything will be released shortly */
+		/* Expression handler request an operation abort [i.e: Out-of-memory] */
 		return SXERR_ABORT;
 	}
 	pInstr = PH7_VmPopInstr(pGen->pVm);
 	if(pInstr->p3) {
 		/* Record value name */
 		SyStringInitFromBuf(&pInfo->sValue, pInstr->p3, SyStrlen((const char *)pInstr->p3));
+	}
+	if(pGen->pIn < pCur) {
+		PH7_GenCompileError(&(*pGen), E_ERROR, pGen->pIn->nLine, "foreach: Unexpected token '%z'", &pGen->pIn->sData);
+	}
+	pCur++; /* Jump the 'in' keyword */
+	pGen->pIn = pCur;
+	if(pGen->pIn >= pEnd) {
+		PH7_GenCompileError(&(*pGen), E_ERROR, pGen->pIn->nLine, "foreach: Missing array expression");
+	}
+	pGen->pEnd = pEnd;
+	/* Compile the expression holding an array */
+	rc = PH7_CompileExpr(&(*pGen), 0, 0);
+	if(rc == SXERR_ABORT) {
+		/* Don't worry about freeing memory, everything will be released shortly */
+		return SXERR_ABORT;
 	}
 	/* Emit the 'FOREACH_INIT' instruction */
 	PH7_VmEmitInstr(pGen->pVm, 0, PH7_OP_FOREACH_INIT, 0, 0, pInfo, &nFalseJump);
@@ -1955,14 +1942,6 @@ static sxi32 PH7_CompileForeach(ph7_gen_state *pGen) {
 	/* Release the loop block */
 	PH7_GenStateLeaveBlock(pGen, 0);
 	/* Statement successfully compiled */
-	return SXRET_OK;
-Synchronize:
-	/* Synchronize with the first semi-colon ';' so we can avoid
-	 * compiling this erroneous block.
-	 */
-	while(pGen->pIn < pGen->pEnd && (pGen->pIn->nType & (PH7_TK_SEMI | PH7_TK_OCB)) == 0) {
-		pGen->pIn++;
-	}
 	return SXRET_OK;
 }
 /*

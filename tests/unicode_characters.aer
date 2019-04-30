@@ -38,7 +38,7 @@ class Unicode {
 		if($to_uni) {
 			$str = strtr($str, $cp);
 		} else {
-			foreach($cp as $c) {
+			foreach($c in $cp) {
 				$cpp[$c] = array_search($c, $cp);
 			}
 			$str = strtr($str, $cpp);

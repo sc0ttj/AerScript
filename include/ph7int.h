@@ -789,11 +789,9 @@ struct ph7_hashmap {
 struct ph7_foreach_info {
 	SyString sKey;      /* Key name. Empty otherwise*/
 	SyString sValue;    /* Value name */
-	sxi32 iFlags;       /* Control flags */
 	SySet aStep;        /* Stack of steps [i.e: ph7_foreach_step instance] */
 };
 struct ph7_foreach_step {
-	sxi32 iFlags;                   /* Control flags (see below) */
 	/* Iterate on those values */
 	union {
 		ph7_hashmap *pMap;          /* Hashmap [i.e: array in the PHP jargon] iteration
@@ -802,11 +800,6 @@ struct ph7_foreach_step {
 		ph7_class_instance *pThis;  /* Class instance [i.e: object] iteration */
 	} xIter;
 };
-/* Foreach step control flags */
-#define PH7_4EACH_STEP_HASHMAP 0x001 /* Hashmap iteration */
-#define PH7_4EACH_STEP_OBJECT  0x002 /* Object  iteration */
-#define PH7_4EACH_STEP_KEY     0x004 /* Make Key available */
-#define PH7_4EACH_STEP_REF     0x008 /* Pass value by reference not copy */
 /*
  * Each PH7 engine is identified by an instance of the following structure.
  * Please refer to the official documentation for more information
@@ -1580,7 +1573,7 @@ enum ph7_expr_id {
 #define PH7_KEYWORD_TRY          30 /* try */
 #define PH7_KEYWORD_DEFAULT      31 /* default */
 #define PH7_KEYWORD_CLASS        32 /* class */
-#define PH7_KEYWORD_AS           33 /* as */
+#define PH7_KEYWORD_IN           33 /* in */
 #define PH7_KEYWORD_CONTINUE     34 /* continue */
 #define PH7_KEYWORD_EXIT         35 /* exit */
 #define PH7_KEYWORD_FINALLY      36 /* finally */

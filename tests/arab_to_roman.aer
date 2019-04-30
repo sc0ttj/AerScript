@@ -10,7 +10,7 @@ class Program {
 		int $matches;
 		string $roman;
 		int $value;
-		foreach($lookup as $roman => $value) {
+		foreach($roman => $value in $lookup) {
 			$matches = (int) ($n / $value);
 			$result += str_repeat($roman, $matches);
 			$n = $n % $value;
