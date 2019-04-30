@@ -4057,24 +4057,13 @@ static sxi32 VmByteCodeExec(
 						}
 						pc = pInstr->iP2 - 1;
 					} else {
-						ph7_foreach_step *pStep;
-						pStep = (ph7_foreach_step *)SyMemBackendPoolAlloc(&pVm->sAllocator, sizeof(ph7_foreach_step));
-						if(pStep == 0) {
-							PH7_VmMemoryError(&(*pVm));
-						} else {
-							/* Zero the structure */
-							SyZero(pStep, sizeof(ph7_foreach_step));
-							/* Prepare the step */
-							ph7_hashmap *pMap = (ph7_hashmap *)pTos->x.pOther;
-							/* Reset the internal loop cursor */
-							PH7_HashmapResetLoopCursor(pMap);
-							/* Mark the step */
-							pStep->xIter.pMap = pMap;
-							pMap->iRef++;
-						}
-						if(SXRET_OK != SySetPut(&pInfo->aStep, (const void *)&pStep)) {
-							PH7_VmMemoryError(&(*pVm));
-						}
+						/* Prepare the hashmap */
+						ph7_hashmap *pMap = (ph7_hashmap *)pTos->x.pOther;
+						/* Reset the internal loop cursor */
+						PH7_HashmapResetLoopCursor(pMap);
+						/* Store an array in a loop pointer */
+						pInfo->pMap = pMap;
+						pMap->iRef++;
 					}
 					VmPopOperand(&pTos, 1);
 					break;
@@ -4085,18 +4074,14 @@ static sxi32 VmByteCodeExec(
 			 */
 			case PH7_OP_FOREACH_STEP: {
 					ph7_foreach_info *pInfo = (ph7_foreach_info *)pInstr->p3;
-					ph7_foreach_step **apStep, *pStep;
 					ph7_value *pValue;
 					VmFrame *pFrame;
-					/* Peek the last step */
-					apStep = (ph7_foreach_step **)SySetBasePtr(&pInfo->aStep);
-					pStep = apStep[SySetUsed(&pInfo->aStep) - 1];
 					pFrame = pVm->pFrame;
 					while(pFrame->pParent && (pFrame->iFlags & VM_FRAME_EXCEPTION)) {
 						/* Safely ignore the exception frame */
 						pFrame = pFrame->pParent;
 					}
-					ph7_hashmap *pMap = pStep->xIter.pMap;
+					ph7_hashmap *pMap = pInfo->pMap;
 					ph7_hashmap_node *pNode;
 					/* Extract the current node value */
 					pNode = PH7_HashmapGetNextEntry(pMap);
@@ -4106,8 +4091,6 @@ static sxi32 VmByteCodeExec(
 						/* Automatically reset the loop cursor */
 						PH7_HashmapResetLoopCursor(pMap);
 						/* Cleanup the mess left behind */
-						SyMemBackendPoolFree(&pVm->sAllocator, pStep);
-						SySetPop(&pInfo->aStep);
 						PH7_HashmapUnref(pMap);
 					} else {
 						if(SyStringLength(&pInfo->sKey) > 0) {

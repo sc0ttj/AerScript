@@ -1840,8 +1840,6 @@ static sxi32 PH7_CompileForeach(ph7_gen_state *pGen) {
 	}
 	/* Zero the structure */
 	SyZero(pInfo, sizeof(ph7_foreach_info));
-	/* Initialize structure fields */
-	SySetInit(&pInfo->aStep, &pGen->pVm->sAllocator, sizeof(ph7_foreach_step *));
 
 	pCur = pGen->pIn;
 	while(pCur < pEnd && (pCur->nType & PH7_TK_ARRAY_OP) == 0) {

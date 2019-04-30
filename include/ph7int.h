@@ -789,16 +789,9 @@ struct ph7_hashmap {
 struct ph7_foreach_info {
 	SyString sKey;      /* Key name. Empty otherwise*/
 	SyString sValue;    /* Value name */
-	SySet aStep;        /* Stack of steps [i.e: ph7_foreach_step instance] */
-};
-struct ph7_foreach_step {
-	/* Iterate on those values */
-	union {
-		ph7_hashmap *pMap;          /* Hashmap [i.e: array in the PHP jargon] iteration
-									 * Ex: foreach(array(1,2,3) as $key=>$value){}
-									 */
-		ph7_class_instance *pThis;  /* Class instance [i.e: object] iteration */
-	} xIter;
+	ph7_hashmap *pMap;  /* Hashmap [i.e: array in the PHP jargon] iteration
+						 * Ex: foreach(array(1,2,3) as $key=>$value){}
+						 */
 };
 /*
  * Each PH7 engine is identified by an instance of the following structure.
