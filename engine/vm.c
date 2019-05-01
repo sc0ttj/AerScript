@@ -1360,8 +1360,7 @@ static ph7_value *VmCreateMemObj(
 static ph7_value *VmExtractMemObj(
 	ph7_vm *pVm,           /* Target VM */
 	const SyString *pName, /* Variable name */
-	int bDup,              /* True to duplicate variable name */
-	int bCreate            /* True to create the variable if non-existent */
+	int bDup               /* True to duplicate variable name */
 ) {
 	int bNullify = FALSE;
 	SyHashEntry *pEntry;
@@ -1405,14 +1404,8 @@ static ph7_value *VmExtractMemObj(
 			}
 		}
 		if(pEntry == 0) {
-			if(!bCreate) {
-				/* Do not create the variable, return NULL instead */
-				return 0;
-			}
-			/* No such variable, automatically create a new one and install
-			 * it in the current frame.
-			 */
-			pObj = VmCreateMemObj(pVm, pName, bDup);
+			/* Variable does not exist, return NULL */
+			return 0;
 		}
 	} else {
 		/* Extract from superglobal */
@@ -2477,7 +2470,7 @@ static sxi32 VmByteCodeExec(
 						pTos++;
 					}
 					/* Extract the requested memory object */
-					pObj = VmExtractMemObj(&(*pVm), &sName, pInstr->p3 ? FALSE : TRUE, FALSE);
+					pObj = VmExtractMemObj(&(*pVm), &sName, pInstr->p3 ? FALSE : TRUE);
 					if(pObj == 0) {
 						/* Fatal error */
 						PH7_VmThrowError(&(*pVm), PH7_CTX_ERR, "Variable '$%z' undeclared (first use in this method/closure)", &sName);
@@ -2669,7 +2662,7 @@ static sxi32 VmByteCodeExec(
 							sEnv.iFlags = pEnv->iFlags;
 							sEnv.nIdx = SXU32_HIGH;
 							PH7_MemObjInit(pVm, &sEnv.sValue);
-							pValue = VmExtractMemObj(pVm, &sEnv.sName, FALSE, FALSE);
+							pValue = VmExtractMemObj(pVm, &sEnv.sName, FALSE);
 							if(pValue) {
 								/* Copy imported value */
 								PH7_MemObjStore(pValue, &sEnv.sValue);
@@ -2735,7 +2728,7 @@ static sxi32 VmByteCodeExec(
 						SyStringInitFromBuf(&sName, pInstr->p3, SyStrlen((const char *)pInstr->p3));
 					}
 					/* Extract the desired variable if available */
-					pObj = VmExtractMemObj(&(*pVm), &sName, pInstr->p3 ? FALSE : TRUE, FALSE);
+					pObj = VmExtractMemObj(&(*pVm), &sName, pInstr->p3 ? FALSE : TRUE);
 					if(pObj == 0) {
 						PH7_VmThrowError(&(*pVm), PH7_CTX_ERR,
 										"Variable '$%z' undeclared (first use in this method/closure)", &sName);
@@ -4081,7 +4074,7 @@ static sxi32 VmByteCodeExec(
 					} else {
 						PH7_MemObjInit(&(*pVm), &pTmp);
 						if(SyStringLength(&pInfo->sKey) > 0) {
-							ph7_value *pKey = VmExtractMemObj(&(*pVm), &pInfo->sKey, FALSE, FALSE);
+							ph7_value *pKey = VmExtractMemObj(&(*pVm), &pInfo->sKey, FALSE);
 							if(pKey == 0) {
 								PH7_VmThrowError(&(*pVm), PH7_CTX_ERR, "Variable '$%z' undeclared (first use in this method/closure)", &pInfo->sKey);
 							}
@@ -4091,7 +4084,7 @@ static sxi32 VmByteCodeExec(
 							}
 						}
 						/* Make a copy of the entry value */
-						pValue = VmExtractMemObj(&(*pVm), &pInfo->sValue, FALSE, FALSE);
+						pValue = VmExtractMemObj(&(*pVm), &pInfo->sValue, FALSE);
 						if(pValue == 0) {
 							PH7_VmThrowError(&(*pVm), PH7_CTX_ERR, "Variable '$%z' undeclared (first use in this method/closure)", &pInfo->sValue);
 						}
@@ -4737,7 +4730,7 @@ static sxi32 VmByteCodeExec(
 								sName.nByte = SyBufferFormat(zName, sizeof(zName), "[%u]apArg", n);
 								sName.zString = zName;
 								/* Anonymous argument */
-								pObj = VmExtractMemObj(&(*pVm), &sName, TRUE, FALSE);
+								pObj = VmExtractMemObj(&(*pVm), &sName, TRUE);
 							}
 							if(pObj) {
 								PH7_MemObjStore(pArg, pObj);
@@ -8320,7 +8313,7 @@ static sxi32 VmThrowException(
 		rc = VmEnterFrame(&(*pVm), 0, 0, &pFrame);
 		if(rc == SXRET_OK) {
 			/* Mark as catch frame */
-			ph7_value *pObj = VmExtractMemObj(&(*pVm), &pCatch->sThis, FALSE, TRUE);
+			ph7_value *pObj = VmCreateMemObj(&(*pVm), &pCatch->sThis, FALSE);
 			pFrame->iFlags |= VM_FRAME_CATCH;
 			if(pObj) {
 				/* Install the exception instance */
@@ -8784,7 +8777,7 @@ static int VmCompactCallback(ph7_value *pKey, ph7_value *pValue, void *pUserData
 		SyStringInitFromBuf(&sVar, SyBlobData(&pValue->sBlob), SyBlobLength(&pValue->sBlob));
 		if(sVar.nByte > 0) {
 			/* Query the current frame */
-			pKey = VmExtractMemObj(pVm, &sVar, FALSE, FALSE);
+			pKey = VmExtractMemObj(pVm, &sVar, FALSE);
 			/* ^
 			 * | Avoid wasting variable and use 'pKey' instead
 			 */
@@ -8854,7 +8847,7 @@ static int vm_builtin_compact(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 			if(nLen > 0) {
 				SyStringInitFromBuf(&sVar, zName, nLen);
 				/* Check if the variable is available in the current frame */
-				pObj = VmExtractMemObj(pVm, &sVar, FALSE, FALSE);
+				pObj = VmExtractMemObj(pVm, &sVar, FALSE);
 				if(pObj) {
 					ph7_array_add_elem(pArray, apArg[i]/*Variable name*/, pObj/* Variable value */);
 				}
@@ -8980,7 +8973,7 @@ static int VmExtractCallback(ph7_value *pKey, ph7_value *pValue, void *pUserData
 	}
 	sVar.zString = pAux->zWorker;
 	/* Try to extract the variable */
-	pObj = VmExtractMemObj(pVm, &sVar, TRUE, FALSE);
+	pObj = VmExtractMemObj(pVm, &sVar, TRUE);
 	if(pObj) {
 		/* Collision */
 		if(iFlags & 0x02 /* EXTR_SKIP */) {
@@ -8995,11 +8988,11 @@ static int VmExtractCallback(ph7_value *pKey, ph7_value *pValue, void *pUserData
 											   pAux->Prefixlen, pAux->zPrefix,
 											   SyBlobLength(&pKey->sBlob), SyBlobData(&pKey->sBlob)
 											  );
-			pObj = VmExtractMemObj(pVm, &sVar, TRUE, TRUE);
+			pObj = VmExtractMemObj(pVm, &sVar, TRUE);
 		}
 	} else {
 		/* Create the variable */
-		pObj = VmExtractMemObj(pVm, &sVar, TRUE, TRUE);
+		pObj = VmCreateMemObj(pVm, &sVar, TRUE);
 	}
 	if(pObj) {
 		/* Overwrite the old value */
