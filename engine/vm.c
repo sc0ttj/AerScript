@@ -4074,7 +4074,7 @@ static sxi32 VmByteCodeExec(
 			 */
 			case PH7_OP_FOREACH_STEP: {
 					ph7_foreach_info *pInfo = (ph7_foreach_info *)pInstr->p3;
-					ph7_value *pValue;
+					ph7_value *pTmp, *pValue;
 					VmFrame *pFrame;
 					pFrame = pVm->pFrame;
 					while(pFrame->pParent && (pFrame->iFlags & VM_FRAME_EXCEPTION)) {
@@ -4093,19 +4093,26 @@ static sxi32 VmByteCodeExec(
 						/* Cleanup the mess left behind */
 						PH7_HashmapUnref(pMap);
 					} else {
+						PH7_MemObjInit(&(*pVm), &pTmp);
 						if(SyStringLength(&pInfo->sKey) > 0) {
 							ph7_value *pKey = VmExtractMemObj(&(*pVm), &pInfo->sKey, FALSE, FALSE);
 							if(pKey == 0) {
 								PH7_VmThrowError(&(*pVm), PH7_CTX_ERR, "Variable '$%z' undeclared (first use in this method/closure)", &pInfo->sKey);
 							}
-							PH7_HashmapExtractNodeKey(pNode, pKey);
+							PH7_HashmapExtractNodeKey(pNode, &pTmp);
+							if(PH7_MemObjSafeStore(&pTmp, pKey) != SXRET_OK) {
+								PH7_VmThrowError(&(*pVm), PH7_CTX_ERR, "Cannot assign a value of incompatible type to variable '$%z'", &pInfo->sKey);
+							}
 						}
 						/* Make a copy of the entry value */
 						pValue = VmExtractMemObj(&(*pVm), &pInfo->sValue, FALSE, FALSE);
 						if(pValue == 0) {
 							PH7_VmThrowError(&(*pVm), PH7_CTX_ERR, "Variable '$%z' undeclared (first use in this method/closure)", &pInfo->sValue);
 						}
-						PH7_HashmapExtractNodeValue(pNode, pValue, TRUE);
+						PH7_HashmapExtractNodeValue(pNode, &pTmp, TRUE);
+						if(PH7_MemObjSafeStore(&pTmp, pValue) != SXRET_OK) {
+							PH7_VmThrowError(&(*pVm), PH7_CTX_ERR, "Cannot assign a value of incompatible type to variable '$%z'", &pInfo->sValue);
+						}
 					}
 					break;
 				}
