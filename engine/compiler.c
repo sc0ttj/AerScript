@@ -1811,7 +1811,9 @@ static sxi32 PH7_CompileForeach(ph7_gen_state *pGen) {
 	ph7_foreach_info *pInfo;
 	sxu32 nFalseJump;
 	VmInstr *pInstr;
+	char *zName;
 	sxu32 nLine;
+	sxu32 nKey;
 	sxi32 rc;
 	nLine = pGen->pIn->nLine;
 	/* Jump the 'foreach' keyword */
@@ -1851,15 +1853,30 @@ static sxi32 PH7_CompileForeach(ph7_gen_state *pGen) {
 		}
 		pTmp = pGen->pEnd;
 		pGen->pEnd = pCur;
-		rc = PH7_CompileExpr(&(*pGen), 0, GenStateForEachNodeValidator);
-		if(rc == SXERR_ABORT) {
-			/* Expression handler request an operation abort [i.e: Out-of-memory] */
-			return SXERR_ABORT;
-		}
-		pInstr = PH7_VmPopInstr(pGen->pVm);
-		if(pInstr->p3) {
+		nKey = (sxu32)(SX_PTR_TO_INT(pGen->pIn->pUserData));
+		if(nKey & PH7_KEYWORD_TYPEDEF) {
+			/* Hack to compile variable */
+			pGen->pEnd->nType = PH7_TK_SEMI;
+			if(pGen->pIn[3].nType != PH7_TK_SEMI) {
+				PH7_GenCompileError(&(*pGen), E_ERROR, pGen->pIn->nLine, "foreach: Improper key declaration");
+			}
+			/* Extract variable name */
+			zName = SyMemBackendStrDup(&pGen->pVm->sAllocator, pGen->pIn[2].sData.zString, pGen->pIn[2].sData.nByte);
+			/* Compile variable declaration */
+			PH7_CompileVar(&(*pGen));
 			/* Record key name */
-			SyStringInitFromBuf(&pInfo->sKey, pInstr->p3, SyStrlen((const char *)pInstr->p3));
+			SyStringInitFromBuf(&pInfo->sKey, zName, SyStrlen(zName));
+		} else {
+			rc = PH7_CompileExpr(&(*pGen), 0, GenStateForEachNodeValidator);
+			if(rc == SXERR_ABORT) {
+				/* Expression handler request an operation abort [i.e: Out-of-memory] */
+				return SXERR_ABORT;
+			}
+			pInstr = PH7_VmPopInstr(pGen->pVm);
+			if(pInstr->p3) {
+				/* Record key name */
+				SyStringInitFromBuf(&pInfo->sKey, pInstr->p3, SyStrlen((const char *)pInstr->p3));
+			}
 		}
 		pCur++; /* Jump the array operator */
 		pGen->pIn = pCur;
@@ -1885,16 +1902,31 @@ static sxi32 PH7_CompileForeach(ph7_gen_state *pGen) {
 	/* Swap token streams */
 	pTmp = pGen->pEnd;
 	pGen->pEnd = pCur;
-	/* Compile the expression holding the value name */
-	rc = PH7_CompileExpr(&(*pGen), 0, GenStateForEachNodeValidator);
-	if(rc == SXERR_ABORT) {
-		/* Expression handler request an operation abort [i.e: Out-of-memory] */
-		return SXERR_ABORT;
-	}
-	pInstr = PH7_VmPopInstr(pGen->pVm);
-	if(pInstr->p3) {
+	nKey = (sxu32)(SX_PTR_TO_INT(pGen->pIn->pUserData));
+	if(nKey & PH7_KEYWORD_TYPEDEF) {
+		/* Hack to compile variable */
+		pGen->pEnd->nType = PH7_TK_SEMI;
+		if(pGen->pIn[3].nType != PH7_TK_SEMI) {
+			PH7_GenCompileError(&(*pGen), E_ERROR, pGen->pIn->nLine, "foreach: Improper value declaration");
+		}
+		/* Extract variable name */
+		zName = SyMemBackendStrDup(&pGen->pVm->sAllocator, pGen->pIn[2].sData.zString, pGen->pIn[2].sData.nByte);
+		/* Compile variable declaration */
+		PH7_CompileVar(&(*pGen));
 		/* Record value name */
-		SyStringInitFromBuf(&pInfo->sValue, pInstr->p3, SyStrlen((const char *)pInstr->p3));
+		SyStringInitFromBuf(&pInfo->sValue, zName, SyStrlen(zName));
+	} else {
+		/* Compile the expression holding the value name */
+		rc = PH7_CompileExpr(&(*pGen), 0, GenStateForEachNodeValidator);
+		if(rc == SXERR_ABORT) {
+			/* Expression handler request an operation abort [i.e: Out-of-memory] */
+			return SXERR_ABORT;
+		}
+		pInstr = PH7_VmPopInstr(pGen->pVm);
+		if(pInstr->p3) {
+			/* Record value name */
+			SyStringInitFromBuf(&pInfo->sValue, pInstr->p3, SyStrlen((const char *)pInstr->p3));
+		}
 	}
 	if(pGen->pIn < pCur) {
 		PH7_GenCompileError(&(*pGen), E_ERROR, pGen->pIn->nLine, "foreach: Unexpected token '%z'", &pGen->pIn->sData);
