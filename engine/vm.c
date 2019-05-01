@@ -4610,7 +4610,7 @@ static sxi32 VmByteCodeExec(
 						if((pVmFunc->iFlags & VM_FUNC_CLASS_METHOD) && pThis) {
 							/* Install the '$this' variable */
 							static const SyString sThis = { "this", sizeof("this") - 1 };
-							pObj = VmExtractMemObj(&(*pVm), &sThis, FALSE, TRUE);
+							pObj = VmCreateMemObj(&(*pVm), &sThis, FALSE);
 							if(pObj) {
 								/* Reflect the change */
 								pObj->x.pOther = pThis;
