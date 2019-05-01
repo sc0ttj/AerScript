@@ -2340,9 +2340,9 @@ static sxi32 PH7_CompileNamespace(ph7_gen_state *pGen) {
 	sxu32 nLine = pGen->pIn->nLine;
 	SyToken *pEnd, *pTmp;
 	sxi32 rc;
-	pGen->pIn++; /* Jump the 'namespace' keyword */
-	if(pGen->pIn >= pGen->pEnd ||
-			(pGen->pIn->nType & (PH7_TK_NSSEP | PH7_TK_ID | PH7_TK_KEYWORD | PH7_TK_SEMI/*';'*/ | PH7_TK_OCB/*'{'*/)) == 0) {
+	/* Jump the 'namespace' keyword */
+	pGen->pIn++;
+	if(pGen->pIn >= pGen->pEnd || (pGen->pIn->nType & (PH7_TK_NSSEP | PH7_TK_ID)) == 0) {
 		SyToken *pTok = pGen->pIn;
 		if(pTok >= pGen->pEnd) {
 			pTok--;
@@ -2395,7 +2395,16 @@ static sxi32 PH7_CompileNamespace(ph7_gen_state *pGen) {
 static sxi32 PH7_CompileUsing(ph7_gen_state *pGen) {
 	sxu32 nLine = pGen->pIn->nLine;
 	sxi32 rc;
-	pGen->pIn++; /* Jump the 'using' keyword */
+	/* Jump the 'using' keyword */
+	pGen->pIn++;
+	if(pGen->pIn >= pGen->pEnd || (pGen->pIn->nType & (PH7_TK_NSSEP | PH7_TK_ID)) == 0) {
+		SyToken *pTok = pGen->pIn;
+		if(pTok >= pGen->pEnd) {
+			pTok--;
+		}
+		/* Unexpected token */
+		PH7_GenCompileError(&(*pGen), E_ERROR, nLine, "Using: Unexpected token '%z'", &pTok->sData);
+	}
 	/* Assemble one or more real namespace path */
 	for(;;) {
 		if(pGen->pIn >= pGen->pEnd) {
@@ -4623,9 +4632,9 @@ static ProcLangConstruct PH7_GenStateGetGlobalScopeHandler(
 		} else if(nKeywordID == PH7_KEYWORD_FINAL && (pLookahead->nType & PH7_TK_KEYWORD)
 				&& SX_PTR_TO_INT(pLookahead->pUserData) == PH7_KEYWORD_CLASS) {
 			return PH7_CompileFinalClass;
-		} else if(nKeywordID == PH7_KEYWORD_NAMESPACE && (pLookahead->nType & PH7_TK_ID)) {
+		} else if(nKeywordID == PH7_KEYWORD_NAMESPACE) {
 			return PH7_CompileNamespace;
-		} else if(nKeywordID == PH7_KEYWORD_USING && (pLookahead->nType & PH7_TK_ID)) {
+		} else if(nKeywordID == PH7_KEYWORD_USING) {
 			return PH7_CompileUsing;
 		}
 	}
