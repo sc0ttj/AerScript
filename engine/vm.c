@@ -5220,7 +5220,7 @@ static const char *VmInstrToString(sxi32 nOp) {
 			zOp = "JMPLFB";
 			break;
 		case PH7_OP_JMPLFE:
-			zOp = "JMPLFB";
+			zOp = "JMPLFE";
 			break;
 		case PH7_OP_POP:
 			zOp = "POP";
