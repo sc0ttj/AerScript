@@ -4613,9 +4613,9 @@ static ProcLangConstruct PH7_GenStateGetGlobalScopeHandler(
 	SyToken *pLookahead  /* Look-ahead token */
 ) {
 	if(pLookahead) {
-		if(nKeywordID == PH7_KEYWORD_INTERFACE && (pLookahead->nType & PH7_TK_ID)) {
+		if(nKeywordID == PH7_KEYWORD_INTERFACE) {
 			return PH7_CompileClassInterface;
-		} else if(nKeywordID == PH7_KEYWORD_CLASS && (pLookahead->nType & PH7_TK_ID)) {
+		} else if(nKeywordID == PH7_KEYWORD_CLASS) {
 			return PH7_CompileClass;
 		} else if(nKeywordID == PH7_KEYWORD_VIRTUAL && (pLookahead->nType & PH7_TK_KEYWORD)
 				&& SX_PTR_TO_INT(pLookahead->pUserData) == PH7_KEYWORD_CLASS) {
