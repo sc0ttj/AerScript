@@ -4705,14 +4705,14 @@ static sxi32 VmByteCodeExec(
 								if(aFormalArg[n].iFlags & VM_FUNC_ARG_BY_REF) {
 									/* Pass by reference */
 									if(pArg->nIdx == SXU32_HIGH) {
-										/* Expecting a variable,not a constant,raise an exception */
+										/* Expecting a variable, not a constant, raise an exception */
 										if((pArg->iFlags & (MEMOBJ_HASHMAP | MEMOBJ_OBJ | MEMOBJ_RES | MEMOBJ_NULL)) == 0) {
 											PH7_VmThrowError(&(*pVm), PH7_CTX_ERR,
 														  "Function '%z', %d argument: Pass by reference, expecting a variable not a "
 														  "constant", &pVmFunc->sName, n + 1);
 										}
 										/* Switch to pass by value */
-										pObj = VmExtractMemObj(&(*pVm), &aFormalArg[n].sName, FALSE, TRUE);
+										pObj = VmCreateMemObj(&(*pVm), &aFormalArg[n].sName, FALSE);
 									} else {
 										SyHashEntry *pRefEntry;
 										/* Install the referenced variable in the private function frame */
@@ -4728,7 +4728,7 @@ static sxi32 VmByteCodeExec(
 									}
 								} else {
 									/* Pass by value, make a copy of the given argument */
-									pObj = VmExtractMemObj(&(*pVm), &aFormalArg[n].sName, FALSE, TRUE);
+									pObj = VmCreateMemObj(&(*pVm), &aFormalArg[n].sName, FALSE);
 								}
 							} else {
 								char zName[32];
@@ -4737,7 +4737,7 @@ static sxi32 VmByteCodeExec(
 								sName.nByte = SyBufferFormat(zName, sizeof(zName), "[%u]apArg", n);
 								sName.zString = zName;
 								/* Anonymous argument */
-								pObj = VmExtractMemObj(&(*pVm), &sName, TRUE, TRUE);
+								pObj = VmExtractMemObj(&(*pVm), &sName, TRUE, FALSE);
 							}
 							if(pObj) {
 								PH7_MemObjStore(pArg, pObj);
@@ -4762,7 +4762,7 @@ static sxi32 VmByteCodeExec(
 									/* Do not install null value */
 									continue;
 								}
-								pValue = VmExtractMemObj(pVm, &pEnv->sName, FALSE, TRUE);
+								pValue = VmCreateMemObj(pVm, &pEnv->sName, FALSE);
 								if(pValue == 0) {
 									continue;
 								}
@@ -4775,7 +4775,7 @@ static sxi32 VmByteCodeExec(
 						/* Process default values */
 						while(n < SySetUsed(&pVmFunc->aArgs)) {
 							if(SySetUsed(&aFormalArg[n].aByteCode) > 0) {
-								pObj = VmExtractMemObj(&(*pVm), &aFormalArg[n].sName, FALSE, TRUE);
+								pObj = VmCreateMemObj(&(*pVm), &aFormalArg[n].sName, FALSE);
 								if(pObj) {
 									/* Evaluate the default value and extract it's result */
 									rc = VmLocalExec(&(*pVm), &aFormalArg[n].aByteCode, pObj);
