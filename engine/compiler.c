@@ -3180,8 +3180,8 @@ static sxi32 PH7_GenStateCompileClassMethod(
 		}
 		if((pClass->iFlags & PH7_CLASS_VIRTUAL) == 0) {
 			PH7_GenCompileError(pGen, E_ERROR, nLine,
-									 "Class '%z' contains virtual method and must therefore be declared virtual or implement the remaining method '%z::%z()'",
-									 &pClass->sName, &pClass->sName, pName);
+									 "A method '%z::%z()' cannot be declared as virtual in non-virtual class",
+									 &pClass->sName, pName);
 		}
 		/* Assemble method signature only */
 		doBody = FALSE;
