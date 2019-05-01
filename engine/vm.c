@@ -2284,20 +2284,6 @@ static sxi32 VmByteCodeExec(
 				MemObjSetType(pTos, MEMOBJ_CHAR);
 				break;
 			/*
-			 * CVT_NUMC: * * *
-			 *
-			 * Force the top of the stack to be a numeric type (integer,real or both).
-			 */
-			case PH7_OP_CVT_NUMC:
-#ifdef UNTRUST
-				if(pTos < pStack) {
-					goto Abort;
-				}
-#endif
-				/* Force a numeric cast */
-				PH7_MemObjToNumeric(pTos);
-				break;
-			/*
 			 * CVT_OBJ: * * *
 			 *
 			 * Force the top of the stack to be a class instance (Object in the PHP jargon).
@@ -5347,9 +5333,6 @@ static const char *VmInstrToString(sxi32 nOp) {
 			break;
 		case PH7_OP_CVT_OBJ:
 			zOp = "CVT_OBJ";
-			break;
-		case PH7_OP_CVT_NUMC:
-			zOp = "CVT_NUMC";
 			break;
 		case PH7_OP_INCR:
 			zOp = "INCR";
