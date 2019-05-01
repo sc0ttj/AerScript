@@ -4095,15 +4095,17 @@ static sxi32 VmByteCodeExec(
 					} else {
 						if(SyStringLength(&pInfo->sKey) > 0) {
 							ph7_value *pKey = VmExtractMemObj(&(*pVm), &pInfo->sKey, FALSE, FALSE);
-							if(pKey) {
-								PH7_HashmapExtractNodeKey(pNode, pKey);
+							if(pKey == 0) {
+								PH7_VmThrowError(&(*pVm), PH7_CTX_ERR, "Variable '$%z' undeclared (first use in this method/closure)", &pInfo->sKey);
 							}
+							PH7_HashmapExtractNodeKey(pNode, pKey);
 						}
 						/* Make a copy of the entry value */
 						pValue = VmExtractMemObj(&(*pVm), &pInfo->sValue, FALSE, FALSE);
-						if(pValue) {
-							PH7_HashmapExtractNodeValue(pNode, pValue, TRUE);
+						if(pValue == 0) {
+							PH7_VmThrowError(&(*pVm), PH7_CTX_ERR, "Variable '$%z' undeclared (first use in this method/closure)", &pInfo->sValue);
 						}
+						PH7_HashmapExtractNodeValue(pNode, pValue, TRUE);
 					}
 					break;
 				}
