@@ -1975,7 +1975,7 @@ static sxi32 PH7_CompileForeach(ph7_gen_state *pGen) {
 	return SXRET_OK;
 }
 /*
- * Compile the infamous if/elseif/else if/else statements.
+ * Compile the if/else statements.
  *  The if construct is one of the most important features of many languages, Aer included.
  *  It allows for conditional execution of code fragments. Aer features an if structure
  *  that is similar to that of C:
@@ -1989,15 +1989,10 @@ static sxi32 PH7_CompileForeach(ph7_gen_state *pGen) {
  *   $b, and a is NOT greater than b otherwise.
  *   The else statement is only executed if the if expression evaluated to FALSE, and if there
  *   were any elseif expressions - only if they evaluated to FALSE as well
- *  elseif
- *   elseif, as its name suggests, is a combination of if and else. Like else, it extends
- *   an if statement to execute a different statement in case the original if expression evaluates
- *   to FALSE. However, unlike else, it will execute that alternative expression only if the elseif
- *   conditional expression evaluates to TRUE. For example, the following code would display a is bigger
- *   than b, a equal to b or a is smaller than b:
+ *  For example, the following code would display a is bigger than b, a equal to b or a is smaller than b:
  *    if ($a > $b) {
  *     echo "a is bigger than b";
- *    } elseif ($a == $b) {
+ *    } else if ($a == $b) {
  *     echo "a is equal to b";
  *    } else {
  *     echo "a is smaller than b";
