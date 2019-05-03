@@ -1583,14 +1583,14 @@ enum ph7_expr_id {
 #define PH7_KEYWORD_RETURN       54 /* return */
 #define PH7_KEYWORD_BREAK        55 /* break */
 #define PH7_KEYWORD_GOTO         56 /* goto */
-#define PH7_KEYWORD_VOID         0x1000   /* void: MUST BE A POWER OF TWO */
-#define PH7_KEYWORD_CHAR         0x2000   /* char: MUST BE A POWER OF TWO */
-#define PH7_KEYWORD_BOOL         0x4000   /* bool: MUST BE A POWER OF TWO */
-#define PH7_KEYWORD_INT          0x8000   /* int: MUST BE A POWER OF TWO */
-#define PH7_KEYWORD_FLOAT        0x10000  /* float: MUST BE A POWER OF TWO */
-#define PH7_KEYWORD_STRING       0x20000  /* string: MUST BE A POWER OF TWO */
-#define PH7_KEYWORD_OBJECT       0x40000  /* object: MUST BE A POWER OF TWO */
-#define PH7_KEYWORD_CALLBACK     0x80000  /* callback: MUST BE A POWER OF TWO */
+#define PH7_KEYWORD_VOID         0x001000 /* void: MUST BE A POWER OF TWO */
+#define PH7_KEYWORD_CHAR         0x002000 /* char: MUST BE A POWER OF TWO */
+#define PH7_KEYWORD_BOOL         0x004000 /* bool: MUST BE A POWER OF TWO */
+#define PH7_KEYWORD_INT          0x008000 /* int: MUST BE A POWER OF TWO */
+#define PH7_KEYWORD_FLOAT        0x010000 /* float: MUST BE A POWER OF TWO */
+#define PH7_KEYWORD_STRING       0x020000 /* string: MUST BE A POWER OF TWO */
+#define PH7_KEYWORD_OBJECT       0x040000 /* object: MUST BE A POWER OF TWO */
+#define PH7_KEYWORD_CALLBACK     0x080000 /* callback: MUST BE A POWER OF TWO */
 #define PH7_KEYWORD_RESOURCE     0x100000 /* resource: MUST BE A POWER OF TWO */
 #define PH7_KEYWORD_MIXED        0x200000 /* mixed: MUST BE A POWER OF TWO */
 
