@@ -1523,6 +1523,8 @@ static sxi32 PH7_CompileGoto(ph7_gen_state *pGen)
 		} else {
 			sJump.pFunc = 0;
 		}
+		/* Make sure there will not stay any loop frame opened (i.e. goto inside a loop) */
+		PH7_VmEmitInstr(pGen->pVm, sJump.nLine, PH7_OP_JMPLFE, 0, 0, 0, 0);
 		/* Emit the unconditional jump */
 		if(SXRET_OK == PH7_VmEmitInstr(pGen->pVm, sJump.nLine, PH7_OP_JMP, 0, 0, 0, &sJump.nInstrIdx)) {
 			SySetPut(&pGen->aGoto, (const void *)&sJump);
