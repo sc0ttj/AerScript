@@ -884,6 +884,8 @@ struct ph7_gen_state {
 	GenBlock sGlobal;    /* Global block */
 	ProcConsumer xErr;   /* Error consumer callback */
 	void *pErrData;      /* Third argument to xErr() */
+	SySet aLabel;        /* Label table */
+	SySet aGoto;         /* Goto table */
 	SyBlob sWorker;      /* General purpose working buffer */
 	SyBlob sErrBuf;      /* Error buffer */
 	SyToken *pIn;        /* Current processed token */
@@ -1580,6 +1582,7 @@ enum ph7_expr_id {
 #define PH7_KEYWORD_CATCH        53 /* catch */
 #define PH7_KEYWORD_RETURN       54 /* return */
 #define PH7_KEYWORD_BREAK        55 /* break */
+#define PH7_KEYWORD_GOTO         56 /* goto */
 #define PH7_KEYWORD_VOID         0x1000   /* void: MUST BE A POWER OF TWO */
 #define PH7_KEYWORD_CHAR         0x2000   /* char: MUST BE A POWER OF TWO */
 #define PH7_KEYWORD_BOOL         0x4000   /* bool: MUST BE A POWER OF TWO */

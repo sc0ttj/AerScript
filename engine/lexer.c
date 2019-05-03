@@ -563,6 +563,7 @@ static sxu32 KeywordCode(const char *z, int n) {
 		{"do", PH7_KEYWORD_DO},
 		{"for", PH7_KEYWORD_FOR},
 		{"foreach", PH7_KEYWORD_FOREACH},
+		{"goto", PH7_KEYWORD_GOTO},
 		{"switch", PH7_KEYWORD_SWITCH},
 		{"else", PH7_KEYWORD_ELSE},
 		{"if", PH7_KEYWORD_IF},

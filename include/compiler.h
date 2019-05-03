@@ -6,6 +6,7 @@
 /* Forward declaration */
 typedef struct LangConstruct LangConstruct;
 typedef struct JumpFixup     JumpFixup;
+typedef struct Label         Label;
 
 /* Block [i.e: set of statements] control flags */
 #define GEN_BLOCK_LOOP        0x001    /* Loop block [i.e: for,while,...] */
@@ -22,6 +23,20 @@ typedef struct JumpFixup     JumpFixup;
 #define GEN_BLOCK_NAMESPACE   0x800    /* Namespace body */
 
 /*
+ * Each label seen in the input is recorded in an instance
+ * of the following structure.
+ * A label is a target point [i.e: a jump destination] that is specified
+ * by an identifier followed by a colon.
+ */
+struct Label {
+	ph7_vm_func *pFunc;  /* Compiled function where the label was declared.NULL otherwise */
+	sxu32 nJumpDest;     /* Jump destination */
+	SyString sName;      /* Label name */
+	sxu32 nLine;         /* Line number this label occurs */
+	sxu8 bRef;           /* True if the label was referenced */
+};
+
+/*
  * Compilation of some Aer constructs such as if, for, while, the logical or
  * (||) and logical and (&&) operators in expressions requires the
  * generation of forward jumps.
@@ -30,8 +45,11 @@ typedef struct JumpFixup     JumpFixup;
  * structure. Those jumps are fixed later when the jump destination is resolved.
  */
 struct JumpFixup {
-	sxi32 nJumpType;     /* Jump type. Either TRUE jump, FALSE jump or Unconditional jump */
-	sxu32 nInstrIdx;     /* Instruction index to fix later when the jump destination is resolved. */
+	sxi32 nJumpType;	/* Jump type. Either TRUE jump, FALSE jump or Unconditional jump */
+	sxu32 nInstrIdx;	/* Instruction index to fix later when the jump destination is resolved. */
+	SyString sLabel;	/* Label name */
+	ph7_vm_func *pFunc;	/* Compiled function inside which the goto was emitted. NULL otherwise */
+	sxu32 nLine;		/* Track line number */
 };
 
 /*
