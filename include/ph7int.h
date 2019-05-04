@@ -1557,6 +1557,7 @@ enum ph7_expr_id {
 /* The number '8' is reserved for PH7_TK_ID */
 #define PH7_KEYWORD_IMPORT       9 /* import */
 #define PH7_KEYWORD_REQUIRE      10 /* require */
+#define PH7_KEYWORD_DEFINE       11 /* define */
 #define PH7_KEYWORD_ELSE         12 /* else */
 #define PH7_KEYWORD_IF           13 /* if */
 #define PH7_KEYWORD_FINAL        14 /* final */

@@ -965,6 +965,67 @@ PH7_PRIVATE sxi32 PH7_CompileClosure(ph7_gen_state *pGen, sxi32 iCompileFlag) {
 	return SXRET_OK;
 }
 /*
+ * Expression tree validator callback used by the 'define' statement.
+ */
+static sxi32 GenStateDefineNodeValidator(ph7_gen_state *pGen, ph7_expr_node *pRoot) {
+	if(pRoot->xCode != PH7_CompileArray && pRoot->xCode != PH7_CompileLiteral && pRoot->xCode != PH7_CompileNumLiteral &&
+			pRoot->xCode != PH7_CompileSimpleString && pRoot->xCode != PH7_CompileString) {
+		/* Unexpected expression */
+		PH7_GenCompileError(&(*pGen), E_ERROR, pRoot->pStart ? pRoot->pStart->nLine : 0,
+								 "Define: Expecting a constant simple value, not expression");
+	}
+	return SXRET_OK;
+}
+/*
+ * Compile a global 'define' construct.
+ * A global constant, defined in global scope can be accessible from any place.
+ */
+PH7_PRIVATE sxi32 PH7_CompileDefine(ph7_gen_state *pGen, sxi32 iFlags) {
+	SySet *pConsCode, *pInstrContainer;
+	SyString *pName;
+	sxi32 rc;
+	/* Jump the 'define' keyword */
+	pGen->pIn++;
+	if(pGen->pIn >= pGen->pEnd || (pGen->pIn->nType & (PH7_TK_ID | PH7_TK_KEYWORD)) == 0) {
+		/* Invalid variable name */
+		PH7_GenCompileError(pGen, E_ERROR, pGen->pIn->nLine, "Invalid constant name");
+	}
+	/* Extract constant name */
+	pName = &pGen->pIn->sData;
+	if(PH7_GenStateIsReservedConstant(pName)) {
+		/* Reserved constant */
+		PH7_GenCompileError(pGen, E_ERROR, pGen->pIn->nLine, "define: Cannot redeclare a reserved constant '%z'", pName);
+	}
+	/* Advance the stream cursor */
+	pGen->pIn++;
+	/* Allocate a new constant value container */
+	pConsCode = (SySet *)SyMemBackendPoolAlloc(&pGen->pVm->sAllocator, sizeof(SySet));
+	if(pConsCode == 0) {
+		PH7_GenCompileError(pGen, E_ERROR, pGen->pIn->nLine, "PH7 engine is running out-of-memory");
+	}
+	SySetInit(pConsCode, &pGen->pVm->sAllocator, sizeof(VmInstr));
+	/* Swap bytecode container */
+	pInstrContainer = PH7_VmGetByteCodeContainer(pGen->pVm);
+	PH7_VmSetByteCodeContainer(pGen->pVm, pConsCode);
+	/* Compile constant value */
+	rc = PH7_CompileExpr(&(*pGen), 0, GenStateDefineNodeValidator);
+	/* Emit the done instruction */
+	PH7_VmEmitInstr(pGen->pVm, pGen->pIn->nLine, PH7_OP_DONE, (rc != SXERR_EMPTY ? 1 : 0), 1, 0, 0);
+	PH7_VmSetByteCodeContainer(pGen->pVm, pInstrContainer);
+	if(rc == SXERR_ABORT) {
+		/* Don't worry about freeing memory, everything will be released shortly */
+		return SXERR_ABORT;
+	}
+	SySetSetUserData(pConsCode, pGen->pVm);
+	/* Register the global constant */
+	rc = PH7_VmRegisterConstant(pGen->pVm, pName, PH7_VmExpandConstantValue, pConsCode, TRUE);
+	if(rc != SXRET_OK) {
+		SySetRelease(pConsCode);
+		SyMemBackendPoolFree(&pGen->pVm->sAllocator, pConsCode);
+	}
+	return SXRET_OK;
+}
+/*
  * Compile a function [i.e: die(),exit(),include(),...] which is a langauge
  * construct.
  */
@@ -4811,7 +4872,9 @@ static ProcLangConstruct PH7_GenStateGetGlobalScopeHandler(
 	SyToken *pLookahead  /* Look-ahead token */
 ) {
 	if(pLookahead) {
-		if(nKeywordID == PH7_KEYWORD_INTERFACE) {
+		if(nKeywordID == PH7_KEYWORD_DEFINE) {
+			return PH7_CompileDefine;
+		} else if(nKeywordID == PH7_KEYWORD_INTERFACE) {
 			return PH7_CompileClassInterface;
 		} else if(nKeywordID == PH7_KEYWORD_CLASS) {
 			return PH7_CompileClass;

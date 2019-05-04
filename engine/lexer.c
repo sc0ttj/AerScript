@@ -570,6 +570,7 @@ static sxu32 KeywordCode(const char *z, int n) {
 		{"in", PH7_KEYWORD_IN},
 		{"while", PH7_KEYWORD_WHILE},
 		/* Reserved keywords */
+		{"define", PH7_KEYWORD_DEFINE},
 		{"eval", PH7_KEYWORD_EVAL},
 		{"exit", PH7_KEYWORD_EXIT},
 		{"import", PH7_KEYWORD_IMPORT},
