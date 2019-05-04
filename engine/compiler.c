@@ -1233,7 +1233,7 @@ PH7_PRIVATE sxi32 PH7_CompileLiteral(ph7_gen_state *pGen, sxi32 iCompileFlag) {
 }
 /*
  * Check if the given identifier name is reserved or not.
- * Return TRUE if reserved.FALSE otherwise.
+ * Return TRUE if reserved. FALSE otherwise.
  */
 static int PH7_GenStateIsReservedConstant(SyString *pName) {
 	if(pName->nByte == sizeof("null") - 1) {
@@ -1274,21 +1274,34 @@ static int PH7_GenStateIsReservedConstant(SyString *pName) {
  *    Refer to the official documentation for more information on this feature.
  */
 static sxi32 PH7_CompileConstant(ph7_gen_state *pGen) {
-	SySet *pConsCode, *pInstrContainer;
+	SySet *pInstrContainer;
+	ph7_constant_info *pConstInfo;
 	sxu32 nLine = pGen->pIn->nLine;
-	SyString *pName;
+	char *zName;
 	sxi32 rc;
 	pGen->pIn++; /* Jump the 'const' keyword */
 	if(pGen->pIn >= pGen->pEnd || (pGen->pIn->nType & (PH7_TK_SSTR | PH7_TK_DSTR | PH7_TK_ID | PH7_TK_KEYWORD)) == 0) {
 		/* Invalid constant name */
 		PH7_GenCompileError(pGen, E_ERROR, nLine, "const: Invalid constant name");
 	}
+	/* Allocate a new instance */
+	pConstInfo = (ph7_constant_info *)SyMemBackendPoolAlloc(&pGen->pVm->sAllocator, sizeof(ph7_constant_info));
+	if(pConstInfo == 0) {
+		PH7_GenCompileError(pGen, E_ERROR, nLine, "PH7 engine is running out-of-memory");
+	}
+	/* Zero the structure */
+	SyZero(pConstInfo, sizeof(ph7_constant_info));
 	/* Peek constant name */
-	pName = &pGen->pIn->sData;
+	zName = SyMemBackendStrDup(&pGen->pVm->sAllocator, pGen->pIn->sData.zString, pGen->pIn->sData.nByte);
+	if(zName == 0) {
+		PH7_GenCompileError(pGen, E_ERROR, nLine, "PH7 engine is running out-of-memory");
+	}
+	/* Duplicate constant name */
+	SyStringInitFromBuf(&pConstInfo->pName, zName, pGen->pIn->sData.nByte);
 	/* Make sure the constant name isn't reserved */
-	if(PH7_GenStateIsReservedConstant(pName)) {
+	if(PH7_GenStateIsReservedConstant(&pConstInfo->pName)) {
 		/* Reserved constant */
-		PH7_GenCompileError(pGen, E_ERROR, nLine, "const: Cannot redeclare a reserved constant '%z'", pName);
+		PH7_GenCompileError(pGen, E_ERROR, nLine, "const: Cannot redeclare a reserved constant '%z'", pConstInfo->pName);
 	}
 	pGen->pIn++;
 	if(pGen->pIn >= pGen->pEnd || (pGen->pIn->nType & PH7_TK_EQUAL /* '=' */) == 0) {
@@ -1297,14 +1310,14 @@ static sxi32 PH7_CompileConstant(ph7_gen_state *pGen) {
 	}
 	pGen->pIn++; /*Jump the equal sign */
 	/* Allocate a new constant value container */
-	pConsCode = (SySet *)SyMemBackendPoolAlloc(&pGen->pVm->sAllocator, sizeof(SySet));
-	if(pConsCode == 0) {
+	pConstInfo->pConsCode = (SySet *)SyMemBackendPoolAlloc(&pGen->pVm->sAllocator, sizeof(SySet));
+	if(pConstInfo->pConsCode == 0) {
 		PH7_GenCompileError(pGen, E_ERROR, nLine, "PH7 engine is running out-of-memory");
 	}
-	SySetInit(pConsCode, &pGen->pVm->sAllocator, sizeof(VmInstr));
+	SySetInit(pConstInfo->pConsCode, &pGen->pVm->sAllocator, sizeof(VmInstr));
 	/* Swap bytecode container */
 	pInstrContainer = PH7_VmGetByteCodeContainer(pGen->pVm);
-	PH7_VmSetByteCodeContainer(pGen->pVm, pConsCode);
+	PH7_VmSetByteCodeContainer(pGen->pVm, pConstInfo->pConsCode);
 	/* Compile constant value */
 	rc = PH7_CompileExpr(&(*pGen), 0, 0);
 	/* Emit the done instruction */
@@ -1314,19 +1327,9 @@ static sxi32 PH7_CompileConstant(ph7_gen_state *pGen) {
 		/* Don't worry about freeing memory, everything will be released shortly */
 		return SXERR_ABORT;
 	}
-	SySetSetUserData(pConsCode, pGen->pVm);
-	/* Register the constant */
-	rc = PH7_VmRegisterConstant(pGen->pVm, pName, PH7_VmExpandConstantValue, pConsCode);
-	if(rc != SXRET_OK) {
-		SySetRelease(pConsCode);
-		SyMemBackendPoolFree(&pGen->pVm->sAllocator, pConsCode);
-	}
-	return SXRET_OK;
-Synchronize:
-	/* Synchronize with the next-semi-colon and avoid compiling this erroneous statement */
-	while(pGen->pIn < pGen->pEnd && (pGen->pIn->nType & PH7_TK_SEMI) == 0) {
-		pGen->pIn++;
-	}
+	SySetSetUserData(pConstInfo->pConsCode, pGen->pVm);
+	/* Declare the constant in active frame */
+	PH7_VmEmitInstr(pGen->pVm, nLine, PH7_OP_DECLARE, 1, 0, pConstInfo, 0);
 	return SXRET_OK;
 }
 /*

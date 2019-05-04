@@ -692,6 +692,15 @@ struct ph7_conf {
  */
 typedef void (*ProcConstant)(ph7_value *, void *);
 /*
+ * Each constant definition is stored in an instance of the following structure.
+ * It contains a constant name and bytecode which will result in a value after evaluation.
+ */
+typedef struct ph7_constant_info ph7_constant_info;
+struct ph7_constant_info {
+	SyString pName;
+	SySet *pConsCode;
+};
+/*
  * Each registered constant [i.e: __TIME__, __DATE__, PHP_OS, INT_MAX, etc.] is stored
  * in an instance of the following structure.
  * Please refer to the official documentation for more information
@@ -1241,6 +1250,7 @@ struct VmFrame {
 	ph7_class_instance *pThis; /* Current class instance [i.e: the '$this' variable].NULL otherwise */
 	SySet sLocal;     /* Local variables container (VmSlot instance) */
 	ph7_vm *pVm;      /* VM that own this frame */
+	SyHash hConst;    /* Constant hashtable for fast lookup */
 	SyHash hVar;      /* Variable hashtable for fast lookup */
 	SySet sArg;       /* Function arguments container */
 	SySet sRef;       /* Local reference table (VmSlot instance) */
@@ -1648,7 +1658,7 @@ PH7_PRIVATE sxi32 PH7_VmRefObjRemove(ph7_vm *pVm, sxu32 nIdx, SyHashEntry *pEntr
 PH7_PRIVATE sxi32 PH7_VmRefObjInstall(ph7_vm *pVm, sxu32 nIdx, SyHashEntry *pEntry, ph7_hashmap_node *pMapEntry, sxi32 iFlags);
 PH7_PRIVATE sxi32 PH7_VmPushFilePath(ph7_vm *pVm, const char *zPath, int nLen, sxu8 bMain, sxi32 *pNew);
 PH7_PRIVATE ph7_class *PH7_VmExtractClass(ph7_vm *pVm, const char *zName, sxu32 nByte, sxi32 iLoadable, sxi32 iNest);
-PH7_PRIVATE sxi32 PH7_VmRegisterConstant(ph7_vm *pVm, const SyString *pName, ProcConstant xExpand, void *pUserData);
+PH7_PRIVATE sxi32 PH7_VmRegisterConstant(ph7_vm *pVm, const SyString *pName, ProcConstant xExpand, void *pUserData, sxbool bGlobal);
 PH7_PRIVATE sxi32 PH7_VmInstallForeignFunction(ph7_vm *pVm, const SyString *pName, ProcHostFunction xFunc, void *pUserData);
 PH7_PRIVATE sxi32 PH7_VmInstallClass(ph7_vm *pVm, ph7_class *pClass);
 PH7_PRIVATE sxi32 PH7_VmBlobConsumer(const void *pSrc, unsigned int nLen, void *pUserData);

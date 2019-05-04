@@ -69,40 +69,41 @@ PH7_PRIVATE sxi32 PH7_VmRegisterConstant(
 	ph7_vm *pVm,            /* Target VM */
 	const SyString *pName,  /* Constant name */
 	ProcConstant xExpand,   /* Constant expansion callback */
-	void *pUserData         /* Last argument to xExpand() */
+	void *pUserData,        /* Last argument to xExpand() */
+	sxbool bGlobal          /* Whether this is a global constant or not */
 ) {
 	ph7_constant *pCons;
+	SyHash *pCollection;
 	SyHashEntry *pEntry;
 	char *zDupName;
 	sxi32 rc;
-	pEntry = SyHashGet(&pVm->hConstant, (const void *)pName->zString, pName->nByte);
+	if(bGlobal) {
+		pCollection = &pVm->hConstant;
+	} else {
+		pCollection = &pVm->pFrame->hConst;
+	}
+	pEntry = SyHashGet(pCollection, (const void *)pName->zString, pName->nByte);
 	if(pEntry) {
-		/* Overwrite the old definition and return immediately */
-		pCons = (ph7_constant *)pEntry->pUserData;
-		pCons->xExpand = xExpand;
-		pCons->pUserData = pUserData;
-		return SXRET_OK;
+		/* Constant already exists */
+		return SXERR_EXISTS;
 	}
 	/* Allocate a new constant instance */
 	pCons = (ph7_constant *)SyMemBackendPoolAlloc(&pVm->sAllocator, sizeof(ph7_constant));
 	if(pCons == 0) {
-		return 0;
+		PH7_VmMemoryError(&(*pVm));
 	}
 	/* Duplicate constant name */
 	zDupName = SyMemBackendStrDup(&pVm->sAllocator, pName->zString, pName->nByte);
 	if(zDupName == 0) {
-		SyMemBackendPoolFree(&pVm->sAllocator, pCons);
-		return 0;
+		PH7_VmMemoryError(&(*pVm));
 	}
 	/* Install the constant */
 	SyStringInitFromBuf(&pCons->sName, zDupName, pName->nByte);
 	pCons->xExpand = xExpand;
 	pCons->pUserData = pUserData;
-	rc = SyHashInsert(&pVm->hConstant, (const void *)zDupName, SyStringLength(&pCons->sName), pCons);
+	rc = SyHashInsert(pCollection, (const void *)zDupName, SyStringLength(&pCons->sName), pCons);
 	if(rc != SXRET_OK) {
-		SyMemBackendFree(&pVm->sAllocator, zDupName);
-		SyMemBackendPoolFree(&pVm->sAllocator, pCons);
-		return rc;
+		PH7_VmMemoryError(&(*pVm));
 	}
 	/* All done,constant can be invoked from PHP code */
 	return SXRET_OK;
@@ -385,6 +386,7 @@ static VmFrame *VmNewFrame(
 	pFrame->pUserData = pUserData;
 	pFrame->pThis = pThis;
 	pFrame->pVm = pVm;
+	SyHashInit(&pFrame->hConst, &pVm->sAllocator, 0, 0);
 	SyHashInit(&pFrame->hVar, &pVm->sAllocator, 0, 0);
 	SySetInit(&pFrame->sArg, &pVm->sAllocator, sizeof(VmSlot));
 	SySetInit(&pFrame->sLocal, &pVm->sAllocator, sizeof(VmSlot));
@@ -439,6 +441,7 @@ static void VmLeaveFrame(ph7_vm *pVm) {
 			}
 		}
 		/* Release internal containers */
+		SyHashRelease(&pFrame->hConst);
 		SyHashRelease(&pFrame->hVar);
 		SySetRelease(&pFrame->sArg);
 		SySetRelease(&pFrame->sLocal);
@@ -2372,39 +2375,51 @@ static sxi32 VmByteCodeExec(
 					break;
 				}
 			/*
-			 * DECLARE: * P2 P3
+			 * DECLARE: P1 P2 P3
 			 *
-			 * Create a variable where it's name is taken from the top of the stack or
-			 * from the P3 operand. It takes a variable type from P2 operand.
+			 * Create a constant if P1 is set, or variable otherwise. It takes the constant/variable name
+			 * from the the P3 operand. P2 operand is used to provide a variable type.
 			 */
 			case PH7_OP_DECLARE: {
-					ph7_value *pObj;
-					SyString sName;
-					SyStringInitFromBuf(&sName, pInstr->p3, SyStrlen((const char *)pInstr->p3));
-					/* Reserve a room for the target object */
-					pTos++;
-					/* Create a new variable */
-					pObj = VmCreateMemObj(&(*pVm), &sName, FALSE);
-					if(!pObj) {
-						PH7_VmThrowError(&(*pVm), PH7_CTX_ERR,
-										"Redeclaration of ‘$%z’ variable", &sName);
-					}
-					if(pInstr->iP2 & MEMOBJ_MIXED && (pInstr->iP2 & MEMOBJ_HASHMAP) == 0) {
-						pObj->iFlags = MEMOBJ_MIXED | MEMOBJ_VOID;
-					} else {
-						if(pInstr->iP2 & MEMOBJ_HASHMAP) {
-							ph7_hashmap *pMap;
-							pMap = PH7_NewHashmap(&(*pVm), 0, 0);
-							if(pMap == 0) {
-								PH7_VmMemoryError(&(*pVm));
-							}
-							pObj->x.pOther = pMap;
+					if(pInstr->iP1) {
+						/* Constant declaration */
+						ph7_constant_info *pConstInfo = (ph7_constant_info *) pInstr->p3;
+						rc = PH7_VmRegisterConstant(&(*pVm), &pConstInfo->pName, PH7_VmExpandConstantValue, pConstInfo->pConsCode, FALSE);
+						if(rc == SXERR_EXISTS) {
+							PH7_VmThrowError(&(*pVm), PH7_CTX_ERR,
+											"Redeclaration of ‘%z’ constant", &pConstInfo->pName);
 						}
-						MemObjSetType(pObj, pInstr->iP2);
+					} else {
+						/* Variable declaration */
+						ph7_value *pObj;
+						SyString sName;
+						SyStringInitFromBuf(&sName, pInstr->p3, SyStrlen((const char *)pInstr->p3));
+						/* Reserve a room for the target object */
+						pTos++;
+						/* Create a new variable */
+						pObj = VmCreateMemObj(&(*pVm), &sName, FALSE);
+						if(!pObj) {
+							PH7_VmThrowError(&(*pVm), PH7_CTX_ERR,
+											"Redeclaration of ‘$%z’ variable", &sName);
+						}
+						if(pInstr->iP2 & MEMOBJ_MIXED && (pInstr->iP2 & MEMOBJ_HASHMAP) == 0) {
+							pObj->iFlags = MEMOBJ_MIXED | MEMOBJ_VOID;
+						} else {
+							if(pInstr->iP2 & MEMOBJ_HASHMAP) {
+								ph7_hashmap *pMap;
+								pMap = PH7_NewHashmap(&(*pVm), 0, 0);
+								if(pMap == 0) {
+									PH7_VmMemoryError(&(*pVm));
+								}
+								pObj->x.pOther = pMap;
+							}
+							MemObjSetType(pObj, pInstr->iP2);
+						}
+						pTos->nIdx = SXU32_HIGH; /* Mark as constant */
 					}
-					pTos->nIdx = SXU32_HIGH; /* Mark as constant */
 					break;
-				}			/*
+				}
+			/*
 			 * LOADC P1 P2 *
 			 *
 			 * Load a constant [i.e: PHP_EOL,PHP_OS,__TIME__,...] indexed at P2 in the constant pool.
@@ -2416,9 +2431,25 @@ static sxi32 VmByteCodeExec(
 					pTos++;
 					if((pObj = (ph7_value *)SySetAt(&pVm->aLitObj, pInstr->iP2)) != 0) {
 						if(pInstr->iP1 == 1 && SyBlobLength(&pObj->sBlob) <= 64) {
+							/* Point to the top active frame */
+							VmFrame *pFrame = pVm->pFrame;
+							while(pFrame->pParent && (pFrame->iFlags & VM_FRAME_EXCEPTION)) {
+								/* Safely ignore the exception frame */
+								pFrame = pFrame->pParent; /* Parent frame */
+							}
 							SyHashEntry *pEntry;
 							/* Candidate for expansion via user defined callbacks */
-							pEntry = SyHashGet(&pVm->hConstant, SyBlobData(&pObj->sBlob), SyBlobLength(&pObj->sBlob));
+							for(;;) {
+								pEntry = SyHashGet(&pVm->pFrame->hConst, SyBlobData(&pObj->sBlob), SyBlobLength(&pObj->sBlob));
+								if(pEntry == 0 && pFrame->iFlags & VM_FRAME_LOOP && pFrame->pParent) {
+									pFrame = pFrame->pParent;
+								} else {
+									break;
+								}
+							}
+							if(pEntry == 0) {
+								pEntry = SyHashGet(&pVm->hConstant, SyBlobData(&pObj->sBlob), SyBlobLength(&pObj->sBlob));
+							}
 							if(pEntry) {
 								ph7_constant *pCons = (ph7_constant *)pEntry->pUserData;
 								/* Set a NULL default value */

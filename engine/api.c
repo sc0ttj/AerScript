@@ -1064,7 +1064,7 @@ int ph7_create_constant(ph7_vm *pVm, const char *zName, void (*xExpand)(ph7_valu
 	}
 #endif
 	/* Perform the registration */
-	rc = PH7_VmRegisterConstant(&(*pVm), &sName, xExpand, pUserData);
+	rc = PH7_VmRegisterConstant(&(*pVm), &sName, xExpand, pUserData, TRUE);
 #if defined(PH7_ENABLE_THREADS)
 	/* Leave VM mutex */
 	SyMutexLeave(sMPGlobal.pMutexMethods, pVm->pMutex); /* NO-OP if sMPGlobal.nThreadingLevel != PH7_THREAD_LEVEL_MULTI */
