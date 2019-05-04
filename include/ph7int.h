@@ -1708,7 +1708,6 @@ PH7_PRIVATE const ph7_expr_op *PH7_ExprExtractOperator(SyString *pStr, SyToken *
 PH7_PRIVATE sxi32 PH7_ExprFreeTree(ph7_gen_state *pGen, SySet *pNodeSet);
 /* compile.c function prototypes */
 PH7_PRIVATE ProcNodeConstruct PH7_GetNodeHandler(sxu32 nNodeType);
-PH7_PRIVATE sxi32 PH7_CompileLangConstruct(ph7_gen_state *pGen, sxi32 iCompileFlag);
 PH7_PRIVATE sxi32 PH7_CompileVariable(ph7_gen_state *pGen, sxi32 iCompileFlag);
 PH7_PRIVATE sxi32 PH7_CompileLiteral(ph7_gen_state *pGen, sxi32 iCompileFlag);
 PH7_PRIVATE sxi32 PH7_CompileSimpleString(ph7_gen_state *pGen, sxi32 iCompileFlag);

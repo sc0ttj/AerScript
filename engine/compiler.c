@@ -1026,43 +1026,6 @@ PH7_PRIVATE sxi32 PH7_CompileDefine(ph7_gen_state *pGen, sxi32 iFlags) {
 	return SXRET_OK;
 }
 /*
- * Compile a function [i.e: die(),exit(),include(),...] which is a langauge
- * construct.
- */
-PH7_PRIVATE sxi32 PH7_CompileLangConstruct(ph7_gen_state *pGen, sxi32 iCompileFlag) {
-	SyString *pName;
-	sxu32 nKeyID;
-	sxi32 rc;
-	/* Name of the language construct [i.e: echo,die...]*/
-	pName = &pGen->pIn->sData;
-	nKeyID = (sxu32)SX_PTR_TO_INT(pGen->pIn->pUserData);
-	pGen->pIn++; /* Jump the language construct keyword */
-	sxi32 nArg = 0;
-	sxu32 nIdx = 0;
-	rc = PH7_CompileExpr(&(*pGen), EXPR_FLAG_RDONLY_LOAD/* Do not create variable if non-existent */, 0);
-	if(rc == SXERR_ABORT) {
-		return SXERR_ABORT;
-	} else if(rc != SXERR_EMPTY) {
-		nArg = 1;
-	}
-	if(SXRET_OK != PH7_GenStateFindLiteral(&(*pGen), pName, &nIdx)) {
-		ph7_value *pObj;
-		/* Emit the call instruction */
-		pObj = PH7_ReserveConstObj(pGen->pVm, &nIdx);
-		if(pObj == 0) {
-			PH7_GenCompileError(&(*pGen), E_ERROR, 1, "PH7 engine is running out-of-memory");
-		}
-		PH7_MemObjInitFromString(pGen->pVm, pObj, pName);
-		/* Install in the literal table */
-		PH7_GenStateInstallLiteral(&(*pGen), pObj, nIdx);
-	}
-	/* Emit the call instruction */
-	PH7_VmEmitInstr(pGen->pVm, 0, PH7_OP_LOADC, 0, nIdx, 0, 0);
-	PH7_VmEmitInstr(pGen->pVm, 0, PH7_OP_CALL, nArg, 0, 0, 0);
-	/* Node successfully compiled */
-	return SXRET_OK;
-}
-/*
  * Compile a node holding a variable declaration.
  *  Variables in Aer are represented by a dollar sign followed by the name of the variable.
  *  The variable name is case-sensitive.
