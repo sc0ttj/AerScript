@@ -2475,12 +2475,12 @@ static sxi32 VmByteCodeExec(
 					break;
 				}
 			/*
-			 * LOAD: * * P3
+			 * LOADV: * * P3
 			 *
 			 * Load a variable where it's name is taken from the top of the stack or
 			 * from the P3 operand.
 			 */
-			case PH7_OP_LOAD: {
+			case PH7_OP_LOADV: {
 					ph7_value *pObj;
 					SyString sName;
 					if(pInstr->p3 == 0) {
@@ -4485,7 +4485,7 @@ static sxi32 VmByteCodeExec(
 					SyString sName;
 					VmInstr *bInstr = &aInstr[pc - 1];
 					/* Extract function name */
-					if(pTos->iFlags & MEMOBJ_STRING && bInstr->iOp == PH7_OP_LOAD) {
+					if(pTos->iFlags & MEMOBJ_STRING && bInstr->iOp == PH7_OP_LOADV) {
 						PH7_VmThrowError(&(*pVm), PH7_CTX_ERR, "Calling a non-callable object");
 					} else if((pTos->iFlags & (MEMOBJ_CALL | MEMOBJ_STRING)) == 0) {
 						if(pTos->iFlags & MEMOBJ_HASHMAP) {
@@ -5220,8 +5220,8 @@ static const char *VmInstrToString(sxi32 nOp) {
 		case PH7_OP_DECLARE:
 			zOp = "DECLARE";
 			break;
-		case PH7_OP_LOAD:
-			zOp = "LOAD";
+		case PH7_OP_LOADV:
+			zOp = "LOADV";
 			break;
 		case PH7_OP_LOADC:
 			zOp = "LOADC";

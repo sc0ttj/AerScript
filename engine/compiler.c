@@ -1078,7 +1078,7 @@ PH7_PRIVATE sxi32 PH7_CompileVariable(ph7_gen_state *pGen, sxi32 iCompileFlag) {
 	}
 	p3 = (void *)zName;
 	/* Emit the load instruction */
-	PH7_VmEmitInstr(pGen->pVm, 0, PH7_OP_LOAD, 0, 0, p3, 0);
+	PH7_VmEmitInstr(pGen->pVm, 0, PH7_OP_LOADV, 0, 0, p3, 0);
 	/* Node successfully compiled */
 	return SXRET_OK;
 }
@@ -4679,7 +4679,7 @@ static sxi32 PH7_GenStateEmitExprCode(
 				/* Static member access,remember that */
 				iP1 = 1;
 				pInstr = PH7_VmPeekInstr(pGen->pVm);
-				if(pInstr && pInstr->iOp == PH7_OP_LOAD) {
+				if(pInstr && pInstr->iOp == PH7_OP_LOADV) {
 					p3 = pInstr->p3;
 					(void)PH7_VmPopInstr(pGen->pVm);
 				}

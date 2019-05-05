@@ -1385,7 +1385,7 @@ enum ph7_vm_op {
 	PH7_OP_DONE =   1,   /* Done */
 	PH7_OP_HALT,         /* Halt */
 	PH7_OP_DECLARE,      /* Declare a variable */
-	PH7_OP_LOAD,         /* Load memory object */
+	PH7_OP_LOADV,        /* Load variable */
 	PH7_OP_LOADC,        /* Load constant */
 	PH7_OP_LOAD_IDX,     /* Load array entry */
 	PH7_OP_LOAD_MAP,     /* Load hashmap('array') */
