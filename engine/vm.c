@@ -6657,158 +6657,6 @@ PH7_PRIVATE sxi32 PH7_VmCallUserFunctionAp(
 	return rc;
 }
 /*
- * bool defined(string $name)
- *  Checks whether a given named constant exists.
- * Parameter:
- *  Name of the desired constant.
- * Return
- *  TRUE if the given constant exists.FALSE otherwise.
- */
-static int vm_builtin_defined(ph7_context *pCtx, int nArg, ph7_value **apArg) {
-	const char *zName;
-	int nLen = 0;
-	int res = 0;
-	if(nArg < 1) {
-		/* Missing constant name,return FALSE */
-		PH7_VmThrowError(pCtx->pVm, PH7_CTX_NOTICE, "Missing constant name");
-		ph7_result_bool(pCtx, 0);
-		return SXRET_OK;
-	}
-	/* Extract constant name */
-	zName = ph7_value_to_string(apArg[0], &nLen);
-	/* Perform the lookup */
-	if(nLen > 0 && SyHashGet(&pCtx->pVm->hConstant, (const void *)zName, (sxu32)nLen) != 0) {
-		/* Already defined */
-		res = 1;
-	}
-	ph7_result_bool(pCtx, res);
-	return SXRET_OK;
-}
-/*
- * Constant expansion callback used by the [define()] function defined
- * below.
- */
-static void VmExpandUserConstant(ph7_value *pVal, void *pUserData) {
-	ph7_value *pConstantValue = (ph7_value *)pUserData;
-	/* Expand constant value */
-	PH7_MemObjStore(pConstantValue, pVal);
-}
-/*
- * bool define(string $constant_name,expression value)
- *  Defines a named constant at runtime.
- * Parameter:
- *  $constant_name
- *   The name of the constant
- *  $value
- *   Constant value
- * Return:
- *   TRUE on success,FALSE on failure.
- */
-static int vm_builtin_define(ph7_context *pCtx, int nArg, ph7_value **apArg) {
-	const char *zName;  /* Constant name */
-	ph7_value *pValue;  /* Duplicated constant value */
-	int nLen = 0;       /* Name length */
-	sxi32 rc;
-	if(nArg < 2) {
-		/* Missing arguments,throw a notice and return false */
-		PH7_VmThrowError(pCtx->pVm, PH7_CTX_NOTICE, "Missing constant name/value pair");
-		ph7_result_bool(pCtx, 0);
-		return SXRET_OK;
-	}
-	if(!ph7_value_is_string(apArg[0])) {
-		PH7_VmThrowError(pCtx->pVm, PH7_CTX_NOTICE, "Invalid constant name");
-		ph7_result_bool(pCtx, 0);
-		return SXRET_OK;
-	}
-	/* Extract constant name */
-	zName = ph7_value_to_string(apArg[0], &nLen);
-	if(nLen < 1) {
-		PH7_VmThrowError(pCtx->pVm, PH7_CTX_NOTICE, "Empty constant name");
-		ph7_result_bool(pCtx, 0);
-		return SXRET_OK;
-	}
-	/* Duplicate constant value */
-	pValue = (ph7_value *)SyMemBackendPoolAlloc(&pCtx->pVm->sAllocator, sizeof(ph7_value));
-	if(pValue == 0) {
-		PH7_VmMemoryError(pCtx->pVm);
-	}
-	/* Initialize the memory object */
-	PH7_MemObjInit(pCtx->pVm, pValue);
-	/* Register the constant */
-	rc = ph7_create_constant(pCtx->pVm, zName, VmExpandUserConstant, pValue);
-	if(rc != SXRET_OK) {
-		SyMemBackendPoolFree(&pCtx->pVm->sAllocator, pValue);
-		PH7_VmMemoryError(pCtx->pVm);
-	}
-	/* Duplicate constant value */
-	PH7_MemObjStore(apArg[1], pValue);
-	if(nArg == 3 && ph7_value_is_bool(apArg[2]) && ph7_value_to_bool(apArg[2])) {
-		/* Lower case the constant name */
-		char *zCur = (char *)zName;
-		while(zCur < &zName[nLen]) {
-			if((unsigned char)zCur[0] >= 0xc0) {
-				/* UTF-8 stream */
-				zCur++;
-				while(zCur < &zName[nLen] && (((unsigned char)zCur[0] & 0xc0) == 0x80)) {
-					zCur++;
-				}
-				continue;
-			}
-			if(SyisUpper(zCur[0])) {
-				int c = SyToLower(zCur[0]);
-				zCur[0] = (char)c;
-			}
-			zCur++;
-		}
-		/* Finally,register the constant */
-		ph7_create_constant(pCtx->pVm, zName, VmExpandUserConstant, pValue);
-	}
-	/* All done,return TRUE */
-	ph7_result_bool(pCtx, 1);
-	return SXRET_OK;
-}
-/*
- * value constant(string $name)
- *  Returns the value of a constant
- * Parameter
- *  $name
- *    Name of the constant.
- * Return
- *  Constant value or NULL if not defined.
- */
-static int vm_builtin_constant(ph7_context *pCtx, int nArg, ph7_value **apArg) {
-	SyHashEntry *pEntry;
-	ph7_constant *pCons;
-	const char *zName; /* Constant name */
-	ph7_value sVal;    /* Constant value */
-	int nLen;
-	if(nArg < 1 || !ph7_value_is_string(apArg[0])) {
-		/* Invalid argument,return NULL */
-		PH7_VmThrowError(pCtx->pVm, PH7_CTX_NOTICE, "Missing/Invalid constant name");
-		ph7_result_null(pCtx);
-		return SXRET_OK;
-	}
-	/* Extract the constant name */
-	zName = ph7_value_to_string(apArg[0], &nLen);
-	/* Perform the query */
-	pEntry = SyHashGet(&pCtx->pVm->hConstant, (const void *)zName, (sxu32)nLen);
-	if(pEntry == 0) {
-		PH7_VmThrowError(pCtx->pVm, PH7_CTX_NOTICE, "'%.*s': Undefined constant", nLen, zName);
-		ph7_result_null(pCtx);
-		return SXRET_OK;
-	}
-	PH7_MemObjInit(pCtx->pVm, &sVal);
-	/* Point to the structure that describe the constant */
-	pCons = (ph7_constant *)SyHashEntryGetUserData(pEntry);
-	/* Extract constant value by calling it's associated callback */
-	pCons->xExpand(&sVal, pCons->pUserData);
-	/* Return that value */
-	ph7_result_value(pCtx, &sVal);
-	/* Cleanup */
-	PH7_MemObjRelease(&sVal);
-	return SXRET_OK;
-}
-/*
  * Hash walker callback used by the [get_defined_constants()] function
  * defined below.
  */
@@ -6827,11 +6675,11 @@ static int VmHashConstStep(SyHashEntry *pEntry, void *pUserData) {
 /*
  * array get_defined_constants(void)
  *  Returns an associative array with the names of all defined
- *  constants.
+ *  global constants.
  * Parameters
  *  NONE.
  * Returns
- *  Returns the names of all the constants currently defined.
+ *  Returns the names of all the global constants currently defined.
  */
 static int vm_builtin_get_defined_constants(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	ph7_value *pArray;
@@ -9973,9 +9821,6 @@ static const ph7_builtin_func aVmFunc[] = {
 	{ "register_autoload_handler", vm_builtin_register_autoload_handler },
 	{ "register_shutdown_function", vm_builtin_register_shutdown_function },
 	/* Constants management */
-	{ "defined",  vm_builtin_defined              },
-	{ "define",   vm_builtin_define               },
-	{ "constant", vm_builtin_constant             },
 	{ "get_defined_constants", vm_builtin_get_defined_constants },
 	/* Class/Object functions */
 	{ "class_alias",     vm_builtin_class_alias       },
