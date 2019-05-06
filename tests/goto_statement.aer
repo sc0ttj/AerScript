@@ -1,0 +1,81 @@
+class Test {
+
+	void goto_test1() {
+		int $i = 0;
+		a:
+		print("Foo $i\n");
+		if($i > 5)
+			goto b;
+		$i++;
+		goto a;
+		b:
+		print("Bar $i\n\n");
+	}
+
+	void goto_test2(int $a = 2) {
+		switch($a) {
+			case 1:
+				print("\$a is 1\n\n");
+				goto out;
+			case 2:
+				print("\$a is 2\n\n");
+				goto out;
+			case 3:
+				print("\$a is 3\n\n");
+				goto out;
+			case 4:
+				print("\$a is 4\n\n");
+				goto out;
+		}
+		out:
+	}
+
+	void goto_test3() {
+		int $a = 10;
+		a:
+		$a--;
+		print("$a\n");
+		if($a > 5) {
+			goto a;
+		}
+		print("\n");
+	}
+
+	void goto_test4() {
+		string[] $headers = {'subject', 'bcc', 'to', 'cc', 'date', 'sender'};
+		int $pos = 0;
+		int $c;
+		hIterator: {
+			$c = 0;
+			print($headers[$pos], "\n");
+			cIterator: {
+				print(" ", $headers[$pos][$c], "\n");
+				if(!($headers[$pos][++$c])) {
+					goto cIteratorExit;
+				}
+				goto cIterator;
+			}
+			cIteratorExit: {
+				if($headers[++$pos]) {
+					goto hIterator;
+				}
+			}
+		}
+	}
+}
+
+class Program {
+	private object $test;
+
+	void __construct() {
+		$this->test = new Test();
+	}
+
+	void main() {
+		$this->test->goto_test1();
+		$this->test->goto_test2();
+		$this->test->goto_test3();
+		$this->test->goto_test4();
+	}
+
+}
