@@ -2431,38 +2431,40 @@ static sxi32 VmByteCodeExec(
 					pTos++;
 					if((pObj = (ph7_value *)SySetAt(&pVm->aLitObj, pInstr->iP2)) != 0) {
 						if(pInstr->iP1 == 1 && SyBlobLength(&pObj->sBlob) <= 64) {
-							/* Point to the top active frame */
-							VmFrame *pFrame = pVm->pFrame;
-							while(pFrame->pParent && (pFrame->iFlags & VM_FRAME_EXCEPTION)) {
-								/* Safely ignore the exception frame */
-								pFrame = pFrame->pParent; /* Parent frame */
-							}
-							SyHashEntry *pEntry;
-							/* Candidate for expansion via user defined callbacks */
-							for(;;) {
-								pEntry = SyHashGet(&pVm->pFrame->hConst, SyBlobData(&pObj->sBlob), SyBlobLength(&pObj->sBlob));
-								if(pEntry == 0 && pFrame->iFlags & VM_FRAME_LOOP && pFrame->pParent) {
-									pFrame = pFrame->pParent;
-								} else {
-									break;
+							if(pInstr[1].iOp != PH7_OP_MEMBER && pInstr[1].iOp != PH7_OP_NEW) {
+								/* Point to the top active frame */
+								VmFrame *pFrame = pVm->pFrame;
+								while(pFrame->pParent && (pFrame->iFlags & VM_FRAME_EXCEPTION)) {
+									/* Safely ignore the exception frame */
+									pFrame = pFrame->pParent; /* Parent frame */
 								}
-							}
-							if(pEntry == 0) {
-								pEntry = SyHashGet(&pVm->hConstant, SyBlobData(&pObj->sBlob), SyBlobLength(&pObj->sBlob));
-							}
-							if(pEntry) {
-								ph7_constant *pCons = (ph7_constant *)pEntry->pUserData;
-								/* Set a NULL default value */
-								MemObjSetType(pTos, MEMOBJ_NULL);
-								SyBlobReset(&pTos->sBlob);
-								/* Invoke the callback and deal with the expanded value */
-								pCons->xExpand(pTos, pCons->pUserData);
-								/* Mark as constant */
-								pTos->nIdx = SXU32_HIGH;
-								break;
-							} else if(pInstr[1].iOp != PH7_OP_MEMBER && pInstr[1].iOp != PH7_OP_NEW && pInstr[2].iOp != PH7_OP_MEMBER && pInstr[1].iOp != PH7_OP_NEW) {
-								PH7_VmThrowError(&(*pVm), PH7_CTX_ERR,
-												"Call to undefined constant ‘%s’", SyBlobData(&pObj->sBlob));
+								SyHashEntry *pEntry;
+								/* Candidate for expansion via user defined callbacks */
+								for(;;) {
+									pEntry = SyHashGet(&pVm->pFrame->hConst, SyBlobData(&pObj->sBlob), SyBlobLength(&pObj->sBlob));
+									if(pEntry == 0 && pFrame->iFlags & VM_FRAME_LOOP && pFrame->pParent) {
+										pFrame = pFrame->pParent;
+									} else {
+										break;
+									}
+								}
+								if(pEntry == 0) {
+									pEntry = SyHashGet(&pVm->hConstant, SyBlobData(&pObj->sBlob), SyBlobLength(&pObj->sBlob));
+								}
+								if(pEntry) {
+									ph7_constant *pCons = (ph7_constant *)pEntry->pUserData;
+									/* Set a NULL default value */
+									MemObjSetType(pTos, MEMOBJ_NULL);
+									SyBlobReset(&pTos->sBlob);
+									/* Invoke the callback and deal with the expanded value */
+									pCons->xExpand(pTos, pCons->pUserData);
+									/* Mark as constant */
+									pTos->nIdx = SXU32_HIGH;
+									break;
+								} else if(pInstr[2].iOp != PH7_OP_MEMBER && pInstr[2].iOp != PH7_OP_NEW) {
+									PH7_VmThrowError(&(*pVm), PH7_CTX_ERR,
+													"Call to undefined constant ‘%s’", SyBlobData(&pObj->sBlob));
+								}
 							}
 						}
 						PH7_MemObjLoad(pObj, pTos);
