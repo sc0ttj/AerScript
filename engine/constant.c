@@ -1075,24 +1075,6 @@ static void PH7_EXTR_PREFIX_IF_EXISTS_Const(ph7_value *pVal, void *pUserData) {
 	ph7_value_int(pVal, 0x40);
 }
 /*
- * static
- *  Expand the name of the current class. 'static' otherwise.
- */
-static void PH7_static_Const(ph7_value *pVal, void *pUserData) {
-	ph7_vm *pVm = (ph7_vm *)pUserData;
-	ph7_class *pClass;
-	/* Extract the target class if available */
-	pClass = PH7_VmExtractActiveClass(pVm, 0);
-	if(pClass) {
-		SyString *pName = &pClass->sName;
-		/* Expand class name */
-		ph7_value_string(pVal, pName->zString, (int)pName->nByte);
-	} else {
-		/* Expand 'static' */
-		ph7_value_string(pVal, "static", sizeof("static") - 1);
-	}
-}
-/*
  * Table of built-in constants.
  */
 static const ph7_builtin_constant aBuiltIn[] = {
@@ -1228,7 +1210,6 @@ static const ph7_builtin_constant aBuiltIn[] = {
 	{"EXTR_PREFIX_INVALID",  PH7_EXTR_PREFIX_INVALID_Const },
 	{"EXTR_IF_EXISTS",       PH7_EXTR_IF_EXISTS_Const   },
 	{"EXTR_PREFIX_IF_EXISTS", PH7_EXTR_PREFIX_IF_EXISTS_Const},
-	{"static",               PH7_static_Const       },
 };
 /*
  * Register the built-in constants defined above.
