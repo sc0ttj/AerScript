@@ -1351,7 +1351,7 @@ static sxi32 PH7_CompileConstant(ph7_gen_state *pGen) {
 	char *zName;
 	sxi32 rc;
 	pGen->pIn++; /* Jump the 'const' keyword */
-	if(pGen->pIn >= pGen->pEnd || (pGen->pIn->nType & (PH7_TK_SSTR | PH7_TK_DSTR | PH7_TK_ID | PH7_TK_KEYWORD)) == 0) {
+	if(pGen->pIn >= pGen->pEnd || (pGen->pIn->nType & PH7_TK_ID) == 0) {
 		/* Invalid constant name */
 		PH7_GenCompileError(pGen, E_ERROR, nLine, "const: Invalid constant name");
 	}
