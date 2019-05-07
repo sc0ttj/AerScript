@@ -641,8 +641,8 @@ struct ph7_value {
 #define MEMOBJ_STRING    0x0080  /* Memory value is a UTF-8 string */
 #define MEMOBJ_VOID      0x0100  /* Memory value is a void */
 #define MEMOBJ_MIXED     0x0200  /* Memory value is mixed */
-#define MEMOBJ_HASHMAP   0x0800  /* Memory value is a hashmap aka 'array' in the PHP jargon */
-#define MEMOBJ_NULL      0x1000  /* Memory value is NULL */
+#define MEMOBJ_HASHMAP   0x0400  /* Memory value is a hashmap aka 'array' in the PHP jargon */
+#define MEMOBJ_NULL      0x0800  /* Memory value is NULL */
 /* Mask of all known types */
 #define MEMOBJ_ALL (MEMOBJ_STRING|MEMOBJ_INT|MEMOBJ_REAL|MEMOBJ_BOOL|MEMOBJ_NULL|MEMOBJ_HASHMAP|MEMOBJ_OBJ|MEMOBJ_RES|MEMOBJ_CALL|MEMOBJ_CHAR|MEMOBJ_VOID)
 /* Scalar variables
