@@ -1,0 +1,21 @@
+define TEST_CONSTANT 'This is a global constant';
+
+class Program {
+	const TEST_CONSTANT = 'This is a class constant';
+
+	void constant_test() {
+		const TEST_CONSTANT = 'This is a local constant';
+		var_dump(TEST_CONSTANT);
+	}
+
+	void main() {
+		int $var = 69;
+		var_dump(TEST_CONSTANT);
+		$this->constant_test();
+		var_dump(TEST_CONSTANT);
+		var_dump($this->TEST_CONSTANT);
+		const TEST_CONSTANT = 'Local constant overrides a global constant';
+		var_dump(TEST_CONSTANT);
+	}
+
+}

@@ -1,0 +1,5 @@
+string(25 'This is a global constant')
+string(24 'This is a local constant')
+string(25 'This is a global constant')
+string(24 'This is a class constant')
+string(42 'Local constant overrides a global constant')
