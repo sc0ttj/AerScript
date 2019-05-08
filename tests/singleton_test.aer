@@ -5,7 +5,7 @@ final class Test {
 	}
 
 	/* This is singleton */
-	public object getInstance() {
+	public static object getInstance() {
 		static object $instance;
 		if(!$instance) {
 			$instance = new Test();
