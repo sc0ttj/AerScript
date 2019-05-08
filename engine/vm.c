@@ -2765,6 +2765,8 @@ static sxi32 VmByteCodeExec(
 					if(pObj == 0) {
 						PH7_VmThrowError(&(*pVm), PH7_CTX_ERR,
 										"Variable '$%z' undeclared (first use in this method/closure)", &sName);
+					} else if(pObj->iFlags & MEMOBJ_FIXEDVAL) {
+						PH7_VmThrowError(&(*pVm), PH7_CTX_ERR, "Cannot re-assign a value of '$%z' statement", &sName);
 					}
 					if(!pInstr->p3) {
 						PH7_MemObjRelease(&pTos[1]);
@@ -4152,6 +4154,13 @@ static sxi32 VmByteCodeExec(
 							pThis = (ph7_class_instance *)pNos->x.pOther;
 							/* Point to the instantiated class */
 							pClass = pThis->pClass;
+							if(pNos->iFlags & MEMOBJ_PARENTOBJ) {
+								if(pClass->pBase == 0) {
+									PH7_VmThrowError(&(*pVm), PH7_CTX_ERR,
+													"Attempt to call parent class from non-inheritance instance of class '%z'", &pClass->sName);
+								}
+								pClass = pClass->pBase;
+							}
 							/* Extract attribute name first */
 							SyStringInitFromBuf(&sName, (const char *)SyBlobData(&pTos->sBlob), SyBlobLength(&pTos->sBlob));
 							if(pInstr->iP2) {
@@ -4552,7 +4561,7 @@ static sxi32 VmByteCodeExec(
 								if(pTarget->iFlags & MEMOBJ_OBJ) {
 									/* Instance already loaded */
 									pThis = (ph7_class_instance *)pTarget->x.pOther;
-									pThis->iRef++;
+									pThis->iRef += 2;
 									pSelf = pThis->pClass;
 								}
 								if(pSelf == 0) {
@@ -4563,20 +4572,6 @@ static sxi32 VmByteCodeExec(
 									}
 									if(pSelf == 0) {
 										pSelf = (ph7_class *)pVmFunc->pUserData;
-									}
-								}
-								if(pThis == 0) {
-									VmFrame *pFrame = pVm->pFrame;
-									while(pFrame->pParent && (pFrame->iFlags & VM_FRAME_EXCEPTION)) {
-										/* Safely ignore the exception frame */
-										pFrame = pFrame->pParent;
-									}
-									if(pFrame->pParent) {
-										/* TICKET-1433-52: Make sure the '$this' variable is available to the current scope */
-										pThis = pFrame->pThis;
-										if(pThis) {
-											pThis->iRef++;
-										}
 									}
 								}
 								VmPopOperand(&pTos, 1);
@@ -4633,14 +4628,24 @@ static sxi32 VmByteCodeExec(
 							/* Raise exception: Out of memory */
 							PH7_VmMemoryError(&(*pVm));
 						}
-						if((pVmFunc->iFlags & VM_FUNC_CLASS_METHOD) && pThis) {
-							/* Install the '$this' variable */
-							static const SyString sThis = { "this", sizeof("this") - 1 };
-							pObj = VmCreateMemObj(&(*pVm), &sThis, FALSE);
+						if(pVmFunc->iFlags & VM_FUNC_CLASS_METHOD) {
+							/* Install the '$parent' variable */
+							static const SyString sParent = { "parent", sizeof("parent") - 1 };
+							pObj = VmCreateMemObj(&(*pVm), &sParent, TRUE);
 							if(pObj) {
 								/* Reflect the change */
 								pObj->x.pOther = pThis;
 								MemObjSetType(pObj, MEMOBJ_OBJ);
+								pObj->iFlags |= MEMOBJ_FIXEDVAL | MEMOBJ_PARENTOBJ;
+							}
+							/* Install the '$this' variable */
+							static const SyString sThis = { "this", sizeof("this") - 1 };
+							pObj = VmCreateMemObj(&(*pVm), &sThis, TRUE);
+							if(pObj) {
+								/* Reflect the change */
+								pObj->x.pOther = pThis;
+								MemObjSetType(pObj, MEMOBJ_OBJ);
+								pObj->iFlags |= MEMOBJ_FIXEDVAL;
 							}
 						}
 						if(SySetUsed(&pVmFunc->aStatic) > 0) {
