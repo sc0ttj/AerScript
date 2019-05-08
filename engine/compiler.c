@@ -1200,34 +1200,6 @@ static sxi32 PH7_GenStateLoadLiteral(ph7_gen_state *pGen) {
 			}
 		}
 		return SXRET_OK;
-	} else if(pStr->nByte == sizeof("PARENT") - 1 && SyMemcmp(pStr->zString, "parent", sizeof("PARENT") - 1) == 0) {
-		GenBlock *pBlock = pGen->pCurrent;
-		while(pBlock && (pBlock->iFlags & GEN_BLOCK_CLASS) == 0) {
-			/* Point to the upper block */
-			pBlock = pBlock->pParent;
-		}
-		if(pBlock == 0) {
-			/* Called in the global scope, load NULL */
-			PH7_VmEmitInstr(pGen->pVm, 0, PH7_OP_LOADC, 0, 0, 0, 0);
-		} else {
-			/* Extract the target base class */
-			ph7_class_info *pClassInfo = (ph7_class_info *)pBlock->pUserData;
-			SyString *pClassBase;
-			pClassBase = SySetAt(&pClassInfo->sExtends, 0);
-			if(pClassBase) {
-				pObj = PH7_ReserveConstObj(pGen->pVm, &nIdx);
-				if(pObj == 0) {
-					PH7_GenCompileError(pGen, E_ERROR, pToken->nLine, "PH7 engine is running out-of-memory");
-				}
-				PH7_MemObjInitFromString(pGen->pVm, pObj, pClassBase);
-				/* Emit the load constant instruction */
-				PH7_VmEmitInstr(pGen->pVm, 0, PH7_OP_LOADC, 0, nIdx, 0, 0);
-			} else {
-				/* No parent class, load NULL */
-				PH7_VmEmitInstr(pGen->pVm, 0, PH7_OP_LOADC, 0, 0, 0, 0);
-			}
-		}
-		return SXRET_OK;
 	} else if(pStr->nByte == sizeof("SELF") - 1 && SyMemcmp(pStr->zString, "self", sizeof("SELF") - 1) == 0) {
 		GenBlock *pBlock = pGen->pCurrent;
 		while(pBlock && (pBlock->iFlags & GEN_BLOCK_CLASS) == 0) {
