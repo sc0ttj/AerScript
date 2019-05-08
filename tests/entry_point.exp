@@ -1,3 +1,9 @@
 Program::__construct() called.
+Test1::__construct() called.
 Program::main() called.
+Test2::__construct() called.
+Test1::__construct() called.
 Program::__destruct() called.
+Test1::__destruct() called.
+Test2::__destruct() called.
+Test1::__destruct() called.
