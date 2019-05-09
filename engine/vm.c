@@ -4295,6 +4295,9 @@ static sxi32 VmByteCodeExec(
 											VmPopOperand(&pTos, 1);
 										}
 										PH7_MemObjRelease(pTos);
+									} else if((pMeth->iFlags & PH7_CLASS_ATTR_STATIC) == 0) {
+										PH7_VmThrowError(&(*pVm), PH7_CTX_ERR, "Attempt to call statically a non-static method '%z::%z()'",
+														&pClass->sName, &sName);
 									} else {
 										/* Push method name on the stack */
 										PH7_MemObjRelease(pTos);
