@@ -4593,14 +4593,9 @@ static sxi32 VmByteCodeExec(
 									/* Check if the call is allowed */
 									pMeth = PH7_ClassExtractMethod(pSelf, pVmFunc->sName.zString, pVmFunc->sName.nByte);
 									if(pMeth && pMeth->iProtection != PH7_CLASS_PROT_PUBLIC) {
-										if(!VmClassMemberAccess(&(*pVm), pSelf, &pVmFunc->sName, pMeth->iProtection, TRUE)) {
-											/* Pop given arguments */
-											if(pInstr->iP1 > 0) {
-												VmPopOperand(&pTos, pInstr->iP1);
-											}
-											/* Assume a null return value so that the program continue it's execution normally */
-											PH7_MemObjRelease(pTos);
-											break;
+										if(!VmClassMemberAccess(&(*pVm), pSelf, &pVmFunc->sName, pMeth->iProtection, FALSE)) {
+											PH7_VmThrowError(&(*pVm), PH7_CTX_ERR,
+													"Access to the class method '%z->%z()' is forbidden", &pSelf->sName, &pVmFunc->sName);
 										}
 									}
 								}
