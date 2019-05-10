@@ -260,11 +260,9 @@ PH7_PRIVATE sxi32 PH7_ClassInherit(ph7_vm *pVm, ph7_class *pSub, ph7_class *pBas
 			continue;
 		}
 		/* Install the attribute */
-		if(pAttr->iProtection != PH7_CLASS_PROT_PRIVATE) {
-			rc = SyHashInsert(&pSub->hAttr, (const void *)pName->zString, pName->nByte, pAttr);
-			if(rc != SXRET_OK) {
-				return rc;
-			}
+		rc = SyHashInsert(&pSub->hAttr, (const void *)pName->zString, pName->nByte, pAttr);
+		if(rc != SXRET_OK) {
+			return rc;
 		}
 	}
 	SyHashResetLoopCursor(&pBase->hMethod);

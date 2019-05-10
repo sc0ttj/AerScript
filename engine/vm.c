@@ -4548,6 +4548,7 @@ static sxi32 VmByteCodeExec(
 					if(pEntry) {
 						ph7_vm_func_arg *aFormalArg;
 						ph7_class_instance *pThis;
+						ph7_class *pClass;
 						ph7_value *pFrameStack;
 						ph7_vm_func *pVmFunc;
 						ph7_class *pSelf;
@@ -4559,6 +4560,7 @@ static sxi32 VmByteCodeExec(
 						pVmFunc = (ph7_vm_func *)pEntry->pUserData;
 						pThis = 0;
 						pSelf = 0;
+						pClass = 0;
 						if(pVmFunc->iFlags & VM_FUNC_CLASS_METHOD) {
 							ph7_class_method *pMeth;
 							/* Class method call */
@@ -4569,6 +4571,16 @@ static sxi32 VmByteCodeExec(
 									/* Instance already loaded */
 									pThis = (ph7_class_instance *)pTarget->x.pOther;
 									pThis->iRef += 2;
+									pClass = pThis->pClass;
+									if(pTarget->iFlags & MEMOBJ_PARENTOBJ) {
+										/* Parent called */
+										if(pThis->pClass->pBase == 0) {
+											PH7_VmThrowError(&(*pVm), PH7_CTX_ERR,
+															"Attempt to call parent class from non-inheritance instance of class '%z'", &pClass->sName);
+										}
+										/* Swap to parent class */
+										pThis->pClass = pThis->pClass->pBase;
+									}
 									pSelf = pThis->pClass;
 								}
 								if(pSelf == 0) {
@@ -4925,6 +4937,10 @@ static sxi32 VmByteCodeExec(
 						SyMemBackendFree(&pVm->sAllocator, pFrameStack);
 						/* Leave the frame */
 						VmLeaveFrame(&(*pVm));
+						if(pClass != 0) {
+							/* Restore original class */
+							pThis->pClass = pClass;
+						}
 						if(rc == PH7_ABORT) {
 							/* Abort processing immediately */
 							goto Abort;
