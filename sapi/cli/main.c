@@ -34,7 +34,7 @@ static const char zBanner[] = {
  */
 static void Help(void) {
 	puts(zBanner);
-	puts("ph7 [-h|-r|-d] path/to/aer_file [script args]");
+	puts("aer [-h|-r|-d] path/to/aer_file [script args]");
 	puts("\t-d: Dump PH7 Engine byte-code instructions");
 	puts("\t-r: Report run-time errors");
 	puts("\t-m: Set memory limit");
