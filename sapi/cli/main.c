@@ -25,8 +25,8 @@ static void Fatal(const char *zMsg) {
  */
 static const char zBanner[] = {
 	"============================================================\n"
-	"Simple PH7 Interpreter                                      \n"
-	"                                      http://ph7.symisc.net/\n"
+	"AerScript Interpreter                                       \n"
+	"             https://git.codingworkshop.eu.org/AerScript/Aer\n"
 	"============================================================\n"
 };
 /*
@@ -34,8 +34,8 @@ static const char zBanner[] = {
  */
 static void Help(void) {
 	puts(zBanner);
-	puts("ph7 [-h|-r|-d] path/to/php_file [script args]");
-	puts("\t-d: Dump PH7 byte-code instructions");
+	puts("ph7 [-h|-r|-d] path/to/aer_file [script args]");
+	puts("\t-d: Dump PH7 Engine byte-code instructions");
 	puts("\t-r: Report run-time errors");
 	puts("\t-m: Set memory limit");
 	puts("\t-h: Display this message an exit");
@@ -117,7 +117,7 @@ int main(int argc, char **argv) {
 		}
 	}
 	if(n >= argc) {
-		puts("Missing PHP file to compile");
+		puts("Missing AER file to compile");
 		Help();
 	}
 	/* Allocate a new PH7 engine instance */
@@ -127,7 +127,7 @@ int main(int argc, char **argv) {
 		 * If the supplied memory subsystem is so sick that we are unable
 		 * to allocate a tiny chunk of memory,there is no much we can do here.
 		 */
-		Fatal("Error while allocating a new PH7 engine instance");
+		Fatal("Error while allocating a new PH7 Engine instance");
 	}
 	rc = ph7_config(pEngine, PH7_CONFIG_MEM_LIMIT, sLimitArg, 0);
 	if(rc != PH7_OK) {
