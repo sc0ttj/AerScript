@@ -1056,7 +1056,7 @@ struct ph7_class {
 /* Class configuration flags */
 #define PH7_CLASS_FINAL       0x001 /* Class is final [cannot be extended] */
 #define PH7_CLASS_INTERFACE   0x002 /* Class is interface */
-#define PH7_CLASS_VIRTUAL    0x004 /* Class is virtual */
+#define PH7_CLASS_VIRTUAL     0x004 /* Class is virtual */
 /* Class attribute/methods/constants protection levels */
 #define PH7_CLASS_PROT_PUBLIC     1 /* public */
 #define PH7_CLASS_PROT_PROTECTED  2 /* protected */
@@ -1077,7 +1077,7 @@ struct ph7_class_attr {
 /* Attribute configuration */
 #define PH7_CLASS_ATTR_STATIC       0x001  /* Static attribute */
 #define PH7_CLASS_ATTR_CONSTANT     0x002  /* Constant attribute */
-#define PH7_CLASS_ATTR_VIRTUAL     0x004  /* Virtual method */
+#define PH7_CLASS_ATTR_VIRTUAL      0x004  /* Virtual method */
 #define PH7_CLASS_ATTR_FINAL        0x008  /* Final method */
 /*
  * Each class method is parsed out and stored in an instance of the following
@@ -1240,7 +1240,7 @@ struct ph7_vm {
 	SySet aSelf;               /* 'self' stack used for static member access [i.e: self::MyConstant] */
 	sxi32 iExitStatus;         /* Script exit status */
 	ph7_gen_state sCodeGen;    /* Code generator module */
-	ph7_vm *pNext, *pPrev;     /* List of active VM's */
+	ph7_vm *pNext, *pPrev;     /* List of active VMs */
 	sxu32 nMagic;              /* Sanity check against misuse */
 };
 /*
@@ -1331,7 +1331,7 @@ struct VmModule {
 	SyString sName;      /* Module name */
 	SyString sFile;      /* Module library file */
 	SyString sDesc;      /* Module short description */
-	ph7_real fVer;          /* Module version */
+	ph7_real fVer;       /* Module version */
 };
 /*
  * Each installed class autoload callback (registered using [register_autoload_handler()] )
