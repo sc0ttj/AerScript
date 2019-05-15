@@ -42,11 +42,11 @@ struct SyhttpHeader {
 /*
  * Supported HTTP methods.
  */
-#define HTTP_METHOD_GET  1 /* GET */
-#define HTTP_METHOD_HEAD 2 /* HEAD */
-#define HTTP_METHOD_POST 3 /* POST */
-#define HTTP_METHOD_PUT  4 /* PUT */
-#define HTTP_METHOD_OTHR 5 /* Other HTTP methods [i.e: DELETE,TRACE,OPTIONS...]*/
+#define HTTP_METHOD_GET   1 /* GET */
+#define HTTP_METHOD_HEAD  2 /* HEAD */
+#define HTTP_METHOD_POST  3 /* POST */
+#define HTTP_METHOD_PUT   4 /* PUT */
+#define HTTP_METHOD_OTHER 5 /* Other HTTP methods [i.e: DELETE,TRACE,OPTIONS...]*/
 /*
  * Supported HTTP protocol version.
  */
@@ -10649,7 +10649,7 @@ static sxi32 VmHttpProcessFirstLine(
 	while(zIn < zEnd && !SyisSpace(zIn[0])) {
 		zIn++;
 	}
-	*pMethod = HTTP_METHOD_OTHR;
+	*pMethod = HTTP_METHOD_OTHER;
 	if(zIn > zPtr) {
 		sxu32 i;
 		nLen = (sxu32)(zIn - zPtr);
