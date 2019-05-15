@@ -21,7 +21,7 @@
  * amazing things now such as array dereferencing,on the fly function call,anonymous function
  * as array values,class member access on instantiation and so on.
  * Refer to the following page for a full discussion on these improvements:
- * http://ph7.symisc.net/features.html#improved_precedence
+ * https://ph7.symisc.net/features.html#improved_precedence
  */
 static const ph7_expr_op aOpTable[] = {
 	/* Precedence 1: non-associative */

@@ -5496,7 +5496,7 @@ PH7_PRIVATE void PH7_VmExpandConstantValue(ph7_value *pVal, void *pUserData) {
  *  Function handling functions.
  * Authors:
  *    Symisc Systems,devel@symisc.net.
- *    Copyright (C) Symisc Systems,http://ph7.symisc.net
+ *    Copyright (C) Symisc Systems,https://ph7.symisc.net
  * Status:
  *    Stable.
  */
@@ -5701,7 +5701,7 @@ static int vm_builtin_register_shutdown_function(ph7_context *pCtx, int nArg, ph
  *  Class handling functions.
  * Authors:
  *    Symisc Systems,devel@symisc.net.
- *    Copyright (C) Symisc Systems,http://ph7.symisc.net
+ *    Copyright (C) Symisc Systems,https://ph7.symisc.net
  * Status:
  *    Stable.
  */
@@ -6728,7 +6728,7 @@ static int vm_builtin_get_defined_constants(ph7_context *pCtx, int nArg, ph7_val
  *  Output Control (OB) functions.
  * Authors:
  *    Symisc Systems,devel@symisc.net.
- *    Copyright (C) Symisc Systems,http://ph7.symisc.net
+ *    Copyright (C) Symisc Systems,https://ph7.symisc.net
  * Status:
  *    Stable.
  */
@@ -7146,7 +7146,7 @@ static int vm_builtin_ob_list_handlers(ph7_context *pCtx, int nArg, ph7_value **
  *  Random numbers/string generators.
  * Authors:
  *    Symisc Systems,devel@symisc.net.
- *    Copyright (C) Symisc Systems,http://ph7.symisc.net
+ *    Copyright (C) Symisc Systems,https://ph7.symisc.net
  * Status:
  *    Stable.
  */
@@ -7424,7 +7424,7 @@ static int vm_builtin_uniqid(ph7_context *pCtx, int nArg, ph7_value **apArg) {
  *  Language construct implementation as foreign functions.
  * Authors:
  *    Symisc Systems,devel@symisc.net.
- *    Copyright (C) Symisc Systems,http://ph7.symisc.net
+ *    Copyright (C) Symisc Systems,https://ph7.symisc.net
  * Status:
  *    Stable.
  */
@@ -7934,7 +7934,7 @@ static int vm_builtin_assert(ph7_context *pCtx, int nArg, ph7_value **apArg) {
  *  Error reporting functions.
  * Authors:
  *    Symisc Systems,devel@symisc.net.
- *    Copyright (C) Symisc Systems,http://ph7.symisc.net
+ *    Copyright (C) Symisc Systems,https://ph7.symisc.net
  * Status:
  *    Stable.
  */
@@ -8241,7 +8241,7 @@ static sxi32 VmThrowException(
  *  Version,Credits and Copyright related functions.
  * Authors:
  *    Symisc Systems,devel@symisc.net.
- *    Copyright (C) Symisc Systems,http://ph7.symisc.net
+ *    Copyright (C) Symisc Systems,https://ph7.symisc.net
  * Status:
  *    Stable.
  */
@@ -8263,9 +8263,9 @@ static int vm_builtin_ph7_version(ph7_context *pCtx, int nArg, ph7_value **apArg
 /*
  * PH7 release information HTML page used by the ph7info() and ph7credits() functions.
  */
-#define PH7_HTML_PAGE_HEADER "<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01//EN\" \"http://www.w3.org/TR/html4/strict.dtd\">"\
+#define PH7_HTML_PAGE_HEADER "<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01//EN\" \"https://www.w3.org/TR/html4/strict.dtd\">"\
 	"<html><head>"\
-	"<!-- Copyright (C) 2011-2012 Symisc Systems,http://www.symisc.net contact@symisc.net -->"\
+	"<!-- Copyright (C) 2011-2012 Symisc Systems,https://www.symisc.net contact@symisc.net -->"\
 	"<meta content=\"text/html; charset=UTF-8\" http-equiv=\"content-type\"><title>PH7 engine credits</title>"\
 	"<style type=\"text/css\">"\
 	"div {"\
@@ -8326,7 +8326,7 @@ static int vm_builtin_ph7_version(ph7_context *pCtx, int nArg, ph7_value **apArg
 	"<div style=\"background-color: white; width: 699px;\">"\
 	"<h1 style=\"font-family: Verdana; text-align: right;\"><small><small>PH7 Engine Credits</small></small></h1>"\
 	"<hr style=\"margin-left: auto; margin-right: auto;\">"\
-	"<p><small><a href=\"http://ph7.symisc.net/\"><small><span style=\"font-weight: bold;\">"\
+	"<p><small><a href=\"https://ph7.symisc.net/\"><small><span style=\"font-weight: bold;\">"\
 	"Symisc PH7</span></small></a><small>&nbsp;</small></small></p>"\
 	"<p style=\"text-align: left;\"><small><small>"\
 	"A highly efficient embeddable bytecode compiler and a Virtual Machine for the PHP(5) Programming Language.</small></small></p>"\
@@ -8346,7 +8346,7 @@ static int vm_builtin_ph7_version(ph7_context *pCtx, int nArg, ph7_value **apArg
 	"<p style=\"text-align: left; font-weight: bold;\"><small><small>Host Operating System:</small></small></p>"\
 	"<p style=\"text-align: left; font-weight: bold; margin-left: 40px;\"><small><small><span style=\"font-weight: normal;\">%s</span></small></small></p>"\
 	"<p style=\"text-align: left; font-weight: bold;\"><small style=\"font-weight: bold;\"><small><small></small></small></small></p>"\
-	"<p style=\"text-align: left; font-weight: bold;\"><small><small>Licensed To: &lt;Public Release Under The <a href=\"http://www.symisc.net/spl.txt\">"\
+	"<p style=\"text-align: left; font-weight: bold;\"><small><small>Licensed To: &lt;Public Release Under The <a href=\"https://www.symisc.net/spl.txt\">"\
 	"Symisc Public License (SPL)</a>&gt;</small></small></p>"
 
 #define PH7_HTML_PAGE_FOOTER "<p style=\"text-align: left; font-weight: bold; margin-left: 40px;\"><small><small><span style=\"font-weight: normal;\">/*<br>"\
@@ -8384,7 +8384,7 @@ static int vm_builtin_ph7_version(ph7_context *pCtx, int nArg, ph7_value **apArg
 	"&nbsp;* IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.<br>"\
 	"&nbsp;*/<br>"\
 	"</span></small></small></p>"\
-	"<p style=\"text-align: right;\"><small><small>Copyright (C) <a href=\"http://www.symisc.net/\">Symisc Systems</a></small></small><big>"\
+	"<p style=\"text-align: right;\"><small><small>Copyright (C) <a href=\"https://www.symisc.net/\">Symisc Systems</a></small></small><big>"\
 	"</big></p></div></body></html>"
 /*
  * bool ph7credits(void)
@@ -8428,7 +8428,7 @@ static int vm_builtin_ph7_credits(ph7_context *pCtx, int nArg, ph7_value **apArg
  *    URL related routines.
  * Authors:
  *    Symisc Systems,devel@symisc.net.
- *    Copyright (C) Symisc Systems,http://ph7.symisc.net
+ *    Copyright (C) Symisc Systems,https://ph7.symisc.net
  * Status:
  *    Stable.
  */
@@ -8653,7 +8653,7 @@ static int vm_builtin_parse_url(ph7_context *pCtx, int nArg, ph7_value **apArg) 
  *   Array related routines.
  * Authors:
  *    Symisc Systems,devel@symisc.net.
- *    Copyright (C) Symisc Systems,http://ph7.symisc.net
+ *    Copyright (C) Symisc Systems,https://ph7.symisc.net
  * Status:
  *    Stable.
  * Note 2012-5-21 01:04:15:
@@ -9097,7 +9097,7 @@ static sxi32 VmExecIncludedFile(
 	/* Extract the associated stream */
 	pStream = PH7_VmGetStreamDevice(pVm, &pPath->zString, pPath->nByte);
 	/*
-	 * Open the file or the URL [i.e: http://ph7.symisc.net/example/hello.php"]
+	 * Open the file or the URL [i.e: https://ph7.symisc.net/example/hello.php"]
 	 * in a read-only mode.
 	 */
 	pHandle = PH7_StreamOpenHandle(pVm, pStream, pPath->zString, PH7_IO_OPEN_RDONLY, TRUE, 0, TRUE, &isNew);
@@ -9348,7 +9348,7 @@ static int vm_builtin_require(ph7_context *pCtx, int nArg, ph7_value **apArg) {
  *  Command line arguments processing.
  * Authors:
  *    Symisc Systems,devel@symisc.net.
- *    Copyright (C) Symisc Systems,http://ph7.symisc.net
+ *    Copyright (C) Symisc Systems,https://ph7.symisc.net
  * Status:
  *    Stable.
  */
@@ -9739,7 +9739,7 @@ static int vm_builtin_utf8_encode(ph7_context *pCtx, int nArg, ph7_value **apArg
 }
 /*
  * UTF-8 decoding routine extracted from the sqlite3 source tree.
- * Original author: D. Richard Hipp (http://www.sqlite.org)
+ * Original author: D. Richard Hipp (https://www.sqlite.org)
  * Status: Public Domain
  */
 /*
@@ -10347,7 +10347,7 @@ PH7_PRIVATE const ph7_io_stream *PH7_VmGetStreamDevice(
  *    HTTP/URI related routines.
  * Authors:
  *    Symisc Systems,devel@symisc.net.
- *    Copyright (C) Symisc Systems,http://ph7.symisc.net
+ *    Copyright (C) Symisc Systems,https://ph7.symisc.net
  * Status:
  *    Stable.
  */
@@ -10934,7 +10934,7 @@ static sxi32 VmHttpProcessRequest(ph7_vm *pVm, const char *zRequest, int nByte) 
 	 * 'ORIG_PATH_INFO'
 	 * Contains any client-provided pathname information trailing the actual script filename but preceding
 	 * the query string, if available. For instance, if the current script was accessed via the URL
-	 * http://www.example.com/php/path_info.php/some/stuff?foo=bar, then $_SERVER['PATH_INFO'] would contain
+	 * https://www.example.com/php/path_info.php/some/stuff?foo=bar, then $_SERVER['PATH_INFO'] would contain
 	 * /some/stuff.
 	 */
 	pValue = &sUri.sPath;

@@ -1751,7 +1751,7 @@ static void HashmapSortRehash(ph7_hashmap *pMap) {
  * Array functions implementation.
  * Authors:
  *  Symisc Systems,devel@symisc.net.
- *  Copyright (C) Symisc Systems,http://ph7.symisc.net
+ *  Copyright (C) Symisc Systems,https://ph7.symisc.net
  * Status:
  *  Stable.
  */

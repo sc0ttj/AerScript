@@ -12,7 +12,7 @@
  *    Variable handling Functions.
  * Authors:
  *    Symisc Systems,devel@symisc.net.
- *    Copyright (C) Symisc Systems,http://ph7.symisc.net
+ *    Copyright (C) Symisc Systems,https://ph7.symisc.net
  * Status:
  *    Stable.
  */
@@ -539,7 +539,7 @@ static int PH7_builtin_base_convert(ph7_context *pCtx, int nArg, ph7_value **apA
  *    String handling Functions.
  * Authors:
  *    Symisc Systems,devel@symisc.net.
- *    Copyright (C) Symisc Systems,http://ph7.symisc.net
+ *    Copyright (C) Symisc Systems,https://ph7.symisc.net
  * Status:
  *    Stable.
  */
@@ -5898,7 +5898,7 @@ static int PH7_builtin_parse_ini_string(ph7_context *pCtx, int nArg, ph7_value *
  * Date/Time functions
  * Authors:
  *    Symisc Systems,devel@symisc.net.
- *    Copyright (C) Symisc Systems,http://ph7.symisc.net
+ *    Copyright (C) Symisc Systems,https://ph7.symisc.net
  * Status:
  *    Devel.
  */
@@ -7264,7 +7264,7 @@ static int PH7_builtin_mktime(ph7_context *pCtx, int nArg, ph7_value **apArg) {
  *    URL handling Functions.
  * Authors:
  *    Symisc Systems,devel@symisc.net.
- *    Copyright (C) Symisc Systems,http://ph7.symisc.net
+ *    Copyright (C) Symisc Systems,https://ph7.symisc.net
  * Status:
  *    Stable.
  */

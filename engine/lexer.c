@@ -41,7 +41,7 @@ static sxi32 TokenizeAerScript(SyStream *pStream, SyToken *pToken, void *pUserDa
 		 * application seeking for a production quality,ready to use macro processor.
 		 * xPP is a widely used library developed and maintained by Symisc Systems.
 		 * You can reach the xPP home page by following this link:
-		 * http://xpp.symisc.net/
+		 * https://xpp.symisc.net/
 		 */
 		const unsigned char *zIn;
 		sxu32 nKeyword;

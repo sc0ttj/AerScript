@@ -1,6 +1,6 @@
 /*
  * Symisc PH7: An embeddable bytecode compiler and a virtual machine for the PHP(5) programming language.
- * Copyright (C) 2011-2012, Symisc Systems http://ph7.symisc.net/
+ * Copyright (C) 2011-2012, Symisc Systems https://ph7.symisc.net/
  * Version 2.1.4
  * For information on licensing,redistribution of this file,and for a DISCLAIMER OF ALL WARRANTIES
  * please contact Symisc Systems via:
@@ -8,7 +8,7 @@
  *       licensing@symisc.net
  *       contact@symisc.net
  * or visit:
- *      http://ph7.symisc.net/
+ *      https://ph7.symisc.net/
  */
 /* $SymiscID: ph7int.h v1.9 FreeBSD 2012-08-13 26:25 devel <chm@symisc.net> $ */
 #ifndef __PH7INT_H__

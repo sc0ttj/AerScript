@@ -3,7 +3,7 @@
 #define _PH7_H_
 /*
  * Symisc PH7: An embeddable bytecode compiler and a virtual machine for the PHP(5) programming language.
- * Copyright (C) 2011-2012, Symisc Systems http://ph7.symisc.net/
+ * Copyright (C) 2011-2012, Symisc Systems https://ph7.symisc.net/
  * Version 2.1.4
  * For information on licensing,redistribution of this file,and for a DISCLAIMER OF ALL WARRANTIES
  * please contact Symisc Systems via:
@@ -11,7 +11,7 @@
  *       licensing@symisc.net
  *       contact@symisc.net
  * or visit:
- *      http://ph7.symisc.net/
+ *      https://ph7.symisc.net/
  */
 /*
  * Copyright (C) 2011, 2012 Symisc Systems. All rights reserved.
@@ -73,13 +73,13 @@
 /*
  * Copyright notice.
  * If you have any questions about the licensing situation,please
- * visit http://ph7.symisc.net/licensing.html
+ * visit https://ph7.symisc.net/licensing.html
  * or contact Symisc Systems via:
  *   legal@symisc.net
  *   licensing@symisc.net
  *   contact@symisc.net
  */
-#define PH7_COPYRIGHT "Copyright (C) Symisc Systems 2011-2012, http://ph7.symisc.net/"
+#define PH7_COPYRIGHT "Copyright (C) Symisc Systems 2011-2012, https://ph7.symisc.net/"
 /* Forward declaration to public objects */
 typedef struct ph7_io_stream ph7_io_stream;
 typedef struct ph7_context ph7_context;
@@ -323,7 +323,7 @@ typedef sxi64 ph7_int64;
  * return value indicates failure.
  * For a full discussion on the configuration verbs and their expected
  * parameters, please refer to this page:
- *      http://ph7.symisc.net/c_api_func.html#ph7_config
+ *      https://ph7.symisc.net/c_api_func.html#ph7_config
  */
 #define PH7_CONFIG_ERR_OUTPUT    1  /* TWO ARGUMENTS: int (*xConsumer)(const void *pOut,unsigned int nLen,void *pUserData),void *pUserData */
 #define PH7_CONFIG_ERR_ABORT     2  /* RESERVED FOR FUTURE USE */
@@ -344,7 +344,7 @@ typedef sxi64 ph7_int64;
  * a HTTP request and PH7_VM_CONFIG_ARGV_ENTRY which populate the $argv array.
  * For a full discussion on the configuration verbs and their expected parameters, please
  * refer to this page:
- *      http://ph7.symisc.net/c_api_func.html#ph7_vm_config
+ *      https://ph7.symisc.net/c_api_func.html#ph7_vm_config
  */
 #define PH7_VM_CONFIG_OUTPUT           1  /* TWO ARGUMENTS: int (*xConsumer)(const void *pOut,unsigned int nLen,void *pUserData),void *pUserData */
 #define PH7_VM_CONFIG_IMPORT_PATH      3  /* ONE ARGUMENT: const char *zIncludePath */
@@ -387,7 +387,7 @@ typedef sxi64 ph7_int64;
  * and their expected parameters.
  * For a full discussion on the configuration verbs and their expected parameters,please
  * refer to this page:
- *      http://ph7.symisc.net/c_api_func.html#Global_Library_Management_Interfaces
+ *      https://ph7.symisc.net/c_api_func.html#Global_Library_Management_Interfaces
  */
 #define PH7_LIB_CONFIG_USER_MALLOC            1 /* ONE ARGUMENT: const SyMemMethods *pMemMethods */
 #define PH7_LIB_CONFIG_MEM_ERR_CALLBACK       2 /* TWO ARGUMENTS: int (*xMemError)(void *),void *pUserData */
@@ -495,7 +495,7 @@ struct ph7_vfs {
 /*
  * Possible open mode flags that can be passed to the xOpen() routine
  * of the underlying IO stream device .
- * Refer to the PH7 IO Stream C/C++ specification manual (http://ph7.symisc.net/io_stream_spec.html)
+ * Refer to the PH7 IO Stream C/C++ specification manual (https://ph7.symisc.net/io_stream_spec.html)
  * for additional information.
  */
 #define PH7_IO_OPEN_RDONLY   0x001  /* Read-only open */
@@ -535,7 +535,7 @@ struct ph7_vfs {
  * Currently the PH7 development team is working on the implementation of the http:// and ftp://
  * IO stream protocols. These devices will be available in the next major release of the PH7 engine.
  * Developers wishing to implement their own IO stream devices must understand and follow
- * The PH7 IO Stream C/C++ specification manual (http://ph7.symisc.net/io_stream_spec.html).
+ * The PH7 IO Stream C/C++ specification manual (https://ph7.symisc.net/io_stream_spec.html).
  */
 struct ph7_io_stream {
 	const char *zName;                                     /* Underlying stream name [i.e: file/http/zip/php,..] */

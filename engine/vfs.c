@@ -1497,7 +1497,7 @@ static int PH7_vfs_touch(ph7_context *pCtx, int nArg, ph7_value **apArg) {
  * Path processing functions that do not need access to the VFS layer
  * Authors:
  *    Symisc Systems,devel@symisc.net.
- *    Copyright (C) Symisc Systems,http://ph7.symisc.net
+ *    Copyright (C) Symisc Systems,https://ph7.symisc.net
  * Status:
  *    Stable.
  */
@@ -1803,7 +1803,7 @@ static int PH7_builtin_pathinfo(ph7_context *pCtx, int nArg, ph7_value **apArg) 
 }
 /*
  * Globbing implementation extracted from the sqlite3 source tree.
- * Original author: D. Richard Hipp (http://www.sqlite.org)
+ * Original author: D. Richard Hipp (https://www.sqlite.org)
  * Status: Public Domain
  */
 typedef unsigned char u8;
@@ -2492,7 +2492,7 @@ static int PH7_vfs_ph7_uname(ph7_context *pCtx, int nArg, ph7_value **apArg) {
  *    IO stream implementation.
  * Authors:
  *    Symisc Systems,devel@symisc.net.
- *    Copyright (C) Symisc Systems,http://ph7.symisc.net
+ *    Copyright (C) Symisc Systems,https://ph7.symisc.net
  * Status:
  *    Stable.
  */
@@ -4918,7 +4918,7 @@ static int vfsHashConsumer(const void *pData, unsigned int nLen, void *pUserData
  *  Calculates the md5 hash of a given file.
  * Parameters
  *  $uri
- *   Target URI (file(/path/to/something) or URL(http://www.symisc.net/))
+ *   Target URI (file(/path/to/something) or URL(https://www.symisc.net/))
  *  $raw_output
  *   When TRUE, returns the digest in raw binary format with a length of 16.
  * Return
@@ -4988,7 +4988,7 @@ static int PH7_builtin_md5_file(ph7_context *pCtx, int nArg, ph7_value **apArg) 
  *  Calculates the SHA1 hash of a given file.
  * Parameters
  *  $uri
- *   Target URI (file(/path/to/something) or URL(http://www.symisc.net/))
+ *   Target URI (file(/path/to/something) or URL(https://www.symisc.net/))
  *  $raw_output
  *   When TRUE, returns the digest in raw binary format with a length of 20.
  * Return
@@ -5120,7 +5120,7 @@ static int PH7_builtin_parse_ini_file(ph7_context *pCtx, int nArg, ph7_value **a
  *    ZIP archive processing.
  * Authors:
  *    Symisc Systems,devel@symisc.net.
- *    Copyright (C) Symisc Systems,http://ph7.symisc.net
+ *    Copyright (C) Symisc Systems,https://ph7.symisc.net
  * Status:
  *    Stable.
  */
@@ -5706,7 +5706,7 @@ static const ph7_vfs null_vfs = {
  * Windows VFS implementation for the PH7 engine.
  * Authors:
  *    Symisc Systems,devel@symisc.net.
- *    Copyright (C) Symisc Systems,http://ph7.symisc.net
+ *    Copyright (C) Symisc Systems,https://ph7.symisc.net
  * Status:
  *    Stable.
  */
@@ -6894,7 +6894,7 @@ static const ph7_io_stream sWinFileStream = {
  * UNIX VFS implementation for the PH7 engine.
  * Authors:
  *    Symisc Systems,devel@symisc.net.
- *    Copyright (C) Symisc Systems,http://ph7.symisc.net
+ *    Copyright (C) Symisc Systems,https://ph7.symisc.net
  * Status:
  *    Stable.
  */
@@ -7850,7 +7850,7 @@ static ph7_stream_data *PHPStreamDataInit(ph7_vm *pVm, int iType) {
  * Implementation of the php:// IO streams routines
  * Authors:
  *  Symisc Systems,devel@symisc.net.
- *  Copyright (C) Symisc Systems,http://ph7.symisc.net
+ *  Copyright (C) Symisc Systems,https://ph7.symisc.net
  * Status:
  *   Stable.
  */
