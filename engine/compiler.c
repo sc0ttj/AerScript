@@ -3215,7 +3215,7 @@ loop:
 	}
 	pGen->pIn++; /* Jump the equal sign */
 	/* Allocate a new class attribute */
-	pCons = PH7_NewClassAttr(pGen->pVm, &pClass->sName, pName, nLine, iProtection, iFlags, 0);
+	pCons = PH7_NewClassAttr(pGen->pVm, pClass, pName, nLine, iProtection, iFlags, 0);
 	if(pCons == 0) {
 		PH7_GenCompileError(pGen, E_ERROR, nLine, "PH7 is running out-of-memory");
 	}
@@ -3308,7 +3308,7 @@ loop:
 		PH7_GenCompileError(pGen, E_ERROR, nLine, "Expected '=' or ';' after attribute name '%z'", pName);
 	}
 	/* Allocate a new class attribute */
-	pAttr = PH7_NewClassAttr(pGen->pVm, &pClass->sName, pName, nLine, iProtection, iFlags, nType);
+	pAttr = PH7_NewClassAttr(pGen->pVm, pClass, pName, nLine, iProtection, iFlags, nType);
 	if(pAttr == 0) {
 		PH7_GenCompileError(pGen, E_ERROR, nLine, "PH7 engine is running out-of-memory");
 	}
