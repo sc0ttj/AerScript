@@ -67,7 +67,7 @@ PH7_PRIVATE ph7_class *PH7_NewRawClass(ph7_vm *pVm, const SyString *pName) {
  * Allocate and initialize a new class attribute.
  * Return a pointer to the class attribute on success. NULL otherwise.
  */
-PH7_PRIVATE ph7_class_attr *PH7_NewClassAttr(ph7_vm *pVm, const SyString *pName, sxu32 nLine, sxi32 iProtection, sxi32 iFlags, sxu32 nType) {
+PH7_PRIVATE ph7_class_attr *PH7_NewClassAttr(ph7_vm *pVm, const SyString *pClass, const SyString *pName, sxu32 nLine, sxi32 iProtection, sxi32 iFlags, sxu32 nType) {
 	ph7_class_attr *pAttr;
 	char *zName;
 	pAttr = (ph7_class_attr *)SyMemBackendPoolAlloc(&pVm->sAllocator, sizeof(ph7_class_attr));
@@ -82,9 +82,16 @@ PH7_PRIVATE ph7_class_attr *PH7_NewClassAttr(ph7_vm *pVm, const SyString *pName,
 		SyMemBackendPoolFree(&pVm->sAllocator, pAttr);
 		return 0;
 	}
+	SyStringInitFromBuf(&pAttr->sName, zName, pName->nByte);
+	/* Duplicate class name */
+	zName = SyMemBackendStrDup(&pVm->sAllocator, pClass->zString, pClass->nByte);
+	if(zName == 0) {
+		SyMemBackendPoolFree(&pVm->sAllocator, pAttr);
+		return 0;
+	}
+	SyStringInitFromBuf(&pAttr->sClass, zName, pName->nByte);
 	/* Initialize fields */
 	SySetInit(&pAttr->aByteCode, &pVm->sAllocator, sizeof(VmInstr));
-	SyStringInitFromBuf(&pAttr->sName, zName, pName->nByte);
 	pAttr->iProtection = iProtection;
 	pAttr->nIdx = SXU32_HIGH;
 	pAttr->iFlags = iFlags;

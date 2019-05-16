@@ -1066,6 +1066,7 @@ struct ph7_class {
  * in an instance of the following structure.
  */
 struct ph7_class_attr {
+	SyString sClass;     /* Class name */
 	SyString sName;      /* Attribute name */
 	sxi32 iFlags;        /* Attribute configuration [i.e: static, variable, constant, etc.] */
 	sxi32 iProtection;   /* Protection level [i.e: public, private, protected] */
@@ -1756,7 +1757,7 @@ PH7_PRIVATE sxi32 PH7_ParseIniString(ph7_context *pCtx, const char *zIn, sxu32 n
 /* oo.c function prototypes */
 PH7_PRIVATE ph7_class_info *PH7_NewClassInfo(ph7_vm *pVm, const SyString *pName);
 PH7_PRIVATE ph7_class *PH7_NewRawClass(ph7_vm *pVm, const SyString *pName);
-PH7_PRIVATE ph7_class_attr *PH7_NewClassAttr(ph7_vm *pVm, const SyString *pName, sxu32 nLine, sxi32 iProtection, sxi32 iFlags, sxu32 nType);
+PH7_PRIVATE ph7_class_attr *PH7_NewClassAttr(ph7_vm *pVm, const SyString *pClass, const SyString *pName, sxu32 nLine, sxi32 iProtection, sxi32 iFlags, sxu32 nType);
 PH7_PRIVATE ph7_class_method *PH7_NewClassMethod(ph7_vm *pVm, ph7_class *pClass, const SyString *pName, sxu32 nLine,
 		sxi32 iProtection, sxi32 iFlags, sxi32 iFuncFlags);
 PH7_PRIVATE ph7_class_method *PH7_ClassExtractMethod(ph7_class *pClass, const char *zName, sxu32 nByte);
