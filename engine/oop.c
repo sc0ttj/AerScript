@@ -254,7 +254,8 @@ PH7_PRIVATE sxi32 PH7_ClassInherit(ph7_vm *pVm, ph7_class *pSub, ph7_class *pBas
 		pAttr = (ph7_class_attr *)pEntry->pUserData;
 		pName = &pAttr->sName;
 		if((pEntry = SyHashGet(&pSub->hAttr, (const void *)pName->zString, pName->nByte)) != 0) {
-			PH7_VmThrowError(pVm, PH7_CTX_WARNING, "Attribute '%z::$%z' hides inherited member '%z::$%z'", &pSub->sName, pName, &pBase->sName, pName);
+			ph7_class_attr *pSubAttr = (ph7_class_attr *)pEntry->pUserData;
+			PH7_VmThrowError(pVm, PH7_CTX_WARNING, "Attribute '%z::$%z' hides inherited member '%z::$%z'", &pSubAttr->pClass->sName, pName, &pBase->sName, pName);
 		}
 		/* Install the attribute */
 		rc = SyHashInsert(&pSub->hAttr, (const void *)pName->zString, pName->nByte, pAttr);
