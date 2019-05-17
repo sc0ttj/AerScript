@@ -1,6 +1,6 @@
 class Program {
 
-	void main() {
+	public void main() {
 		int[] $numbers = {'five' => 5, 'six' => 6, 'seven' => 7, 'eight' => 8, 'nine' => 9, 'zero' => 0};
 		string[] $days = { "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday" };
 		foreach(string $key => int $numeric in $numbers) {

@@ -10,7 +10,7 @@ class Program {
 		return hexdec($hexipbang[0]) + '.' + hexdec($hexipbang[1]) + '.' + hexdec($hexipbang[2]) + '.' + hexdec($hexipbang[3]);
 	}
 
-	void main() {
+	public void main() {
 		string $localhost = $this->encode_ip('127.0.0.1');
 		print("127.0.0.1 ==> $localhost\n");
 		string $router = $this->encode_ip('192.168.2.1');

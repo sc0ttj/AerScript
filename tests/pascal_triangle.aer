@@ -8,7 +8,7 @@ class Program {
 		return $result;
 	}
 
-	void main() {
+	public void main() {
 		int $z;
 		int $y = 5;
 		for(int $x = 0; $x < $y; $x++) {

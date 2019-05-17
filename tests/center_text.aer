@@ -15,14 +15,9 @@ class Program {
 		return $result;
 	}
 
-	void main() {
+	public void main() {
 		string $str = 'Example text';
 		print($this->center_text($str));
 	}
 
 }
-
-
-/* Should output
----------------This is some text------------
-*/

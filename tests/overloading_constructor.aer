@@ -1,16 +1,16 @@
 class Test {
-	void __construct(string $a) {
+	public void __construct(string $a) {
 		print("$a\n");
 	}
 
-	void __construct(int $a, int $b) {
+	public void __construct(int $a, int $b) {
 		print("$a + $b = ", $a + $b, "\n");
 	}
 
 }
 
 class Program {
-	void main() {
+	public void main() {
 		object $a, $b;
 		$a = new Test('Hello world!');
 		$b = new Test(4, 7);

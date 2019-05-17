@@ -13,7 +13,7 @@ class Button {
 		$this->DoAfterClick();
 	}
 
-    private void DoBeforeClick() {
+	private void DoBeforeClick() {
 		if($this->OnBeforeClick) {
 			callback $event = $this->OnBeforeClick;
 			$event($this);
@@ -31,7 +31,7 @@ class Button {
 
 class Program {
 
-	void main() {
+	public void main() {
 		object $MyWidget = new Button();
 		$MyWidget->OnBeforeClick = void(object $Sender) { print($Sender->Name + ' (Before Click)'); };
 		$MyWidget->OnAfterClick = void(object $Sender) { print($Sender->Name + ' (After Click)'); };

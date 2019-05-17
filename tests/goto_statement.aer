@@ -1,6 +1,6 @@
 class Test {
 
-	void goto_test1() {
+	public void goto_test1() {
 		int $i = 0;
 		a:
 		print("Foo $i\n");
@@ -12,7 +12,7 @@ class Test {
 		print("Bar $i\n\n");
 	}
 
-	void goto_test2(int $a = 2) {
+	public void goto_test2(int $a = 2) {
 		switch($a) {
 			case 1:
 				print("\$a is 1\n\n");
@@ -30,7 +30,7 @@ class Test {
 		out:
 	}
 
-	void goto_test3() {
+	public void goto_test3() {
 		int $a = 10;
 		a:
 		$a--;
@@ -41,7 +41,7 @@ class Test {
 		print("\n");
 	}
 
-	void goto_test4() {
+	public void goto_test4() {
 		string[] $headers = {'subject', 'bcc', 'to', 'cc', 'date', 'sender'};
 		int $pos = 0;
 		int $c;
@@ -67,11 +67,11 @@ class Test {
 class Program {
 	private object $test;
 
-	void __construct() {
+	public void __construct() {
 		$this->test = new Test();
 	}
 
-	void main() {
+	public void main() {
 		$this->test->goto_test1();
 		$this->test->goto_test2();
 		$this->test->goto_test3();

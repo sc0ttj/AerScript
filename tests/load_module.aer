@@ -1,5 +1,5 @@
 final class Program {
-	void main() {
+	public void main() {
 		var_dump(function_exists('dummy_function'));
 		var_dump(import('dummy'));
 		var_dump(function_exists('dummy_function'));

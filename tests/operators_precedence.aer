@@ -8,7 +8,7 @@ class Program {
 		return {'callme' => void() { print("Hello world\n"); }};
 	}
 
-	void main() {
+	public void main() {
 		callback[] $constr = {'print'};
 		print($this->testArray()['Machine'] + "\n");
 		$this->testCallback()['callme']();

@@ -15,7 +15,7 @@ class NewException extends Exception {
 
 class Program {
 
-	void main() {
+	public void main() {
 		callback $handler = void(Exception $e) {
 			ExceptionHandler::handleException($e);
 		};

@@ -1,6 +1,6 @@
 class Program {
 
-	int main() {
+	public int main() {
 		int[] $arr1;
 		int[] $arr2 = {0, 0};
 		float[] $arr3 = {1, 4.5};

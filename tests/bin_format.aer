@@ -11,7 +11,7 @@ class Program {
 		return ltrim($rtnval);
 	}
 
-	void main() {
+	public void main() {
 		var_dump($this->fmt_binary(2541));
 	}
 }

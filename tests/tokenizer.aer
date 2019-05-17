@@ -24,7 +24,7 @@ class StringTokenizer {
 }
 
 class Program {
-	void main() {
+	public void main() {
 		string $str = "This is:@\t\n a TEST!";
 		string $delim = " !@:\t\n";
 		object $st = new StringTokenizer($str, $delim);

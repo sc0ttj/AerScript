@@ -1,11 +1,11 @@
 class Circle {
-	void draw() {
+	public void draw() {
 		print("Circle\n");
 	}
 }
 
 class Square {
-	void draw() {
+	public void draw() {
 		print("Square\n");
 	}
 }
@@ -21,7 +21,7 @@ class Program {
 		}
 	}
 
-	void main() {
+	public void main() {
 		$this->ShapeFactoryMethod("Circle")->draw();
 		$this->ShapeFactoryMethod("Square")->draw();
 	}

@@ -7,12 +7,12 @@ class Test2 extends Test1 {
 class Program {
 	object $t;
 
-	void test(Test1 $t = new Test2) {
+	private void test(Test1 $t = new Test2) {
 		$this->t = $t;
 		var_dump($this->t);
 	}
 
-	void main() {
+	public void main() {
 		$this->test();
 	}
 

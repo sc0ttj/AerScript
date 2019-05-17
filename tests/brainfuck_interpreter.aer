@@ -78,7 +78,7 @@ class Brainfuck {
 
 class Program {
 
-	void main() {
+	public void main() {
 		object $bf;
 		string $code;
 		resource $dir;

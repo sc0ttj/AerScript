@@ -1,6 +1,6 @@
 class Program {
 
-	string num2alpha(int $n) {
+	private string num2alpha(int $n) {
 		string $r = '';
 		for(int $i = 1; $n >= 0 && $i < 10; $i++) {
 			$r = chr(0x41 + ($n % pow(26, $i) / pow(26, $i - 1))) + $r;
@@ -9,7 +9,7 @@ class Program {
 		return $r;
 	}
 
-	int alpha2num(string $a) {
+	private int alpha2num(string $a) {
 		int $r = 0;
 		int $l = strlen($a);
 		for(int $i = 0; $i < $l; $i++) {
@@ -18,7 +18,7 @@ class Program {
 		return (int) $r - 1;
 	}
 
-	void main() {
+	public void main() {
 		import('math');
 		var_dump($this->alpha2num("Salut"), $this->num2alpha(1723), $this->num2alpha(9854), $this->alpha2num("Base64"));
 	}

@@ -13,16 +13,9 @@ class Program {
 		return $filtered;
 	}
 
-	void main() {
+	public void main() {
 		int[] $filtered = $this->filter($this->condition, $this->numbers);
 		var_dump($filtered);
 	}
 
 }
- 
- 
-/*
- * Should output
-
-Array ( [0] => 897 [1] => 123 ) 
-*/

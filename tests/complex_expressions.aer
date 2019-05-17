@@ -24,7 +24,7 @@ class Program {
 		return false;
 	}
 
-	int main() {
+	public int main() {
 		static float $f = 4 + 2.4 * 9.1;
 		var_dump($this->MY_CONST);
 		var_dump($this->callback_test);

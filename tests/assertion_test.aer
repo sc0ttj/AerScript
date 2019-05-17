@@ -4,7 +4,7 @@ class Program {
 		assert("is_bool($param);");
 	}
 
-	void main() {
+	public void main() {
 		callback $assert_fail = void(string $file, int $line, string $code) {
 			print("Assertion failed ...\n");
 		};

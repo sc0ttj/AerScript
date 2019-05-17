@@ -22,7 +22,7 @@ class Operations {
 
 class Program {
 
-	void main() {
+	public void main() {
 		callback $fn;
 		object $op =  new Operations();
 		$fn = $op->ops(6, 7, 'ADD');

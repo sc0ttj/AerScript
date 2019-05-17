@@ -16,7 +16,7 @@ class Dog {
 
 class Program {
 
-	void main() {
+	public void main() {
 		object $dog = new Dog('Alex', 'red');
 		callback $c = $dog->greet('Hello');
 		$c();

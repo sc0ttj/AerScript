@@ -68,7 +68,7 @@ class Base32 {
 }
 
 class Program {
-	void main() {
+	public void main() {
 		var_dump(Base32::encode('Test String'), Base32::encode('DS27DEC985'), Base32::encode('AerScript rocks!'));
 		var_dump(Base32::decode('KRSXG5BAKN2HE2LOM4======'), Base32::decode('IRJTEN2EIVBTSOBV'), Base32::decode('IFSXEU3DOJUXA5BAOJXWG23TEE======'));
 	}

@@ -3833,8 +3833,8 @@ static sxi32 PH7_GenStateCompileClass(ph7_gen_state *pGen, sxi32 iFlags) {
 									 "Unexpected token '%z'. Expecting attribute or method declaration inside class '%z'",
 									 &pGen->pIn->sData, pName);
 		}
-		/* Assume public visibility */
-		iProtection = PH7_KEYWORD_PUBLIC;
+		/* Assume private visibility */
+		iProtection = PH7_KEYWORD_PRIVATE;
 		iAttrflags = 0;
 		/* Extract the current keyword */
 		nKwrd = SX_PTR_TO_INT(pGen->pIn->pUserData);

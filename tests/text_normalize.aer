@@ -14,7 +14,7 @@ class Program {
 		return strtr($str, $table);
 	}
 
-	void main() {
+	public void main() {
 		var_dump($this->normalize("ÿĆ Welcome ÂëÑ Žöø Ŕ"));
 	}
 

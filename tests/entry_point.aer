@@ -1,10 +1,10 @@
 class Test1 {
 
-	void __construct() {
+	public void __construct() {
 		print("Test1::__construct() called.\n");
 	}
 
-	void __destruct() {
+	public void __destruct() {
 		print("Test1::__destruct() called.\n");
 	}
 
@@ -12,12 +12,12 @@ class Test1 {
 
 class Test2 extends Test1 {
 
-	void __construct() {
+	public void __construct() {
 		print("Test2::__construct() called.\n");
 		$parent->__construct();
 	}
 
-	void __destruct() {
+	public void __destruct() {
 		print("Test2::__destruct() called.\n");
 		$parent->__destruct();
 	}
@@ -27,16 +27,16 @@ class Test2 extends Test1 {
 class Program {
 	object $test;
 
-	void __construct() {
+	public void __construct() {
 		print("Program::__construct() called.\n");
 		$this->test = new Test1();
 	}
 
-	void __destruct() {
+	public void __destruct() {
 		print("Program::__destruct() called.\n");
 	}
 
-	void main() {
+	public void main() {
 		print("Program::main() called.\n");
 		object $test = new Test2();
 	}

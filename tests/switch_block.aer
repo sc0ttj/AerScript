@@ -1,6 +1,6 @@
 class Program {
 
-	void main() {
+	public void main() {
 		int $a = 1;
 			switch($a) {
 				case 0:

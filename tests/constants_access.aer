@@ -3,12 +3,12 @@ define TEST_CONSTANT 'This is a global constant';
 class Program {
 	const TEST_CONSTANT = 'This is a class constant';
 
-	void constant_test() {
+	private void constant_test() {
 		const TEST_CONSTANT = 'This is a local constant';
 		var_dump(TEST_CONSTANT);
 	}
 
-	void main() {
+	public void main() {
 		int $var = 69;
 		var_dump(TEST_CONSTANT);
 		$this->constant_test();
