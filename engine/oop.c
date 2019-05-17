@@ -247,18 +247,14 @@ PH7_PRIVATE sxi32 PH7_ClassInherit(ph7_vm *pVm, ph7_class *pSub, ph7_class *pBas
 	if(rc != SXRET_OK) {
 		return rc;
 	}
-	/* Copy public/protected attributes from the base class */
+	/* Copy all attributes from the base class */
 	SyHashResetLoopCursor(&pBase->hAttr);
 	while((pEntry = SyHashGetNextEntry(&pBase->hAttr)) != 0) {
-		/* Make sure the private attributes are not redeclared in the subclass */
+		/* Check if attributes are not being redeclared in the subclass and emit WARNING */
 		pAttr = (ph7_class_attr *)pEntry->pUserData;
 		pName = &pAttr->sName;
 		if((pEntry = SyHashGet(&pSub->hAttr, (const void *)pName->zString, pName->nByte)) != 0) {
-			if(pAttr->iProtection == PH7_CLASS_PROT_PRIVATE && ((ph7_class_attr *)pEntry->pUserData)->iProtection != PH7_CLASS_PROT_PUBLIC) {
-				/* Cannot redeclare private attribute */
-				PH7_VmThrowError(pVm, PH7_CTX_ERR, "Private attribute '%z::%z' redeclared inside child class '%z'", &pBase->sName, pName, &pSub->sName);
-			}
-			continue;
+			PH7_VmThrowError(pVm, PH7_CTX_WARNING, "Attribute '%z::$%z' hides inherited member '%z::$%z'", &pSub->sName, pName, &pBase->sName, pName);
 		}
 		/* Install the attribute */
 		rc = SyHashInsert(&pSub->hAttr, (const void *)pName->zString, pName->nByte, pAttr);
