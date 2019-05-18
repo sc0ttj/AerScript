@@ -243,7 +243,7 @@ PH7_PRIVATE sxi32 PH7_ClassInherit(ph7_vm *pVm, ph7_class *pSub, ph7_class *pBas
 	SyString *pName;
 	sxi32 rc;
 	/* Install in the derived hashtable */
-	rc = SyHashInsert(&pBase->hDerived, (const void *)SyStringData(&pSub->sName), SyStringLength(&pSub->sName), pSub);
+	rc = SyHashInsert(&pSub->hDerived, (const void *)SyStringData(&pBase->sName), SyStringLength(&pBase->sName), pBase);
 	if(rc != SXRET_OK) {
 		return rc;
 	}
