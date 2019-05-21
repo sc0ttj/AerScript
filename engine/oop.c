@@ -84,7 +84,6 @@ PH7_PRIVATE ph7_class_attr *PH7_NewClassAttr(ph7_vm *pVm, ph7_class *pClass, con
 	}
 	SyStringInitFromBuf(&pAttr->sName, zName, pName->nByte);
 	/* Initialize fields */
-	pAttr->pClass = pClass;
 	SySetInit(&pAttr->aByteCode, &pVm->sAllocator, sizeof(VmInstr));
 	pAttr->iProtection = iProtection;
 	pAttr->nIdx = SXU32_HIGH;
@@ -182,6 +181,7 @@ PH7_PRIVATE ph7_class_attr *PH7_ClassExtractAttribute(ph7_class *pClass, const c
 PH7_PRIVATE sxi32 PH7_ClassInstallAttr(ph7_class *pClass, ph7_class_attr *pAttr) {
 	SyString *pName = &pAttr->sName;
 	sxi32 rc;
+	pAttr->pClass = pClass;
 	rc = SyHashInsert(&pClass->hAttr, (const void *)pName->zString, pName->nByte, pAttr);
 	return rc;
 }
