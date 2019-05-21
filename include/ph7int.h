@@ -631,8 +631,10 @@ struct ph7_value {
 	sxu32 nIdx;         /* Index number of this entry in the global object allocator */
 };
 /* Variable control flags */
-#define MEMOBJ_FIXEDVAL  0x1000  /* Memory value is fixed and cannot be modified */
-#define MEMOBJ_PARENTOBJ 0x2000  /* Memory value is a parent object */
+#define MEMOBJ_VARIABLE  0 /* Memory value is variable */
+#define MEMOBJ_BASEOBJ   1 /* Memory value is 'base' object */
+#define MEMOBJ_PARENTOBJ 2 /* Memory value is 'parent' object */
+#define MEMOBJ_THISOBJ   3 /* Memory value is 'this' object */
 /* Allowed variable data types.
  */
 #define MEMOBJ_BOOL      0x0001  /* Memory value is a boolean */

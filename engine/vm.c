@@ -2765,7 +2765,7 @@ static sxi32 VmByteCodeExec(
 					if(pObj == 0) {
 						PH7_VmThrowError(&(*pVm), PH7_CTX_ERR,
 										"Variable '$%z' undeclared (first use in this method/closure)", &sName);
-					} else if(pObj->iFlags & MEMOBJ_FIXEDVAL) {
+					} else if(pObj->iFlags != MEMOBJ_VARIABLE) {
 						PH7_VmThrowError(&(*pVm), PH7_CTX_ERR, "Cannot re-assign a value of '$%z' statement", &sName);
 					}
 					if(!pInstr->p3) {
@@ -4154,7 +4154,7 @@ static sxi32 VmByteCodeExec(
 							pThis = (ph7_class_instance *)pNos->x.pOther;
 							/* Point to the instantiated class */
 							pClass = pThis->pClass;
-							if(pNos->iFlags & MEMOBJ_PARENTOBJ) {
+							if(pNos->iFlags == MEMOBJ_PARENTOBJ) {
 								if(pClass->pBase == 0) {
 									PH7_VmThrowError(&(*pVm), PH7_CTX_ERR,
 													"Attempt to call parent class from non-inheritance instance of class '%z'", &pClass->sName);
@@ -4175,7 +4175,7 @@ static sxi32 VmByteCodeExec(
 												  &pClass->sName, &sName
 												 );
 								} else {
-									if(pNos->iFlags & MEMOBJ_PARENTOBJ && pMeth->iProtection == PH7_CLASS_PROT_PRIVATE) {
+									if(pNos->iFlags == MEMOBJ_PARENTOBJ && pMeth->iProtection == PH7_CLASS_PROT_PRIVATE) {
 										PH7_VmThrowError(&(*pVm), PH7_CTX_ERR,
 												"Access to the class method '%z->%z()' is forbidden", &pClass->sName, &sName);
 									}
@@ -4572,7 +4572,7 @@ static sxi32 VmByteCodeExec(
 									pThis = (ph7_class_instance *)pTarget->x.pOther;
 									pThis->iRef += 2;
 									pClass = pThis->pClass;
-									if(pTarget->iFlags & MEMOBJ_PARENTOBJ) {
+									if(pTarget->iFlags == MEMOBJ_PARENTOBJ) {
 										/* Parent called */
 										if(pThis->pClass->pBase == 0) {
 											PH7_VmThrowError(&(*pVm), PH7_CTX_ERR,
@@ -4648,18 +4648,18 @@ static sxi32 VmByteCodeExec(
 							pObj = VmCreateMemObj(&(*pVm), &sParent, TRUE);
 							if(pObj) {
 								/* Reflect the change */
+								pObj->iFlags = MEMOBJ_PARENTOBJ;
 								pObj->x.pOther = pThis;
 								MemObjSetType(pObj, MEMOBJ_OBJ);
-								pObj->iFlags |= MEMOBJ_FIXEDVAL | MEMOBJ_PARENTOBJ;
 							}
 							/* Install the '$this' variable */
 							static const SyString sThis = { "this", sizeof("this") - 1 };
 							pObj = VmCreateMemObj(&(*pVm), &sThis, TRUE);
 							if(pObj) {
 								/* Reflect the change */
+								pObj->iFlags = MEMOBJ_THISOBJ;
 								pObj->x.pOther = pThis;
 								MemObjSetType(pObj, MEMOBJ_OBJ);
-								pObj->iFlags |= MEMOBJ_FIXEDVAL;
 							}
 						}
 						if(SySetUsed(&pVmFunc->aStatic) > 0) {
