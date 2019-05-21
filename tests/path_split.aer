@@ -1,6 +1,6 @@
 class Program {
 
-	string[] parsePathComponents(string $path, bool $endSlash=true, bool $base=false) {
+	string[] parsePathComponents(string $path, bool $endSlash=true, bool $file=false) {
 		string[] $retArray;
 		$path = trim($path);
 		string $str, $temp;
@@ -14,7 +14,7 @@ class Program {
 				$temp = '';
 			}
 		}
-		($base && $temp) ? $retArray[$temp] = $str + $temp : NULL;
+		($file && $temp) ? $retArray[$temp] = $str + $temp : NULL;
 		return $retArray;
 	}
 
