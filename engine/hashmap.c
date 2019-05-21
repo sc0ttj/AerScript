@@ -69,7 +69,7 @@ static sxi64 HashmapCount(ph7_hashmap *pMap, int bRecursive, int iRecCount) {
 			/* Point to the element value */
 			pElem = (ph7_value *)SySetAt(&pMap->pVm->aMemObj, pEntry->nValIdx);
 			if(pElem) {
-				if(pElem->iFlags & MEMOBJ_HASHMAP) {
+				if(pElem->nType & MEMOBJ_HASHMAP) {
 					if(iRecCount > 31) {
 						/* Nesting limit reached */
 						return iCount;
@@ -455,8 +455,8 @@ static sxi32 HashmapLookup(
 ) {
 	ph7_hashmap_node *pNode = 0; /* cc -O6 warning */
 	sxi32 rc;
-	if(pKey->iFlags & (MEMOBJ_STRING | MEMOBJ_HASHMAP | MEMOBJ_OBJ | MEMOBJ_RES)) {
-		if((pKey->iFlags & MEMOBJ_STRING) == 0) {
+	if(pKey->nType & (MEMOBJ_STRING | MEMOBJ_HASHMAP | MEMOBJ_OBJ | MEMOBJ_RES)) {
+		if((pKey->nType & MEMOBJ_STRING) == 0) {
 			/* Force a string cast */
 			PH7_MemObjToString(&(*pKey));
 		}
@@ -467,7 +467,7 @@ static sxi32 HashmapLookup(
 		}
 	}
 	/* Perform an int lookup */
-	if((pKey->iFlags & MEMOBJ_INT) == 0) {
+	if((pKey->nType & MEMOBJ_INT) == 0) {
 		/* Force an integer cast */
 		PH7_MemObjToInteger(pKey);
 	}
@@ -497,8 +497,8 @@ static sxi32 HashmapInsert(
 ) {
 	ph7_hashmap_node *pNode = 0;
 	sxi32 rc = SXRET_OK;
-	if(pKey && pKey->iFlags & (MEMOBJ_STRING | MEMOBJ_HASHMAP | MEMOBJ_OBJ | MEMOBJ_RES)) {
-		if((pKey->iFlags & MEMOBJ_STRING) == 0) {
+	if(pKey && pKey->nType & (MEMOBJ_STRING | MEMOBJ_HASHMAP | MEMOBJ_OBJ | MEMOBJ_RES)) {
+		if((pKey->nType & MEMOBJ_STRING) == 0) {
 			/* Force a string cast */
 			PH7_MemObjToString(&(*pKey));
 		}
@@ -530,7 +530,7 @@ static sxi32 HashmapInsert(
 	}
 IntKey:
 	if(pKey) {
-		if((pKey->iFlags & MEMOBJ_INT) == 0) {
+		if((pKey->nType & MEMOBJ_INT) == 0) {
 			/* Force an integer cast */
 			PH7_MemObjToInteger(pKey);
 		}
@@ -698,9 +698,9 @@ static int HashmapFindValue(
 		/* Extract node value */
 		pVal = HashmapExtractNodeValue(pEntry);
 		if(pVal) {
-			if((pVal->iFlags | pNeedle->iFlags) & MEMOBJ_NULL) {
-				sxi32 iF1 = pVal->iFlags;
-				sxi32 iF2 = pNeedle->iFlags;
+			if((pVal->nType | pNeedle->nType) & MEMOBJ_NULL) {
+				sxi32 iF1 = pVal->nType;
+				sxi32 iF2 = pNeedle->nType;
 				if(iF1 == iF2) {
 					/* NULL values are equals */
 					if(ppNode) {
@@ -769,7 +769,7 @@ static int HashmapFindValueByCallback(
 			rc = PH7_VmCallUserFunction(pMap->pVm, pCallback, 2, apArg, &sResult);
 			if(rc == SXRET_OK) {
 				/* Extract callback result */
-				if((sResult.iFlags & MEMOBJ_INT) == 0) {
+				if((sResult.nType & MEMOBJ_INT) == 0) {
 					/* Perform an int cast */
 					PH7_MemObjToInteger(&sResult);
 				}
@@ -1490,10 +1490,10 @@ static sxi32 HashmapCmpCallback1(ph7_hashmap_node *pA, ph7_hashmap_node *pB, voi
 	PH7_HashmapExtractNodeValue(pB, &sB, FALSE);
 	if(iFlags == 5) {
 		/* String cast */
-		if((sA.iFlags & MEMOBJ_STRING) == 0) {
+		if((sA.nType & MEMOBJ_STRING) == 0) {
 			PH7_MemObjToString(&sA);
 		}
-		if((sB.iFlags & MEMOBJ_STRING) == 0) {
+		if((sB.nType & MEMOBJ_STRING) == 0) {
 			PH7_MemObjToString(&sB);
 		}
 	} else {
@@ -1569,10 +1569,10 @@ static sxi32 HashmapCmpCallback3(ph7_hashmap_node *pA, ph7_hashmap_node *pB, voi
 	PH7_HashmapExtractNodeValue(pB, &sB, FALSE);
 	if(iFlags == 5) {
 		/* String cast */
-		if((sA.iFlags & MEMOBJ_STRING) == 0) {
+		if((sA.nType & MEMOBJ_STRING) == 0) {
 			PH7_MemObjToString(&sA);
 		}
-		if((sB.iFlags & MEMOBJ_STRING) == 0) {
+		if((sB.nType & MEMOBJ_STRING) == 0) {
 			PH7_MemObjToString(&sB);
 		}
 	} else {
@@ -1611,7 +1611,7 @@ static sxi32 HashmapCmpCallback4(ph7_hashmap_node *pA, ph7_hashmap_node *pB, voi
 		rc = -1; /* Set a dummy result */
 	} else {
 		/* Extract callback result */
-		if((sResult.iFlags & MEMOBJ_INT) == 0) {
+		if((sResult.nType & MEMOBJ_INT) == 0) {
 			/* Perform an int cast */
 			PH7_MemObjToInteger(&sResult);
 		}
@@ -1691,7 +1691,7 @@ static sxi32 HashmapCmpCallback6(ph7_hashmap_node *pA, ph7_hashmap_node *pB, voi
 		rc = -1; /* Set a dummy result */
 	} else {
 		/* Extract callback result */
-		if((sResult.iFlags & MEMOBJ_INT) == 0) {
+		if((sResult.nType & MEMOBJ_INT) == 0) {
 			/* Perform an int cast */
 			PH7_MemObjToInteger(&sResult);
 		}
@@ -4333,7 +4333,7 @@ static int ph7_hashmap_flip(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	for(n = 0 ; n < pSrc->nEntry ; n++) {
 		/* Extract the node value */
 		pKey = HashmapExtractNodeValue(pEntry);
-		if(pKey && (pKey->iFlags & MEMOBJ_NULL) == 0) {
+		if(pKey && (pKey->nType & MEMOBJ_NULL) == 0) {
 			/* Prepare the value for insertion */
 			if(pEntry->iType == HASHMAP_INT_NODE) {
 				PH7_MemObjInitFromInt(pSrc->pVm, &sVal, pEntry->xKey.iKey);
@@ -4372,12 +4372,12 @@ static void DoubleSum(ph7_context *pCtx, ph7_hashmap *pMap) {
 	pEntry = pMap->pFirst;
 	for(n = 0 ; n < pMap->nEntry ; n++) {
 		pObj = HashmapExtractNodeValue(pEntry);
-		if(pObj && (pObj->iFlags & (MEMOBJ_NULL | MEMOBJ_HASHMAP | MEMOBJ_OBJ | MEMOBJ_RES)) == 0) {
-			if(pObj->iFlags & MEMOBJ_REAL) {
+		if(pObj && (pObj->nType & (MEMOBJ_NULL | MEMOBJ_HASHMAP | MEMOBJ_OBJ | MEMOBJ_RES)) == 0) {
+			if(pObj->nType & MEMOBJ_REAL) {
 				dSum += pObj->x.rVal;
-			} else if(pObj->iFlags & (MEMOBJ_INT | MEMOBJ_BOOL)) {
+			} else if(pObj->nType & (MEMOBJ_INT | MEMOBJ_BOOL)) {
 				dSum += (double)pObj->x.iVal;
-			} else if(pObj->iFlags & MEMOBJ_STRING) {
+			} else if(pObj->nType & MEMOBJ_STRING) {
 				if(SyBlobLength(&pObj->sBlob) > 0) {
 					double dv = 0;
 					SyStrToReal((const char *)SyBlobData(&pObj->sBlob), SyBlobLength(&pObj->sBlob), (void *)&dv, 0);
@@ -4399,12 +4399,12 @@ static void Int64Sum(ph7_context *pCtx, ph7_hashmap *pMap) {
 	pEntry = pMap->pFirst;
 	for(n = 0 ; n < pMap->nEntry ; n++) {
 		pObj = HashmapExtractNodeValue(pEntry);
-		if(pObj && (pObj->iFlags & (MEMOBJ_NULL | MEMOBJ_HASHMAP | MEMOBJ_OBJ | MEMOBJ_RES)) == 0) {
-			if(pObj->iFlags & MEMOBJ_REAL) {
+		if(pObj && (pObj->nType & (MEMOBJ_NULL | MEMOBJ_HASHMAP | MEMOBJ_OBJ | MEMOBJ_RES)) == 0) {
+			if(pObj->nType & MEMOBJ_REAL) {
 				nSum += (sxi64)pObj->x.rVal;
-			} else if(pObj->iFlags & (MEMOBJ_INT | MEMOBJ_BOOL)) {
+			} else if(pObj->nType & (MEMOBJ_INT | MEMOBJ_BOOL)) {
 				nSum += pObj->x.iVal;
-			} else if(pObj->iFlags & MEMOBJ_STRING) {
+			} else if(pObj->nType & MEMOBJ_STRING) {
 				if(SyBlobLength(&pObj->sBlob) > 0) {
 					sxi64 nv = 0;
 					SyStrToInt64((const char *)SyBlobData(&pObj->sBlob), SyBlobLength(&pObj->sBlob), (void *)&nv, 0);
@@ -4449,7 +4449,7 @@ static int ph7_hashmap_sum(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 		ph7_result_int(pCtx, 0);
 		return PH7_OK;
 	}
-	if(pObj->iFlags & MEMOBJ_REAL) {
+	if(pObj->nType & MEMOBJ_REAL) {
 		DoubleSum(pCtx, pMap);
 	} else {
 		Int64Sum(pCtx, pMap);
@@ -4473,12 +4473,12 @@ static void DoubleProd(ph7_context *pCtx, ph7_hashmap *pMap) {
 	dProd = 1;
 	for(n = 0 ; n < pMap->nEntry ; n++) {
 		pObj = HashmapExtractNodeValue(pEntry);
-		if(pObj && (pObj->iFlags & (MEMOBJ_NULL | MEMOBJ_HASHMAP | MEMOBJ_OBJ | MEMOBJ_RES)) == 0) {
-			if(pObj->iFlags & MEMOBJ_REAL) {
+		if(pObj && (pObj->nType & (MEMOBJ_NULL | MEMOBJ_HASHMAP | MEMOBJ_OBJ | MEMOBJ_RES)) == 0) {
+			if(pObj->nType & MEMOBJ_REAL) {
 				dProd *= pObj->x.rVal;
-			} else if(pObj->iFlags & (MEMOBJ_INT | MEMOBJ_BOOL)) {
+			} else if(pObj->nType & (MEMOBJ_INT | MEMOBJ_BOOL)) {
 				dProd *= (double)pObj->x.iVal;
-			} else if(pObj->iFlags & MEMOBJ_STRING) {
+			} else if(pObj->nType & MEMOBJ_STRING) {
 				if(SyBlobLength(&pObj->sBlob) > 0) {
 					double dv = 0;
 					SyStrToReal((const char *)SyBlobData(&pObj->sBlob), SyBlobLength(&pObj->sBlob), (void *)&dv, 0);
@@ -4501,12 +4501,12 @@ static void Int64Prod(ph7_context *pCtx, ph7_hashmap *pMap) {
 	nProd = 1;
 	for(n = 0 ; n < pMap->nEntry ; n++) {
 		pObj = HashmapExtractNodeValue(pEntry);
-		if(pObj && (pObj->iFlags & (MEMOBJ_NULL | MEMOBJ_HASHMAP | MEMOBJ_OBJ | MEMOBJ_RES)) == 0) {
-			if(pObj->iFlags & MEMOBJ_REAL) {
+		if(pObj && (pObj->nType & (MEMOBJ_NULL | MEMOBJ_HASHMAP | MEMOBJ_OBJ | MEMOBJ_RES)) == 0) {
+			if(pObj->nType & MEMOBJ_REAL) {
 				nProd *= (sxi64)pObj->x.rVal;
-			} else if(pObj->iFlags & (MEMOBJ_INT | MEMOBJ_BOOL)) {
+			} else if(pObj->nType & (MEMOBJ_INT | MEMOBJ_BOOL)) {
 				nProd *= pObj->x.iVal;
-			} else if(pObj->iFlags & MEMOBJ_STRING) {
+			} else if(pObj->nType & MEMOBJ_STRING) {
 				if(SyBlobLength(&pObj->sBlob) > 0) {
 					sxi64 nv = 0;
 					SyStrToInt64((const char *)SyBlobData(&pObj->sBlob), SyBlobLength(&pObj->sBlob), (void *)&nv, 0);
@@ -4551,7 +4551,7 @@ static int ph7_hashmap_product(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 		ph7_result_int(pCtx, 0);
 		return PH7_OK;
 	}
-	if(pObj->iFlags & MEMOBJ_REAL) {
+	if(pObj->nType & MEMOBJ_REAL) {
 		DoubleProd(pCtx, pMap);
 	} else {
 		Int64Prod(pCtx, pMap);
@@ -5124,7 +5124,7 @@ static int HashmapWalkRecursive(
 		/* Extract the node value */
 		pValue = HashmapExtractNodeValue(pEntry);
 		if(pValue) {
-			if(pValue->iFlags & MEMOBJ_HASHMAP) {
+			if(pValue->nType & MEMOBJ_HASHMAP) {
 				if(iNest < 32) {
 					/* Recurse */
 					iNest++;
@@ -5392,8 +5392,8 @@ PH7_PRIVATE sxi32 PH7_HashmapWalk(
  */
 PH7_PRIVATE sxi32 PH7_HashmapCast(ph7_value *pObj, sxi32 nType) {
 	sxi32 rc;
-	if((pObj->iFlags & MEMOBJ_HASHMAP)) {
-		if((pObj->iFlags & nType) == 0) {
+	if((pObj->nType & MEMOBJ_HASHMAP)) {
+		if((pObj->nType & nType) == 0) {
 			ph7_hashmap *pMap;
 			ph7_hashmap_node *pNode;
 			ph7_value pValue, pKey;
@@ -5413,10 +5413,10 @@ PH7_PRIVATE sxi32 PH7_HashmapCast(ph7_value *pObj, sxi32 nType) {
 				}
 				PH7_HashmapInsert(pMap, &pKey, &pValue);
 			}
-			pObj->iFlags = MEMOBJ_HASHMAP | nType;
+			pObj->nType = MEMOBJ_HASHMAP | nType;
 		}
 	} else {
-		if(pObj->iFlags != nType && PH7_CheckVarCompat(pObj, nType) != SXRET_OK) {
+		if(pObj->nType != nType && PH7_CheckVarCompat(pObj, nType) != SXRET_OK) {
 			return SXERR_NOMATCH;
 		}
 		ProcMemObjCast xCast = PH7_MemObjCastMethod(nType);

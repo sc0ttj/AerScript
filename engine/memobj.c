@@ -124,23 +124,23 @@ static sxi32 MemObjCallClassCastMethod(
  * If pObj represents a NULL value, return 0.
  */
 static sxi64 MemObjIntValue(ph7_value *pObj) {
-	sxi32 iFlags;
-	iFlags = pObj->iFlags;
-	if(iFlags & MEMOBJ_REAL) {
+	sxi32 nType;
+	nType = pObj->nType;
+	if(nType & MEMOBJ_REAL) {
 		return MemObjRealToInt(&(*pObj));
-	} else if(iFlags & (MEMOBJ_INT | MEMOBJ_BOOL | MEMOBJ_CHAR)) {
+	} else if(nType & (MEMOBJ_INT | MEMOBJ_BOOL | MEMOBJ_CHAR)) {
 		return pObj->x.iVal;
-	} else if(iFlags & MEMOBJ_STRING) {
+	} else if(nType & MEMOBJ_STRING) {
 		return MemObjStringToInt(&(*pObj));
-	} else if(iFlags & (MEMOBJ_CALL | MEMOBJ_NULL | MEMOBJ_VOID)) {
+	} else if(nType & (MEMOBJ_CALL | MEMOBJ_NULL | MEMOBJ_VOID)) {
 		return 0;
-	} else if(iFlags & MEMOBJ_HASHMAP) {
+	} else if(nType & MEMOBJ_HASHMAP) {
 		ph7_hashmap *pMap = (ph7_hashmap *)pObj->x.pOther;
 		sxu32 n = pMap->nEntry;
 		PH7_HashmapUnref(pMap);
 		/* Return total number of entries in the hashmap */
 		return n;
-	} else if(iFlags & MEMOBJ_OBJ) {
+	} else if(nType & MEMOBJ_OBJ) {
 		ph7_value sResult;
 		sxi64 iVal = 1;
 		sxi32 rc;
@@ -148,14 +148,14 @@ static sxi64 MemObjIntValue(ph7_value *pObj) {
 		PH7_MemObjInit(pObj->pVm, &sResult);
 		rc = MemObjCallClassCastMethod(pObj->pVm, (ph7_class_instance *)pObj->x.pOther,
 									   "__toInt", sizeof("__toInt") - 1, &sResult);
-		if(rc == SXRET_OK && (sResult.iFlags & MEMOBJ_INT)) {
+		if(rc == SXRET_OK && (sResult.nType & MEMOBJ_INT)) {
 			/* Extract method return value */
 			iVal = sResult.x.iVal;
 		}
 		PH7_ClassInstanceUnref((ph7_class_instance *)pObj->x.pOther);
 		PH7_MemObjRelease(&sResult);
 		return iVal;
-	} else if(iFlags & MEMOBJ_RES) {
+	} else if(nType & MEMOBJ_RES) {
 		return pObj->x.pOther != 0;
 	}
 	/* CANT HAPPEN */
@@ -172,13 +172,13 @@ static sxi64 MemObjIntValue(ph7_value *pObj) {
  * If pObj represents a NULL value, return 0.0
  */
 static ph7_real MemObjRealValue(ph7_value *pObj) {
-	sxi32 iFlags;
-	iFlags = pObj->iFlags;
-	if(iFlags & MEMOBJ_REAL) {
+	sxi32 nType;
+	nType = pObj->nType;
+	if(nType & MEMOBJ_REAL) {
 		return pObj->x.rVal;
-	} else if(iFlags & (MEMOBJ_INT | MEMOBJ_BOOL | MEMOBJ_CHAR)) {
+	} else if(nType & (MEMOBJ_INT | MEMOBJ_BOOL | MEMOBJ_CHAR)) {
 		return (ph7_real)pObj->x.iVal;
-	} else if(iFlags & MEMOBJ_STRING) {
+	} else if(nType & MEMOBJ_STRING) {
 		SyString sString;
 		ph7_real rVal = 0.0;
 		SyStringInitFromBuf(&sString, SyBlobData(&pObj->sBlob), SyBlobLength(&pObj->sBlob));
@@ -187,15 +187,15 @@ static ph7_real MemObjRealValue(ph7_value *pObj) {
 			SyStrToReal(sString.zString, sString.nByte, (void *)&rVal, 0);
 		}
 		return rVal;
-	} else if(iFlags & (MEMOBJ_CALL | MEMOBJ_NULL | MEMOBJ_VOID)) {
+	} else if(nType & (MEMOBJ_CALL | MEMOBJ_NULL | MEMOBJ_VOID)) {
 		return 0.0;
-	} else if(iFlags & MEMOBJ_HASHMAP) {
+	} else if(nType & MEMOBJ_HASHMAP) {
 		/* Return the total number of entries in the hashmap */
 		ph7_hashmap *pMap = (ph7_hashmap *)pObj->x.pOther;
 		ph7_real n = (ph7_real)pMap->nEntry;
 		PH7_HashmapUnref(pMap);
 		return n;
-	} else if(iFlags & MEMOBJ_OBJ) {
+	} else if(nType & MEMOBJ_OBJ) {
 		ph7_value sResult;
 		ph7_real rVal = 1;
 		sxi32 rc;
@@ -203,14 +203,14 @@ static ph7_real MemObjRealValue(ph7_value *pObj) {
 		PH7_MemObjInit(pObj->pVm, &sResult);
 		rc = MemObjCallClassCastMethod(pObj->pVm, (ph7_class_instance *)pObj->x.pOther,
 									   "__toFloat", sizeof("__toFloat") - 1, &sResult);
-		if(rc == SXRET_OK && (sResult.iFlags & MEMOBJ_REAL)) {
+		if(rc == SXRET_OK && (sResult.nType & MEMOBJ_REAL)) {
 			/* Extract method return value */
 			rVal = sResult.x.rVal;
 		}
 		PH7_ClassInstanceUnref((ph7_class_instance *)pObj->x.pOther);
 		PH7_MemObjRelease(&sResult);
 		return rVal;
-	} else if(iFlags & MEMOBJ_RES) {
+	} else if(nType & MEMOBJ_RES) {
 		return (ph7_real)(pObj->x.pOther != 0);
 	}
 	/* NOT REACHED  */
@@ -221,12 +221,12 @@ static ph7_real MemObjRealValue(ph7_value *pObj) {
  * This function never fail and always return SXRET_OK.
  */
 static sxi32 MemObjStringValue(SyBlob *pOut, ph7_value *pObj, sxu8 bStrictBool) {
-	if(pObj->iFlags & MEMOBJ_REAL) {
+	if(pObj->nType & MEMOBJ_REAL) {
 		SyBlobFormat(&(*pOut), "%.15g", pObj->x.rVal);
-	} else if(pObj->iFlags & MEMOBJ_INT) {
+	} else if(pObj->nType & MEMOBJ_INT) {
 		SyBlobFormat(&(*pOut), "%qd", pObj->x.iVal);
 		/* %qd (BSD quad) is equivalent to %lld in the libc printf */
-	} else if(pObj->iFlags & MEMOBJ_BOOL) {
+	} else if(pObj->nType & MEMOBJ_BOOL) {
 		if(pObj->x.iVal) {
 			SyBlobAppend(&(*pOut), "TRUE", sizeof("TRUE") - 1);
 		} else {
@@ -234,21 +234,21 @@ static sxi32 MemObjStringValue(SyBlob *pOut, ph7_value *pObj, sxu8 bStrictBool) 
 				SyBlobAppend(&(*pOut), "FALSE", sizeof("FALSE") - 1);
 			}
 		}
-	} else if(pObj->iFlags & MEMOBJ_CHAR) {
+	} else if(pObj->nType & MEMOBJ_CHAR) {
 		if(pObj->x.iVal > 0) {
 			SyBlobFormat(&(*pOut), "%c", pObj->x.iVal);
 		}
-	} else if(pObj->iFlags & MEMOBJ_HASHMAP) {
+	} else if(pObj->nType & MEMOBJ_HASHMAP) {
 		SyBlobAppend(&(*pOut), "Array", sizeof("Array") - 1);
 		PH7_HashmapUnref((ph7_hashmap *)pObj->x.pOther);
-	} else if(pObj->iFlags & MEMOBJ_OBJ) {
+	} else if(pObj->nType & MEMOBJ_OBJ) {
 		ph7_value sResult;
 		sxi32 rc;
 		/* Invoke the __toString() method if available */
 		PH7_MemObjInit(pObj->pVm, &sResult);
 		rc = MemObjCallClassCastMethod(pObj->pVm, (ph7_class_instance *)pObj->x.pOther,
 									   "__toString", sizeof("__toString") - 1, &sResult);
-		if(rc == SXRET_OK && (sResult.iFlags & MEMOBJ_STRING) && SyBlobLength(&sResult.sBlob) > 0) {
+		if(rc == SXRET_OK && (sResult.nType & MEMOBJ_STRING) && SyBlobLength(&sResult.sBlob) > 0) {
 			/* Expand method return value */
 			SyBlobDup(&sResult.sBlob, pOut);
 		} else {
@@ -257,7 +257,7 @@ static sxi32 MemObjStringValue(SyBlob *pOut, ph7_value *pObj, sxu8 bStrictBool) 
 		}
 		PH7_ClassInstanceUnref((ph7_class_instance *)pObj->x.pOther);
 		PH7_MemObjRelease(&sResult);
-	} else if(pObj->iFlags & MEMOBJ_RES) {
+	} else if(pObj->nType & MEMOBJ_RES) {
 		SyBlobFormat(&(*pOut), "ResourceID_%#x", pObj->x.pOther);
 	}
 	return SXRET_OK;
@@ -275,13 +275,13 @@ static sxi32 MemObjStringValue(SyBlob *pOut, ph7_value *pObj, sxu8 bStrictBool) 
  * an array with zero elements.
  */
 static sxi32 MemObjBooleanValue(ph7_value *pObj) {
-	sxi32 iFlags;
-	iFlags = pObj->iFlags;
-	if(iFlags & MEMOBJ_REAL) {
+	sxi32 nType;
+	nType = pObj->nType;
+	if(nType & MEMOBJ_REAL) {
 		return pObj->x.rVal != 0.0 ? 1 : 0;
-	} else if(iFlags & (MEMOBJ_INT | MEMOBJ_CHAR)) {
+	} else if(nType & (MEMOBJ_INT | MEMOBJ_CHAR)) {
 		return pObj->x.iVal ? 1 : 0;
-	} else if(iFlags & MEMOBJ_STRING) {
+	} else if(nType & MEMOBJ_STRING) {
 		SyString sString;
 		SyStringInitFromBuf(&sString, SyBlobData(&pObj->sBlob), SyBlobLength(&pObj->sBlob));
 		if(sString.nByte == 0) {
@@ -302,7 +302,7 @@ static sxi32 MemObjBooleanValue(ph7_value *pObj) {
 			}
 			return zIn >= zEnd ? 0 : 1;
 		}
-	} else if(iFlags & MEMOBJ_CALL) {
+	} else if(nType & MEMOBJ_CALL) {
 		SyString sString;
 		SyStringInitFromBuf(&sString, SyBlobData(&pObj->sBlob), SyBlobLength(&pObj->sBlob));
 		if(sString.nByte == 0) {
@@ -312,14 +312,14 @@ static sxi32 MemObjBooleanValue(ph7_value *pObj) {
 			/* Something set, return true */
 			return 1;
 		}
-	} else if(iFlags & (MEMOBJ_NULL | MEMOBJ_VOID)) {
+	} else if(nType & (MEMOBJ_NULL | MEMOBJ_VOID)) {
 		return 0;
-	} else if(iFlags & MEMOBJ_HASHMAP) {
+	} else if(nType & MEMOBJ_HASHMAP) {
 		ph7_hashmap *pMap = (ph7_hashmap *)pObj->x.pOther;
 		sxu32 n = pMap->nEntry;
 		PH7_HashmapUnref(pMap);
 		return n > 0 ? TRUE : FALSE;
-	} else if(iFlags & MEMOBJ_OBJ) {
+	} else if(nType & MEMOBJ_OBJ) {
 		ph7_value sResult;
 		sxi32 iVal = 1;
 		sxi32 rc;
@@ -330,14 +330,14 @@ static sxi32 MemObjBooleanValue(ph7_value *pObj) {
 		PH7_MemObjInit(pObj->pVm, &sResult);
 		rc = MemObjCallClassCastMethod(pObj->pVm, (ph7_class_instance *)pObj->x.pOther,
 									   "__toBool", sizeof("__toBool") - 1, &sResult);
-		if(rc == SXRET_OK && (sResult.iFlags & (MEMOBJ_INT | MEMOBJ_BOOL))) {
+		if(rc == SXRET_OK && (sResult.nType & (MEMOBJ_INT | MEMOBJ_BOOL))) {
 			/* Extract method return value */
 			iVal = (sxi32)(sResult.x.iVal != 0); /* Stupid cc warning -W -Wall -O6 */
 		}
 		PH7_ClassInstanceUnref((ph7_class_instance *)pObj->x.pOther);
 		PH7_MemObjRelease(&sResult);
 		return iVal;
-	} else if(iFlags & MEMOBJ_RES) {
+	} else if(nType & MEMOBJ_RES) {
 		return pObj->x.pOther != 0;
 	}
 	/* NOT REACHED */
@@ -348,13 +348,13 @@ static sxi32 MemObjBooleanValue(ph7_value *pObj) {
  * This function never fail and always return SXRET_OK.
  */
 static ph7_real MemObjCharValue(ph7_value *pObj) {
-	sxi32 iFlags;
-	iFlags = pObj->iFlags;
-	if(iFlags & (MEMOBJ_CALL | MEMOBJ_REAL | MEMOBJ_HASHMAP | MEMOBJ_RES | MEMOBJ_NULL | MEMOBJ_VOID)) {
+	sxi32 nType;
+	nType = pObj->nType;
+	if(nType & (MEMOBJ_CALL | MEMOBJ_REAL | MEMOBJ_HASHMAP | MEMOBJ_RES | MEMOBJ_NULL | MEMOBJ_VOID)) {
 		return 0;
-	} else if(iFlags & MEMOBJ_INT) {
+	} else if(nType & MEMOBJ_INT) {
 		return pObj->x.iVal;
-	} else if(iFlags & MEMOBJ_STRING) {
+	} else if(nType & MEMOBJ_STRING) {
 		SyString sString;
 		SyStringInitFromBuf(&sString, SyBlobData(&pObj->sBlob), SyBlobLength(&pObj->sBlob));
 		if(sString.nByte == 0) {
@@ -370,26 +370,26 @@ static ph7_real MemObjCharValue(ph7_value *pObj) {
  * Checks a ph7_value variable compatibility with nType data type.
  */
 PH7_PRIVATE sxi32 PH7_CheckVarCompat(ph7_value *pObj, int nType) {
-	if(((nType & MEMOBJ_HASHMAP) == 0) && ((pObj->iFlags & MEMOBJ_HASHMAP) == 0)) {
-		if(pObj->iFlags & MEMOBJ_NULL) {
+	if(((nType & MEMOBJ_HASHMAP) == 0) && ((pObj->nType & MEMOBJ_HASHMAP) == 0)) {
+		if(pObj->nType & MEMOBJ_NULL) {
 			/* Always allow to store a NULL */
 			return SXRET_OK;
-		} else if((nType & MEMOBJ_REAL) && (pObj->iFlags & MEMOBJ_INT)) {
+		} else if((nType & MEMOBJ_REAL) && (pObj->nType & MEMOBJ_INT)) {
 			/* Allow to store INT to FLOAT variable */
 			return SXRET_OK;
-		} else if((nType & MEMOBJ_CHAR) && (pObj->iFlags & MEMOBJ_INT)) {
+		} else if((nType & MEMOBJ_CHAR) && (pObj->nType & MEMOBJ_INT)) {
 			/* Allow to store INT to CHAR variable */
 			return SXRET_OK;
-		} else if((nType & MEMOBJ_STRING) && (pObj->iFlags & MEMOBJ_CHAR)) {
+		} else if((nType & MEMOBJ_STRING) && (pObj->nType & MEMOBJ_CHAR)) {
 			/* Allow to store CHAR to STRING variable */
 			return SXRET_OK;
-		} else if((nType & MEMOBJ_CHAR) && (pObj->iFlags & MEMOBJ_STRING)) {
+		} else if((nType & MEMOBJ_CHAR) && (pObj->nType & MEMOBJ_STRING)) {
 			/* Allow to store STRING to CHAR variable (if not too long) */
 			int len = SyBlobLength(&pObj->sBlob);
 			if(len == 0 || len == 1) {
 				return SXRET_OK;
 			}
-		} else if((nType & MEMOBJ_CALL) && (pObj->iFlags & MEMOBJ_STRING)) {
+		} else if((nType & MEMOBJ_CALL) && (pObj->nType & MEMOBJ_STRING)) {
 			/* Allow to store STRING to CALLBACK variable */
 			return SXRET_OK;
 		}
@@ -401,48 +401,48 @@ PH7_PRIVATE sxi32 PH7_CheckVarCompat(ph7_value *pObj, int nType) {
  * destination are of the compatible data types.
  */
 PH7_PRIVATE sxi32 PH7_MemObjSafeStore(ph7_value *pSrc, ph7_value *pDest) {
-	if(pDest->iFlags == 0 || ((pDest->iFlags | MEMOBJ_FIXEDVAL | MEMOBJ_PARENTOBJ) == (pSrc->iFlags | MEMOBJ_FIXEDVAL | MEMOBJ_PARENTOBJ))) {
+	if(pDest->nType == 0 || ((pDest->nType | MEMOBJ_FIXEDVAL | MEMOBJ_PARENTOBJ) == (pSrc->nType | MEMOBJ_FIXEDVAL | MEMOBJ_PARENTOBJ))) {
 		PH7_MemObjStore(pSrc, pDest);
-	} else if(pDest->iFlags & MEMOBJ_MIXED) {
-		if(pDest->iFlags & MEMOBJ_HASHMAP) {
+	} else if(pDest->nType & MEMOBJ_MIXED) {
+		if(pDest->nType & MEMOBJ_HASHMAP) {
 			/* mixed[] */
-			if(pSrc->iFlags & MEMOBJ_HASHMAP) {
+			if(pSrc->nType & MEMOBJ_HASHMAP) {
 				PH7_MemObjStore(pSrc, pDest);
-				pDest->iFlags |= MEMOBJ_MIXED;
-			} else if(pSrc->iFlags & MEMOBJ_NULL) {
+				pDest->nType |= MEMOBJ_MIXED;
+			} else if(pSrc->nType & MEMOBJ_NULL) {
 				PH7_MemObjToHashmap(pSrc);
-				MemObjSetType(pSrc, pDest->iFlags);
+				MemObjSetType(pSrc, pDest->nType);
 				PH7_MemObjStore(pSrc, pDest);
 			} else {
 				return SXERR_NOMATCH;
 			}
 		} else {
 			/* mixed */
-			if(pSrc->iFlags == MEMOBJ_NULL) {
+			if(pSrc->nType == MEMOBJ_NULL) {
 				MemObjSetType(pDest, MEMOBJ_MIXED | MEMOBJ_VOID);
-			} else if((pSrc->iFlags & MEMOBJ_HASHMAP) == 0) {
+			} else if((pSrc->nType & MEMOBJ_HASHMAP) == 0) {
 				PH7_MemObjStore(pSrc, pDest);
-				pDest->iFlags |= MEMOBJ_MIXED;
+				pDest->nType |= MEMOBJ_MIXED;
 			} else {
 				return SXERR_NOMATCH;
 			}
 		}
-	} else if((pDest->iFlags & MEMOBJ_HASHMAP)) {
+	} else if((pDest->nType & MEMOBJ_HASHMAP)) {
 		/* [] */
-		if(pSrc->iFlags & MEMOBJ_NULL) {
+		if(pSrc->nType & MEMOBJ_NULL) {
 			PH7_MemObjToHashmap(pSrc);
-			MemObjSetType(pSrc, pDest->iFlags);
+			MemObjSetType(pSrc, pDest->nType);
 			PH7_MemObjStore(pSrc, pDest);
-		} else if(pSrc->iFlags & MEMOBJ_HASHMAP) {
-			if(PH7_HashmapCast(pSrc, pDest->iFlags ^ MEMOBJ_HASHMAP) != SXRET_OK) {
+		} else if(pSrc->nType & MEMOBJ_HASHMAP) {
+			if(PH7_HashmapCast(pSrc, pDest->nType ^ MEMOBJ_HASHMAP) != SXRET_OK) {
 				return SXERR_NOMATCH;
 			}
 			PH7_MemObjStore(pSrc, pDest);
 		} else {
 			return SXERR_NOMATCH;
 		}
-	} else if(PH7_CheckVarCompat(pSrc, pDest->iFlags) == SXRET_OK) {
-		ProcMemObjCast xCast = PH7_MemObjCastMethod(pDest->iFlags);
+	} else if(PH7_CheckVarCompat(pSrc, pDest->nType) == SXRET_OK) {
+		ProcMemObjCast xCast = PH7_MemObjCastMethod(pDest->nType);
 		xCast(pSrc);
 		PH7_MemObjStore(pSrc, pDest);
 	} else {
@@ -454,7 +454,7 @@ PH7_PRIVATE sxi32 PH7_MemObjSafeStore(ph7_value *pSrc, ph7_value *pDest) {
  * Convert a ph7_value to type integer.Invalidate any prior representations.
  */
 PH7_PRIVATE sxi32 PH7_MemObjToInteger(ph7_value *pObj) {
-	if((pObj->iFlags & MEMOBJ_INT) == 0) {
+	if((pObj->nType & MEMOBJ_INT) == 0) {
 		/* Preform the conversion */
 		pObj->x.iVal = MemObjIntValue(&(*pObj));
 		/* Invalidate any prior representations */
@@ -468,7 +468,7 @@ PH7_PRIVATE sxi32 PH7_MemObjToInteger(ph7_value *pObj) {
  * Invalidate any prior representations
  */
 PH7_PRIVATE sxi32 PH7_MemObjToReal(ph7_value *pObj) {
-	if((pObj->iFlags & MEMOBJ_REAL) == 0) {
+	if((pObj->nType & MEMOBJ_REAL) == 0) {
 		/* Preform the conversion */
 		pObj->x.rVal = MemObjRealValue(&(*pObj));
 		/* Invalidate any prior representations */
@@ -481,7 +481,7 @@ PH7_PRIVATE sxi32 PH7_MemObjToReal(ph7_value *pObj) {
  * Convert a ph7_value to type boolean.Invalidate any prior representations.
  */
 PH7_PRIVATE sxi32 PH7_MemObjToBool(ph7_value *pObj) {
-	if((pObj->iFlags & MEMOBJ_BOOL) == 0) {
+	if((pObj->nType & MEMOBJ_BOOL) == 0) {
 		/* Preform the conversion */
 		pObj->x.iVal = MemObjBooleanValue(&(*pObj));
 		/* Invalidate any prior representations */
@@ -491,7 +491,7 @@ PH7_PRIVATE sxi32 PH7_MemObjToBool(ph7_value *pObj) {
 	return SXRET_OK;
 }
 PH7_PRIVATE sxi32 PH7_MemObjToChar(ph7_value *pObj) {
-	if((pObj->iFlags & MEMOBJ_CHAR) == 0) {
+	if((pObj->nType & MEMOBJ_CHAR) == 0) {
 		/* Preform the conversion */
 		pObj->x.iVal = MemObjCharValue(&(*pObj));
 		/* Invalidate any prior representations */
@@ -504,7 +504,7 @@ PH7_PRIVATE sxi32 PH7_MemObjToChar(ph7_value *pObj) {
  * Convert a ph7_value to type void.Invalidate any prior representations.
  */
 PH7_PRIVATE sxi32 PH7_MemObjToVoid(ph7_value *pObj) {
-	if((pObj->iFlags & MEMOBJ_VOID) == 0) {
+	if((pObj->nType & MEMOBJ_VOID) == 0) {
 		PH7_MemObjRelease(pObj);
 		MemObjSetType(pObj, MEMOBJ_VOID);
 	}
@@ -512,7 +512,7 @@ PH7_PRIVATE sxi32 PH7_MemObjToVoid(ph7_value *pObj) {
 }
 PH7_PRIVATE sxi32 PH7_MemObjToCallback(ph7_value *pObj) {
 	sxi32 rc = SXRET_OK;
-	if((pObj->iFlags & (MEMOBJ_CALL | MEMOBJ_STRING)) == 0) {
+	if((pObj->nType & (MEMOBJ_CALL | MEMOBJ_STRING)) == 0) {
 		SyBlobReset(&pObj->sBlob); /* Reset the internal buffer */
 		rc = MemObjStringValue(&pObj->sBlob, &(*pObj), TRUE);
 	}
@@ -521,10 +521,10 @@ PH7_PRIVATE sxi32 PH7_MemObjToCallback(ph7_value *pObj) {
 }
 PH7_PRIVATE sxi32 PH7_MemObjToResource(ph7_value *pObj) {
 	sxi32 rc = SXRET_OK;
-	if((pObj->iFlags & MEMOBJ_NULL) == 0) {
+	if((pObj->nType & MEMOBJ_NULL) == 0) {
 		PH7_VmThrowError(&(*pObj->pVm), PH7_CTX_WARNING, "Unsafe type casting condition, assuming default value");
 	}
-	if((pObj->iFlags & MEMOBJ_RES) == 0) {
+	if((pObj->nType & MEMOBJ_RES) == 0) {
 		pObj->x.iVal = 0;
 	}
 	MemObjSetType(pObj, MEMOBJ_RES);
@@ -535,8 +535,8 @@ PH7_PRIVATE sxi32 PH7_MemObjToResource(ph7_value *pObj) {
  */
 PH7_PRIVATE sxi32 PH7_MemObjToString(ph7_value *pObj) {
 	sxi32 rc = SXRET_OK;
-	if((pObj->iFlags & MEMOBJ_STRING) == 0) {
-		if((pObj->iFlags & MEMOBJ_CALL) == 0) {
+	if((pObj->nType & MEMOBJ_STRING) == 0) {
+		if((pObj->nType & MEMOBJ_CALL) == 0) {
 			/* Perform the conversion */
 			SyBlobReset(&pObj->sBlob); /* Reset the internal buffer */
 			rc = MemObjStringValue(&pObj->sBlob, &(*pObj), TRUE);
@@ -553,21 +553,21 @@ PH7_PRIVATE sxi32 PH7_MemObjToString(ph7_value *pObj) {
   *   and the value of the scalar which was converted.
   */
 PH7_PRIVATE sxi32 PH7_MemObjToHashmap(ph7_value *pObj) {
-	if((pObj->iFlags & MEMOBJ_HASHMAP) == 0) {
+	if((pObj->nType & MEMOBJ_HASHMAP) == 0) {
 		ph7_hashmap *pMap;
 		/* Allocate a new hashmap instance */
 		pMap = PH7_NewHashmap(pObj->pVm, 0, 0);
 		if(pMap == 0) {
 			return SXERR_MEM;
 		}
-		if((pObj->iFlags & (MEMOBJ_NULL | MEMOBJ_RES)) == 0) {
+		if((pObj->nType & (MEMOBJ_NULL | MEMOBJ_RES)) == 0) {
 			/*
 			 * According to the PHP language reference manual.
 			 *   For any of the types: integer, float, string, boolean converting a value
 			 *   to an array results in an array with a single element with index zero
 			 *   and the value of the scalar which was converted.
 			 */
-			if(pObj->iFlags & MEMOBJ_OBJ) {
+			if(pObj->nType & MEMOBJ_OBJ) {
 				/* Object cast */
 				PH7_ClassInstanceToHashmap((ph7_class_instance *)pObj->x.pOther, pMap);
 			} else {
@@ -599,12 +599,12 @@ PH7_PRIVATE sxi32 PH7_MemObjToHashmap(ph7_value *pObj) {
  * Refer to the official documentation for more information.
  */
 PH7_PRIVATE sxi32 PH7_MemObjToObject(ph7_value *pObj) {
-	if(pObj->iFlags & MEMOBJ_NULL) {
+	if(pObj->nType & MEMOBJ_NULL) {
 		/* Invalidate any prior representation */
 		PH7_MemObjRelease(pObj);
 		/* Typecast the value */
 		MemObjSetType(pObj, MEMOBJ_OBJ);
-	} else if((pObj->iFlags & MEMOBJ_OBJ) == 0) {
+	} else if((pObj->nType & MEMOBJ_OBJ) == 0) {
 		ph7_class_instance *pStd;
 		ph7_class_method *pCons;
 		ph7_class *pClass;
@@ -655,24 +655,24 @@ PH7_PRIVATE sxi32 PH7_MemObjToObject(ph7_value *pObj) {
  *  to variable $var, $var becomes a string. If an integer value is then
  *  assigned to $var, it becomes an integer.
  */
-PH7_PRIVATE ProcMemObjCast PH7_MemObjCastMethod(sxi32 iFlags) {
-	if(iFlags & MEMOBJ_STRING) {
+PH7_PRIVATE ProcMemObjCast PH7_MemObjCastMethod(sxi32 nType) {
+	if(nType & MEMOBJ_STRING) {
 		return PH7_MemObjToString;
-	} else if(iFlags & MEMOBJ_INT) {
+	} else if(nType & MEMOBJ_INT) {
 		return PH7_MemObjToInteger;
-	} else if(iFlags & MEMOBJ_REAL) {
+	} else if(nType & MEMOBJ_REAL) {
 		return PH7_MemObjToReal;
-	} else if(iFlags & MEMOBJ_BOOL) {
+	} else if(nType & MEMOBJ_BOOL) {
 		return PH7_MemObjToBool;
-	} else if(iFlags & MEMOBJ_CHAR) {
+	} else if(nType & MEMOBJ_CHAR) {
 		return PH7_MemObjToChar;
-	} else if(iFlags & MEMOBJ_OBJ) {
+	} else if(nType & MEMOBJ_OBJ) {
 		return PH7_MemObjToObject;
-	} else if(iFlags & MEMOBJ_CALL) {
+	} else if(nType & MEMOBJ_CALL) {
 		return PH7_MemObjToCallback;
-	} else if(iFlags & MEMOBJ_RES) {
+	} else if(nType & MEMOBJ_RES) {
 		return PH7_MemObjToResource;
-	} else if(iFlags & MEMOBJ_VOID) {
+	} else if(nType & MEMOBJ_VOID) {
 		return PH7_MemObjToVoid;
 	}
 	/* Release the variable */
@@ -684,7 +684,7 @@ PH7_PRIVATE ProcMemObjCast PH7_MemObjCastMethod(sxi32 iFlags) {
  * Return TRUE if numeric.FALSE otherwise.
  */
 PH7_PRIVATE sxi32 PH7_MemObjIsNumeric(ph7_value *pObj) {
-	if(pObj->iFlags & (MEMOBJ_INT | MEMOBJ_REAL)) {
+	if(pObj->nType & (MEMOBJ_INT | MEMOBJ_REAL)) {
 		return TRUE;
 	}
 	return FALSE;
@@ -698,9 +698,9 @@ PH7_PRIVATE sxi32 PH7_MemObjIsNumeric(ph7_value *pObj) {
  * and ignore the rest.
  */
 PH7_PRIVATE sxi32 PH7_MemObjToNumeric(ph7_value *pObj) {
-	if(pObj->iFlags & (MEMOBJ_INT | MEMOBJ_REAL | MEMOBJ_BOOL | MEMOBJ_NULL)) {
-		if(pObj->iFlags & (MEMOBJ_BOOL | MEMOBJ_NULL | MEMOBJ_VOID)) {
-			if(pObj->iFlags & (MEMOBJ_CALL | MEMOBJ_NULL | MEMOBJ_VOID)) {
+	if(pObj->nType & (MEMOBJ_INT | MEMOBJ_REAL | MEMOBJ_BOOL | MEMOBJ_NULL)) {
+		if(pObj->nType & (MEMOBJ_BOOL | MEMOBJ_NULL | MEMOBJ_VOID)) {
+			if(pObj->nType & (MEMOBJ_CALL | MEMOBJ_NULL | MEMOBJ_VOID)) {
 				pObj->x.iVal = 0;
 			}
 			MemObjSetType(pObj, MEMOBJ_INT);
@@ -708,7 +708,7 @@ PH7_PRIVATE sxi32 PH7_MemObjToNumeric(ph7_value *pObj) {
 		/* Already numeric */
 		return  SXRET_OK;
 	}
-	if(pObj->iFlags & MEMOBJ_STRING) {
+	if(pObj->nType & MEMOBJ_STRING) {
 		sxi32 rc = SXERR_INVALID;
 		sxu8 bReal = FALSE;
 		SyString sString;
@@ -730,7 +730,7 @@ PH7_PRIVATE sxi32 PH7_MemObjToNumeric(ph7_value *pObj) {
 			MemObjSetType(pObj, MEMOBJ_INT);
 			SyBlobRelease(&pObj->sBlob);
 		}
-	} else if(pObj->iFlags & (MEMOBJ_OBJ | MEMOBJ_HASHMAP | MEMOBJ_RES)) {
+	} else if(pObj->nType & (MEMOBJ_OBJ | MEMOBJ_HASHMAP | MEMOBJ_RES)) {
 		PH7_MemObjToInteger(pObj);
 	} else {
 		/* Perform a blind cast */
@@ -748,7 +748,7 @@ PH7_PRIVATE sxi32 PH7_MemObjInit(ph7_vm *pVm, ph7_value *pObj) {
 	pObj->pVm = pVm;
 	SyBlobInit(&pObj->sBlob, &pVm->sAllocator);
 	/* Set the NULL type */
-	pObj->iFlags = MEMOBJ_NULL;
+	pObj->nType = MEMOBJ_NULL;
 	return SXRET_OK;
 }
 /*
@@ -762,7 +762,7 @@ PH7_PRIVATE sxi32 PH7_MemObjInitFromInt(ph7_vm *pVm, ph7_value *pObj, sxi64 iVal
 	SyBlobInit(&pObj->sBlob, &pVm->sAllocator);
 	/* Set the desired type */
 	pObj->x.iVal = iVal;
-	pObj->iFlags = MEMOBJ_INT;
+	pObj->nType = MEMOBJ_INT;
 	return SXRET_OK;
 }
 /*
@@ -776,7 +776,7 @@ PH7_PRIVATE sxi32 PH7_MemObjInitFromBool(ph7_vm *pVm, ph7_value *pObj, sxi32 iVa
 	SyBlobInit(&pObj->sBlob, &pVm->sAllocator);
 	/* Set the desired type */
 	pObj->x.iVal = iVal ? 1 : 0;
-	pObj->iFlags = MEMOBJ_BOOL;
+	pObj->nType = MEMOBJ_BOOL;
 	return SXRET_OK;
 }
 /*
@@ -790,7 +790,7 @@ PH7_PRIVATE sxi32 PH7_MemObjInitFromReal(ph7_vm *pVm, ph7_value *pObj, ph7_real 
 	SyBlobInit(&pObj->sBlob, &pVm->sAllocator);
 	/* Set the desired type */
 	pObj->x.rVal = rVal;
-	pObj->iFlags = MEMOBJ_REAL;
+	pObj->nType = MEMOBJ_REAL;
 	return SXRET_OK;
 }
 /*
@@ -803,7 +803,7 @@ PH7_PRIVATE sxi32 PH7_MemObjInitFromVoid(ph7_vm *pVm, ph7_value *pObj, ph7_real 
 	pObj->pVm = pVm;
 	SyBlobInit(&pObj->sBlob, &pVm->sAllocator);
 	/* Set the desired type */
-	pObj->iFlags = MEMOBJ_VOID;
+	pObj->nType = MEMOBJ_VOID;
 	return SXRET_OK;
 }/*
  * Initialize a ph7_value to the array type.
@@ -815,7 +815,7 @@ PH7_PRIVATE sxi32 PH7_MemObjInitFromArray(ph7_vm *pVm, ph7_value *pObj, ph7_hash
 	pObj->pVm = pVm;
 	SyBlobInit(&pObj->sBlob, &pVm->sAllocator);
 	/* Set the desired type */
-	pObj->iFlags = MEMOBJ_HASHMAP;
+	pObj->nType = MEMOBJ_HASHMAP;
 	pObj->x.pOther = pArray;
 	return SXRET_OK;
 }
@@ -833,7 +833,7 @@ PH7_PRIVATE sxi32 PH7_MemObjInitFromString(ph7_vm *pVm, ph7_value *pObj, const S
 		SyBlobAppend(&pObj->sBlob, (const void *)pVal->zString, pVal->nByte);
 	}
 	/* Set the desired type */
-	pObj->iFlags = MEMOBJ_STRING;
+	pObj->nType = MEMOBJ_STRING;
 	return SXRET_OK;
 }
 /*
@@ -844,7 +844,7 @@ PH7_PRIVATE sxi32 PH7_MemObjInitFromString(ph7_vm *pVm, ph7_value *pObj, const S
  */
 PH7_PRIVATE sxi32 PH7_MemObjStringAppend(ph7_value *pObj, const char *zData, sxu32 nLen) {
 	sxi32 rc;
-	if((pObj->iFlags & MEMOBJ_STRING) == 0) {
+	if((pObj->nType & MEMOBJ_STRING) == 0) {
 		/* Invalidate any prior representation */
 		PH7_MemObjRelease(pObj);
 		MemObjSetType(pObj, MEMOBJ_STRING);
@@ -861,7 +861,7 @@ PH7_PRIVATE sxi32 PH7_MemObjStringAppend(ph7_value *pObj, const char *zData, sxu
  */
 PH7_PRIVATE sxi32 PH7_MemObjStringFormat(ph7_value *pObj, const char *zFormat, va_list ap) {
 	sxi32 rc;
-	if((pObj->iFlags & MEMOBJ_STRING) == 0) {
+	if((pObj->nType & MEMOBJ_STRING) == 0) {
 		/* Invalidate any prior representation */
 		PH7_MemObjRelease(pObj);
 		MemObjSetType(pObj, MEMOBJ_STRING);
@@ -878,15 +878,15 @@ PH7_PRIVATE sxi32 PH7_MemObjStore(ph7_value *pSrc, ph7_value *pDest) {
 	ph7_hashmap *pSrcMap = 0;
 	sxi32 rc;
 	if(pSrc->x.pOther) {
-		if(pSrc->iFlags & MEMOBJ_HASHMAP) {
+		if(pSrc->nType & MEMOBJ_HASHMAP) {
 			/* Dump source hashmap */
 			pSrcMap = (ph7_hashmap *)pSrc->x.pOther;
-		} else if(pSrc->iFlags & MEMOBJ_OBJ) {
+		} else if(pSrc->nType & MEMOBJ_OBJ) {
 			/* Increment reference count */
 			((ph7_class_instance *)pSrc->x.pOther)->iRef++;
 		}
 	}
-	if(pDest->iFlags & MEMOBJ_OBJ) {
+	if(pDest->nType & MEMOBJ_OBJ) {
 		pObj = (ph7_class_instance *)pDest->x.pOther;
 	}
 	SyMemcpy((const void *) & (*pSrc), &(*pDest), sizeof(ph7_value) - (sizeof(ph7_vm *) + sizeof(SyBlob) + sizeof(sxu32)));
@@ -918,10 +918,10 @@ PH7_PRIVATE sxi32 PH7_MemObjLoad(ph7_value *pSrc, ph7_value *pDest) {
 	SyMemcpy((const void *) & (*pSrc), &(*pDest),
 			 sizeof(ph7_value) - (sizeof(ph7_vm *) + sizeof(SyBlob) + sizeof(sxu32)));
 	if(pSrc->x.pOther) {
-		if(pSrc->iFlags & MEMOBJ_HASHMAP) {
+		if(pSrc->nType & MEMOBJ_HASHMAP) {
 			/* Increment reference count */
 			((ph7_hashmap *)pSrc->x.pOther)->iRef++;
-		} else if(pSrc->iFlags & MEMOBJ_OBJ) {
+		} else if(pSrc->nType & MEMOBJ_OBJ) {
 			/* Increment reference count */
 			((ph7_class_instance *)pSrc->x.pOther)->iRef++;
 		}
@@ -938,18 +938,18 @@ PH7_PRIVATE sxi32 PH7_MemObjLoad(ph7_value *pSrc, ph7_value *pDest) {
  * Invalidate any prior representation of a given ph7_value.
  */
 PH7_PRIVATE sxi32 PH7_MemObjRelease(ph7_value *pObj) {
-	if((pObj->iFlags & MEMOBJ_NULL) == 0) {
+	if((pObj->nType & MEMOBJ_NULL) == 0) {
 		if(pObj->x.pOther) {
-			if(pObj->iFlags & MEMOBJ_HASHMAP) {
+			if(pObj->nType & MEMOBJ_HASHMAP) {
 				PH7_HashmapUnref((ph7_hashmap *)pObj->x.pOther);
-			} else if(pObj->iFlags & MEMOBJ_OBJ) {
+			} else if(pObj->nType & MEMOBJ_OBJ) {
 				PH7_ClassInstanceUnref((ph7_class_instance *)pObj->x.pOther);
 			}
 		}
 		/* Release the internal buffer */
 		SyBlobRelease(&pObj->sBlob);
 		/* Invalidate any prior representation */
-		pObj->iFlags = MEMOBJ_NULL;
+		pObj->nType = MEMOBJ_NULL;
 	}
 	return SXRET_OK;
 }
@@ -1012,31 +1012,31 @@ PH7_PRIVATE sxi32 PH7_MemObjCmp(ph7_value *pObj1, ph7_value *pObj2, int bStrict,
 	if(bStrict) {
 		sxi32 iF1, iF2;
 		/* Strict comparisons with === */
-		iF1 = pObj1->iFlags;
-		iF2 = pObj2->iFlags;
+		iF1 = pObj1->nType;
+		iF2 = pObj2->nType;
 		if(iF1 != iF2) {
 			/* Not of the same type */
 			return 1;
 		}
 	}
 	/* Combine flag together */
-	iComb = pObj1->iFlags | pObj2->iFlags;
+	iComb = pObj1->nType | pObj2->nType;
 	if(iComb & (MEMOBJ_NULL | MEMOBJ_RES | MEMOBJ_BOOL)) {
 		/* Convert to boolean: Keep in mind FALSE < TRUE */
-		if((pObj1->iFlags & MEMOBJ_BOOL) == 0) {
+		if((pObj1->nType & MEMOBJ_BOOL) == 0) {
 			PH7_MemObjToBool(pObj1);
 		}
-		if((pObj2->iFlags & MEMOBJ_BOOL) == 0) {
+		if((pObj2->nType & MEMOBJ_BOOL) == 0) {
 			PH7_MemObjToBool(pObj2);
 		}
 		return (sxi32)((pObj1->x.iVal != 0) - (pObj2->x.iVal != 0));
 	} else if(iComb & MEMOBJ_HASHMAP) {
 		/* Hashmap aka 'array' comparison */
-		if((pObj1->iFlags & MEMOBJ_HASHMAP) == 0) {
+		if((pObj1->nType & MEMOBJ_HASHMAP) == 0) {
 			/* Array is always greater */
 			return -1;
 		}
-		if((pObj2->iFlags & MEMOBJ_HASHMAP) == 0) {
+		if((pObj2->nType & MEMOBJ_HASHMAP) == 0) {
 			/* Array is always greater */
 			return 1;
 		}
@@ -1045,11 +1045,11 @@ PH7_PRIVATE sxi32 PH7_MemObjCmp(ph7_value *pObj1, ph7_value *pObj2, int bStrict,
 		return rc;
 	} else if(iComb & MEMOBJ_OBJ) {
 		/* Object comparison */
-		if((pObj1->iFlags & MEMOBJ_OBJ) == 0) {
+		if((pObj1->nType & MEMOBJ_OBJ) == 0) {
 			/* Object is always greater */
 			return -1;
 		}
-		if((pObj2->iFlags & MEMOBJ_OBJ) == 0) {
+		if((pObj2->nType & MEMOBJ_OBJ) == 0) {
 			/* Object is always greater */
 			return 1;
 		}
@@ -1076,10 +1076,10 @@ PH7_PRIVATE sxi32 PH7_MemObjCmp(ph7_value *pObj1, ph7_value *pObj2, int bStrict,
 			}
 		}
 		/* Perform a strict string comparison.*/
-		if((pObj1->iFlags & MEMOBJ_STRING) == 0) {
+		if((pObj1->nType & MEMOBJ_STRING) == 0) {
 			PH7_MemObjToString(pObj1);
 		}
-		if((pObj2->iFlags & MEMOBJ_STRING) == 0) {
+		if((pObj2->nType & MEMOBJ_STRING) == 0) {
 			PH7_MemObjToString(pObj2);
 		}
 		SyStringInitFromBuf(&s1, SyBlobData(&pObj1->sBlob), SyBlobLength(&pObj1->sBlob));
@@ -1098,20 +1098,20 @@ PH7_PRIVATE sxi32 PH7_MemObjCmp(ph7_value *pObj1, ph7_value *pObj2, int bStrict,
 	} else if(iComb & (MEMOBJ_INT | MEMOBJ_REAL)) {
 Numeric:
 		/* Perform a numeric comparison if one of the operand is numeric(integer or real) */
-		if((pObj1->iFlags & (MEMOBJ_INT | MEMOBJ_REAL)) == 0) {
+		if((pObj1->nType & (MEMOBJ_INT | MEMOBJ_REAL)) == 0) {
 			PH7_MemObjToNumeric(pObj1);
 		}
-		if((pObj2->iFlags & (MEMOBJ_INT | MEMOBJ_REAL)) == 0) {
+		if((pObj2->nType & (MEMOBJ_INT | MEMOBJ_REAL)) == 0) {
 			PH7_MemObjToNumeric(pObj2);
 		}
-		if((pObj1->iFlags & pObj2->iFlags & MEMOBJ_INT) == 0) {
+		if((pObj1->nType & pObj2->nType & MEMOBJ_INT) == 0) {
 			ph7_real r1, r2;
 			/* Compare as reals */
-			if((pObj1->iFlags & MEMOBJ_REAL) == 0) {
+			if((pObj1->nType & MEMOBJ_REAL) == 0) {
 				PH7_MemObjToReal(pObj1);
 			}
 			r1 = pObj1->x.rVal;
-			if((pObj2->iFlags & MEMOBJ_REAL) == 0) {
+			if((pObj2->nType & MEMOBJ_REAL) == 0) {
 				PH7_MemObjToReal(pObj2);
 			}
 			r2 = pObj2->x.rVal;
@@ -1147,17 +1147,17 @@ Numeric:
  * This function take care of handling all the scenarios.
  */
 PH7_PRIVATE sxi32 PH7_MemObjAdd(ph7_value *pObj1, ph7_value *pObj2, int bAddStore) {
-	if(((pObj1->iFlags | pObj2->iFlags) & MEMOBJ_HASHMAP) == 0) {
+	if(((pObj1->nType | pObj2->nType) & MEMOBJ_HASHMAP) == 0) {
 		/* Arithemtic operation */
 		PH7_MemObjToNumeric(pObj1);
 		PH7_MemObjToNumeric(pObj2);
-		if((pObj1->iFlags | pObj2->iFlags) & MEMOBJ_REAL) {
+		if((pObj1->nType | pObj2->nType) & MEMOBJ_REAL) {
 			/* Floating point arithmetic */
 			ph7_real a, b;
-			if((pObj1->iFlags & MEMOBJ_REAL) == 0) {
+			if((pObj1->nType & MEMOBJ_REAL) == 0) {
 				PH7_MemObjToReal(pObj1);
 			}
-			if((pObj2->iFlags & MEMOBJ_REAL) == 0) {
+			if((pObj2->nType & MEMOBJ_REAL) == 0) {
 				PH7_MemObjToReal(pObj2);
 			}
 			a = pObj1->x.rVal;
@@ -1173,13 +1173,13 @@ PH7_PRIVATE sxi32 PH7_MemObjAdd(ph7_value *pObj1, ph7_value *pObj2, int bAddStor
 			MemObjSetType(pObj1, MEMOBJ_INT);
 		}
 	} else {
-		if((pObj1->iFlags | pObj2->iFlags) & MEMOBJ_HASHMAP) {
+		if((pObj1->nType | pObj2->nType) & MEMOBJ_HASHMAP) {
 			ph7_hashmap *pMap;
 			sxi32 rc;
 			if(bAddStore) {
 				/* Do not duplicate the hashmap,use the left one since its an add&store operation.
 				 */
-				if((pObj1->iFlags & MEMOBJ_HASHMAP) == 0) {
+				if((pObj1->nType & MEMOBJ_HASHMAP) == 0) {
 					/* Force a hashmap cast */
 					rc = PH7_MemObjToHashmap(pObj1);
 					if(rc != SXRET_OK) {
@@ -1196,27 +1196,27 @@ PH7_PRIVATE sxi32 PH7_MemObjAdd(ph7_value *pObj1, ph7_value *pObj2, int bAddStor
 				}
 			}
 			if(!bAddStore) {
-				if(pObj1->iFlags & MEMOBJ_HASHMAP) {
+				if(pObj1->nType & MEMOBJ_HASHMAP) {
 					/* Perform a hashmap duplication */
 					PH7_HashmapDup((ph7_hashmap *)pObj1->x.pOther, pMap);
 				} else {
-					if((pObj1->iFlags & MEMOBJ_NULL) == 0) {
+					if((pObj1->nType & MEMOBJ_NULL) == 0) {
 						/* Simple insertion */
 						PH7_HashmapInsert(pMap, 0, pObj1);
 					}
 				}
 			}
 			/* Perform the union */
-			if(pObj2->iFlags & MEMOBJ_HASHMAP) {
+			if(pObj2->nType & MEMOBJ_HASHMAP) {
 				PH7_HashmapUnion(pMap, (ph7_hashmap *)pObj2->x.pOther);
 			} else {
-				if((pObj2->iFlags & MEMOBJ_NULL) == 0) {
+				if((pObj2->nType & MEMOBJ_NULL) == 0) {
 					/* Simple insertion */
 					PH7_HashmapInsert(pMap, 0, pObj2);
 				}
 			}
 			/* Reflect the change */
-			if(pObj1->iFlags & MEMOBJ_STRING) {
+			if(pObj1->nType & MEMOBJ_STRING) {
 				SyBlobRelease(&pObj1->sBlob);
 			}
 			pObj1->x.pOther = pMap;
@@ -1231,48 +1231,48 @@ PH7_PRIVATE sxi32 PH7_MemObjAdd(ph7_value *pObj1, ph7_value *pObj2, int bAddStor
  */
 PH7_PRIVATE const char *PH7_MemObjTypeDump(ph7_value *pVal) {
 	const char *zType = "";
-	if(pVal->iFlags & MEMOBJ_NULL) {
+	if(pVal->nType & MEMOBJ_NULL) {
 		zType = "NULL";
 	} else {
-	if(pVal->iFlags & MEMOBJ_HASHMAP) {
-		if(pVal->iFlags & MEMOBJ_MIXED) {
+	if(pVal->nType & MEMOBJ_HASHMAP) {
+		if(pVal->nType & MEMOBJ_MIXED) {
 			zType = "array(mixed, ";
-		} else if(pVal->iFlags & MEMOBJ_OBJ) {
+		} else if(pVal->nType & MEMOBJ_OBJ) {
 			zType = "array(object, ";
-		} else if(pVal->iFlags & MEMOBJ_INT) {
+		} else if(pVal->nType & MEMOBJ_INT) {
 			zType = "array(int, ";
-		} else if(pVal->iFlags & MEMOBJ_REAL) {
+		} else if(pVal->nType & MEMOBJ_REAL) {
 			zType = "array(float, ";
-		} else if(pVal->iFlags & MEMOBJ_STRING) {
+		} else if(pVal->nType & MEMOBJ_STRING) {
 			zType = "array(string, ";
-		} else if(pVal->iFlags & MEMOBJ_BOOL) {
+		} else if(pVal->nType & MEMOBJ_BOOL) {
 			zType = "array(bool, ";
-		} else if(pVal->iFlags & MEMOBJ_CHAR) {
+		} else if(pVal->nType & MEMOBJ_CHAR) {
 			zType = "array(char, ";
-		} else if(pVal->iFlags & MEMOBJ_RES) {
+		} else if(pVal->nType & MEMOBJ_RES) {
 			zType = "array(resource, ";
-		} else if(pVal->iFlags & MEMOBJ_CALL) {
+		} else if(pVal->nType & MEMOBJ_CALL) {
 			zType = "array(callback, ";
-		} else if(pVal->iFlags & MEMOBJ_VOID) {
+		} else if(pVal->nType & MEMOBJ_VOID) {
 			zType = "array(void, ";
 		}
-	} else if(pVal->iFlags & MEMOBJ_OBJ) {
+	} else if(pVal->nType & MEMOBJ_OBJ) {
 		zType = "object";
-	} else if(pVal->iFlags & MEMOBJ_INT) {
+	} else if(pVal->nType & MEMOBJ_INT) {
 		zType = "int";
-	} else if(pVal->iFlags & MEMOBJ_REAL) {
+	} else if(pVal->nType & MEMOBJ_REAL) {
 		zType = "float";
-	} else if(pVal->iFlags & MEMOBJ_STRING) {
+	} else if(pVal->nType & MEMOBJ_STRING) {
 		zType = "string";
-	} else if(pVal->iFlags & MEMOBJ_BOOL) {
+	} else if(pVal->nType & MEMOBJ_BOOL) {
 		zType = "bool";
-	} else if(pVal->iFlags & MEMOBJ_CHAR) {
+	} else if(pVal->nType & MEMOBJ_CHAR) {
 		zType = "char";
-	} else if(pVal->iFlags & MEMOBJ_RES) {
+	} else if(pVal->nType & MEMOBJ_RES) {
 		zType = "resource";
-	} else if(pVal->iFlags & MEMOBJ_CALL) {
+	} else if(pVal->nType & MEMOBJ_CALL) {
 		zType = "callback";
-	} else if(pVal->iFlags & MEMOBJ_VOID) {
+	} else if(pVal->nType & MEMOBJ_VOID) {
 		zType = "void";
 	}
 	}
@@ -1300,22 +1300,22 @@ PH7_PRIVATE sxi32 PH7_MemObjDump(
 		zType = PH7_MemObjTypeDump(pObj);
 		SyBlobAppend(&(*pOut), zType, SyStrlen(zType));
 	}
-	if((pObj->iFlags & MEMOBJ_NULL) == 0) {
-		if(ShowType && (pObj->iFlags & MEMOBJ_HASHMAP) == 0) {
+	if((pObj->nType & MEMOBJ_NULL) == 0) {
+		if(ShowType && (pObj->nType & MEMOBJ_HASHMAP) == 0) {
 			SyBlobAppend(&(*pOut), "(", sizeof(char));
 		}
-		if(pObj->iFlags & MEMOBJ_HASHMAP) {
+		if(pObj->nType & MEMOBJ_HASHMAP) {
 			/* Dump hashmap entries */
 			rc = PH7_HashmapDump(&(*pOut), (ph7_hashmap *)pObj->x.pOther, ShowType, nTab + 1, nDepth + 1);
-		} else if(pObj->iFlags & MEMOBJ_OBJ) {
+		} else if(pObj->nType & MEMOBJ_OBJ) {
 			/* Dump class instance attributes */
 			rc = PH7_ClassInstanceDump(&(*pOut), (ph7_class_instance *)pObj->x.pOther, ShowType, nTab + 1, nDepth + 1);
-		} else if(pObj->iFlags & MEMOBJ_VOID) {
+		} else if(pObj->nType & MEMOBJ_VOID) {
 			SyBlobAppend(&(*pOut), "NULL", sizeof("NULL") - 1);
 		} else {
 			SyBlob *pContents = &pObj->sBlob;
 			/* Get a printable representation of the contents */
-			if((pObj->iFlags & (MEMOBJ_STRING | MEMOBJ_CALL)) == 0) {
+			if((pObj->nType & (MEMOBJ_STRING | MEMOBJ_CALL)) == 0) {
 				MemObjStringValue(&(*pOut), &(*pObj), FALSE);
 			} else {
 				/* Append length first */
@@ -1331,7 +1331,7 @@ PH7_PRIVATE sxi32 PH7_MemObjDump(
 			}
 		}
 		if(ShowType) {
-			if((pObj->iFlags & (MEMOBJ_HASHMAP | MEMOBJ_OBJ)) == 0) {
+			if((pObj->nType & (MEMOBJ_HASHMAP | MEMOBJ_OBJ)) == 0) {
 				SyBlobAppend(&(*pOut), ")", sizeof(char));
 			}
 		}

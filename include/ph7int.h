@@ -625,7 +625,7 @@ struct ph7_value {
 		void *pOther;   /* Other values (Object, Array, Resource, Namespace, etc.) */
 	} x;
 	sxi32 iFlags;       /* Control flags (see below) */
-	sxi32 iType;        /* Variable data type */
+	sxi32 nType;        /* Variable data type */
 	ph7_vm *pVm;        /* Virtual machine that own this instance */
 	SyBlob sBlob;       /* String values */
 	sxu32 nIdx;         /* Index number of this entry in the global object allocator */
@@ -659,7 +659,7 @@ struct ph7_value {
  * The following macro clear the current ph7_value type and replace
  * it with the given one.
  */
-#define MemObjSetType(OBJ,TYPE) ((OBJ)->iFlags = ((OBJ)->iFlags&~MEMOBJ_ALL)|TYPE)
+#define MemObjSetType(OBJ,TYPE) ((OBJ)->nType = ((OBJ)->nType&~MEMOBJ_ALL)|TYPE)
 /* ph7_value cast method signature */
 typedef sxi32(*ProcMemObjCast)(ph7_value *);
 /* Forward reference */

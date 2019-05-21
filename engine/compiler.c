@@ -947,7 +947,7 @@ PH7_PRIVATE sxi32 PH7_CompileClosure(ph7_gen_state *pGen, sxi32 iCompileFlag) {
 	}
 	SyStringInitFromBuf(&sName, zName, nLen);
 	PH7_MemObjInitFromString(pGen->pVm, pObj, &sName);
-	pObj->iFlags = MEMOBJ_CALL;
+	pObj->nType = MEMOBJ_CALL;
 	/* Compile the closure body */
 	rc = PH7_GenStateCompileFunc(&(*pGen), &sName, 0, TRUE, &pAnonFunc);
 	if(rc == SXERR_ABORT) {

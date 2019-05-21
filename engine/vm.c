@@ -528,41 +528,41 @@ static ph7_vm_func *VmOverload(
 	SyBlobInit(&sSig, &pVm->sAllocator);
 	for(j = 0 ; j < nArg ; j++) {
 		int c = 'n'; /* null */
-		if(aArg[j].iFlags & MEMOBJ_BOOL) {
+		if(aArg[j].nType & MEMOBJ_BOOL) {
 			/* Bool */
 			c = 'b';
-		} else if(aArg[j].iFlags & MEMOBJ_CALL) {
+		} else if(aArg[j].nType & MEMOBJ_CALL) {
 			/* Callback */
 			c = 'a';
-		} else if(aArg[j].iFlags & MEMOBJ_CHAR) {
+		} else if(aArg[j].nType & MEMOBJ_CHAR) {
 			/* Char */
 			c = 'c';
-		} else if(aArg[j].iFlags & MEMOBJ_INT) {
+		} else if(aArg[j].nType & MEMOBJ_INT) {
 			/* Integer */
 			c = 'i';
-		} else if(aArg[j].iFlags & MEMOBJ_MIXED) {
+		} else if(aArg[j].nType & MEMOBJ_MIXED) {
 			/* Mixed */
 			c = 'm';
-		} else if(aArg[j].iFlags & MEMOBJ_OBJ) {
+		} else if(aArg[j].nType & MEMOBJ_OBJ) {
 			/* Class instance */
 			ph7_class *pClass = ((ph7_class_instance *)aArg[j].x.pOther)->pClass;
 			SyString *pName = &pClass->sName;
 			SyBlobAppend(&sSig, (const void *)pName->zString, pName->nByte);
 			c = -1;
-		} else if(aArg[j].iFlags & MEMOBJ_REAL) {
+		} else if(aArg[j].nType & MEMOBJ_REAL) {
 			/* Float */
 			c = 'f';
-		} else if(aArg[j].iFlags & MEMOBJ_RES) {
+		} else if(aArg[j].nType & MEMOBJ_RES) {
 			/* Resource */
 			c = 'r';
-		} else if(aArg[j].iFlags & MEMOBJ_STRING) {
+		} else if(aArg[j].nType & MEMOBJ_STRING) {
 			/* String */
 			c = 's';
-		} else if(aArg[j].iFlags & MEMOBJ_VOID) {
+		} else if(aArg[j].nType & MEMOBJ_VOID) {
 			/* Void */
 			c = 'v';
 		}
-		if(aArg[j].iFlags & MEMOBJ_HASHMAP && (aArg[j].iFlags & MEMOBJ_OBJ) == 0) {
+		if(aArg[j].nType & MEMOBJ_HASHMAP && (aArg[j].nType & MEMOBJ_OBJ) == 0) {
 			c = SyToUpper(c);
 		}
 		if(c > 0) {
@@ -619,7 +619,7 @@ static sxi32 VmMountUserClass(
 				if(rc != SXRET_OK) {
 					PH7_VmThrowError(&(*pVm), PH7_CTX_ERR, "Cannot assign a value of incompatible type to variable '%z::$%z'", &pClass->sName, &pAttr->sName);
 				}
-			} else if(pMemObj->iFlags & MEMOBJ_HASHMAP) {
+			} else if(pMemObj->nType & MEMOBJ_HASHMAP) {
 				ph7_hashmap *pMap;
 				pMap = PH7_NewHashmap(&(*pVm), 0, 0);
 				if(pMap == 0) {
@@ -694,7 +694,7 @@ PH7_PRIVATE sxi32 PH7_VmCreateClassInstanceFrame(
 				if(rc != SXRET_OK) {
 					PH7_VmThrowError(&(*pVm), PH7_CTX_ERR, "Cannot assign a value of incompatible type to variable '%z::$%z'", &pClass->sName, &pAttr->sName);
 				}
-			} else if(pMemObj->iFlags & MEMOBJ_HASHMAP) {
+			} else if(pMemObj->nType & MEMOBJ_HASHMAP) {
 				ph7_hashmap *pMap;
 				pMap = PH7_NewHashmap(&(*pVm), 0, 0);
 				if(pMap == 0) {
@@ -1645,7 +1645,7 @@ PH7_PRIVATE sxi32 PH7_VmConfigure(
 					/* Extract the $_SERVER superglobal */
 					pValue = VmExtractSuper(&(*pVm), "_SERVER", sizeof("_SERVER") - 1);
 				}
-				if(pValue == 0 || (pValue->iFlags & MEMOBJ_HASHMAP) == 0) {
+				if(pValue == 0 || (pValue->nType & MEMOBJ_HASHMAP) == 0) {
 					/* No such entry */
 					rc = SXERR_NOTFOUND;
 					break;
@@ -2038,11 +2038,11 @@ static sxi32 VmByteCodeExec(
 								if((pFunc->nType & MEMOBJ_MIXED) == 0) {
 									if(pFunc->nType & MEMOBJ_VOID) {
 										PH7_VmThrowError(&(*pVm), PH7_CTX_ERR, "Return with a value in closure/method returning void");
-									} else if(pFunc->nType != pResult->iFlags) {
+									} else if(pFunc->nType != pResult->nType) {
 										if(PH7_CheckVarCompat(pResult, pFunc->nType) == SXRET_OK) {
 											ProcMemObjCast xCast = PH7_MemObjCastMethod(pFunc->nType);
 											xCast(pResult);
-										} else if((pFunc->iFlags & MEMOBJ_HASHMAP) && (pResult->iFlags & MEMOBJ_HASHMAP)) {
+										} else if((pFunc->iFlags & MEMOBJ_HASHMAP) && (pResult->nType & MEMOBJ_HASHMAP)) {
 											if(PH7_HashmapCast(pResult, pFunc->iFlags ^ MEMOBJ_HASHMAP) != SXRET_OK) {
 												PH7_VmThrowError(&(*pVm), PH7_CTX_ERR, "Incompatible type when returning data by closure/method");
 											}
@@ -2076,14 +2076,14 @@ static sxi32 VmByteCodeExec(
 					if(pLastRef) {
 						*pLastRef = pTos->nIdx;
 					}
-					if(pTos->iFlags & MEMOBJ_STRING) {
+					if(pTos->nType & MEMOBJ_STRING) {
 						if(SyBlobLength(&pTos->sBlob) > 0) {
 							/* Output the exit message */
 							pVm->sVmConsumer.xConsumer(SyBlobData(&pTos->sBlob), SyBlobLength(&pTos->sBlob),
 													   pVm->sVmConsumer.pUserData);
 						}
 						pVm->iExitStatus = 0;
-					} else if(pTos->iFlags & MEMOBJ_INT) {
+					} else if(pTos->nType & MEMOBJ_INT) {
 						/* Record exit status */
 						pVm->iExitStatus = (sxi32)pTos->x.iVal;
 					}
@@ -2115,7 +2115,7 @@ static sxi32 VmByteCodeExec(
 				}
 #endif
 				/* Get a boolean value */
-				if((pTos->iFlags & MEMOBJ_BOOL) == 0) {
+				if((pTos->nType & MEMOBJ_BOOL) == 0) {
 					PH7_MemObjToBool(pTos);
 				}
 				if(!pTos->x.iVal) {
@@ -2139,7 +2139,7 @@ static sxi32 VmByteCodeExec(
 				}
 #endif
 				/* Get a boolean value */
-				if((pTos->iFlags & MEMOBJ_BOOL) == 0) {
+				if((pTos->nType & MEMOBJ_BOOL) == 0) {
 					PH7_MemObjToBool(pTos);
 				}
 				if(pTos->x.iVal) {
@@ -2209,7 +2209,7 @@ static sxi32 VmByteCodeExec(
 					goto Abort;
 				}
 #endif
-				if((pTos->iFlags & MEMOBJ_INT) == 0) {
+				if((pTos->nType & MEMOBJ_INT) == 0) {
 					PH7_MemObjToInteger(pTos);
 				}
 				/* Invalidate any prior representation */
@@ -2226,7 +2226,7 @@ static sxi32 VmByteCodeExec(
 					goto Abort;
 				}
 #endif
-				if((pTos->iFlags & MEMOBJ_REAL) == 0) {
+				if((pTos->nType & MEMOBJ_REAL) == 0) {
 					PH7_MemObjToReal(pTos);
 				}
 				/* Invalidate any prior representation */
@@ -2243,7 +2243,7 @@ static sxi32 VmByteCodeExec(
 					goto Abort;
 				}
 #endif
-				if((pTos->iFlags & MEMOBJ_STRING) == 0) {
+				if((pTos->nType & MEMOBJ_STRING) == 0) {
 					PH7_MemObjToString(pTos);
 				}
 				break;
@@ -2258,7 +2258,7 @@ static sxi32 VmByteCodeExec(
 					goto Abort;
 				}
 #endif
-				if((pTos->iFlags & MEMOBJ_BOOL) == 0) {
+				if((pTos->nType & MEMOBJ_BOOL) == 0) {
 					PH7_MemObjToBool(pTos);
 				}
 				break;
@@ -2273,7 +2273,7 @@ static sxi32 VmByteCodeExec(
 					goto Abort;
 				}
 #endif
-				if((pTos->iFlags & MEMOBJ_CHAR) == 0) {
+				if((pTos->nType & MEMOBJ_CHAR) == 0) {
 					PH7_MemObjToChar(pTos);
 				}
 				/* Invalidate any prior representation */
@@ -2290,7 +2290,7 @@ static sxi32 VmByteCodeExec(
 					goto Abort;
 				}
 #endif
-				if((pTos->iFlags & MEMOBJ_OBJ) == 0) {
+				if((pTos->nType & MEMOBJ_OBJ) == 0) {
 					/* Force a 'stdClass()' cast */
 					PH7_MemObjToObject(pTos);
 				}
@@ -2350,14 +2350,14 @@ static sxi32 VmByteCodeExec(
 						goto Abort;
 					}
 #endif
-					if(pNos->iFlags & MEMOBJ_OBJ) {
+					if(pNos->nType & MEMOBJ_OBJ) {
 						ph7_class_instance *pThis = (ph7_class_instance *)pNos->x.pOther;
 						ph7_class *pClass = 0;
 						/* Extract the target class */
-						if(pTos->iFlags & MEMOBJ_OBJ) {
+						if(pTos->nType & MEMOBJ_OBJ) {
 							/* Instance already loaded */
 							pClass = ((ph7_class_instance *)pTos->x.pOther)->pClass;
-						} else if(pTos->iFlags & MEMOBJ_STRING && SyBlobLength(&pTos->sBlob) > 0) {
+						} else if(pTos->nType & MEMOBJ_STRING && SyBlobLength(&pTos->sBlob) > 0) {
 							/* Perform the query */
 							pClass = PH7_VmExtractClass(&(*pVm), (const char *)SyBlobData(&pTos->sBlob),
 														SyBlobLength(&pTos->sBlob), FALSE, 0);
@@ -2403,7 +2403,7 @@ static sxi32 VmByteCodeExec(
 											"Redeclaration of ‘$%z’ variable", &sName);
 						}
 						if(pInstr->iP2 & MEMOBJ_MIXED && (pInstr->iP2 & MEMOBJ_HASHMAP) == 0) {
-							pObj->iFlags = MEMOBJ_MIXED | MEMOBJ_VOID;
+							pObj->nType = MEMOBJ_MIXED | MEMOBJ_VOID;
 						} else {
 							if(pInstr->iP2 & MEMOBJ_HASHMAP) {
 								ph7_hashmap *pMap;
@@ -2493,7 +2493,7 @@ static sxi32 VmByteCodeExec(
 						}
 #endif
 						/* Force a string cast */
-						if((pTos->iFlags & MEMOBJ_STRING) == 0) {
+						if((pTos->nType & MEMOBJ_STRING) == 0) {
 							PH7_MemObjToString(pTos);
 						}
 						SyStringInitFromBuf(&sName, SyBlobData(&pTos->sBlob), SyBlobLength(&pTos->sBlob));
@@ -2521,7 +2521,7 @@ static sxi32 VmByteCodeExec(
 			 * stack and insert them (key => value pair) in the new hashmap.
 			 */
 			case PH7_OP_LOAD_MAP: {
-					sxi32 iFlags, pFlags;
+					sxi32 nType, pType;
 					ph7_hashmap *pMap;
 					/* Allocate a new hashmap instance */
 					pMap = PH7_NewHashmap(&(*pVm), 0, 0);
@@ -2530,19 +2530,19 @@ static sxi32 VmByteCodeExec(
 					}
 					if(pInstr->iP1 > 0) {
 						ph7_value *pEntry = &pTos[-pInstr->iP1 + 1]; /* Point to the first entry */
-						iFlags = pEntry[1].iFlags; /* Save the type of value */
+						nType = pEntry[1].nType; /* Save the type of value */
 						/* Perform the insertion */
 						while(pEntry < pTos) {
 							/* Standard insertion */
 							PH7_HashmapInsert(pMap,
-											  (pEntry->iFlags & MEMOBJ_NULL) ? 0 /* Automatic index assign */ : pEntry,
+											  (pEntry->nType & MEMOBJ_NULL) ? 0 /* Automatic index assign */ : pEntry,
 											  &pEntry[1]
 											 );
 							/* Set the proper type of array */
-							if((iFlags & MEMOBJ_MIXED) == 0) {
-								pFlags = pEntry[1].iFlags;
-								if(iFlags != pFlags && iFlags != (pFlags ^ MEMOBJ_HASHMAP)) {
-									iFlags = MEMOBJ_MIXED;
+							if((nType & MEMOBJ_MIXED) == 0) {
+								pType = pEntry[1].nType;
+								if(nType != pType && nType != (pType ^ MEMOBJ_HASHMAP)) {
+									nType = MEMOBJ_MIXED;
 								}
 							}
 							/* Next pair on the stack */
@@ -2555,7 +2555,7 @@ static sxi32 VmByteCodeExec(
 					pTos++;
 					pTos->nIdx = SXU32_HIGH;
 					pTos->x.pOther = pMap;
-					MemObjSetType(pTos, MEMOBJ_HASHMAP | iFlags);
+					MemObjSetType(pTos, MEMOBJ_HASHMAP | nType);
 					break;
 				}
 			/*
@@ -2580,11 +2580,11 @@ static sxi32 VmByteCodeExec(
 						pIdx = pTos;
 						pTos--;
 					}
-					if(pTos->iFlags & MEMOBJ_STRING && (pTos->iFlags & MEMOBJ_HASHMAP) == 0) {
+					if(pTos->nType & MEMOBJ_STRING && (pTos->nType & MEMOBJ_HASHMAP) == 0) {
 						/* String access */
 						if(pIdx) {
 							sxu32 nOfft;
-							if((pIdx->iFlags & MEMOBJ_INT) == 0) {
+							if((pIdx->nType & MEMOBJ_INT) == 0) {
 								/* Force an int cast */
 								PH7_MemObjToInteger(pIdx);
 							}
@@ -2605,11 +2605,11 @@ static sxi32 VmByteCodeExec(
 						}
 						break;
 					}
-					if((pTos->iFlags & MEMOBJ_HASHMAP) == 0) {
+					if((pTos->nType & MEMOBJ_HASHMAP) == 0) {
 						PH7_VmThrowError(&(*pVm), PH7_CTX_ERR, "Subscripted value is neither array nor string");
 					}
 					rc = SXERR_NOTFOUND; /* Assume the index is invalid */
-					if(pTos->iFlags & MEMOBJ_HASHMAP) {
+					if(pTos->nType & MEMOBJ_HASHMAP) {
 						/* Point to the hashmap */
 						pMap = (ph7_hashmap *)pTos->x.pOther;
 						if(pIdx) {
@@ -2746,7 +2746,7 @@ static sxi32 VmByteCodeExec(
 						break;
 					} else if(pInstr->p3 == 0) {
 						/* Take the variable name from the next on the stack */
-						if((pTos->iFlags & MEMOBJ_STRING) == 0) {
+						if((pTos->nType & MEMOBJ_STRING) == 0) {
 							/* Force a string cast */
 							PH7_MemObjToString(pTos);
 						}
@@ -2796,7 +2796,7 @@ static sxi32 VmByteCodeExec(
 						pKey = 0;
 					}
 					nIdx = pTos->nIdx;
-					if(pTos->iFlags & MEMOBJ_HASHMAP) {
+					if(pTos->nType & MEMOBJ_HASHMAP) {
 						/* Hashmap already loaded */
 						pMap = (ph7_hashmap *)pTos->x.pOther;
 						if(pMap->iRef < 2) {
@@ -2814,9 +2814,9 @@ static sxi32 VmByteCodeExec(
 							break;
 						}
 						/* Phase#1: Load the array */
-						if(pObj->iFlags & MEMOBJ_STRING) {
+						if(pObj->nType & MEMOBJ_STRING) {
 							VmPopOperand(&pTos, 1);
-							if((pTos->iFlags & MEMOBJ_STRING) == 0) {
+							if((pTos->nType & MEMOBJ_STRING) == 0) {
 								/* Force a string cast */
 								PH7_MemObjToString(pTos);
 							}
@@ -2827,7 +2827,7 @@ static sxi32 VmByteCodeExec(
 								}
 							} else {
 								sxu32 nOfft;
-								if((pKey->iFlags & MEMOBJ_INT)) {
+								if((pKey->nType & MEMOBJ_INT)) {
 									/* Force an int cast */
 									PH7_MemObjToInteger(pKey);
 								}
@@ -2847,7 +2847,7 @@ static sxi32 VmByteCodeExec(
 								PH7_MemObjRelease(pKey);
 							}
 							break;
-						} else if((pObj->iFlags & MEMOBJ_HASHMAP) == 0) {
+						} else if((pObj->nType & MEMOBJ_HASHMAP) == 0) {
 							/* Force a hashmap cast  */
 							rc = PH7_MemObjToHashmap(pObj);
 							if(rc != SXRET_OK) {
@@ -2856,12 +2856,12 @@ static sxi32 VmByteCodeExec(
 						}
 						pMap = (ph7_hashmap *)pObj->x.pOther;
 					}
-					sxu32 pArrType = pTos->iFlags ^ MEMOBJ_HASHMAP;
+					sxu32 pArrType = pTos->nType ^ MEMOBJ_HASHMAP;
 					VmPopOperand(&pTos, 1);
 					/* Phase#2: Perform the type validation */
-					if((pArrType & MEMOBJ_MIXED) == 0 && (pTos->iFlags & pArrType) == 0) {
+					if((pArrType & MEMOBJ_MIXED) == 0 && (pTos->nType & pArrType) == 0) {
 						sxu32 rc = SXRET_OK;
-						if(pTos->iFlags & MEMOBJ_HASHMAP) {
+						if(pTos->nType & MEMOBJ_HASHMAP) {
 							rc = PH7_HashmapCast(pTos, pArrType);
 						} else {
 							if((rc = PH7_CheckVarCompat(pTos, pArrType)) == SXRET_OK) {
@@ -2894,13 +2894,13 @@ static sxi32 VmByteCodeExec(
 					goto Abort;
 				}
 #endif
-				if((pTos->iFlags & (MEMOBJ_HASHMAP | MEMOBJ_OBJ | MEMOBJ_RES)) == 0) {
+				if((pTos->nType & (MEMOBJ_HASHMAP | MEMOBJ_OBJ | MEMOBJ_RES)) == 0) {
 					if(pTos->nIdx != SXU32_HIGH) {
 						ph7_value *pObj;
 						if((pObj = (ph7_value *)SySetAt(&pVm->aMemObj, pTos->nIdx)) != 0) {
 							/* Force a numeric cast */
 							PH7_MemObjToNumeric(pObj);
-							if(pObj->iFlags & MEMOBJ_REAL) {
+							if(pObj->nType & MEMOBJ_REAL) {
 								pObj->x.rVal++;
 							} else {
 								pObj->x.iVal++;
@@ -2916,7 +2916,7 @@ static sxi32 VmByteCodeExec(
 							/* Force a numeric cast */
 							PH7_MemObjToNumeric(pTos);
 							/* Pre-increment */
-							if(pTos->iFlags & MEMOBJ_REAL) {
+							if(pTos->nType & MEMOBJ_REAL) {
 								pTos->x.rVal++;
 							} else {
 								pTos->x.iVal++;
@@ -2939,7 +2939,7 @@ static sxi32 VmByteCodeExec(
 					goto Abort;
 				}
 #endif
-				if((pTos->iFlags & (MEMOBJ_HASHMAP | MEMOBJ_OBJ | MEMOBJ_RES | MEMOBJ_NULL)) == 0) {
+				if((pTos->nType & (MEMOBJ_HASHMAP | MEMOBJ_OBJ | MEMOBJ_RES | MEMOBJ_NULL)) == 0) {
 					/* Force a numeric cast */
 					PH7_MemObjToNumeric(pTos);
 					if(pTos->nIdx != SXU32_HIGH) {
@@ -2947,7 +2947,7 @@ static sxi32 VmByteCodeExec(
 						if((pObj = (ph7_value *)SySetAt(&pVm->aMemObj, pTos->nIdx)) != 0) {
 							/* Force a numeric cast */
 							PH7_MemObjToNumeric(pObj);
-							if(pObj->iFlags & MEMOBJ_REAL) {
+							if(pObj->nType & MEMOBJ_REAL) {
 								pObj->x.rVal--;
 							} else {
 								pObj->x.iVal--;
@@ -2961,7 +2961,7 @@ static sxi32 VmByteCodeExec(
 					} else {
 						if(pInstr->iP1) {
 							/* Pre-decrement */
-							if(pTos->iFlags & MEMOBJ_REAL) {
+							if(pTos->nType & MEMOBJ_REAL) {
 								pTos->x.rVal--;
 							} else {
 								pTos->x.iVal--;
@@ -2984,10 +2984,10 @@ static sxi32 VmByteCodeExec(
 #endif
 				/* Force a numeric (integer,real or both) cast */
 				PH7_MemObjToNumeric(pTos);
-				if(pTos->iFlags & MEMOBJ_REAL) {
+				if(pTos->nType & MEMOBJ_REAL) {
 					pTos->x.rVal = -pTos->x.rVal;
 				}
-				if(pTos->iFlags & MEMOBJ_INT) {
+				if(pTos->nType & MEMOBJ_INT) {
 					pTos->x.iVal = -pTos->x.iVal;
 				}
 				break;
@@ -3004,10 +3004,10 @@ static sxi32 VmByteCodeExec(
 #endif
 				/* Force a numeric (integer,real or both) cast */
 				PH7_MemObjToNumeric(pTos);
-				if(pTos->iFlags & MEMOBJ_REAL) {
+				if(pTos->nType & MEMOBJ_REAL) {
 					pTos->x.rVal = +pTos->x.rVal;
 				}
-				if(pTos->iFlags & MEMOBJ_INT) {
+				if(pTos->nType & MEMOBJ_INT) {
 					pTos->x.iVal = +pTos->x.iVal;
 				}
 				break;
@@ -3024,7 +3024,7 @@ static sxi32 VmByteCodeExec(
 				}
 #endif
 				/* Force a boolean cast */
-				if((pTos->iFlags & MEMOBJ_BOOL) == 0) {
+				if((pTos->nType & MEMOBJ_BOOL) == 0) {
 					PH7_MemObjToBool(pTos);
 				}
 				pTos->x.iVal = !pTos->x.iVal;
@@ -3042,7 +3042,7 @@ static sxi32 VmByteCodeExec(
 				}
 #endif
 				/* Force an integer cast */
-				if((pTos->iFlags & MEMOBJ_INT) == 0) {
+				if((pTos->nType & MEMOBJ_INT) == 0) {
 					PH7_MemObjToInteger(pTos);
 				}
 				pTos->x.iVal = ~pTos->x.iVal;
@@ -3065,13 +3065,13 @@ static sxi32 VmByteCodeExec(
 					PH7_MemObjToNumeric(pTos);
 					PH7_MemObjToNumeric(pNos);
 					/* Perform the requested operation */
-					if(MEMOBJ_REAL & (pTos->iFlags | pNos->iFlags)) {
+					if(MEMOBJ_REAL & (pTos->nType | pNos->nType)) {
 						/* Floating point arithemic */
 						ph7_real a, b, r;
-						if((pTos->iFlags & MEMOBJ_REAL) == 0) {
+						if((pTos->nType & MEMOBJ_REAL) == 0) {
 							PH7_MemObjToReal(pTos);
 						}
-						if((pNos->iFlags & MEMOBJ_REAL) == 0) {
+						if((pNos->nType & MEMOBJ_REAL) == 0) {
 							PH7_MemObjToReal(pNos);
 						}
 						a = pNos->x.rVal;
@@ -3118,15 +3118,15 @@ static sxi32 VmByteCodeExec(
 						goto Abort;
 					}
 #endif
-					if(pInstr->iP2 || pNos->iFlags & MEMOBJ_STRING || pTos->iFlags & MEMOBJ_STRING) {
+					if(pInstr->iP2 || pNos->nType & MEMOBJ_STRING || pTos->nType & MEMOBJ_STRING) {
 						/* Perform the string addition */
 						ph7_value *pCur;
-						if((pNos->iFlags & MEMOBJ_STRING) == 0) {
+						if((pNos->nType & MEMOBJ_STRING) == 0) {
 							PH7_MemObjToString(pNos);
 						}
 						pCur = &pNos[1];
 						while(pCur <= pTos) {
-							if((pCur->iFlags & MEMOBJ_STRING) == 0) {
+							if((pCur->nType & MEMOBJ_STRING) == 0) {
 								PH7_MemObjToString(pCur);
 							}
 							if(SyBlobLength(&pCur->sBlob) > 0) {
@@ -3157,9 +3157,9 @@ static sxi32 VmByteCodeExec(
 						goto Abort;
 					}
 #endif
-					if(pTos->iFlags & MEMOBJ_STRING) {
+					if(pTos->nType & MEMOBJ_STRING) {
 						/* Perform the string addition */
-						if((pNos->iFlags & MEMOBJ_STRING) == 0) {
+						if((pNos->nType & MEMOBJ_STRING) == 0) {
 							/* Force a string cast */
 							PH7_MemObjToString(pNos);
 						}
@@ -3195,13 +3195,13 @@ static sxi32 VmByteCodeExec(
 						goto Abort;
 					}
 #endif
-					if(MEMOBJ_REAL & (pTos->iFlags | pNos->iFlags)) {
+					if(MEMOBJ_REAL & (pTos->nType | pNos->nType)) {
 						/* Floating point arithemic */
 						ph7_real a, b, r;
-						if((pTos->iFlags & MEMOBJ_REAL) == 0) {
+						if((pTos->nType & MEMOBJ_REAL) == 0) {
 							PH7_MemObjToReal(pTos);
 						}
-						if((pNos->iFlags & MEMOBJ_REAL) == 0) {
+						if((pNos->nType & MEMOBJ_REAL) == 0) {
 							PH7_MemObjToReal(pNos);
 						}
 						a = pNos->x.rVal;
@@ -3237,13 +3237,13 @@ static sxi32 VmByteCodeExec(
 						goto Abort;
 					}
 #endif
-					if(MEMOBJ_REAL & (pTos->iFlags | pNos->iFlags)) {
+					if(MEMOBJ_REAL & (pTos->nType | pNos->nType)) {
 						/* Floating point arithemic */
 						ph7_real a, b, r;
-						if((pTos->iFlags & MEMOBJ_REAL) == 0) {
+						if((pTos->nType & MEMOBJ_REAL) == 0) {
 							PH7_MemObjToReal(pTos);
 						}
-						if((pNos->iFlags & MEMOBJ_REAL) == 0) {
+						if((pNos->nType & MEMOBJ_REAL) == 0) {
 							PH7_MemObjToReal(pNos);
 						}
 						a = pTos->x.rVal;
@@ -3288,10 +3288,10 @@ static sxi32 VmByteCodeExec(
 					}
 #endif
 					/* Force the operands to be integer */
-					if((pTos->iFlags & MEMOBJ_INT) == 0) {
+					if((pTos->nType & MEMOBJ_INT) == 0) {
 						PH7_MemObjToInteger(pTos);
 					}
-					if((pNos->iFlags & MEMOBJ_INT) == 0) {
+					if((pNos->nType & MEMOBJ_INT) == 0) {
 						PH7_MemObjToInteger(pNos);
 					}
 					/* Perform the requested operation */
@@ -3327,10 +3327,10 @@ static sxi32 VmByteCodeExec(
 					}
 #endif
 					/* Force the operands to be integer */
-					if((pTos->iFlags & MEMOBJ_INT) == 0) {
+					if((pTos->nType & MEMOBJ_INT) == 0) {
 						PH7_MemObjToInteger(pTos);
 					}
-					if((pNos->iFlags & MEMOBJ_INT) == 0) {
+					if((pNos->nType & MEMOBJ_INT) == 0) {
 						PH7_MemObjToInteger(pNos);
 					}
 					/* Perform the requested operation */
@@ -3369,10 +3369,10 @@ static sxi32 VmByteCodeExec(
 					}
 #endif
 					/* Force the operands to be real */
-					if((pTos->iFlags & MEMOBJ_REAL) == 0) {
+					if((pTos->nType & MEMOBJ_REAL) == 0) {
 						PH7_MemObjToReal(pTos);
 					}
-					if((pNos->iFlags & MEMOBJ_REAL) == 0) {
+					if((pNos->nType & MEMOBJ_REAL) == 0) {
 						PH7_MemObjToReal(pNos);
 					}
 					/* Perform the requested operation */
@@ -3407,10 +3407,10 @@ static sxi32 VmByteCodeExec(
 					}
 #endif
 					/* Force the operands to be real */
-					if((pTos->iFlags & MEMOBJ_REAL) == 0) {
+					if((pTos->nType & MEMOBJ_REAL) == 0) {
 						PH7_MemObjToReal(pTos);
 					}
-					if((pNos->iFlags & MEMOBJ_REAL) == 0) {
+					if((pNos->nType & MEMOBJ_REAL) == 0) {
 						PH7_MemObjToReal(pNos);
 					}
 					/* Perform the requested operation */
@@ -3462,10 +3462,10 @@ static sxi32 VmByteCodeExec(
 					}
 #endif
 					/* Force the operands to be integer */
-					if((pTos->iFlags & MEMOBJ_INT) == 0) {
+					if((pTos->nType & MEMOBJ_INT) == 0) {
 						PH7_MemObjToInteger(pTos);
 					}
-					if((pNos->iFlags & MEMOBJ_INT) == 0) {
+					if((pNos->nType & MEMOBJ_INT) == 0) {
 						PH7_MemObjToInteger(pNos);
 					}
 					/* Perform the requested operation */
@@ -3522,10 +3522,10 @@ static sxi32 VmByteCodeExec(
 					}
 #endif
 					/* Force the operands to be integer */
-					if((pTos->iFlags & MEMOBJ_INT) == 0) {
+					if((pTos->nType & MEMOBJ_INT) == 0) {
 						PH7_MemObjToInteger(pTos);
 					}
-					if((pNos->iFlags & MEMOBJ_INT) == 0) {
+					if((pNos->nType & MEMOBJ_INT) == 0) {
 						PH7_MemObjToInteger(pNos);
 					}
 					/* Perform the requested operation */
@@ -3582,10 +3582,10 @@ static sxi32 VmByteCodeExec(
 					}
 #endif
 					/* Force the operands to be integer */
-					if((pTos->iFlags & MEMOBJ_INT) == 0) {
+					if((pTos->nType & MEMOBJ_INT) == 0) {
 						PH7_MemObjToInteger(pTos);
 					}
-					if((pNos->iFlags & MEMOBJ_INT) == 0) {
+					if((pNos->nType & MEMOBJ_INT) == 0) {
 						PH7_MemObjToInteger(pNos);
 					}
 					/* Perform the requested operation */
@@ -3628,10 +3628,10 @@ static sxi32 VmByteCodeExec(
 					}
 #endif
 					/* Force the operands to be integer */
-					if((pTos->iFlags & MEMOBJ_INT) == 0) {
+					if((pTos->nType & MEMOBJ_INT) == 0) {
 						PH7_MemObjToInteger(pTos);
 					}
-					if((pNos->iFlags & MEMOBJ_INT) == 0) {
+					if((pNos->nType & MEMOBJ_INT) == 0) {
 						PH7_MemObjToInteger(pNos);
 					}
 					/* Perform the requested operation */
@@ -3675,10 +3675,10 @@ static sxi32 VmByteCodeExec(
 					}
 #endif
 					/* Force a boolean cast */
-					if((pTos->iFlags & MEMOBJ_BOOL) == 0) {
+					if((pTos->nType & MEMOBJ_BOOL) == 0) {
 						PH7_MemObjToBool(pTos);
 					}
-					if((pNos->iFlags & MEMOBJ_BOOL) == 0) {
+					if((pNos->nType & MEMOBJ_BOOL) == 0) {
 						PH7_MemObjToBool(pNos);
 					}
 					v1 = pNos->x.iVal == 0 ? 1 : 0;
@@ -3716,10 +3716,10 @@ static sxi32 VmByteCodeExec(
 					}
 #endif
 					/* Force a boolean cast */
-					if((pTos->iFlags & MEMOBJ_BOOL) == 0) {
+					if((pTos->nType & MEMOBJ_BOOL) == 0) {
 						PH7_MemObjToBool(pTos);
 					}
-					if((pNos->iFlags & MEMOBJ_BOOL) == 0) {
+					if((pNos->nType & MEMOBJ_BOOL) == 0) {
 						PH7_MemObjToBool(pNos);
 					}
 					if((pNos->x.iVal && !pTos->x.iVal) || (pTos->x.iVal && !pNos->x.iVal)) {
@@ -3935,7 +3935,7 @@ static sxi32 VmByteCodeExec(
 					}
 					/* Tell the upper layer that an exception was thrown */
 					pFrame->iFlags |= VM_FRAME_THROW;
-					if(pTos->iFlags & MEMOBJ_OBJ) {
+					if(pTos->nType & MEMOBJ_OBJ) {
 						ph7_class_instance *pThis = (ph7_class_instance *)pTos->x.pOther;
 						ph7_class *pException;
 						/* Make sure the loaded object is an instance of the 'Exception' base class.
@@ -4064,9 +4064,9 @@ static sxi32 VmByteCodeExec(
 					}
 #endif
 					/* Make sure we are dealing with an array or an object */
-					if((pTos->iFlags & MEMOBJ_HASHMAP) == 0 || SyStringLength(&pInfo->sValue) < 1) {
+					if((pTos->nType & MEMOBJ_HASHMAP) == 0 || SyStringLength(&pInfo->sValue) < 1) {
 						/* Jump out of the loop */
-						if((pTos->iFlags & MEMOBJ_NULL) == 0) {
+						if((pTos->nType & MEMOBJ_NULL) == 0) {
 							PH7_VmThrowError(&(*pVm), PH7_CTX_WARNING, "Invalid argument supplied for the foreach statement, expecting an array");
 						}
 						pc = pInstr->iP2 - 1;
@@ -4145,7 +4145,7 @@ static sxi32 VmByteCodeExec(
 							goto Abort;
 						}
 #endif
-						if(pNos->iFlags & MEMOBJ_OBJ) {
+						if(pNos->nType & MEMOBJ_OBJ) {
 							if(!pNos->x.pOther) {
 								PH7_VmThrowError(&(*pVm), PH7_CTX_ERR, "Call to non-instantiated object '$%z'", &sName);
 							}
@@ -4257,9 +4257,9 @@ static sxi32 VmByteCodeExec(
 							/* Attribute name already computed */
 							SyStringInitFromBuf(&sName, pInstr->p3, SyStrlen((const char *)pInstr->p3));
 						}
-						if(pNos->iFlags & (MEMOBJ_STRING | MEMOBJ_OBJ)) {
+						if(pNos->nType & (MEMOBJ_STRING | MEMOBJ_OBJ)) {
 							ph7_class *pClass = 0;
-							if(pNos->iFlags & MEMOBJ_OBJ) {
+							if(pNos->nType & MEMOBJ_OBJ) {
 								/* Class already instantiated */
 								pThis = (ph7_class_instance *)pNos->x.pOther;
 								pClass = pThis->pClass;
@@ -4370,11 +4370,11 @@ static sxi32 VmByteCodeExec(
 					ph7_value *pArg = &pTos[-pInstr->iP1]; /* Constructor arguments (if available) */
 					ph7_class *pClass = 0;
 					ph7_class_instance *pNew;
-					if((pTos->iFlags & MEMOBJ_STRING) && SyBlobLength(&pTos->sBlob) > 0) {
+					if((pTos->nType & MEMOBJ_STRING) && SyBlobLength(&pTos->sBlob) > 0) {
 						/* Try to extract the desired class */
 						pClass = PH7_VmExtractClass(&(*pVm), (const char *)SyBlobData(&pTos->sBlob),
 													SyBlobLength(&pTos->sBlob), TRUE /* Only loadable class but not 'interface' or 'virtual' class*/, 0);
-					} else if(pTos->iFlags & MEMOBJ_OBJ) {
+					} else if(pTos->nType & MEMOBJ_OBJ) {
 						/* Take the base class from the loaded instance */
 						pClass = ((ph7_class_instance *)pTos->x.pOther)->pClass;
 					}
@@ -4427,7 +4427,7 @@ static sxi32 VmByteCodeExec(
 					}
 #endif
 					/* Make sure we are dealing with a class instance */
-					if((pTos->iFlags & MEMOBJ_OBJ) == 0 || pTos->x.pOther == 0) {
+					if((pTos->nType & MEMOBJ_OBJ) == 0 || pTos->x.pOther == 0) {
 						PH7_VmThrowError(&(*pVm), PH7_CTX_ERR,
 										 "Clone: Expecting a class instance as left operand");
 					}
@@ -4503,10 +4503,10 @@ static sxi32 VmByteCodeExec(
 					SyString sName;
 					VmInstr *bInstr = &aInstr[pc - 1];
 					/* Extract function name */
-					if(pTos->iFlags & MEMOBJ_STRING && bInstr->iOp == PH7_OP_LOADV) {
+					if(pTos->nType & MEMOBJ_STRING && bInstr->iOp == PH7_OP_LOADV) {
 						PH7_VmThrowError(&(*pVm), PH7_CTX_ERR, "Calling a non-callable object");
-					} else if((pTos->iFlags & (MEMOBJ_CALL | MEMOBJ_STRING)) == 0) {
-						if(pTos->iFlags & MEMOBJ_HASHMAP) {
+					} else if((pTos->nType & (MEMOBJ_CALL | MEMOBJ_STRING)) == 0) {
+						if(pTos->nType & MEMOBJ_HASHMAP) {
 							ph7_value sResult;
 							SySetReset(&aArg);
 							while(pArg < pTos) {
@@ -4525,7 +4525,7 @@ static sxi32 VmByteCodeExec(
 							PH7_MemObjStore(&sResult, pTos);
 							PH7_MemObjRelease(&sResult);
 						} else {
-							if(pTos->iFlags & MEMOBJ_OBJ) {
+							if(pTos->nType & MEMOBJ_OBJ) {
 								ph7_class_instance *pThis = (ph7_class_instance *)pTos->x.pOther;
 								/* Call the magic method '__invoke' if available */
 								PH7_ClassInstanceCallMagicMethod(&(*pVm), pThis->pClass, pThis, "__invoke", sizeof("__invoke") - 1, 0);
@@ -4565,9 +4565,9 @@ static sxi32 VmByteCodeExec(
 							ph7_class_method *pMeth;
 							/* Class method call */
 							ph7_value *pTarget = &pTos[-1];
-							if(pTarget >= pStack && (pTarget->iFlags & (MEMOBJ_STRING | MEMOBJ_OBJ | MEMOBJ_NULL))) {
+							if(pTarget >= pStack && (pTarget->nType & (MEMOBJ_STRING | MEMOBJ_OBJ | MEMOBJ_NULL))) {
 								/* Extract the 'this' pointer */
-								if(pTarget->iFlags & MEMOBJ_OBJ) {
+								if(pTarget->nType & MEMOBJ_OBJ) {
 									/* Instance already loaded */
 									pThis = (ph7_class_instance *)pTarget->x.pOther;
 									pThis->iRef += 2;
@@ -4584,7 +4584,7 @@ static sxi32 VmByteCodeExec(
 									pSelf = pThis->pClass;
 								}
 								if(pSelf == 0) {
-									if((pTarget->iFlags & MEMOBJ_STRING) && SyBlobLength(&pTarget->sBlob) > 0) {
+									if((pTarget->nType & MEMOBJ_STRING) && SyBlobLength(&pTarget->sBlob) > 0) {
 										/* "Late Static Binding" class name */
 										pSelf = PH7_VmExtractClass(&(*pVm), (const char *)SyBlobData(&pTarget->sBlob),
 																   SyBlobLength(&pTarget->sBlob), FALSE, 0);
@@ -4684,7 +4684,7 @@ static sxi32 VmByteCodeExec(
 										if(rc != SXRET_OK) {
 											PH7_VmThrowError(&(*pVm), PH7_CTX_ERR, "Cannot assign a value of incompatible type to variable '$%z'", &pStatic->sName);
 										}
-									} else if(pObj->iFlags & MEMOBJ_HASHMAP) {
+									} else if(pObj->nType & MEMOBJ_HASHMAP) {
 										ph7_hashmap *pMap;
 										pMap = PH7_NewHashmap(&(*pVm), 0, 0);
 										if(pMap == 0) {
@@ -4703,7 +4703,7 @@ static sxi32 VmByteCodeExec(
 						n = 0;
 						while(pArg < pTos) {
 							if(n < SySetUsed(&pVmFunc->aArgs)) {
-								if((pArg->iFlags & MEMOBJ_NULL) && SySetUsed(&aFormalArg[n].aByteCode) > 0) {
+								if((pArg->nType & MEMOBJ_NULL) && SySetUsed(&aFormalArg[n].aByteCode) > 0) {
 									/* NULL values are redirected to default arguments */
 									rc = VmLocalExec(&(*pVm), &aFormalArg[n].aByteCode, pArg);
 									if(rc == PH7_ABORT) {
@@ -4719,8 +4719,8 @@ static sxi32 VmByteCodeExec(
 										/* Try to extract the desired class */
 										pClass = PH7_VmExtractClass(&(*pVm), pName->zString, pName->nByte, TRUE, 0);
 										if(pClass) {
-											if((pArg->iFlags & MEMOBJ_OBJ) == 0) {
-												if((pArg->iFlags & MEMOBJ_NULL) == 0) {
+											if((pArg->nType & MEMOBJ_OBJ) == 0) {
+												if((pArg->nType & MEMOBJ_NULL) == 0) {
 													PH7_VmThrowError(&(*pVm), PH7_CTX_ERR,
 																  "Argument %u passed to function '%z()' must be an object of type '%z'",
 																  n+1, &pVmFunc->sName, pName);
@@ -4737,13 +4737,13 @@ static sxi32 VmByteCodeExec(
 										}
 									} else {
 										ph7_value *pTmp = PH7_ReserveMemObj(&(*pVm));
-										pTmp->iFlags = aFormalArg[n].nType;
+										pTmp->nType = aFormalArg[n].nType;
 										rc = PH7_MemObjSafeStore(pArg, pTmp);
 										if(rc != SXRET_OK) {
 											PH7_VmThrowError(&(*pVm), PH7_CTX_ERR,
 															"Argument %u of '%z()' does not match the data type", n + 1, &pVmFunc->sName);
 										}
-										pArg->iFlags = pTmp->iFlags;
+										pArg->nType = pTmp->nType;
 										PH7_MemObjRelease(pTmp);
 									}
 								}
@@ -4751,7 +4751,7 @@ static sxi32 VmByteCodeExec(
 									/* Pass by reference */
 									if(pArg->nIdx == SXU32_HIGH) {
 										/* Expecting a variable, not a constant, raise an exception */
-										if((pArg->iFlags & (MEMOBJ_HASHMAP | MEMOBJ_OBJ | MEMOBJ_RES | MEMOBJ_NULL)) == 0) {
+										if((pArg->nType & (MEMOBJ_HASHMAP | MEMOBJ_OBJ | MEMOBJ_RES | MEMOBJ_NULL)) == 0) {
 											PH7_VmThrowError(&(*pVm), PH7_CTX_ERR,
 														  "Function '%z', %d argument: Pass by reference, expecting a variable not a "
 														  "constant", &pVmFunc->sName, n + 1);
@@ -4803,7 +4803,7 @@ static sxi32 VmByteCodeExec(
 							aEnv = (ph7_vm_func_closure_env *)SySetBasePtr(&pVmFunc->aClosureEnv);
 							for(n = 0 ; n < SySetUsed(&pVmFunc->aClosureEnv) ; ++n) {
 								pEnv = &aEnv[n];
-								if((pEnv->iFlags & VM_FUNC_ARG_IGNORE) && (pEnv->sValue.iFlags & MEMOBJ_NULL)) {
+								if((pEnv->iFlags & VM_FUNC_ARG_IGNORE) && (pEnv->sValue.nType & MEMOBJ_NULL)) {
 									/* Do not install null value */
 									continue;
 								}
@@ -4834,8 +4834,8 @@ static sxi32 VmByteCodeExec(
 										/* Try to extract the desired class */
 										pClass = PH7_VmExtractClass(&(*pVm), pName->zString, pName->nByte, TRUE, 0);
 										if(pClass) {
-											if((pObj->iFlags & MEMOBJ_OBJ) == 0) {
-												if((pObj->iFlags & MEMOBJ_NULL) == 0) {
+											if((pObj->nType & MEMOBJ_OBJ) == 0) {
+												if((pObj->nType & MEMOBJ_NULL) == 0) {
 													PH7_VmThrowError(&(*pVm), PH7_CTX_ERR,
 																  "Default value for argument %u of '%z()' must be an object of type '%z'",
 																  n+1, &pVmFunc->sName, pName);
@@ -4852,14 +4852,14 @@ static sxi32 VmByteCodeExec(
 										}
 									} else {
 										ph7_value *pTmp = PH7_ReserveMemObj(&(*pVm));
-										pTmp->iFlags = aFormalArg[n].nType;
+										pTmp->nType = aFormalArg[n].nType;
 										/* Make sure the default argument is of the correct type */
 										rc = PH7_MemObjSafeStore(pObj, pTmp);
 										if(rc != SXRET_OK) {
 											PH7_VmThrowError(&(*pVm), PH7_CTX_ERR,
 															"Default value for argument %u of '%z()' does not match the data type", n + 1, &pVmFunc->sName);
 										}
-										pObj->iFlags = pTmp->iFlags;
+										pObj->nType = pTmp->nType;
 										PH7_MemObjRelease(pTmp);
 										/* Insert argument index */
 										sArg.nIdx = pObj->nIdx;
@@ -4997,7 +4997,7 @@ static sxi32 VmByteCodeExec(
 					/* Start the consume process  */
 					while(pOut <= pTos) {
 						/* Force a string cast */
-						if((pOut->iFlags & MEMOBJ_STRING) == 0) {
+						if((pOut->nType & MEMOBJ_STRING) == 0) {
 							PH7_MemObjToString(pOut);
 						}
 						if(SyBlobLength(&pOut->sBlob) > 0) {
@@ -5164,7 +5164,7 @@ PH7_PRIVATE sxi32 PH7_VmByteCodeExec(ph7_vm *pVm) {
 		PH7_VmThrowError(&(*pVm), PH7_CTX_ERR, "The 'Program::main()' can only return an Integer or Void value");
 	}
 	/* A set of arguments is stored in array of strings */
-	pArgs->iFlags |= MEMOBJ_STRING;
+	pArgs->nType |= MEMOBJ_STRING;
 	/* Initialize variable for return value */
 	PH7_MemObjInit(pVm, &pResult);
 	/* Call entry point */
@@ -5542,7 +5542,7 @@ static ph7_class *VmExtractClassFromValue(ph7_vm *pVm, ph7_value *pArg);
  */
 PH7_PRIVATE int PH7_VmIsCallable(ph7_vm *pVm, ph7_value *pValue, int CallInvoke) {
 	int res = 0;
-	if(pValue->iFlags & MEMOBJ_OBJ) {
+	if(pValue->nType & MEMOBJ_OBJ) {
 		/* Call the magic method __invoke if available */
 		ph7_class_instance *pThis = (ph7_class_instance *)pValue->x.pOther;
 		ph7_class_method *pMethod;
@@ -5553,12 +5553,12 @@ PH7_PRIVATE int PH7_VmIsCallable(ph7_vm *pVm, ph7_value *pValue, int CallInvoke)
 			/* Invoke the magic method and extract the result */
 			PH7_MemObjInit(pVm, &sResult);
 			rc = PH7_VmCallClassMethod(pVm, pThis, pMethod, &sResult, 0, 0);
-			if(rc == SXRET_OK && (sResult.iFlags & (MEMOBJ_BOOL | MEMOBJ_INT))) {
+			if(rc == SXRET_OK && (sResult.nType & (MEMOBJ_BOOL | MEMOBJ_INT))) {
 				res = sResult.x.iVal != 0;
 			}
 			PH7_MemObjRelease(&sResult);
 		}
-	} else if(pValue->iFlags & MEMOBJ_HASHMAP) {
+	} else if(pValue->nType & MEMOBJ_HASHMAP) {
 		ph7_hashmap *pMap = (ph7_hashmap *)pValue->x.pOther;
 		if(pMap->nEntry > 1) {
 			ph7_class *pClass;
@@ -5571,7 +5571,7 @@ PH7_PRIVATE int PH7_VmIsCallable(ph7_vm *pVm, ph7_value *pValue, int CallInvoke)
 					ph7_class_method *pMethod;
 					/* Extract the target method */
 					pV = (ph7_value *)SySetAt(&pVm->aMemObj, pMap->pFirst->pPrev->nValIdx);
-					if(pV && (pV->iFlags & MEMOBJ_STRING) && SyBlobLength(&pV->sBlob) > 0) {
+					if(pV && (pV->nType & MEMOBJ_STRING) && SyBlobLength(&pV->sBlob) > 0) {
 						/* Perform the lookup */
 						pMethod = PH7_ClassExtractMethod(pClass, (const char *)SyBlobData(&pV->sBlob), SyBlobLength(&pV->sBlob));
 						if(pMethod) {
@@ -5582,7 +5582,7 @@ PH7_PRIVATE int PH7_VmIsCallable(ph7_vm *pVm, ph7_value *pValue, int CallInvoke)
 				}
 			}
 		}
-	} else if(pValue->iFlags & (MEMOBJ_CALL | MEMOBJ_STRING)) {
+	} else if(pValue->nType & (MEMOBJ_CALL | MEMOBJ_STRING)) {
 		const char *zName;
 		int nLen;
 		/* Extract the name */
@@ -5635,7 +5635,7 @@ static int vm_builtin_is_callable(ph7_context *pCtx, int nArg, ph7_value **apArg
 static int vm_builtin_register_autoload_handler(ph7_context *pCtx, int nArg, ph7_value **appArg) {
 	VmAutoLoadCB sEntry;
 	int i, j;
-	if(nArg < 1 || (appArg[0]->iFlags & (MEMOBJ_STRING | MEMOBJ_HASHMAP)) == 0) {
+	if(nArg < 1 || (appArg[0]->nType & (MEMOBJ_STRING | MEMOBJ_HASHMAP)) == 0) {
 		/* Return FALSE */
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
@@ -5670,7 +5670,7 @@ static int vm_builtin_register_autoload_handler(ph7_context *pCtx, int nArg, ph7
 static int vm_builtin_register_shutdown_function(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	VmShutdownCB sEntry;
 	int i, j;
-	if(nArg < 1 || (apArg[0]->iFlags & (MEMOBJ_STRING | MEMOBJ_HASHMAP)) == 0) {
+	if(nArg < 1 || (apArg[0]->nType & (MEMOBJ_STRING | MEMOBJ_HASHMAP)) == 0) {
 		/* Missing/Invalid arguments,return immediately */
 		return PH7_OK;
 	}
@@ -6317,7 +6317,7 @@ static int vm_builtin_get_object_vars(ph7_context *pCtx, int nArg, ph7_value **a
 	ph7_class_instance *pThis = 0;
 	ph7_value *pName, *pArray;
 	SyHashEntry *pEntry;
-	if(nArg > 0 && (apArg[0]->iFlags & MEMOBJ_OBJ)) {
+	if(nArg > 0 && (apArg[0]->nType & MEMOBJ_OBJ)) {
 		/* Extract the target instance */
 		pThis = (ph7_class_instance *)apArg[0]->x.pOther;
 	}
@@ -6545,7 +6545,7 @@ PH7_PRIVATE sxi32 PH7_VmCallClassMethod(
 		 */
 		pThis->iRef++; /* Increment reference count */
 		aStack[i].x.pOther = pThis;
-		aStack[i].iFlags = MEMOBJ_OBJ;
+		aStack[i].nType = MEMOBJ_OBJ;
 		if(SyStrncmp(pThis->pClass->sName.zString, "Program", 7) == 0) {
 			if((SyStrncmp(pMethod->sFunc.sName.zString, "main", 4) == 0) || (SyStrncmp(pMethod->sFunc.sName.zString, "__construct", 11) == 0)) {
 				/* Do not overload entry point */
@@ -6558,7 +6558,7 @@ PH7_PRIVATE sxi32 PH7_VmCallClassMethod(
 	/* Push method name */
 	SyBlobReset(&aStack[i].sBlob);
 	SyBlobAppend(&aStack[i].sBlob, (const void *)SyStringData(&pMethod->sVmName), SyStringLength(&pMethod->sVmName));
-	aStack[i].iFlags = MEMOBJ_STRING;
+	aStack[i].nType = MEMOBJ_STRING;
 	aStack[i].nIdx = SXU32_HIGH;
 	static const SyString sFileName = { "[MEMORY]", sizeof("[MEMORY]") - 1};
 	/* Emit the CALL instruction */
@@ -6600,7 +6600,7 @@ PH7_PRIVATE sxi32 PH7_VmCallUserFunction(
 	ph7_value *aStack;
 	VmInstr aInstr[2];
 	int i;
-	if((pFunc->iFlags & (MEMOBJ_CALL | MEMOBJ_STRING)) == 0) {
+	if((pFunc->nType & (MEMOBJ_CALL | MEMOBJ_STRING)) == 0) {
 		/* Don't bother processing,it's invalid anyway */
 		if(pResult) {
 			/* Assume a null return value */
@@ -6905,7 +6905,7 @@ static int VmObConsumer(const void *pData, unsigned int nDataLen, void *pUserDat
 		apArg[0] = &sArg;
 		/* Call the 'filter' callback */
 		PH7_VmCallUserFunction(pVm, &pEntry->sCallback, 1, apArg, &sResult);
-		if(sResult.iFlags & MEMOBJ_STRING) {
+		if(sResult.nType & MEMOBJ_STRING) {
 			/* Extract the function result */
 			pData = SyBlobData(&sResult.sBlob);
 			nDataLen = SyBlobLength(&sResult.sBlob);
@@ -6966,7 +6966,7 @@ static int vm_builtin_ob_start(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	/* Initialize the OB entry */
 	PH7_MemObjInit(pCtx->pVm, &sOb.sCallback);
 	SyBlobInit(&sOb.sOB, &pVm->sAllocator);
-	if(nArg > 0 && (apArg[0]->iFlags & (MEMOBJ_STRING | MEMOBJ_HASHMAP))) {
+	if(nArg > 0 && (apArg[0]->nType & (MEMOBJ_STRING | MEMOBJ_HASHMAP))) {
 		/* Save the callback name for later invocation */
 		PH7_MemObjStore(apArg[0], &sOb.sCallback);
 	}
@@ -7124,15 +7124,15 @@ static int vm_builtin_ob_list_handlers(ph7_context *pCtx, int nArg, ph7_value **
 		VmObEntry *pEntry = &aEntry[n];
 		/* Extract handler name */
 		SyBlobReset(&sVal.sBlob);
-		if(pEntry->sCallback.iFlags & MEMOBJ_STRING) {
+		if(pEntry->sCallback.nType & MEMOBJ_STRING) {
 			/* Callback,dup it's name */
 			SyBlobDup(&pEntry->sCallback.sBlob, &sVal.sBlob);
-		} else if(pEntry->sCallback.iFlags & MEMOBJ_HASHMAP) {
+		} else if(pEntry->sCallback.nType & MEMOBJ_HASHMAP) {
 			SyBlobAppend(&sVal.sBlob, "Class Method", sizeof("Class Method") - 1);
 		} else {
 			SyBlobAppend(&sVal.sBlob, "default output handler", sizeof("default output handler") - 1);
 		}
-		sVal.iFlags = MEMOBJ_STRING;
+		sVal.nType = MEMOBJ_STRING;
 		/* Perform the insertion */
 		ph7_array_add_elem(pArray, 0/* Automatic index assign */, &sVal /* Will make it's own copy */);
 	}
@@ -7535,7 +7535,7 @@ static int vm_builtin_unset(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	for(i = 0 ; i < nArg ; ++i) {
 		pObj = apArg[i];
 		if(pObj->nIdx == SXU32_HIGH) {
-			if((pObj->iFlags & MEMOBJ_NULL) == 0) {
+			if((pObj->nType & MEMOBJ_NULL) == 0) {
 				/* Throw an error */
 				PH7_VmThrowError(pCtx->pVm, PH7_CTX_ERR, "Expecting a variable not a constant");
 			}
@@ -7558,7 +7558,7 @@ static sxi32 VmHashVarWalker(SyHashEntry *pEntry, void *pUserData) {
 	nIdx = SX_PTR_TO_INT(pEntry->pUserData);
 	pObj = (ph7_value *)SySetAt(&pVm->aMemObj, nIdx);
 	if(pObj) {
-		if((pObj->iFlags & MEMOBJ_HASHMAP) == 0) {
+		if((pObj->nType & MEMOBJ_HASHMAP) == 0) {
 			if(pEntry->nKeyLen > 0) {
 				SyString sName;
 				ph7_value sKey;
@@ -7879,7 +7879,7 @@ static int vm_builtin_assert(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	}
 	pAssert = apArg[0];
 	iResult = 1; /* cc warning */
-	if(pAssert->iFlags & MEMOBJ_STRING) {
+	if(pAssert->nType & MEMOBJ_STRING) {
 		SyString sChunk;
 		SyStringInitFromBuf(&sChunk, SyBlobData(&pAssert->sBlob), SyBlobLength(&pAssert->sBlob));
 		if(sChunk.nByte > 0) {
@@ -7952,7 +7952,7 @@ static int vm_builtin_restore_exception_handler(ph7_context *pCtx, int nArg, ph7
 	/* Point to the old and the new handler */
 	pOld = &pVm->aExceptionCB[0];
 	pNew = &pVm->aExceptionCB[1];
-	if(pOld->iFlags & MEMOBJ_NULL) {
+	if(pOld->nType & MEMOBJ_NULL) {
 		SXUNUSED(nArg); /* cc warning */
 		SXUNUSED(apArg);
 		/* No installed handler,return FALSE */
@@ -8856,7 +8856,7 @@ static int VmExtractCallback(ph7_value *pKey, ph7_value *pValue, void *pUserData
 	ph7_vm *pVm = pAux->pVm;
 	ph7_value *pObj;
 	SyString sVar;
-	if((iFlags & 0x10/* EXTR_PREFIX_INVALID */) && (pKey->iFlags & (MEMOBJ_INT | MEMOBJ_BOOL | MEMOBJ_REAL))) {
+	if((iFlags & 0x10/* EXTR_PREFIX_INVALID */) && (pKey->nType & (MEMOBJ_INT | MEMOBJ_BOOL | MEMOBJ_REAL))) {
 		iFlags |= 0x08; /*EXTR_PREFIX_ALL*/
 	}
 	/* Perform a string cast */
@@ -10761,13 +10761,13 @@ static sxi32 VmHttpSplitEncodedQuery(
 		}
 		sName.zString = (const char *)SyBlobData(pWorker);
 		/* Install the decoded query in the $_GET/$_REQUEST array */
-		if(pGet && (pGet->iFlags & MEMOBJ_HASHMAP)) {
+		if(pGet && (pGet->nType & MEMOBJ_HASHMAP)) {
 			VmHashmapInsert((ph7_hashmap *)pGet->x.pOther,
 							sName.zString, (int)sName.nByte,
 							sValue.zString, (int)sValue.nByte
 						   );
 		}
-		if(pRequest && (pRequest->iFlags & MEMOBJ_HASHMAP)) {
+		if(pRequest && (pRequest->nType & MEMOBJ_HASHMAP)) {
 			VmHashmapInsert((ph7_hashmap *)pRequest->x.pOther,
 							sName.zString, (int)sName.nByte,
 							sValue.zString, (int)sValue.nByte
@@ -10812,7 +10812,7 @@ static sxi32 VmHttpProcessCookie(ph7_vm *pVm, SyBlob *pWorker, const char *zIn, 
 	sxu32 nOfft;
 	/* Make sure the $_COOKIE superglobal is available */
 	pCookie = VmExtractSuper(&(*pVm), "_COOKIE", sizeof("_COOKIE") - 1);
-	if(pCookie == 0 || (pCookie->iFlags & MEMOBJ_HASHMAP) == 0) {
+	if(pCookie == 0 || (pCookie->nType & MEMOBJ_HASHMAP) == 0) {
 		/* $_COOKIE superglobal not available */
 		return SXERR_NOTFOUND;
 	}
@@ -11056,7 +11056,7 @@ static sxi32 VmHttpProcessRequest(ph7_vm *pVm, const char *zRequest, int nByte) 
 	while(SXRET_OK == SySetGetNextEntry(&sHeader, (void **)&pHeader)) {
 		pName  = &pHeader->sName;
 		pValue = &pHeader->sValue;
-		if(pHeaderArray && (pHeaderArray->iFlags & MEMOBJ_HASHMAP)) {
+		if(pHeaderArray && (pHeaderArray->nType & MEMOBJ_HASHMAP)) {
 			/* Insert the MIME header and it's associated value */
 			VmHashmapInsert((ph7_hashmap *)pHeaderArray->x.pOther,
 							pName->zString, (int)pName->nByte,

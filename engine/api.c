@@ -1236,7 +1236,7 @@ const char *ph7_value_to_string(ph7_value *pValue, int *pLen) {
  * Please refer to the official documentation for function purpose and expected parameters.
  */
 void *ph7_value_to_resource(ph7_value *pValue) {
-	if((pValue->iFlags & MEMOBJ_RES) == 0) {
+	if((pValue->nType & MEMOBJ_RES) == 0) {
 		/* Not a resource,return NULL */
 		return 0;
 	}
@@ -1310,7 +1310,7 @@ int ph7_result_string_format(ph7_context *pCtx, const char *zFormat, ...) {
 	va_list ap;
 	int rc;
 	p = pCtx->pRet;
-	if((p->iFlags & MEMOBJ_STRING) == 0) {
+	if((p->nType & MEMOBJ_STRING) == 0) {
 		/* Invalidate any prior representation */
 		PH7_MemObjRelease(p);
 		MemObjSetType(p, MEMOBJ_STRING);
@@ -1469,7 +1469,7 @@ ph7_value *ph7_array_fetch(ph7_value *pArray, const char *zKey, int nByte) {
 	ph7_value skey;
 	int rc;
 	/* Make sure we are dealing with a valid hashmap */
-	if((pArray->iFlags & MEMOBJ_HASHMAP) == 0) {
+	if((pArray->nType & MEMOBJ_HASHMAP) == 0) {
 		return 0;
 	}
 	if(nByte < 0) {
@@ -1499,7 +1499,7 @@ int ph7_array_walk(ph7_value *pArray, int (*xWalk)(ph7_value *pValue, ph7_value 
 		return PH7_CORRUPT;
 	}
 	/* Make sure we are dealing with a valid hashmap */
-	if((pArray->iFlags & MEMOBJ_HASHMAP) == 0) {
+	if((pArray->nType & MEMOBJ_HASHMAP) == 0) {
 		return PH7_CORRUPT;
 	}
 	/* Start the walk process */
@@ -1513,7 +1513,7 @@ int ph7_array_walk(ph7_value *pArray, int (*xWalk)(ph7_value *pValue, ph7_value 
 int ph7_array_add_elem(ph7_value *pArray, ph7_value *pKey, ph7_value *pValue) {
 	int rc;
 	/* Make sure we are dealing with a valid hashmap */
-	if((pArray->iFlags & MEMOBJ_HASHMAP) == 0) {
+	if((pArray->nType & MEMOBJ_HASHMAP) == 0) {
 		return PH7_CORRUPT;
 	}
 	/* Perform the insertion */
@@ -1527,7 +1527,7 @@ int ph7_array_add_elem(ph7_value *pArray, ph7_value *pKey, ph7_value *pValue) {
 int ph7_array_add_strkey_elem(ph7_value *pArray, const char *zKey, ph7_value *pValue) {
 	int rc;
 	/* Make sure we are dealing with a valid hashmap */
-	if((pArray->iFlags & MEMOBJ_HASHMAP) == 0) {
+	if((pArray->nType & MEMOBJ_HASHMAP) == 0) {
 		return PH7_CORRUPT;
 	}
 	/* Perform the insertion */
@@ -1551,7 +1551,7 @@ int ph7_array_add_intkey_elem(ph7_value *pArray, int iKey, ph7_value *pValue) {
 	ph7_value sKey;
 	int rc;
 	/* Make sure we are dealing with a valid hashmap */
-	if((pArray->iFlags & MEMOBJ_HASHMAP) == 0) {
+	if((pArray->nType & MEMOBJ_HASHMAP) == 0) {
 		return PH7_CORRUPT;
 	}
 	PH7_MemObjInitFromInt(pArray->pVm, &sKey, iKey);
@@ -1567,7 +1567,7 @@ int ph7_array_add_intkey_elem(ph7_value *pArray, int iKey, ph7_value *pValue) {
 unsigned int ph7_array_count(ph7_value *pArray) {
 	ph7_hashmap *pMap;
 	/* Make sure we are dealing with a valid hashmap */
-	if((pArray->iFlags & MEMOBJ_HASHMAP) == 0) {
+	if((pArray->nType & MEMOBJ_HASHMAP) == 0) {
 		return 0;
 	}
 	/* Point to the internal representation of the hashmap */
@@ -1584,7 +1584,7 @@ int ph7_object_walk(ph7_value *pObject, int (*xWalk)(const char *, ph7_value *, 
 		return PH7_CORRUPT;
 	}
 	/* Make sure we are dealing with a valid class instance */
-	if((pObject->iFlags & MEMOBJ_OBJ) == 0) {
+	if((pObject->nType & MEMOBJ_OBJ) == 0) {
 		return PH7_CORRUPT;
 	}
 	/* Start the walk process */
@@ -1599,7 +1599,7 @@ ph7_value *ph7_object_fetch_attr(ph7_value *pObject, const char *zAttr) {
 	ph7_value *pValue;
 	SyString sAttr;
 	/* Make sure we are dealing with a valid class instance */
-	if((pObject->iFlags & MEMOBJ_OBJ) == 0 || zAttr == 0) {
+	if((pObject->nType & MEMOBJ_OBJ) == 0 || zAttr == 0) {
 		return 0;
 	}
 	SyStringInitFromBuf(&sAttr, zAttr, SyStrlen(zAttr));
@@ -1618,7 +1618,7 @@ const char *ph7_object_get_class_name(ph7_value *pObject, int *pLength) {
 		*pLength = 0;
 	}
 	/* Make sure we are dealing with a valid class instance */
-	if((pObject->iFlags & MEMOBJ_OBJ) == 0) {
+	if((pObject->nType & MEMOBJ_OBJ) == 0) {
 		return 0;
 	}
 	/* Point to the class */
@@ -1809,7 +1809,7 @@ int ph7_value_void(ph7_value *pVal) {
  * Please refer to the official documentation for function purpose and expected parameters.
  */
 int ph7_value_string(ph7_value *pVal, const char *zString, int nLen) {
-	if((pVal->iFlags & MEMOBJ_STRING) == 0) {
+	if((pVal->nType & MEMOBJ_STRING) == 0) {
 		/* Invalidate any prior representation */
 		PH7_MemObjRelease(pVal);
 		MemObjSetType(pVal, MEMOBJ_STRING);
@@ -1830,7 +1830,7 @@ int ph7_value_string(ph7_value *pVal, const char *zString, int nLen) {
 int ph7_value_string_format(ph7_value *pVal, const char *zFormat, ...) {
 	va_list ap;
 	int rc;
-	if((pVal->iFlags & MEMOBJ_STRING) == 0) {
+	if((pVal->nType & MEMOBJ_STRING) == 0) {
 		/* Invalidate any prior representation */
 		PH7_MemObjRelease(pVal);
 		MemObjSetType(pVal, MEMOBJ_STRING);
@@ -1874,42 +1874,42 @@ int ph7_value_release(ph7_value *pVal) {
  * Please refer to the official documentation for function purpose and expected parameters.
  */
 int ph7_value_is_int(ph7_value *pVal) {
-	return (pVal->iFlags & MEMOBJ_INT) ? TRUE : FALSE;
+	return (pVal->nType & MEMOBJ_INT) ? TRUE : FALSE;
 }
 /*
  * [CAPIREF: ph7_value_is_float()]
  * Please refer to the official documentation for function purpose and expected parameters.
  */
 int ph7_value_is_float(ph7_value *pVal) {
-	return (pVal->iFlags & MEMOBJ_REAL) ? TRUE : FALSE;
+	return (pVal->nType & MEMOBJ_REAL) ? TRUE : FALSE;
 }
 /*
  * [CAPIREF: ph7_value_is_bool()]
  * Please refer to the official documentation for function purpose and expected parameters.
  */
 int ph7_value_is_bool(ph7_value *pVal) {
-	return (pVal->iFlags & MEMOBJ_BOOL) ? TRUE : FALSE;
+	return (pVal->nType & MEMOBJ_BOOL) ? TRUE : FALSE;
 }
 /*
  * [CAPIREF: ph7_value_is_char()]
  * Please refer to the official documentation for function purpose and expected parameters.
  */
 int ph7_value_is_char(ph7_value *pVal) {
-	return (pVal->iFlags & MEMOBJ_CHAR) ? TRUE : FALSE;
+	return (pVal->nType & MEMOBJ_CHAR) ? TRUE : FALSE;
 }
 /*
  * [CAPIREF: ph7_value_is_void()]
  * Please refer to the official documentation for function purpose and expected parameters.
  */
 int ph7_value_is_void(ph7_value *pVal) {
-	return (pVal->iFlags & MEMOBJ_VOID) ? TRUE : FALSE;
+	return (pVal->nType & MEMOBJ_VOID) ? TRUE : FALSE;
 }
 /*
  * [CAPIREF: ph7_value_is_string()]
  * Please refer to the official documentation for function purpose and expected parameters.
  */
 int ph7_value_is_string(ph7_value *pVal) {
-	return (pVal->iFlags & MEMOBJ_STRING) ? TRUE : FALSE;
+	return (pVal->nType & MEMOBJ_STRING) ? TRUE : FALSE;
 }
 /*
  * [CAPIREF: ph7_value_is_numeric()]
@@ -1934,33 +1934,33 @@ int ph7_value_is_callable(ph7_value *pVal) {
  * Please refer to the official documentation for function purpose and expected parameters.
  */
 int ph7_value_is_callback(ph7_value *pVal) {
-	return (pVal->iFlags & MEMOBJ_CALL) ? TRUE : FALSE;
+	return (pVal->nType & MEMOBJ_CALL) ? TRUE : FALSE;
 }
 /*
  * [CAPIREF: ph7_value_is_scalar()]
  * Please refer to the official documentation for function purpose and expected parameters.
  */
 int ph7_value_is_scalar(ph7_value *pVal) {
-	return (pVal->iFlags & MEMOBJ_SCALAR) ? TRUE : FALSE;
+	return (pVal->nType & MEMOBJ_SCALAR) ? TRUE : FALSE;
 }
 /*
  * [CAPIREF: ph7_value_is_array()]
  * Please refer to the official documentation for function purpose and expected parameters.
  */
 int ph7_value_is_array(ph7_value *pVal) {
-	return (pVal->iFlags & MEMOBJ_HASHMAP) ? TRUE : FALSE;
+	return (pVal->nType & MEMOBJ_HASHMAP) ? TRUE : FALSE;
 }
 /*
  * [CAPIREF: ph7_value_is_object()]
  * Please refer to the official documentation for function purpose and expected parameters.
  */
 int ph7_value_is_object(ph7_value *pVal) {
-	return (pVal->iFlags & MEMOBJ_OBJ) ? TRUE : FALSE;
+	return (pVal->nType & MEMOBJ_OBJ) ? TRUE : FALSE;
 }
 /*
  * [CAPIREF: ph7_value_is_resource()]
  * Please refer to the official documentation for function purpose and expected parameters.
  */
 int ph7_value_is_resource(ph7_value *pVal) {
-	return (pVal->iFlags & MEMOBJ_RES) ? TRUE : FALSE;
+	return (pVal->nType & MEMOBJ_RES) ? TRUE : FALSE;
 }
