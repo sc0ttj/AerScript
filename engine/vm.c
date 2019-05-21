@@ -4570,7 +4570,7 @@ static sxi32 VmByteCodeExec(
 								if(pTarget->nType & MEMOBJ_OBJ) {
 									/* Instance already loaded */
 									pThis = (ph7_class_instance *)pTarget->x.pOther;
-									pThis->iRef += 2;
+									pThis->iRef += 3;
 									pClass = pThis->pClass;
 									if(pTarget->iFlags == MEMOBJ_PARENTOBJ) {
 										/* Parent called */
@@ -4643,6 +4643,15 @@ static sxi32 VmByteCodeExec(
 							PH7_VmMemoryError(&(*pVm));
 						}
 						if(pVmFunc->iFlags & VM_FUNC_CLASS_METHOD) {
+							/* Install the '$base' variable */
+							static const SyString sBase = { "base", sizeof("base") - 1 };
+							pObj = VmCreateMemObj(&(*pVm), &sBase, TRUE);
+							if(pObj) {
+								/* Reflect the change */
+								pObj->iFlags = MEMOBJ_BASEOBJ;
+								pObj->x.pOther = pThis;
+								MemObjSetType(pObj, MEMOBJ_OBJ);
+							}
 							/* Install the '$parent' variable */
 							static const SyString sParent = { "parent", sizeof("parent") - 1 };
 							pObj = VmCreateMemObj(&(*pVm), &sParent, TRUE);
