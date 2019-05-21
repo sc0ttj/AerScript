@@ -1093,6 +1093,7 @@ struct ph7_class_method {
 	SyString sVmName;    /* Automatically generated name assigned to this method.
 						  * Typically this is "[class_name__method_name@random_string]"
 						  */
+	ph7_class *pClass;   /* Class the method was declared */
 	sxi32 iProtection;   /* Protection level [i.e: public,private,protected] */
 	sxi32 iFlags;        /* Methods configuration */
 	sxi32 iCloneDepth;   /* Clone depth [Only used by the magic method __clone ] */
