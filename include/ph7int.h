@@ -996,6 +996,7 @@ struct ph7_vm_func {
 	SySet aArgs;         /* Expected arguments (ph7_vm_func_arg instance) */
 	SySet aStatic;       /* Static variable (ph7_vm_func_static_var instance) */
 	SyString sName;      /* Function name */
+	ph7_class *pClass;   /* Class the method was declared */
 	SySet aByteCode;     /* Compiled function body */
 	SySet aClosureEnv;   /* Closure environment (ph7_vm_func_closure_env instace) */
 	sxi32 iFlags;        /* VM function configuration */
@@ -1096,7 +1097,6 @@ struct ph7_class_method {
 	SyString sVmName;    /* Automatically generated name assigned to this method.
 						  * Typically this is "[class_name__method_name@random_string]"
 						  */
-	ph7_class *pClass;   /* Class the method was declared */
 	sxi32 iProtection;   /* Protection level [i.e: public,private,protected] */
 	sxi32 iFlags;        /* Methods configuration */
 	sxi32 iCloneDepth;   /* Clone depth [Only used by the magic method __clone ] */

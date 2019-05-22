@@ -192,7 +192,7 @@ PH7_PRIVATE sxi32 PH7_ClassInstallAttr(ph7_class *pClass, ph7_class_attr *pAttr)
 PH7_PRIVATE sxi32 PH7_ClassInstallMethod(ph7_class *pClass, ph7_class_method *pMeth) {
 	SyString *pName = &pMeth->sFunc.sName;
 	sxi32 rc;
-	pMeth->pClass = pClass;
+	pMeth->sFunc.pClass = pClass;
 	rc = SyHashInsert(&pClass->hMethod, (const void *)pName->zString, pName->nByte, pMeth);
 	return rc;
 }
