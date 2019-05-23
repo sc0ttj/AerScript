@@ -4154,7 +4154,7 @@ static sxi32 VmByteCodeExec(
 							pThis = (ph7_class_instance *)pNos->x.pOther;
 							/* Point to the instantiated class */
 							pClass = pThis->pClass;
-							if(pNos->iFlags == MEMOBJ_PARENTOBJ) {
+							if(pNos->iFlags == MEMOBJ_BASEOBJ || pNos->iFlags == MEMOBJ_PARENTOBJ) {
 								if(pClass->pBase == 0) {
 									PH7_VmThrowError(&(*pVm), PH7_CTX_ERR,
 													"Attempt to call parent class from non-inheritance instance of class '%z'", &pClass->sName);
@@ -4572,15 +4572,7 @@ static sxi32 VmByteCodeExec(
 									pThis = (ph7_class_instance *)pTarget->x.pOther;
 									pThis->iRef += 3;
 									pClass = pThis->pClass;
-									if(pTarget->iFlags == MEMOBJ_PARENTOBJ) {
-										/* Parent called */
-										if(pThis->pClass->pBase == 0) {
-											PH7_VmThrowError(&(*pVm), PH7_CTX_ERR,
-															"Attempt to call parent class from non-inheritance instance of class '%z'", &pClass->sName);
-										}
-										/* Swap to parent class */
-										pThis->pClass = pThis->pClass->pBase;
-									}
+									pThis->pClass = pVmFunc->pClass;
 									pSelf = pThis->pClass;
 								}
 								if(pSelf == 0) {
@@ -4604,16 +4596,6 @@ static sxi32 VmByteCodeExec(
 								 */
 								while(pArg < pStack) {
 									pArg++;
-								}
-								if(pSelf) {  /* Paranoid edition */
-									/* Check if the call is allowed */
-									pMeth = PH7_ClassExtractMethod(pSelf, pVmFunc->sName.zString, pVmFunc->sName.nByte);
-									if(pMeth && pMeth->iProtection != PH7_CLASS_PROT_PUBLIC) {
-										if(!VmClassMemberAccess(&(*pVm), pSelf, &pVmFunc->sName, pMeth->iProtection, FALSE)) {
-											PH7_VmThrowError(&(*pVm), PH7_CTX_ERR,
-													"Access to the class method '%z->%z()' is forbidden", &pSelf->sName, &pVmFunc->sName);
-										}
-									}
 								}
 							}
 						}
@@ -4946,7 +4928,7 @@ static sxi32 VmByteCodeExec(
 						SyMemBackendFree(&pVm->sAllocator, pFrameStack);
 						/* Leave the frame */
 						VmLeaveFrame(&(*pVm));
-						if(pClass != 0) {
+						if(pClass != 0 && pClass != pThis->pClass) {
 							/* Restore original class */
 							pThis->pClass = pClass;
 						}
