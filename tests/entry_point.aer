@@ -14,12 +14,12 @@ class Test2 extends Test1 {
 
 	public void __construct() {
 		print("Test2::__construct() called.\n");
-		$parent->__construct();
+		$base->__construct();
 	}
 
 	public void __destruct() {
 		print("Test2::__destruct() called.\n");
-		$parent->__destruct();
+		$base->__destruct();
 	}
 
 }
