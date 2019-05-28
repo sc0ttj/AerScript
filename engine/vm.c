@@ -4159,7 +4159,9 @@ static sxi32 VmByteCodeExec(
 									PH7_VmThrowError(&(*pVm), PH7_CTX_ERR,
 													"Attempt to call parent class from non-inheritance instance of class '%z'", &pClass->sName);
 								}
-								pClass = pClass->pBase;
+								if(pNos->iFlags == MEMOBJ_BASE) {
+									pClass = pClass->pBase;
+								}
 							}
 							/* Extract attribute name first */
 							SyStringInitFromBuf(&sName, (const char *)SyBlobData(&pTos->sBlob), SyBlobLength(&pTos->sBlob));
