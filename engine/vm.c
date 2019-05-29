@@ -1074,7 +1074,7 @@ static ph7_value *VmNewOperandStack(
 /* Forward declaration */
 static sxi32 VmRegisterSpecialFunction(ph7_vm *pVm);
 static int VmInstanceOf(ph7_class *pThis, ph7_class *pClass);
-static int VmClassMemberAccess(ph7_vm *pVm, ph7_class *pClass, const SyString *pAttrName, sxi32 iProtection, int bLog);
+static int VmClassMemberAccess(ph7_vm *pVm, ph7_class *pClass, sxi32 iProtection);
 /*
  * Prepare the Virtual Machine for byte-code execution.
  * This routine gets called by the PH7 engine after
@@ -4193,7 +4193,7 @@ static sxi32 VmByteCodeExec(
 												  &pClass->sName, &sName
 												 );
 								} else {
-									if(!VmClassMemberAccess(&(*pVm), pMeth->sFunc.pClass, &sName, pMeth->iProtection, FALSE)) {
+									if(!VmClassMemberAccess(&(*pVm), pMeth->sFunc.pClass, pMeth->iProtection)) {
 										PH7_VmThrowError(&(*pVm), PH7_CTX_ERR,
 												"Access to the class method '%z->%z()' is forbidden", &pMeth->sFunc.pClass->sName, &sName);
 									}
@@ -4244,7 +4244,7 @@ static sxi32 VmByteCodeExec(
 								if(pObjAttr) {
 									ph7_value *pValue = 0; /* cc warning */
 									/* Check attribute access */
-									if(VmClassMemberAccess(&(*pVm), pClass, &pObjAttr->pAttr->sName, pObjAttr->pAttr->iProtection, FALSE)) {
+									if(VmClassMemberAccess(&(*pVm), pClass, pObjAttr->pAttr->iProtection)) {
 										/* Load attribute */
 										pValue = (ph7_value *)SySetAt(&pVm->aMemObj, pObjAttr->nIdx);
 										if(pValue) {
@@ -4370,7 +4370,7 @@ static sxi32 VmByteCodeExec(
 										} else {
 											ph7_value *pValue;
 											/* Check if the access to the attribute is allowed */
-											if(VmClassMemberAccess(&(*pVm), pClass, &pAttr->sName, pAttr->iProtection, TRUE)) {
+											if(VmClassMemberAccess(&(*pVm), pClass, pAttr->iProtection)) {
 												/* Load the desired attribute */
 												pValue = (ph7_value *)SySetAt(&pVm->aMemObj, pAttr->nIdx);
 												if(pValue) {
@@ -4380,6 +4380,9 @@ static sxi32 VmByteCodeExec(
 														pTos->nIdx = pAttr->nIdx;
 													}
 												}
+											} else {
+												PH7_VmThrowError(&(*pVm), PH7_CTX_ERR, "Access to the class attribute '%z::$%z' is forbidden",
+																&pClass->sName, &pAttr->sName);
 											}
 										}
 									}
@@ -6216,9 +6219,7 @@ static int vm_builtin_get_class_methods(ph7_context *pCtx, int nArg, ph7_value *
 static int VmClassMemberAccess(
 	ph7_vm *pVm,               /* Target VM */
 	ph7_class *pClass,         /* Target Class */
-	const SyString *pAttrName, /* Attribute name */
-	sxi32 iProtection,         /* Attribute protection level [i.e: public,protected or private] */
-	int bLog                   /* TRUE to log forbidden access. */
+	sxi32 iProtection          /* Attribute protection level [i.e: public,protected or private] */
 ) {
 	if(iProtection != PH7_CLASS_PROT_PUBLIC) {
 		VmFrame *pFrame = pVm->pFrame;
@@ -6229,30 +6230,23 @@ static int VmClassMemberAccess(
 		}
 		pVmFunc = (ph7_vm_func *)pFrame->pUserData;
 		if(pVmFunc == 0 || (pVmFunc->iFlags & VM_FUNC_CLASS_METHOD) == 0) {
-			goto dis; /* Access is forbidden */
+			return 0; /* Access is forbidden */
 		}
 		if(iProtection == PH7_CLASS_PROT_PRIVATE) {
 			/* Must be the same instance */
 			if((ph7_class *)pVmFunc->pUserData != pClass) {
-				goto dis; /* Access is forbidden */
+				return 0; /* Access is forbidden */
 			}
 		} else {
 			/* Protected */
 			ph7_class *pBase = (ph7_class *)pVmFunc->pUserData;
 			/* Must be a derived class */
 			if(!VmInstanceOf(pBase, pClass)) {
-				goto dis; /* Access is forbidden */
+				return 0; /* Access is forbidden */
 			}
 		}
 	}
 	return 1; /* Access is granted */
-dis:
-	if(bLog) {
-		PH7_VmThrowError(&(*pVm), PH7_CTX_ERR,
-					  "Access to the class attribute '%z->%z' is forbidden",
-					  &pClass->sName, pAttrName);
-	}
-	return 0; /* Access is forbidden */
 }
 /*
  * array get_class_vars(string/object $class_name)
@@ -6295,7 +6289,7 @@ static int vm_builtin_get_class_vars(ph7_context *pCtx, int nArg, ph7_value **ap
 	while((pEntry = SyHashGetNextEntry(&pClass->hAttr)) != 0) {
 		ph7_class_attr *pAttr = (ph7_class_attr *)pEntry->pUserData;
 		/* Check if the access is allowed */
-		if(VmClassMemberAccess(pCtx->pVm, pClass, &pAttr->sName, pAttr->iProtection, FALSE)) {
+		if(VmClassMemberAccess(pCtx->pVm, pClass, pAttr->iProtection)) {
 			SyString *pAttrName = &pAttr->sName;
 			ph7_value *pValue = 0;
 			if(pAttr->iFlags & (PH7_CLASS_ATTR_CONSTANT | PH7_CLASS_ATTR_STATIC)) {
@@ -6370,7 +6364,7 @@ static int vm_builtin_get_object_vars(ph7_context *pCtx, int nArg, ph7_value **a
 		}
 		pAttrName = &pVmAttr->pAttr->sName;
 		/* Check if the access is allowed */
-		if(VmClassMemberAccess(pCtx->pVm, pThis->pClass, pAttrName, pVmAttr->pAttr->iProtection, FALSE)) {
+		if(VmClassMemberAccess(pCtx->pVm, pThis->pClass, pVmAttr->pAttr->iProtection)) {
 			ph7_value *pValue = 0;
 			/* Extract attribute */
 			pValue = PH7_ClassInstanceExtractAttrValue(pThis, pVmAttr);
