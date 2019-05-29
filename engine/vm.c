@@ -4195,7 +4195,7 @@ static sxi32 VmByteCodeExec(
 								} else {
 									if(!VmClassMemberAccess(&(*pVm), pMeth->sFunc.pClass, pMeth->iProtection)) {
 										PH7_VmThrowError(&(*pVm), PH7_CTX_ERR,
-												"Access to the class method '%z->%z()' is forbidden", &pMeth->sFunc.pClass->sName, &sName);
+												"Method '%z->%z()' is inaccessible due to its protection level", &pMeth->sFunc.pClass->sName, &sName);
 									}
 									/* Push method name on the stack */
 									PH7_MemObjRelease(pTos);
@@ -4266,7 +4266,7 @@ static sxi32 VmByteCodeExec(
 										}
 									} else {
 										PH7_VmThrowError(&(*pVm), PH7_CTX_ERR,
-													"Access to the class attribute '%z->%z' is forbidden", &pClass->sName, &pObjAttr->pAttr->sName);
+													"Class attribute '%z->%z' is inaccessible due to its protection level", &pClass->sName, &pObjAttr->pAttr->sName);
 									}
 								}
 								/* Safely unreference the object */
@@ -4320,7 +4320,7 @@ static sxi32 VmByteCodeExec(
 									}
 									if(pMeth == 0 || (pMeth->iFlags & PH7_CLASS_ATTR_VIRTUAL)) {
 										if(pMeth) {
-											PH7_VmThrowError(&(*pVm), PH7_CTX_ERR, "Cannot call virtual method '%z:%z'",
+											PH7_VmThrowError(&(*pVm), PH7_CTX_ERR, "Cannot call virtual method '%z::%z'",
 														  &pClass->sName, &sName
 														 );
 										} else {
@@ -4381,7 +4381,7 @@ static sxi32 VmByteCodeExec(
 													}
 												}
 											} else {
-												PH7_VmThrowError(&(*pVm), PH7_CTX_ERR, "Access to the class attribute '%z::$%z' is forbidden",
+												PH7_VmThrowError(&(*pVm), PH7_CTX_ERR, "Class attribute '%z::$%z' is inaccessible due to its protection level",
 																&pClass->sName, &pAttr->sName);
 											}
 										}
