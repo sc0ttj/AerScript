@@ -165,14 +165,18 @@ PH7_PRIVATE ph7_class_method *PH7_ClassExtractMethod(ph7_class *pClass, const ch
  */
 PH7_PRIVATE ph7_class_attr *PH7_ClassExtractAttribute(ph7_class *pClass, const char *zName, sxu32 nByte) {
 	SyHashEntry *pEntry;
+	ph7_class_attr *pAttr;
 	/* Perform a hash lookup */
-	pEntry = SyHashGet(&pClass->hAttr, (const void *)zName, nByte);
-	if(pEntry == 0) {
-		/* No such entry */
-		return 0;
+	SyHashResetLoopCursor(&pClass->hAttr);
+	while((pEntry = SyHashGetNextEntry(&pClass->hAttr)) != 0) {
+		/* Point to the desired method */
+		pAttr = (ph7_class_attr *)pEntry->pUserData;
+		if(pAttr->pClass == pClass && SyStrncmp(pAttr->sName.zString, zName, nByte) == 0) {
+			return pAttr;
+		}
 	}
-	/* Point to the desired method */
-	return (ph7_class_attr *)pEntry->pUserData;
+	/* No such entry */
+	return 0;
 }
 /*
  * Install a class attribute in the corresponding container.
