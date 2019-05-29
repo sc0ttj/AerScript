@@ -4149,7 +4149,7 @@ static sxi32 VmByteCodeExec(
 							if(!pNos->x.pOther) {
 								PH7_VmThrowError(&(*pVm), PH7_CTX_ERR, "Call to non-instantiated object '$%z'", &sName);
 							}
-							ph7_class *pClass;
+							ph7_class *pClass, *pDerived;
 							/* Class already instantiated */
 							pThis = (ph7_class_instance *)pNos->x.pOther;
 							/* Point to the instantiated class */
@@ -4170,14 +4170,30 @@ static sxi32 VmByteCodeExec(
 								ph7_class_method *pMeth = 0;
 								if(sName.nByte > 0) {
 									/* Extract the target method */
-									pMeth = PH7_ClassExtractMethod(pClass, sName.zString, sName.nByte);
+									if(pNos->iFlags != MEMOBJ_PARENTOBJ) {
+										pMeth = PH7_ClassExtractMethod(pClass, sName.zString, sName.nByte);
+									}
+									if(pMeth == 0 && pNos->iFlags != MEMOBJ_BASEOBJ) {
+										/* Browse hashtable from the beginning */
+										SyHashResetLoopCursor(&pClass->hDerived);
+										/* Search for appropriate class member */
+										SyHashEntry *pEntry;
+										while((pEntry = SyHashGetNextEntry(&pClass->hDerived)) != 0) {
+											pDerived = (ph7_class *) pEntry->pUserData;
+											pMeth = PH7_ClassExtractMethod(pDerived, sName.zString, sName.nByte);
+											if(pMeth) {
+												pClass = pDerived;
+												break;
+											}
+										}
+									}
 								}
 								if(pMeth == 0) {
 									PH7_VmThrowError(&(*pVm), PH7_CTX_ERR, "Call to undefined method '%z->%z()'",
 												  &pClass->sName, &sName
 												 );
 								} else {
-									if(pNos->iFlags == MEMOBJ_PARENTOBJ && pMeth->iProtection == PH7_CLASS_PROT_PRIVATE) {
+									if(pMeth->iProtection == PH7_CLASS_PROT_PRIVATE && (pNos->iFlags == MEMOBJ_BASEOBJ || pNos->iFlags == MEMOBJ_PARENTOBJ)) {
 										PH7_VmThrowError(&(*pVm), PH7_CTX_ERR,
 												"Access to the class method '%z->%z()' is forbidden", &pClass->sName, &sName);
 									}
