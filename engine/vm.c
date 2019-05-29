@@ -4355,7 +4355,7 @@ static sxi32 VmByteCodeExec(
 									}
 									if(pAttr == 0) {
 										/* No such attribute,load null */
-										PH7_VmThrowError(&(*pVm), PH7_CTX_ERR, "Undefined class attribute '%z::%z'",
+										PH7_VmThrowError(&(*pVm), PH7_CTX_ERR, "Undefined class attribute '%z::$%z'",
 													  &pClass->sName, &sName);
 									}
 									/* Pop the attribute name from the stack */
@@ -4367,7 +4367,7 @@ static sxi32 VmByteCodeExec(
 									if(pAttr) {
 										if((pAttr->iFlags & (PH7_CLASS_ATTR_STATIC | PH7_CLASS_ATTR_CONSTANT)) == 0) {
 											/* Access to a non static attribute */
-											PH7_VmThrowError(&(*pVm), PH7_CTX_ERR, "Access to a non-static class attribute '%z::%z'",
+											PH7_VmThrowError(&(*pVm), PH7_CTX_ERR, "Access to a non-static class attribute '%z::$%z'",
 														  &pClass->sName, &pAttr->sName
 														 );
 										} else {
