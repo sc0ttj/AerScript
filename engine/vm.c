@@ -6224,7 +6224,7 @@ static int VmClassMemberAccess(
 			/* Protected */
 			ph7_class *pBase = (ph7_class *)pVmFunc->pUserData;
 			/* Must be a derived class */
-			if(!VmInstanceOf(pClass, pBase)) {
+			if(!VmInstanceOf(pBase, pClass)) {
 				goto dis; /* Access is forbidden */
 			}
 		}
