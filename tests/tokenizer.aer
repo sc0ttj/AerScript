@@ -8,7 +8,6 @@ class StringTokenizer {
 	}
 
 	public void __destruct() {
-		unset($this);
 	}
 
 	public bool hasMoreTokens() {
