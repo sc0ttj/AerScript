@@ -282,11 +282,9 @@ PH7_PRIVATE sxi32 PH7_ClassInherit(ph7_vm *pVm, ph7_class *pSub, ph7_class *pBas
 			}
 		}
 		/* Install the method */
-		if(pMeth->iProtection != PH7_CLASS_PROT_PRIVATE) {
-			rc = SyHashInsert(&pSub->hMethod, (const void *)pName->zString, pName->nByte, pMeth);
-			if(rc != SXRET_OK) {
-				return rc;
-			}
+		rc = SyHashInsert(&pSub->hMethod, (const void *)pName->zString, pName->nByte, pMeth);
+		if(rc != SXRET_OK) {
+			return rc;
 		}
 	}
 	/* Mark first inherited class as direct subclass */
