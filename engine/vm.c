@@ -7580,6 +7580,10 @@ static int vm_builtin_unset(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 				PH7_VmThrowError(pCtx->pVm, PH7_CTX_ERR, "Expecting a variable not a constant");
 			}
 		} else {
+			if(pObj->iFlags != MEMOBJ_VARIABLE) {
+				/* Throw an error */
+				PH7_VmThrowError(pCtx->pVm, PH7_CTX_ERR, "Expecting a variable not AerScript statement");
+			}
 			sxu32 nIdx = pObj->nIdx;
 			PH7_VmUnsetMemObj(&(*pVm), nIdx, FALSE);
 		}
