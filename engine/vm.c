@@ -4193,9 +4193,9 @@ static sxi32 VmByteCodeExec(
 												  &pClass->sName, &sName
 												 );
 								} else {
-									if(pMeth->iProtection == PH7_CLASS_PROT_PRIVATE && (pNos->iFlags == MEMOBJ_BASEOBJ || pNos->iFlags == MEMOBJ_PARENTOBJ)) {
+									if(!VmClassMemberAccess(&(*pVm), pMeth->sFunc.pClass, &sName, pMeth->iProtection, FALSE)) {
 										PH7_VmThrowError(&(*pVm), PH7_CTX_ERR,
-												"Access to the class method '%z->%z()' is forbidden", &pClass->sName, &sName);
+												"Access to the class method '%z->%z()' is forbidden", &pMeth->sFunc.pClass->sName, &sName);
 									}
 									/* Push method name on the stack */
 									PH7_MemObjRelease(pTos);
