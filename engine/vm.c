@@ -4209,10 +4209,23 @@ static sxi32 VmByteCodeExec(
 								SyHashEntry *pEntry;
 								/* Extract the target attribute */
 								if(sName.nByte > 0) {
-									pEntry = SyHashGet(&pThis->hAttr, (const void *)sName.zString, sName.nByte);
-									if(pEntry) {
-										/* Point to the attribute value */
+									SyHashResetLoopCursor(&pThis->hAttr);
+									while((pEntry = SyHashGetNextEntry(&pThis->hAttr)) != 0) {
 										pObjAttr = (VmClassAttr *)pEntry->pUserData;
+										if(SyStrncmp(pObjAttr->pAttr->sName.zString, sName.zString, sName.nByte) == 0) {
+											if(pNos->iFlags != MEMOBJ_PARENTOBJ && pObjAttr->pAttr->pClass == pClass) {
+												break;
+											} else if(pNos->iFlags != MEMOBJ_BASEOBJ && pObjAttr->pAttr->iProtection != PH7_CLASS_PROT_PRIVATE) {
+												SyHashEntry *pDerived = SyHashGet(&pClass->hDerived, (const void *)pObjAttr->pAttr->pClass->sName.zString, pObjAttr->pAttr->pClass->sName.nByte);
+												if(pDerived != 0) {
+													ph7_class *pSub = (ph7_class *)pDerived->pUserData;
+													if(pObjAttr->pAttr->pClass == pSub) {
+														break;
+													}
+												}
+											}
+										}
+										pObjAttr = 0;
 									}
 								}
 								if(pObjAttr == 0) {
@@ -4231,7 +4244,7 @@ static sxi32 VmByteCodeExec(
 								if(pObjAttr) {
 									ph7_value *pValue = 0; /* cc warning */
 									/* Check attribute access */
-									if(VmClassMemberAccess(&(*pVm), pClass, &pObjAttr->pAttr->sName, pObjAttr->pAttr->iProtection, TRUE)) {
+									if(VmClassMemberAccess(&(*pVm), pClass, &pObjAttr->pAttr->sName, pObjAttr->pAttr->iProtection, FALSE)) {
 										/* Load attribute */
 										pValue = (ph7_value *)SySetAt(&pVm->aMemObj, pObjAttr->nIdx);
 										if(pValue) {
@@ -4251,6 +4264,9 @@ static sxi32 VmByteCodeExec(
 												}
 											}
 										}
+									} else {
+										PH7_VmThrowError(&(*pVm), PH7_CTX_ERR,
+													"Access to the class attribute '%z->%z' is forbidden", &pClass->sName, &pObjAttr->pAttr->sName);
 									}
 								}
 								/* Safely unreference the object */
