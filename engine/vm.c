@@ -6402,7 +6402,8 @@ static int VmQueryInterfaceSet(ph7_class *pClass, SySet *pSet) {
  * Otherwise FALSE is returned.
  */
 static int VmInstanceOf(ph7_class *pThis, ph7_class *pClass) {
-	ph7_class *pParent;
+	SyHashEntry *pEntry;
+	ph7_class *pDerived, *pParent;
 	sxi32 rc;
 	if(pThis == pClass) {
 		/* Instance of the same class */
@@ -6413,20 +6414,34 @@ static int VmInstanceOf(ph7_class *pThis, ph7_class *pClass) {
 	if(rc) {
 		return TRUE;
 	}
-	/* Check parent classes */
-	pParent = pThis->pBase;
-	while(pParent) {
-		if(pParent == pClass) {
+	/* Check derived classes */
+	SyHashResetLoopCursor(&pThis->hDerived);
+	while((pEntry = SyHashGetNextEntry(&pThis->hDerived)) != 0) {
+		pDerived = (ph7_class *) pEntry->pUserData;
+		if(pDerived == pClass) {
 			/* Same instance */
 			return TRUE;
 		}
 		/* Check the implemented interfaces */
-		rc = VmQueryInterfaceSet(pClass, &pParent->aInterface);
+		rc = VmQueryInterfaceSet(pClass, &pDerived->aInterface);
 		if(rc) {
 			return TRUE;
 		}
-		/* Point to the parent class */
-		pParent = pParent->pBase;
+		/* Check parent classes */
+		pParent = pDerived->pBase;
+		while(pParent) {
+			if(pParent == pClass) {
+				/* Same instance */
+				return TRUE;
+			}
+			/* Check the implemented interfaces */
+			rc = VmQueryInterfaceSet(pClass, &pParent->aInterface);
+			if(rc) {
+				return TRUE;
+			}
+			/* Point to the parent class */
+			pParent = pParent->pBase;
+		}
 	}
 	/* Not an instance of the the given class */
 	return FALSE;
