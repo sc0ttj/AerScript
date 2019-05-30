@@ -4007,22 +4007,29 @@ done:
  *   protected or public, but not private. Furthermore the signatures of the methods must
  *   match, i.e. the type hints and the number of required arguments must be the same.
  */
-static sxi32 PH7_CompileVirtualClass(ph7_gen_state *pGen) {
-	sxi32 rc;
-	pGen->pIn++; /* Jump the 'virtual' keyword */
-	rc = PH7_GenStateCompileClass(&(*pGen), PH7_CLASS_VIRTUAL);
-	return rc;
-}
-/*
- * Compile a user-defined final class.
- *    Aer introduces the final keyword, which prevents child classes from overriding
- *    a method by prefixing the definition with final. If the class itself is being defined
- *    final then it cannot be extended.
- */
-static sxi32 PH7_CompileFinalClass(ph7_gen_state *pGen) {
-	sxi32 rc;
-	pGen->pIn++; /* Jump the 'final' keyword */
-	rc = PH7_GenStateCompileClass(&(*pGen), PH7_CLASS_FINAL);
+static sxi32 PH7_CompileFinalVirtualClass(ph7_gen_state *pGen) {
+	sxi32 nKwrd, rc;
+	sxi32 iFlags = 0;
+	for(;;) {
+		nKwrd = SX_PTR_TO_INT(pGen->pIn->pUserData);
+		if(nKwrd == PH7_KEYWORD_FINAL) {
+			if(iFlags & PH7_CLASS_FINAL) {
+				PH7_GenCompileError(pGen, E_ERROR, pGen->pIn->nLine, "Duplicate 'final' modifier");
+			}
+			iFlags |= PH7_CLASS_FINAL;
+		} else if(nKwrd == PH7_KEYWORD_VIRTUAL) {
+			if(iFlags & PH7_CLASS_VIRTUAL) {
+				PH7_GenCompileError(pGen, E_ERROR, pGen->pIn->nLine, "Duplicate 'virtual' modifier");
+			}
+			iFlags |= PH7_CLASS_VIRTUAL;
+		} else if(nKwrd == PH7_KEYWORD_CLASS) {
+			break;
+		} else {
+			PH7_GenCompileError(pGen, E_ERROR, pGen->pIn->nLine, "Unexpected token '%z' in class declaration", &pGen->pIn->sData);
+		}
+		pGen->pIn++;
+	}
+	rc = PH7_GenStateCompileClass(&(*pGen), iFlags);
 	return rc;
 }
 /*
@@ -4858,14 +4865,10 @@ static ProcLangConstruct PH7_GenStateGetGlobalScopeHandler(
 			return PH7_CompileDefine;
 		} else if(nKeywordID == PH7_KEYWORD_INTERFACE) {
 			return PH7_CompileClassInterface;
+		} else if(nKeywordID == PH7_KEYWORD_FINAL || nKeywordID == PH7_KEYWORD_VIRTUAL) {
+			return PH7_CompileFinalVirtualClass;
 		} else if(nKeywordID == PH7_KEYWORD_CLASS) {
 			return PH7_CompileClass;
-		} else if(nKeywordID == PH7_KEYWORD_VIRTUAL && (pLookahead->nType & PH7_TK_KEYWORD)
-				&& SX_PTR_TO_INT(pLookahead->pUserData) == PH7_KEYWORD_CLASS) {
-			return PH7_CompileVirtualClass;
-		} else if(nKeywordID == PH7_KEYWORD_FINAL && (pLookahead->nType & PH7_TK_KEYWORD)
-				&& SX_PTR_TO_INT(pLookahead->pUserData) == PH7_KEYWORD_CLASS) {
-			return PH7_CompileFinalClass;
 		} else if(nKeywordID == PH7_KEYWORD_NAMESPACE) {
 			return PH7_CompileNamespace;
 		} else if(nKeywordID == PH7_KEYWORD_USING) {
