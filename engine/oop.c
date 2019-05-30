@@ -282,7 +282,7 @@ PH7_PRIVATE sxi32 PH7_ClassInherit(ph7_vm *pVm, ph7_class *pSub, ph7_class *pBas
 		} else {
 			if(pMeth->iFlags & PH7_CLASS_ATTR_VIRTUAL) {
 				/* Virtual method must be defined in the child class */
-				PH7_VmThrowError(&(*pVm), PH7_CTX_ERR, "Virtual method '%z:%z()' must be defined inside child class '%z'", &pBase->sName, pName, &pSub->sName);
+				PH7_VmThrowError(&(*pVm), PH7_CTX_ERR, "Virtual method '%z::%z()' must be defined inside child class '%z'", &pBase->sName, pName, &pSub->sName);
 			}
 		}
 		/* Install the method */

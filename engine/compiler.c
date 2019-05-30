@@ -3458,7 +3458,7 @@ static sxi32 PH7_GenStateCompileClassMethod(
 		/* Only method signature is allowed */
 		if(pGen->pIn < pGen->pEnd && (pGen->pIn->nType & PH7_TK_SEMI /* ';'*/) == 0) {
 			PH7_GenCompileError(pGen, E_ERROR, pGen->pIn->nLine,
-									 "Interface method '%z::%z()' cannot contain body", &pClass->sName, pName);
+									 "Interface or virtual method '%z::%z()' cannot contain body", &pClass->sName, pName);
 		}
 	}
 	/* Store method return data type */

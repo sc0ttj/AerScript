@@ -4331,7 +4331,7 @@ static sxi32 VmByteCodeExec(
 										}
 										PH7_MemObjRelease(pTos);
 									} else if((pMeth->iFlags & PH7_CLASS_ATTR_STATIC) == 0 && ((pClass->iFlags & PH7_CLASS_FINAL) == 0 || (pClass->iFlags & PH7_CLASS_VIRTUAL) == 0)) {
-										PH7_VmThrowError(&(*pVm), PH7_CTX_ERR, "Attempt to call statically a non-static method '%z::%z()'",
+										PH7_VmThrowError(&(*pVm), PH7_CTX_ERR, "An object reference is required for the non-static method '%z::%z()'",
 														&pClass->sName, &sName);
 									} else if(!VmClassMemberAccess(&(*pVm), pClass, pMeth->iProtection)) {
 										PH7_VmThrowError(&(*pVm), PH7_CTX_ERR, "Method '%z::%z()' is inaccessible due to its protection level",
@@ -4364,7 +4364,7 @@ static sxi32 VmByteCodeExec(
 									if(pAttr) {
 										if((pAttr->iFlags & (PH7_CLASS_ATTR_STATIC | PH7_CLASS_ATTR_CONSTANT)) == 0) {
 											/* Access to a non static attribute */
-											PH7_VmThrowError(&(*pVm), PH7_CTX_ERR, "Access to a non-static class attribute '%z::$%z'",
+											PH7_VmThrowError(&(*pVm), PH7_CTX_ERR, "An object reference is required for the non-static attribute '%z::$%z'",
 														  &pClass->sName, &pAttr->sName
 														 );
 										} else {
