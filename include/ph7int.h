@@ -632,9 +632,8 @@ struct ph7_value {
 };
 /* Variable control flags */
 #define MEMOBJ_VARIABLE  0 /* Memory value is variable */
-#define MEMOBJ_BASEOBJ   1 /* Memory value is 'base' object */
-#define MEMOBJ_PARENTOBJ 2 /* Memory value is 'parent' object */
-#define MEMOBJ_THISOBJ   3 /* Memory value is 'this' object */
+#define MEMOBJ_PARENTOBJ 1 /* Memory value is 'parent' object */
+#define MEMOBJ_THISOBJ   2 /* Memory value is 'this' object */
 /* Allowed variable data types.
  */
 #define MEMOBJ_BOOL      0x0001  /* Memory value is a boolean */

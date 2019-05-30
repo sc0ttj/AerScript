@@ -4154,13 +4154,10 @@ static sxi32 VmByteCodeExec(
 							pThis = (ph7_class_instance *)pNos->x.pOther;
 							/* Point to the instantiated class */
 							pClass = pThis->pClass;
-							if(pNos->iFlags == MEMOBJ_BASEOBJ || pNos->iFlags == MEMOBJ_PARENTOBJ) {
+							if(pNos->iFlags == MEMOBJ_PARENTOBJ) {
 								if(pClass->pBase == 0) {
 									PH7_VmThrowError(&(*pVm), PH7_CTX_ERR,
 													"Attempt to call parent class from non-inheritance instance of class '%z'", &pClass->sName);
-								}
-								if(pNos->iFlags == MEMOBJ_BASEOBJ) {
-									pClass = pClass->pBase;
 								}
 							}
 							/* Extract attribute name first */
@@ -4173,7 +4170,7 @@ static sxi32 VmByteCodeExec(
 									if(pNos->iFlags != MEMOBJ_PARENTOBJ) {
 										pMeth = PH7_ClassExtractMethod(pClass, sName.zString, sName.nByte);
 									}
-									if(pMeth == 0 && pNos->iFlags != MEMOBJ_BASEOBJ) {
+									if(pMeth == 0) {
 										/* Browse hashtable from the beginning */
 										SyHashResetLoopCursor(&pClass->hDerived);
 										/* Search for appropriate class member */
@@ -4215,7 +4212,7 @@ static sxi32 VmByteCodeExec(
 										if(SyStrncmp(pObjAttr->pAttr->sName.zString, sName.zString, sName.nByte) == 0) {
 											if(pNos->iFlags != MEMOBJ_PARENTOBJ && pObjAttr->pAttr->pClass == pClass) {
 												break;
-											} else if(pNos->iFlags != MEMOBJ_BASEOBJ) {
+											} else {
 												SyHashEntry *pDerived = SyHashGet(&pClass->hDerived, (const void *)pObjAttr->pAttr->pClass->sName.zString, pObjAttr->pAttr->pClass->sName.nByte);
 												if(pDerived != 0) {
 													ph7_class *pSub = (ph7_class *)pDerived->pUserData;
@@ -4610,7 +4607,7 @@ static sxi32 VmByteCodeExec(
 								if(pTarget->nType & MEMOBJ_OBJ) {
 									/* Instance already loaded */
 									pThis = (ph7_class_instance *)pTarget->x.pOther;
-									pThis->iRef += 3;
+									pThis->iRef += 2;
 									pClass = pThis->pClass;
 									pThis->pClass = pVmFunc->pClass;
 									pSelf = pThis->pClass;
@@ -4665,15 +4662,6 @@ static sxi32 VmByteCodeExec(
 							PH7_VmMemoryError(&(*pVm));
 						}
 						if(pVmFunc->iFlags & VM_FUNC_CLASS_METHOD) {
-							/* Install the '$base' variable */
-							static const SyString sBase = { "base", sizeof("base") - 1 };
-							pObj = VmCreateMemObj(&(*pVm), &sBase, TRUE);
-							if(pObj) {
-								/* Reflect the change */
-								pObj->iFlags = MEMOBJ_BASEOBJ;
-								pObj->x.pOther = pThis;
-								MemObjSetType(pObj, MEMOBJ_OBJ);
-							}
 							/* Install the '$parent' variable */
 							static const SyString sParent = { "parent", sizeof("parent") - 1 };
 							pObj = VmCreateMemObj(&(*pVm), &sParent, TRUE);
