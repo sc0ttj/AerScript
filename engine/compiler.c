@@ -3417,6 +3417,11 @@ static sxi32 PH7_GenStateCompileClassMethod(
 		/* Assemble method signature only */
 		doBody = FALSE;
 	}
+	if(iFlags & PH7_CLASS_ATTR_STATIC && pClass->iFlags & PH7_CLASS_INTERFACE) {
+		PH7_GenCompileError(pGen, E_ERROR, nLine,
+								 "A method '%z::%z()' cannot be declared as static in an interface",
+								 &pClass->sName, pName);
+	}
 	if(pGen->pIn >= pGen->pEnd || (pGen->pIn->nType & PH7_TK_LPAREN) == 0) {
 		/* Syntax error */
 		PH7_GenCompileError(pGen, E_ERROR, nLine, "Expected '(' after method name '%z::%z()'", &pClass->sName, pName);
