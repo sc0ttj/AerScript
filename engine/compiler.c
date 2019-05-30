@@ -3417,11 +3417,6 @@ static sxi32 PH7_GenStateCompileClassMethod(
 		/* Assemble method signature only */
 		doBody = FALSE;
 	}
-	if(iFlags & PH7_CLASS_ATTR_STATIC && pClass->iFlags & PH7_CLASS_INTERFACE) {
-		PH7_GenCompileError(pGen, E_ERROR, nLine,
-								 "A method '%z::%z()' cannot be declared as static in an interface",
-								 &pClass->sName, pName);
-	}
 	if(pGen->pIn >= pGen->pEnd || (pGen->pIn->nType & PH7_TK_LPAREN) == 0) {
 		/* Syntax error */
 		PH7_GenCompileError(pGen, E_ERROR, nLine, "Expected '(' after method name '%z::%z()'", &pClass->sName, pName);
@@ -3614,27 +3609,9 @@ static sxi32 PH7_CompileClassInterface(ph7_gen_state *pGen) {
 		} else {
 			sxi32 iFlags = 0;
 			if(nKwrd == PH7_KEYWORD_STATIC) {
-				/* Static method,record that */
-				iFlags |= PH7_CLASS_ATTR_STATIC;
-				/* Advance the stream cursor */
-				pGen->pIn++;
-				if(pGen->pIn >= pGen->pEnd || (pGen->pIn->nType & PH7_TK_KEYWORD) == 0) {
-					PH7_GenCompileError(pGen, E_ERROR, pGen->pIn->nLine,
-											 "Expecting method signature inside interface '%z'", pName);
-				}
-				/* Extract the keyword */
-				nKwrd = SX_PTR_TO_INT(pGen->pIn->pUserData);
-				if(nKwrd == PH7_KEYWORD_PRIVATE || nKwrd == PH7_KEYWORD_PROTECTED) {
-					/* Emit a warning and switch to public visibility */
-					PH7_GenCompileError(&(*pGen), E_WARNING, pGen->pIn->nLine, "interface: Access type must be public");
-					nKwrd = PH7_KEYWORD_PUBLIC;
-				}
-				if(nKwrd == PH7_KEYWORD_PUBLIC) {
-					/* Advance the stream cursor */
-					pGen->pIn++;
-					/* Extract the keyword */
-					nKwrd = SX_PTR_TO_INT(pGen->pIn->pUserData);
-				}
+				PH7_GenCompileError(pGen, E_ERROR, nLine,
+										 "Cannot declare a static method in an interface '%z'",
+										 pName);
 			}
 			if((nKwrd & PH7_KEYWORD_TYPEDEF) == 0) {
 				PH7_GenCompileError(pGen, E_ERROR, pGen->pIn->nLine,
