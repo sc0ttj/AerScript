@@ -1,0 +1,11 @@
+final virtual class Static {
+	public void test() {
+		print('This method can be called statically...');
+	}
+}
+
+final class Program {
+	public void main() {
+		Static::test();
+	}
+}
