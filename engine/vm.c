@@ -6025,62 +6025,6 @@ static int vm_builtin_interface_exists(ph7_context *pCtx, int nArg, ph7_value **
 	return PH7_OK;
 }
 /*
- * bool class_alias([string $original[,string $alias ]])
- *   Creates an alias for a class.
- * Parameters
- *  original
- *    The original class.
- *  alias
- *   The alias name for the class.
- * Return
- *   Returns TRUE on success or FALSE on failure.
- */
-static int vm_builtin_class_alias(ph7_context *pCtx, int nArg, ph7_value **apArg) {
-	const char *zOld, *zNew;
-	int nOldLen, nNewLen;
-	SyHashEntry *pEntry;
-	ph7_class *pClass;
-	char *zDup;
-	sxi32 rc;
-	if(nArg < 2) {
-		/* Missing arguments,return FALSE */
-		ph7_result_bool(pCtx, 0);
-		return PH7_OK;
-	}
-	/* Extract old class name */
-	zOld = ph7_value_to_string(apArg[0], &nOldLen);
-	/* Extract alias name */
-	zNew = ph7_value_to_string(apArg[1], &nNewLen);
-	if(nNewLen < 1) {
-		/* Invalid alias name,return FALSE */
-		ph7_result_bool(pCtx, 0);
-		return PH7_OK;
-	}
-	/* Perform a hash lookup */
-	pEntry = SyHashGet(&pCtx->pVm->hClass, (const void *)zOld, (sxu32)nOldLen);
-	if(pEntry ==  0) {
-		/* No such class,return FALSE */
-		ph7_result_bool(pCtx, 0);
-		return PH7_OK;
-	}
-	/* Point to the class */
-	pClass = (ph7_class *)pEntry->pUserData;
-	/* Duplicate alias name */
-	zDup = SyMemBackendStrDup(&pCtx->pVm->sAllocator, zNew, (sxu32)nNewLen);
-	if(zDup == 0) {
-		/* Out of memory,return FALSE */
-		ph7_result_bool(pCtx, 0);
-		return PH7_OK;
-	}
-	/* Create the alias */
-	rc = SyHashInsert(&pCtx->pVm->hClass, (const void *)zDup, (sxu32)nNewLen, pClass);
-	if(rc != SXRET_OK) {
-		SyMemBackendFree(&pCtx->pVm->sAllocator, zDup);
-	}
-	ph7_result_bool(pCtx, rc == SXRET_OK);
-	return PH7_OK;
-}
-/*
  * array get_declared_classes(void)
  *   Returns an array with the name of the defined classes
  * Parameters
@@ -9889,7 +9833,6 @@ static const ph7_builtin_func aVmFunc[] = {
 	/* Constants management */
 	{ "get_defined_constants", vm_builtin_get_defined_constants },
 	/* Class/Object functions */
-	{ "class_alias",     vm_builtin_class_alias       },
 	{ "class_exists",    vm_builtin_class_exists      },
 	{ "property_exists", vm_builtin_property_exists   },
 	{ "method_exists",   vm_builtin_method_exists     },
