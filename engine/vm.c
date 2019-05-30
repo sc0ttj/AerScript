@@ -4227,7 +4227,7 @@ static sxi32 VmByteCodeExec(
 								}
 								if(pObjAttr == 0) {
 									/* No such attribute,load null */
-									PH7_VmThrowError(&(*pVm), PH7_CTX_ERR, "Undefined class attribute '%z->%z',PH7 is loading NULL",
+									PH7_VmThrowError(&(*pVm), PH7_CTX_ERR, "Undefined class attribute '%z->%z'",
 												  &pClass->sName, &sName);
 								}
 								VmPopOperand(&pTos, 1);
@@ -4317,11 +4317,11 @@ static sxi32 VmByteCodeExec(
 									}
 									if(pMeth == 0 || (pMeth->iFlags & PH7_CLASS_ATTR_VIRTUAL)) {
 										if(pMeth) {
-											PH7_VmThrowError(&(*pVm), PH7_CTX_ERR, "Cannot call virtual method '%z::%z'",
+											PH7_VmThrowError(&(*pVm), PH7_CTX_ERR, "Cannot call virtual method '%z::%z()'",
 														  &pClass->sName, &sName
 														 );
 										} else {
-											PH7_VmThrowError(&(*pVm), PH7_CTX_ERR, "Undefined class static method '%z::%z'",
+											PH7_VmThrowError(&(*pVm), PH7_CTX_ERR, "Undefined class static method '%z::%z()'",
 														  &pClass->sName, &sName
 														 );
 										}
