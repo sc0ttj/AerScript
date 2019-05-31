@@ -4203,20 +4203,44 @@ static sxi32 VmByteCodeExec(
 							} else {
 								/* Attribute access */
 								VmClassAttr *pObjAttr = 0;
+								ph7_class_attr *pAttr = 0;
 								SyHashEntry *pEntry;
-								/* Extract the target attribute */
 								if(sName.nByte > 0) {
-									SyHashResetLoopCursor(&pThis->hAttr);
-									while((pEntry = SyHashGetNextEntry(&pThis->hAttr)) != 0) {
-										pObjAttr = (VmClassAttr *)pEntry->pUserData;
-										if(SyStrncmp(pObjAttr->pAttr->sName.zString, sName.zString, sName.nByte) == 0) {
-											if(pNos->iFlags != MEMOBJ_PARENTOBJ && pObjAttr->pAttr->pClass == pClass) {
-												break;
-											} else if(pObjAttr->pAttr->pClass != pClass) {
+									/* Extract the target attribute */
+									if(pNos->iFlags != MEMOBJ_PARENTOBJ) {
+										pAttr = PH7_ClassExtractAttribute(pClass, sName.zString, sName.nByte);
+									}
+									if(pAttr == 0) {
+										/* Browse hashtable from the beginning */
+										SyHashResetLoopCursor(&pClass->hDerived);
+										/* Search for appropriate class member */
+										SyHashEntry *pEntry;
+										while((pEntry = SyHashGetNextEntry(&pClass->hDerived)) != 0) {
+											pDerived = (ph7_class *) pEntry->pUserData;
+											SyHashResetLoopCursor(&pDerived->hAttr);
+											while((pEntry = SyHashGetNextEntry(&pDerived->hAttr)) != 0) {
+												pAttr = (ph7_class_attr *)pEntry->pUserData;
+												if(SyStrncmp(pAttr->sName.zString, sName.zString, sName.nByte) == 0) {
+													break;
+												}
+												pAttr = 0;
+											}
+											if(pAttr) {
 												break;
 											}
 										}
-										pObjAttr = 0;
+									}
+									if(pAttr) {
+										SyHashResetLoopCursor(&pThis->hAttr);
+										while((pEntry = SyHashGetNextEntry(&pThis->hAttr)) != 0) {
+											pObjAttr = (VmClassAttr *)pEntry->pUserData;
+											if(pObjAttr->pAttr->pClass == pAttr->pClass) {
+												if(SyStrncmp(pObjAttr->pAttr->sName.zString, sName.zString, sName.nByte) == 0) {
+													break;
+												}
+											}
+											pObjAttr = 0;
+										}
 									}
 								}
 								if(pObjAttr == 0) {
