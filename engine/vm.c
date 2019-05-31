@@ -4212,14 +4212,8 @@ static sxi32 VmByteCodeExec(
 										if(SyStrncmp(pObjAttr->pAttr->sName.zString, sName.zString, sName.nByte) == 0) {
 											if(pNos->iFlags != MEMOBJ_PARENTOBJ && pObjAttr->pAttr->pClass == pClass) {
 												break;
-											} else {
-												SyHashEntry *pDerived = SyHashGet(&pClass->hDerived, (const void *)pObjAttr->pAttr->pClass->sName.zString, pObjAttr->pAttr->pClass->sName.nByte);
-												if(pDerived != 0) {
-													ph7_class *pSub = (ph7_class *)pDerived->pUserData;
-													if(pObjAttr->pAttr->pClass == pSub) {
-														break;
-													}
-												}
+											} else if(pObjAttr->pAttr->pClass != pClass) {
+												break;
 											}
 										}
 										pObjAttr = 0;
