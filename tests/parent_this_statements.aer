@@ -1,0 +1,41 @@
+class Test1 {
+	protected int $w = 7;
+
+	protected static void test1() {
+		var_dump(++$this->w);
+	}
+}
+
+class Test2 {
+	private int $x = 4;
+	protected int $z = 2;
+
+	protected void test2() {
+		var_dump($this->x++);
+	}
+}
+
+class Test3 extends Test2 {
+	protected int $y = 9;
+}
+
+class Test4 extends Test1, Test3 {
+
+	public void test4() {
+		var_dump($this->w);
+		$this->test1();
+		$this->test2();
+		$parent->test2();
+		var_dump($parent->w);
+		var_dump($parent->y);
+		var_dump($parent->z);
+		var_dump($this->z);
+	}
+}
+
+class Program {
+	public void main() {
+		object $test = new Test4();
+		$test->test4();
+	}
+}
