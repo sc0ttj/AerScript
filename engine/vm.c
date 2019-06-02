@@ -4679,7 +4679,7 @@ static sxi32 VmByteCodeExec(
 							/* Raise exception: Out of memory */
 							PH7_VmMemoryError(&(*pVm));
 						}
-						if(pVmFunc->iFlags & VM_FUNC_CLASS_METHOD) {
+						if(pThis && pVmFunc->iFlags & VM_FUNC_CLASS_METHOD) {
 							/* Install the '$parent' variable */
 							static const SyString sParent = { "parent", sizeof("parent") - 1 };
 							pObj = VmCreateMemObj(&(*pVm), &sParent, TRUE);
