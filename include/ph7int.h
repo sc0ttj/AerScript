@@ -1269,6 +1269,7 @@ struct VmFrame {
 #define VM_FRAME_EXCEPTION  0x04 /* Special Exception frame */
 #define VM_FRAME_THROW      0x08 /* An exception was thrown */
 #define VM_FRAME_CATCH      0x10 /* Catch frame */
+#define VM_FRAME_FINALLY    0x20 /* Finally frame */
 /*
  * When a debug stacktrace is extracted from Virtual Machine, all information about
  * calls (file, line, class, method, arguments) are stored in this structure.
