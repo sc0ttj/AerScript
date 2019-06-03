@@ -1570,7 +1570,6 @@ enum ph7_expr_id {
 #define PH7_KEYWORD_FINAL        14 /* final */
 #define PH7_KEYWORD_STATIC       16 /* static */
 #define PH7_KEYWORD_CASE         17 /* case */
-#define PH7_KEYWORD_SELF         18 /* self */
 #define PH7_KEYWORD_NAMESPACE    20 /* namespace */
 #define PH7_KEYWORD_CLONE        0x80 /* clone: MUST BE A POWER OF TWO  */
 #define PH7_KEYWORD_NEW          0x100 /* new: MUST BE A POWER OF TWO  */

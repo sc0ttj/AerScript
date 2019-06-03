@@ -533,7 +533,6 @@ static sxu32 KeywordCode(const char *z, int n) {
 		{"namespace", PH7_KEYWORD_NAMESPACE},
 		{"new", PH7_KEYWORD_NEW},
 		{"parent", PH7_KEYWORD_PARENT},
-		{"self", PH7_KEYWORD_SELF},
 		{"throw", PH7_KEYWORD_THROW},
 		{"try", PH7_KEYWORD_TRY},
 		{"using", PH7_KEYWORD_USING},

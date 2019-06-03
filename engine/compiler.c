@@ -1200,27 +1200,6 @@ static sxi32 PH7_GenStateLoadLiteral(ph7_gen_state *pGen) {
 			}
 		}
 		return SXRET_OK;
-	} else if(pStr->nByte == sizeof("SELF") - 1 && SyMemcmp(pStr->zString, "self", sizeof("SELF") - 1) == 0) {
-		GenBlock *pBlock = pGen->pCurrent;
-		while(pBlock && (pBlock->iFlags & GEN_BLOCK_CLASS) == 0) {
-			/* Point to the upper block */
-			pBlock = pBlock->pParent;
-		}
-		if(pBlock == 0) {
-			/* Called in the global scope, load NULL */
-			PH7_VmEmitInstr(pGen->pVm, 0, PH7_OP_LOADC, 0, 0, 0, 0);
-		} else {
-			/* Extract the target class */
-			ph7_class_info *pClassInfo = (ph7_class_info *)pBlock->pUserData;
-			pObj = PH7_ReserveConstObj(pGen->pVm, &nIdx);
-			if(pObj == 0) {
-				PH7_GenCompileError(pGen, E_ERROR, pToken->nLine, "PH7 engine is running out-of-memory");
-			}
-			PH7_MemObjInitFromString(pGen->pVm, pObj, &pClassInfo->sName);
-			/* Emit the load constant instruction */
-			PH7_VmEmitInstr(pGen->pVm, 0, PH7_OP_LOADC, 0, nIdx, 0, 0);
-		}
-		return SXRET_OK;
 	}
 	/* Query literal table */
 	if(SXRET_OK != PH7_GenStateFindLiteral(&(*pGen), &pToken->sData, &nIdx)) {
@@ -4899,7 +4878,7 @@ static ProcLangConstruct PH7_GenStateGetStatementHandler(
  */
 static int PH7_IsLangConstruct(sxu32 nKeywordID) {
 	if(nKeywordID == PH7_KEYWORD_IMPORT || nKeywordID == PH7_KEYWORD_INCLUDE || nKeywordID == PH7_KEYWORD_REQUIRE
-				|| nKeywordID == PH7_KEYWORD_EVAL || nKeywordID == PH7_KEYWORD_SELF || nKeywordID == PH7_KEYWORD_PARENT
+				|| nKeywordID == PH7_KEYWORD_EVAL || nKeywordID == PH7_KEYWORD_PARENT
 				|| nKeywordID == PH7_KEYWORD_STATIC || nKeywordID == PH7_KEYWORD_NEW || nKeywordID == PH7_KEYWORD_CLONE) {
 			return TRUE;
 	}
