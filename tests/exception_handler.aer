@@ -5,7 +5,7 @@ class ExceptionHandler {
 	}
 
 	public static void handleException(Exception $e) {
-		self::printException($e);
+		ExceptionHandler::printException($e);
 	}
 
 }
