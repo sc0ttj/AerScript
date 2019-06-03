@@ -1400,7 +1400,7 @@ static ph7_value *VmExtractMemObj(
 				}
 				break;
 			}
-			if(pFrame->iFlags & VM_FRAME_LOOP && pFrame->pParent) {
+			if(pFrame->pParent && pFrame->iFlags & (VM_FRAME_LOOP | VM_FRAME_EXCEPTION | VM_FRAME_CATCH | VM_FRAME_FINALLY)) {
 				pFrame = pFrame->pParent;
 			} else {
 				break;
