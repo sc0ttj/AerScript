@@ -1589,7 +1589,6 @@ enum ph7_expr_id {
 #define PH7_KEYWORD_IMPLEMENTS   39 /* implements */
 #define PH7_KEYWORD_INCLUDE      41 /* include */
 #define PH7_KEYWORD_INSTANCEOF   0x400 /* instanceof: MUST BE A POWER OF TWO  */
-#define PH7_KEYWORD_PARENT       44 /* parent */
 #define PH7_KEYWORD_PRIVATE      45 /* private */
 #define PH7_KEYWORD_FOR          48 /* for */
 #define PH7_KEYWORD_FOREACH      49 /* foreach */
