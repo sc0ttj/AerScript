@@ -8099,8 +8099,6 @@ static sxi32 VmExecFinallyBlock(
 		pFrame->iFlags |= VM_FRAME_FINALLY;
 		/* Execute the block */
 		rc = VmLocalExec(&(*pVm), &pException->sFinally, 0);
-		/* Release the bytecode container */
-		SySetRelease(&pException->sFinally);
 		/* Leave the frame */
 		VmLeaveFrame(&(*pVm));
 	}
