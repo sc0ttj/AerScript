@@ -1,4 +1,5 @@
 Uncaught NewException, code: 1
 Message: Catch me once
+Called finally block 1
 Uncaught Exception, code: 2
 Message: Catch me twice

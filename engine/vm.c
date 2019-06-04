@@ -6178,7 +6178,7 @@ static int VmClassMemberAccess(
 	if(iProtection != PH7_CLASS_PROT_PUBLIC) {
 		VmFrame *pFrame = pVm->pFrame;
 		ph7_vm_func *pVmFunc;
-		while(pFrame->pParent && (pFrame->iFlags & (VM_FRAME_EXCEPTION | VM_FRAME_CATCH))) {
+		while(pFrame->pParent && (pFrame->iFlags & (VM_FRAME_EXCEPTION | VM_FRAME_CATCH | VM_FRAME_FINALLY))) {
 			/* Safely ignore the exception frame */
 			pFrame = pFrame->pParent;
 		}
@@ -8149,6 +8149,8 @@ static sxi32 VmUncaughtException(
 		if(pFrame->pParent) {
 			if(pFrame->iFlags & VM_FRAME_CATCH) {
 				SyStringInitFromBuf(&sFuncName, "Catch_block", sizeof("Catch_block") - 1);
+			} else if(pFrame->iFlags & VM_FRAME_FINALLY) {
+				SyStringInitFromBuf(&sFuncName, "Finally_block", sizeof("Finally_block") - 1);
 			} else {
 				ph7_vm_func *pFunc = (ph7_vm_func *)pFrame->pUserData;
 				if(pFunc) {
@@ -8174,6 +8176,7 @@ static sxi32 VmThrowException(
 	ph7_exception_block *pCatch; /* Catch block to execute */
 	ph7_exception **apException;
 	ph7_exception *pException;
+	sxi32 rc;
 	/* Point to the stack of loaded exceptions */
 	apException = (ph7_exception **)SySetBasePtr(&pVm->aException);
 	pException = 0;
@@ -8201,25 +8204,9 @@ static sxi32 VmThrowException(
 			}
 		}
 	}
-	/* Execute the cached block if available */
-	if(pCatch == 0) {
-		sxi32 rc;
-		rc = VmUncaughtException(&(*pVm), pThis);
-		if(rc == SXRET_OK && pException) {
-			VmFrame *pFrame = pVm->pFrame;
-			while(pFrame->pParent && (pFrame->iFlags & VM_FRAME_EXCEPTION)) {
-				/* Safely ignore the exception frame */
-				pFrame = pFrame->pParent;
-			}
-			if(pException->pFrame == pFrame) {
-				/* Tell the upper layer that the exception was caught */
-				pFrame->iFlags &= ~VM_FRAME_THROW;
-			}
-		}
-		return rc;
-	} else {
+	/* Execute the 'catch' block if available */
+	if(pCatch) {
 		VmFrame *pFrame = pVm->pFrame;
-		sxi32 rc;
 		while(pFrame->pParent && (pFrame->iFlags & VM_FRAME_EXCEPTION)) {
 			/* Safely ignore the exception frame */
 			pFrame = pFrame->pParent;
@@ -8246,10 +8233,29 @@ static sxi32 VmThrowException(
 			VmLeaveFrame(&(*pVm));
 		}
 	}
+	/* Execute the 'finally' block if available */
+	if(pException && SySetUsed(&pException->sFinally)) {
+		rc = VmExecFinallyBlock(&(*pVm), pException);
+	}
+	/* No matching 'catch' block found */
+	if(pCatch == 0) {
+		rc = VmUncaughtException(&(*pVm), pThis);
+		if(rc == SXRET_OK && pException) {
+			VmFrame *pFrame = pVm->pFrame;
+			while(pFrame->pParent && (pFrame->iFlags & VM_FRAME_EXCEPTION)) {
+				/* Safely ignore the exception frame */
+				pFrame = pFrame->pParent;
+			}
+			if(pException->pFrame == pFrame) {
+				/* Tell the upper layer that the exception was caught */
+				pFrame->iFlags &= ~VM_FRAME_THROW;
+			}
+		}
+	}
 	/* TICKET 1433-60: Do not release the 'pException' pointer since it may
 	 * be used again if a 'goto' statement is executed.
 	 */
-	return SXRET_OK;
+	return rc;
 }
 /*
  * Section:
