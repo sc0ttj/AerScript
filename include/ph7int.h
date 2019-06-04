@@ -1157,6 +1157,7 @@ struct ph7_exception {
 	SySet sEntry;   /* Compiled 'catch' blocks (ph7_exception_block instance)
 				     * container.
 					 */
+	SySet sFinally; /* Compiled 'finally' instructions block (VmInstr) */
 	VmFrame *pFrame; /* Frame that trigger the exception */
 };
 /* Forward reference */
