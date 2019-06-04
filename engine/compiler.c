@@ -4158,6 +4158,37 @@ Mem:
 	PH7_GenCompileError(&(*pGen), E_ERROR, nLine, "PH7 engine is running out-of-memory");
 }
 /*
+ * Compile a 'finally' block.
+ * A "finally' block will get executed regardless of whether
+ * or not there is an exception. This comes in very handy when
+ * it comes to certain housekeeping functions you need to always
+ * run like closing connections.
+ */
+static sxi32 PH7_CompileFinally(ph7_gen_state *pGen, ph7_exception *pException) {
+	SySet *pInstrContainer;
+	GenBlock *pFinally;
+	sxi32 rc;
+	pGen->pIn++; /* Jump the 'finally' keyword */
+	rc = PH7_GenStateEnterBlock(&(*pGen), GEN_BLOCK_EXCEPTION, PH7_VmInstrLength(pGen->pVm), 0, &pFinally);
+	if(rc != SXRET_OK) {
+		return SXERR_ABORT;
+	}
+	/* Swap bytecode container */
+	pInstrContainer = PH7_VmGetByteCodeContainer(pGen->pVm);
+	PH7_VmSetByteCodeContainer(pGen->pVm, &pException->sFinally);
+	/* Compile the block */
+	PH7_CompileBlock(&(*pGen));
+	/* Fix forward jumps now the destination is resolved */
+	PH7_GenStateFixJumps(pFinally, -1, PH7_VmInstrLength(pGen->pVm));
+	/* Emit the DONE instruction */
+	PH7_VmEmitInstr(pGen->pVm, pGen->pIn->nType, PH7_OP_DONE, 0, 0, 0, 0);
+	/* Leave the block */
+	PH7_GenStateLeaveBlock(&(*pGen), 0);
+	/* Restore the default container */
+	PH7_VmSetByteCodeContainer(pGen->pVm, pInstrContainer);
+	return SXRET_OK;
+}
+/*
  * Compile a 'try' block.
  * A function using an exception should be in a "try" block.
  * If the exception does not trigger, the code will continue
@@ -4179,6 +4210,7 @@ static sxi32 PH7_CompileTry(ph7_gen_state *pGen) {
 	SyZero(pException, sizeof(ph7_exception));
 	/* Initialize fields */
 	SySetInit(&pException->sEntry, &pGen->pVm->sAllocator, sizeof(ph7_exception_block));
+	SySetInit(&pException->sFinally, &pGen->pVm->sAllocator, sizeof(VmInstr));
 	pException->pVm = pGen->pVm;
 	/* Create the try block */
 	rc = PH7_GenStateEnterBlock(&(*pGen), GEN_BLOCK_EXCEPTION, PH7_VmInstrLength(pGen->pVm), 0, &pTry);
@@ -4203,24 +4235,33 @@ static sxi32 PH7_CompileTry(ph7_gen_state *pGen) {
 	PH7_GenStateLeaveBlock(&(*pGen), 0);
 	/* Compile the catch block */
 	if(pGen->pIn >= pGen->pEnd || (pGen->pIn->nType & PH7_TK_KEYWORD) == 0 ||
-			SX_PTR_TO_INT(pGen->pIn->pUserData) != PH7_KEYWORD_CATCH) {
+			(SX_PTR_TO_INT(pGen->pIn->pUserData) != PH7_KEYWORD_CATCH &&
+			SX_PTR_TO_INT(pGen->pIn->pUserData) != PH7_KEYWORD_FINALLY)) {
 		SyToken *pTok = pGen->pIn;
 		if(pTok >= pGen->pEnd) {
 			pTok--; /* Point back */
 		}
 		/* Unexpected token */
 		rc = PH7_GenCompileError(&(*pGen), E_ERROR, pTok->nLine,
-								 "Try: Unexpected token '%z',expecting 'catch' block", &pTok->sData);
+								 "Try: Unexpected token '%z',expecting 'catch' or 'finally' block", &pTok->sData);
 	}
 	/* Compile one or more catch blocks */
-	for(;;) {
-		if(pGen->pIn >= pGen->pEnd || (pGen->pIn->nType & PH7_TK_KEYWORD) == 0
-				|| SX_PTR_TO_INT(pGen->pIn->pUserData) != PH7_KEYWORD_CATCH) {
-			/* No more blocks */
-			break;
+	if(SX_PTR_TO_INT(pGen->pIn->pUserData) == PH7_KEYWORD_CATCH) {
+		for(;;) {
+			if(pGen->pIn >= pGen->pEnd || (pGen->pIn->nType & PH7_TK_KEYWORD) == 0
+					|| SX_PTR_TO_INT(pGen->pIn->pUserData) != PH7_KEYWORD_CATCH) {
+				/* No more blocks */
+				break;
+			}
+			/* Compile the catch block */
+			rc = PH7_CompileCatch(&(*pGen), pException);
+			if(rc == SXERR_ABORT) {
+				return SXERR_ABORT;
+			}
 		}
-		/* Compile the catch block */
-		rc = PH7_CompileCatch(&(*pGen), pException);
+	}
+	if(SX_PTR_TO_INT(pGen->pIn->pUserData) == PH7_KEYWORD_FINALLY) {
+		rc = PH7_CompileFinally(&(*pGen), pException);
 		if(rc == SXERR_ABORT) {
 			return SXERR_ABORT;
 		}
