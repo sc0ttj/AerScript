@@ -1832,6 +1832,7 @@ static sxi32 VmByteCodeDump(
 }
 /* Forward declaration */
 static int VmObConsumer(const void *pData, unsigned int nDataLen, void *pUserData);
+static sxi32 VmExecFinallyBlock(ph7_vm *pVm, ph7_exception *pException);
 static sxi32 VmUncaughtException(ph7_vm *pVm, ph7_class_instance *pThis);
 static sxi32 VmThrowException(ph7_vm *pVm, ph7_class_instance *pThis);
 /*
@@ -8080,6 +8081,30 @@ static int vm_builtin_debug_backtrace(ph7_context *pCtx, int nArg, ph7_value **a
 	 * as soon we return from this function.
 	 */
 	return PH7_OK;
+}
+static sxi32 VmExecFinallyBlock(
+	ph7_vm *pVm, /* Target VM */
+	ph7_exception *pException /* Exception thrown */
+) {
+	sxi32 rc;
+	VmFrame *pFrame = pVm->pFrame;
+	while(pFrame->pParent && (pFrame->iFlags & VM_FRAME_EXCEPTION)) {
+		/* Safely ignore the exception frame */
+		pFrame = pFrame->pParent;
+	}
+	/* Create a private frame first */
+	rc = VmEnterFrame(&(*pVm), 0, 0, &pFrame);
+	if(rc == SXRET_OK) {
+		/* Mark as 'finally' frame */
+		pFrame->iFlags |= VM_FRAME_FINALLY;
+		/* Execute the block */
+		rc = VmLocalExec(&(*pVm), &pException->sFinally, 0);
+		/* Release the bytecode container */
+		SySetRelease(&pException->sFinally);
+		/* Leave the frame */
+		VmLeaveFrame(&(*pVm));
+	}
+	return rc;
 }
 /*
  * The following routine is invoked by the engine when an uncaught
