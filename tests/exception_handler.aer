@@ -24,6 +24,8 @@ class Program {
 			throw new NewException("Catch me once", 1);
 		} catch(Exception $e) {
 			ExceptionHandler::handleException($e);
+		} finally {
+			print("Called finally block 1\n");
 		}
 		throw new Exception("Catch me twice", 2);
 	}
