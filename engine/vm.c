@@ -6586,6 +6586,7 @@ PH7_PRIVATE sxi32 PH7_VmCallUserFunction(
 ) {
 	ph7_value *aStack;
 	VmInstr aInstr[2];
+	sxi32 rc;
 	int i;
 	if((pFunc->nType & (MEMOBJ_CALL | MEMOBJ_STRING)) == 0) {
 		/* Don't bother processing,it's invalid anyway */
@@ -6630,10 +6631,10 @@ PH7_PRIVATE sxi32 PH7_VmCallUserFunction(
 	aInstr[1].iLine = 1;
 	aInstr[1].pFile = (SyString *)&sFileName;
 	/* Execute the function body (if available) */
-	VmByteCodeExec(&(*pVm), aInstr, aStack, nArg, pResult, 0, TRUE);
+	rc = VmByteCodeExec(&(*pVm), aInstr, aStack, nArg, pResult, 0, TRUE);
 	/* Clean up the mess left behind */
 	SyMemBackendFree(&pVm->sAllocator, aStack);
-	return PH7_OK;
+	return rc;
 }
 /*
  * Call a user defined or foreign function with a variable number
