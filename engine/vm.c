@@ -8236,6 +8236,8 @@ static sxi32 VmThrowException(
 	/* Execute the 'finally' block if available */
 	if(pException && SySetUsed(&pException->sFinally)) {
 		rc = VmExecFinallyBlock(&(*pVm), pException);
+		/* Release the bytecode container */
+		SySetRelease(&pException->sFinally);
 	}
 	/* No matching 'catch' block found */
 	if(pCatch == 0) {
