@@ -810,7 +810,7 @@ PH7_PRIVATE sxi32 PH7_ClassInstanceCmp(ph7_class_instance *pLeft, ph7_class_inst
 		 *  are identical if and only if they refer to the same instance
 		 *  of the same class.
 		 */
-		return !(pLeft == pRight);
+		return pLeft != pRight;
 	}
 	/*
 	 * Attribute comparison.
