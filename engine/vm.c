@@ -8184,11 +8184,13 @@ static sxi32 VmThrowException(
 	ph7_exception_block *pCatch; /* Catch block to execute */
 	ph7_exception **apException;
 	ph7_exception *pException;
-	sxi32 rc;
+	sxi32 rc, rcc, rcf;
 	/* Point to the stack of loaded exceptions */
 	apException = (ph7_exception **)SySetBasePtr(&pVm->aException);
 	pException = 0;
 	pCatch = 0;
+	rcc = SXRET_OK;
+	rcf = SXRET_OK;
 	if(SySetUsed(&pVm->aException) > 0) {
 		ph7_exception_block *aCatch;
 		ph7_class *pClass;
@@ -8236,21 +8238,21 @@ static sxi32 VmThrowException(
 				MemObjSetType(pObj, MEMOBJ_OBJ);
 			}
 			/* Execute the block */
-			VmLocalExec(&(*pVm), &pCatch->sByteCode, 0);
+			rcc = VmLocalExec(&(*pVm), &pCatch->sByteCode, 0);
 			/* Leave the frame */
 			VmLeaveFrame(&(*pVm));
 		}
 	}
 	/* Execute the 'finally' block if available */
 	if(pException && SySetUsed(&pException->sFinally)) {
-		rc = VmExecFinallyBlock(&(*pVm), pException);
+		rcf = VmExecFinallyBlock(&(*pVm), pException);
 		/* Release the bytecode container */
 		SySetRelease(&pException->sFinally);
 	}
 	/* No matching 'catch' block found */
 	if(pCatch == 0) {
-		rc = VmUncaughtException(&(*pVm), pThis);
-		if(rc == SXRET_OK && pException) {
+		rcc = VmUncaughtException(&(*pVm), pThis);
+		if(rcc == SXRET_OK && pException) {
 			VmFrame *pFrame = pVm->pFrame;
 			while(pFrame->pParent && (pFrame->iFlags & VM_FRAME_EXCEPTION)) {
 				/* Safely ignore the exception frame */
@@ -8265,7 +8267,7 @@ static sxi32 VmThrowException(
 	/* TICKET 1433-60: Do not release the 'pException' pointer since it may
 	 * be used again if a 'goto' statement is executed.
 	 */
-	return rc;
+	return rcc | rcf;
 }
 /*
  * Section:
