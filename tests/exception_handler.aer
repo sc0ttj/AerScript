@@ -21,15 +21,23 @@ class Program {
 		};
 		set_exception_handler($handler);
 		try {
+			print("Called try block 0\n");
+		} finally {
+			print("Called finally block 0\n");
+		}
+		try {
 			throw new NewException("Catch me once", 1);
 		} catch(Exception $e) {
 			ExceptionHandler::handleException($e);
 		} finally {
 			print("Called finally block 1\n");
 		}
-		throw new Exception("Catch me twice", 2);
+		try {
+			throw new NewException("Catch me twice", 2);
+		} finally {
+			print("Called finally block 2\n");
+		}
+		throw new Exception("Catch me thrice", 3);
 	}
 
 }
-
-
