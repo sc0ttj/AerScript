@@ -1665,7 +1665,7 @@ PH7_PRIVATE sxi32 PH7_VmCreateClassInstanceFrame(ph7_vm *pVm, ph7_class_instance
 PH7_PRIVATE sxi32 PH7_VmRefObjRemove(ph7_vm *pVm, sxu32 nIdx, SyHashEntry *pEntry, ph7_hashmap_node *pMapEntry);
 PH7_PRIVATE sxi32 PH7_VmRefObjInstall(ph7_vm *pVm, sxu32 nIdx, SyHashEntry *pEntry, ph7_hashmap_node *pMapEntry, sxi32 iFlags);
 PH7_PRIVATE sxi32 PH7_VmPushFilePath(ph7_vm *pVm, const char *zPath, int nLen, sxu8 bMain, sxi32 *pNew);
-PH7_PRIVATE ph7_class *PH7_VmExtractClass(ph7_vm *pVm, const char *zName, sxu32 nByte, sxi32 iLoadable, sxi32 iNest);
+PH7_PRIVATE ph7_class *PH7_VmExtractClass(ph7_vm *pVm, const char *zName, sxu32 nByte, sxi32 iLoadable);
 PH7_PRIVATE sxi32 PH7_VmRegisterConstant(ph7_vm *pVm, const SyString *pName, ProcConstant xExpand, void *pUserData, sxbool bGlobal);
 PH7_PRIVATE sxi32 PH7_VmInstallForeignFunction(ph7_vm *pVm, const SyString *pName, ProcHostFunction xFunc, void *pUserData);
 PH7_PRIVATE sxi32 PH7_VmInstallClass(ph7_vm *pVm, ph7_class *pClass);

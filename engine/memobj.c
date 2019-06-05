@@ -612,7 +612,7 @@ PH7_PRIVATE sxi32 PH7_MemObjToObject(ph7_value *pObj) {
 		/* Point to the underlying VM */
 		pVm = pObj->pVm;
 		/* Point to the stdClass() */
-		pClass = PH7_VmExtractClass(pVm, "stdClass", sizeof("stdClass") - 1, 0, 0);
+		pClass = PH7_VmExtractClass(pVm, "stdClass", sizeof("stdClass") - 1, TRUE);
 		if(pClass == 0) {
 			/* Can't happen,load null instead */
 			PH7_MemObjRelease(pObj);

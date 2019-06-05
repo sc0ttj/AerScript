@@ -2361,7 +2361,7 @@ static sxi32 VmByteCodeExec(
 						} else if(pTos->nType & MEMOBJ_STRING && SyBlobLength(&pTos->sBlob) > 0) {
 							/* Perform the query */
 							pClass = PH7_VmExtractClass(&(*pVm), (const char *)SyBlobData(&pTos->sBlob),
-														SyBlobLength(&pTos->sBlob), FALSE, 0);
+														SyBlobLength(&pTos->sBlob), FALSE);
 						}
 						if(pClass) {
 							/* Perform the query */
@@ -3949,7 +3949,7 @@ static sxi32 VmByteCodeExec(
 						ph7_class *pException;
 						/* Make sure the loaded object is an instance of the 'Exception' base class.
 						 */
-						pException = PH7_VmExtractClass(&(*pVm), "Exception", sizeof("Exception") - 1, TRUE, 0);
+						pException = PH7_VmExtractClass(&(*pVm), "Exception", sizeof("Exception") - 1, TRUE);
 						if(pException == 0 || !VmInstanceOf(pThis->pClass, pException)) {
 							/* Exceptions must be valid objects derived from the Exception base class */
 							rc = VmUncaughtException(&(*pVm), pThis);
@@ -3987,13 +3987,13 @@ static sxi32 VmByteCodeExec(
 			case PH7_OP_CLASS_INIT:
 				{
 					ph7_class_info *pClassInfo = (ph7_class_info *)pInstr->p3;
-					ph7_class *pClass = PH7_VmExtractClass(pVm, pClassInfo->sName.zString, pClassInfo->sName.nByte, FALSE, 0);
+					ph7_class *pClass = PH7_VmExtractClass(pVm, pClassInfo->sName.zString, pClassInfo->sName.nByte, FALSE);
 					ph7_class *pBase = 0;
 					if(pInstr->iP1) {
 						/* This class inherits from other classes */
 						SyString *apExtends;
 						while(SySetGetNextEntry(&pClassInfo->sExtends, (void **)&apExtends) == SXRET_OK) {
-							pBase = PH7_VmExtractClass(pVm, apExtends->zString, apExtends->nByte, FALSE, 0);
+							pBase = PH7_VmExtractClass(pVm, apExtends->zString, apExtends->nByte, FALSE);
 							if(pBase == 0) {
 								/* Non-existent base class */
 								PH7_VmThrowError(&(*pVm), PH7_CTX_ERR, "Call to non-existent base class '%z'", &apExtends->zString);
@@ -4014,7 +4014,7 @@ static sxi32 VmByteCodeExec(
 						/* This class implements some interfaces */
 						SyString *apImplements;
 						while(SySetGetNextEntry(&pClassInfo->sImplements, (void **)&apImplements) == SXRET_OK) {
-							pBase = PH7_VmExtractClass(pVm, apImplements->zString, apImplements->nByte, FALSE, 0);
+							pBase = PH7_VmExtractClass(pVm, apImplements->zString, apImplements->nByte, FALSE);
 							if(pBase == 0) {
 								/* Non-existent interface */
 								PH7_VmThrowError(&(*pVm), PH7_CTX_ERR, "Call to non-existent interface '%z'", &apImplements->zString);
@@ -4038,13 +4038,13 @@ static sxi32 VmByteCodeExec(
 			case PH7_OP_INTERFACE_INIT:
 				{
 					ph7_class_info *pClassInfo = (ph7_class_info *)pInstr->p3;
-					ph7_class *pClass = PH7_VmExtractClass(pVm, pClassInfo->sName.zString, pClassInfo->sName.nByte, FALSE, 0);
+					ph7_class *pClass = PH7_VmExtractClass(pVm, pClassInfo->sName.zString, pClassInfo->sName.nByte, FALSE);
 					ph7_class *pBase = 0;
 					if(pInstr->iP1) {
 						/* This interface inherits from other interface */
 						SyString *apExtends;
 						while(SySetGetNextEntry(&pClassInfo->sExtends, (void **)&apExtends) == SXRET_OK) {
-							pBase = PH7_VmExtractClass(pVm, apExtends->zString, apExtends->nByte, FALSE, 0);
+							pBase = PH7_VmExtractClass(pVm, apExtends->zString, apExtends->nByte, FALSE);
 							if(pBase == 0) {
 								/* Non-existent base interface */
 								PH7_VmThrowError(&(*pVm), PH7_CTX_ERR, "Call to non-existent base interface '%z'", &apExtends->zString);
@@ -4326,7 +4326,7 @@ static sxi32 VmByteCodeExec(
 								/* Try to extract the target class */
 								if(SyBlobLength(&pNos->sBlob) > 0) {
 									pClass = PH7_VmExtractClass(&(*pVm), (const char *)SyBlobData(&pNos->sBlob),
-																SyBlobLength(&pNos->sBlob), FALSE, 0);
+																SyBlobLength(&pNos->sBlob), FALSE);
 								}
 							}
 							if(pClass == 0) {
@@ -4437,7 +4437,7 @@ static sxi32 VmByteCodeExec(
 					if((pTos->nType & MEMOBJ_STRING) && SyBlobLength(&pTos->sBlob) > 0) {
 						/* Try to extract the desired class */
 						pClass = PH7_VmExtractClass(&(*pVm), (const char *)SyBlobData(&pTos->sBlob),
-													SyBlobLength(&pTos->sBlob), TRUE /* Only loadable class but not 'interface' or 'virtual' class*/, 0);
+													SyBlobLength(&pTos->sBlob), TRUE /* Only loadable class but not 'interface' or 'virtual' class*/);
 					} else if(pTos->nType & MEMOBJ_OBJ) {
 						/* Take the base class from the loaded instance */
 						pClass = ((ph7_class_instance *)pTos->x.pOther)->pClass;
@@ -4643,7 +4643,7 @@ static sxi32 VmByteCodeExec(
 									if((pTarget->nType & MEMOBJ_STRING) && SyBlobLength(&pTarget->sBlob) > 0) {
 										/* "Late Static Binding" class name */
 										pSelf = PH7_VmExtractClass(&(*pVm), (const char *)SyBlobData(&pTarget->sBlob),
-																   SyBlobLength(&pTarget->sBlob), FALSE, 0);
+																   SyBlobLength(&pTarget->sBlob), FALSE);
 									}
 									if(pSelf == 0) {
 										pSelf = (ph7_class *)pVmFunc->pUserData;
@@ -4763,7 +4763,7 @@ static sxi32 VmByteCodeExec(
 										SyString *pName = &aFormalArg[n].sClass;
 										ph7_class *pClass;
 										/* Try to extract the desired class */
-										pClass = PH7_VmExtractClass(&(*pVm), pName->zString, pName->nByte, TRUE, 0);
+										pClass = PH7_VmExtractClass(&(*pVm), pName->zString, pName->nByte, TRUE);
 										if(pClass) {
 											if((pArg->nType & MEMOBJ_OBJ) == 0) {
 												if((pArg->nType & MEMOBJ_NULL) == 0) {
@@ -4878,7 +4878,7 @@ static sxi32 VmByteCodeExec(
 										SyString *pName = &aFormalArg[n].sClass;
 										ph7_class *pClass;
 										/* Try to extract the desired class */
-										pClass = PH7_VmExtractClass(&(*pVm), pName->zString, pName->nByte, TRUE, 0);
+										pClass = PH7_VmExtractClass(&(*pVm), pName->zString, pName->nByte, TRUE);
 										if(pClass) {
 											if((pObj->nType & MEMOBJ_OBJ) == 0) {
 												if((pObj->nType & MEMOBJ_NULL) == 0) {
@@ -5169,7 +5169,7 @@ PH7_PRIVATE sxi32 PH7_VmByteCodeExec(ph7_vm *pVm) {
 	/* Execute the byte code */
 	VmByteCodeExec(&(*pVm), (VmInstr *)SySetBasePtr(pVm->pByteContainer), pVm->aOps, -1, 0, 0, FALSE);
 	/* Extract and instantiate the entry point */
-	pClass = PH7_VmExtractClass(&(*pVm), "Program", 7, TRUE /* Only loadable class but not 'interface' or 'virtual' class*/, 0);
+	pClass = PH7_VmExtractClass(&(*pVm), "Program", 7, TRUE /* Only loadable class but not 'interface' or 'virtual' class*/);
 	if(!pClass) {
 		PH7_VmThrowError(&(*pVm), PH7_CTX_ERR, "Cannot find an entry 'Program' class");
 	}
@@ -8202,7 +8202,7 @@ static sxi32 VmThrowException(
 		for(j = 0 ; j < SySetUsed(&pException->sEntry) ; ++j) {
 			SyString *pName = &aCatch[j].sClass;
 			/* Extract the target class */
-			pClass = PH7_VmExtractClass(&(*pVm), pName->zString, pName->nByte, TRUE, 0);
+			pClass = PH7_VmExtractClass(&(*pVm), pName->zString, pName->nByte, TRUE);
 			if(pClass == 0) {
 				/* No such class */
 				continue;
@@ -9987,10 +9987,9 @@ PH7_PRIVATE ph7_class *PH7_VmExtractClass(
 	ph7_vm *pVm,        /* Target VM */
 	const char *zName,  /* Name of the target class */
 	sxu32 nByte,        /* zName length */
-	sxi32 iLoadable,    /* TRUE to return only loadable class
+	sxi32 iLoadable    /* TRUE to return only loadable class
 						 * [i.e: no virtual classes or interfaces]
 						 */
-	sxi32 iNest         /* Nesting level (Not used) */
 ) {
 	SyHashEntry *pEntry;
 	ph7_class *pClass;
@@ -10024,7 +10023,6 @@ PH7_PRIVATE ph7_class *PH7_VmExtractClass(
 		}
 		if(pEntry == 0) {
 			/* No such entry,return NULL */
-			iNest = 0; /* cc warning */
 			return 0;
 		}
 	}
