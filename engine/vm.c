@@ -4437,7 +4437,7 @@ static sxi32 VmByteCodeExec(
 					if((pTos->nType & MEMOBJ_STRING) && SyBlobLength(&pTos->sBlob) > 0) {
 						/* Try to extract the desired class */
 						pClass = PH7_VmExtractClass(&(*pVm), (const char *)SyBlobData(&pTos->sBlob),
-													SyBlobLength(&pTos->sBlob), TRUE /* Only loadable class but not 'interface' or 'virtual' class*/);
+													SyBlobLength(&pTos->sBlob), FALSE);
 					} else if(pTos->nType & MEMOBJ_OBJ) {
 						/* Take the base class from the loaded instance */
 						pClass = ((ph7_class_instance *)pTos->x.pOther)->pClass;
@@ -4448,6 +4448,10 @@ static sxi32 VmByteCodeExec(
 									  SyBlobLength(&pTos->sBlob), (const char *)SyBlobData(&pTos->sBlob)
 									 );
 					} else {
+						if(pClass->iFlags & (PH7_CLASS_INTERFACE | PH7_CLASS_VIRTUAL)) {
+							PH7_VmThrowError(&(*pVm), PH7_CTX_ERR, "Cannot create an instance of the virtual class or interface '%z'",
+											&pClass->sName);
+						}
 						ph7_class_method *pCons;
 						/* Create a new class instance */
 						pNew = PH7_NewClassInstance(&(*pVm), pClass);
