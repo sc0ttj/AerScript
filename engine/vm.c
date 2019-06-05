@@ -3909,7 +3909,15 @@ static sxi32 VmByteCodeExec(
 						ph7_exception **apException;
 						/* Pop the loaded exception */
 						apException = (ph7_exception **)SySetBasePtr(&pVm->aException);
-						if(pException == apException[SySetUsed(&pVm->aException) - 1]) {
+						if(pException && pException == apException[SySetUsed(&pVm->aException) - 1]) {
+							if(SySetUsed(&pException->sFinally)) {
+								/* Execute the 'finally' block */
+								rc = VmExecFinallyBlock(&(*pVm), pException);
+								if(rc == SXERR_ABORT) {
+									/* Abort processing immediately */
+									goto Abort;
+								}
+							}
 							(void)SySetPop(&pVm->aException);
 						}
 					}
