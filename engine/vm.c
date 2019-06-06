@@ -2432,7 +2432,7 @@ static sxi32 VmByteCodeExec(
 					pTos++;
 					if((pObj = (ph7_value *)SySetAt(&pVm->aLitObj, pInstr->iP2)) != 0) {
 						if(pInstr->iP1 == 1 && SyBlobLength(&pObj->sBlob) <= 64) {
-							if(pInstr[1].iOp != PH7_OP_MEMBER && pInstr[1].iOp != PH7_OP_NEW) {
+							if(pInstr[1].iOp != PH7_OP_MEMBER && pInstr[1].iOp != PH7_OP_NEW && pInstr[1].iOp != PH7_OP_IS) {
 								/* Point to the top active frame */
 								VmFrame *pFrame = pVm->pFrame;
 								while(pFrame->pParent && (pFrame->iFlags & VM_FRAME_EXCEPTION)) {
@@ -2462,7 +2462,7 @@ static sxi32 VmByteCodeExec(
 									/* Mark as constant */
 									pTos->nIdx = SXU32_HIGH;
 									break;
-								} else if(pInstr[2].iOp != PH7_OP_MEMBER && pInstr[2].iOp != PH7_OP_NEW) {
+								} else if(pInstr[2].iOp != PH7_OP_MEMBER && pInstr[2].iOp != PH7_OP_NEW && pInstr[2].iOp != PH7_OP_IS) {
 									PH7_VmThrowError(&(*pVm), PH7_CTX_ERR,
 													"Call to undefined constant ‘%s’", SyBlobData(&pObj->sBlob));
 								}
