@@ -52,8 +52,9 @@ static const ph7_expr_op aOpTable[] = {
 	{ {"(resource)", sizeof("(resource)") - 1}, EXPR_OP_TYPECAST, 4, EXPR_OP_ASSOC_RIGHT, PH7_OP_CVT_RES},
 	{ {"(void)",     sizeof("(void)") - 1  }, EXPR_OP_TYPECAST, 4, EXPR_OP_ASSOC_RIGHT, PH7_OP_CVT_VOID },
 	/* Binary operators */
+	/* Precedence 6,non-associative */
+	{ {"is", sizeof("is") - 1}, EXPR_OP_IS, 6, EXPR_OP_NON_ASSOC, PH7_OP_IS},
 	/* Precedence 7,left-associative */
-	{ {"is", sizeof("is") - 1}, EXPR_OP_IS, 7, EXPR_OP_NON_ASSOC, PH7_OP_IS},
 	{ {"*", sizeof(char)}, EXPR_OP_MUL, 7, EXPR_OP_ASSOC_LEFT, PH7_OP_MUL},
 	{ {"/", sizeof(char)}, EXPR_OP_DIV, 7, EXPR_OP_ASSOC_LEFT, PH7_OP_DIV},
 	{ {"%", sizeof(char)}, EXPR_OP_MOD, 7, EXPR_OP_ASSOC_LEFT, PH7_OP_MOD},
@@ -1009,7 +1010,7 @@ static sxi32 ExprMakeTree(ph7_gen_state *pGen, ph7_expr_node **apNode, sxi32 nTo
 		}
 	}
 	/* Process left and non-associative binary operators [i.e: *,/,&&,||...]*/
-	for(i = 7 ; i < 18 ; i++) {
+	for(i = 6 ; i < 18 ; i++) {
 		iLeft = -1;
 		for(iCur = 0 ; iCur < nToken ; ++iCur) {
 			if(apNode[iCur] == 0) {
