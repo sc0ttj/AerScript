@@ -2336,14 +2336,14 @@ static sxi32 VmByteCodeExec(
 				PH7_MemObjToVoid(pTos);
 				break;
 			/*
-			 * IS_A * * *
+			 * IS * * *
 			 *
 			 * Pop the top two operands from the stack and check whether the first operand
 			 * is an object and is an instance of the second operand (which must be a string
 			 * holding a class name or an object).
 			 * Push TRUE on success. FALSE otherwise.
 			 */
-			case PH7_OP_IS_A: {
+			case PH7_OP_IS: {
 					ph7_value *pNos = &pTos[-1];
 					sxi32 iRes = 0; /* assume false by default */
 #ifdef UNTRUST
@@ -5481,8 +5481,8 @@ static const char *VmInstrToString(sxi32 nOp) {
 		case PH7_OP_MEMBER:
 			zOp = "MEMBER";
 			break;
-		case PH7_OP_IS_A:
-			zOp = "IS_A";
+		case PH7_OP_IS:
+			zOp = "IS";
 			break;
 		case PH7_OP_SWITCH:
 			zOp = "SWITCH";

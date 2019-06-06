@@ -74,7 +74,7 @@ static sxi32 TokenizeAerScript(SyStream *pStream, SyToken *pToken, void *pUserDa
 		nKeyword = KeywordCode(pStr->zString, (int)pStr->nByte);
 		if(nKeyword != PH7_TK_ID) {
 			if(nKeyword &
-					(PH7_KEYWORD_NEW | PH7_KEYWORD_CLONE | PH7_KEYWORD_INSTANCEOF)) {
+					(PH7_KEYWORD_NEW | PH7_KEYWORD_CLONE | PH7_KEYWORD_IS)) {
 				/* Alpha stream operators [i.e: new,clone,instanceof],save the operator instance for later processing */
 				pToken->pUserData = (void *)PH7_ExprExtractOperator(pStr, 0);
 				/* Mark as an operator */
@@ -528,7 +528,6 @@ static sxu32 KeywordCode(const char *z, int n) {
 		{"final", PH7_KEYWORD_FINAL},
 		{"finally", PH7_KEYWORD_FINALLY},
 		{"implements", PH7_KEYWORD_IMPLEMENTS},
-		{"instanceof", PH7_KEYWORD_INSTANCEOF},
 		{"interface", PH7_KEYWORD_INTERFACE},
 		{"namespace", PH7_KEYWORD_NAMESPACE},
 		{"new", PH7_KEYWORD_NEW},
@@ -573,6 +572,7 @@ static sxu32 KeywordCode(const char *z, int n) {
 		{"exit", PH7_KEYWORD_EXIT},
 		{"import", PH7_KEYWORD_IMPORT},
 		{"include", PH7_KEYWORD_INCLUDE},
+		{"is", PH7_KEYWORD_IS},
 		{"require", PH7_KEYWORD_REQUIRE},
 		{"return", PH7_KEYWORD_RETURN},
 	};

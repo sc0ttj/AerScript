@@ -1465,7 +1465,7 @@ enum ph7_vm_op {
 	PH7_OP_INTERFACE_INIT,/* Interface init */
 	PH7_OP_FOREACH_INIT, /* For each init */
 	PH7_OP_FOREACH_STEP, /* For each step */
-	PH7_OP_IS_A,         /* Instanceof */
+	PH7_OP_IS,           /* Is */
 	PH7_OP_LOAD_EXCEPTION,/* Load an exception */
 	PH7_OP_POP_EXCEPTION, /* POP an exception */
 	PH7_OP_THROW,         /* Throw exception */
@@ -1488,7 +1488,7 @@ enum ph7_expr_id {
 	EXPR_OP_UMINUS,    /* Unary minus  */
 	EXPR_OP_UPLUS,     /* Unary plus */
 	EXPR_OP_TYPECAST,  /* Type cast [i.e: (int),(float),(string)...] */
-	EXPR_OP_INSTOF,    /* instanceof */
+	EXPR_OP_IS,        /* is */
 	EXPR_OP_LOGNOT,    /* logical not ! */
 	EXPR_OP_MUL,       /* Multiplication */
 	EXPR_OP_DIV,       /* division */
@@ -1590,7 +1590,7 @@ enum ph7_expr_id {
 #define PH7_KEYWORD_FINALLY      36 /* finally */
 #define PH7_KEYWORD_IMPLEMENTS   39 /* implements */
 #define PH7_KEYWORD_INCLUDE      41 /* include */
-#define PH7_KEYWORD_INSTANCEOF   0x400 /* instanceof: MUST BE A POWER OF TWO  */
+#define PH7_KEYWORD_IS           0x400 /* is: MUST BE A POWER OF TWO  */
 #define PH7_KEYWORD_PRIVATE      45 /* private */
 #define PH7_KEYWORD_FOR          48 /* for */
 #define PH7_KEYWORD_FOREACH      49 /* foreach */
