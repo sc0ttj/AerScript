@@ -1,0 +1,30 @@
+interface Test0 {}
+
+class Test1 implements Test0 {}
+
+class Test2 extends Test1 {
+}
+
+class Program {
+
+	void main() {
+		int[] $q = {1, 2, 3};
+		float $t = 4;
+		object $x = new Test1();
+		var_dump($x is Test0);
+		var_dump($x is Test1);
+		var_dump($x is Test2);
+		var_dump($x is object);
+		var_dump($x is object[]);
+		var_dump($x is void);
+		var_dump($q is void);
+		var_dump($q is void[]);
+		var_dump($q is int);
+		var_dump($q is int[]);
+		var_dump($q[1] is int);
+		var_dump($t is int);
+		var_dump($t is float);
+		var_dump($t is 4);
+	}
+
+}
