@@ -1056,6 +1056,15 @@ static sxi32 ExprMakeTree(ph7_gen_state *pGen, ph7_expr_node **apNode, sxi32 nTo
 					iTmp = iRight;
 					iRight = iLeft;
 					iLeft = iTmp;
+				} else if(pNode->pOp->iOp == EXPR_OP_IS) {
+					sxu32 nKwrd = 0;
+					if(apNode[iRight]->pStart->nType == PH7_TK_KEYWORD) {
+						nKwrd = SX_PTR_TO_INT(apNode[iRight]->pStart->pUserData);
+						if(nKwrd && (nKwrd & PH7_KEYWORD_TYPEDEF) == 0) {
+							PH7_GenCompileError(pGen, E_ERROR, pNode->pStart->nLine,
+													"'%z': Unexpected keyword '%z'", &pNode->pOp->sOp, &apNode[iRight]->pStart->sData);
+						}
+					}
 				}
 				/* Link the node to the tree */
 				pNode->pLeft = apNode[iLeft];
