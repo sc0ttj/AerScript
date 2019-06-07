@@ -4712,6 +4712,44 @@ static sxi32 PH7_GenStateEmitExprCode(
 					(void)PH7_VmPopInstr(pGen->pVm);
 				}
 			}
+		} else if(iVmOp == PH7_OP_IS) {
+			ph7_expr_node *pNext = pNode->pRight;
+			sxu32 nKwrd = 0;
+			if(pNext->pLeft && pNext->pLeft->pStart->nType == PH7_TK_KEYWORD) {
+				nKwrd = SX_PTR_TO_INT(pNext->pLeft->pStart->pUserData);
+				pInstr = PH7_VmPeekInstr(pGen->pVm);
+				if(pInstr && pInstr->iOp == PH7_OP_LOAD_IDX) {
+					iP2 = MEMOBJ_HASHMAP;
+					(void)PH7_VmPopInstr(pGen->pVm);
+				}
+			} else if(pNext->pStart->nType == PH7_TK_KEYWORD) {
+				nKwrd = SX_PTR_TO_INT(pNext->pStart->pUserData);
+			}
+			if(nKwrd & PH7_KEYWORD_BOOL) {
+				iP2 |= MEMOBJ_BOOL;
+			} else if(nKwrd & PH7_KEYWORD_CALLBACK) {
+				iP2 |= MEMOBJ_CALL;
+			} else if(nKwrd & PH7_KEYWORD_CHAR) {
+				iP2 |= MEMOBJ_CHAR;
+			} else if(nKwrd & PH7_KEYWORD_FLOAT) {
+				iP2 |= MEMOBJ_REAL;
+			} else if(nKwrd & PH7_KEYWORD_INT) {
+				iP2 |= MEMOBJ_INT;
+			} else if(nKwrd & PH7_KEYWORD_MIXED) {
+				iP2 |= MEMOBJ_MIXED;
+			} else if(nKwrd & PH7_KEYWORD_OBJECT) {
+				iP2 |= MEMOBJ_OBJ;
+			} else if(nKwrd & PH7_KEYWORD_RESOURCE) {
+				iP2 |= MEMOBJ_RES;
+			} else if(nKwrd & PH7_KEYWORD_STRING) {
+				iP2 |= MEMOBJ_STRING;
+			} else if(nKwrd & PH7_KEYWORD_VOID) {
+				iP2 |= MEMOBJ_VOID;
+			}
+			pInstr = PH7_VmPeekInstr(pGen->pVm);
+			if(pInstr && pInstr->iOp == PH7_OP_LOADV) {
+				PH7_GenCompileError(pGen, E_ERROR, pGen->pIn->nLine, "A constant value is expected");
+			}
 		}
 		/* Finally,emit the VM instruction associated with this operator */
 		PH7_VmEmitInstr(pGen->pVm, 0, iVmOp, iP1, iP2, p3, 0);
