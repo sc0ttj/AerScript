@@ -832,8 +832,14 @@ static sxi32 ExprMakeTree(ph7_gen_state *pGen, ph7_expr_node **apNode, sxi32 nTo
 				if(iLeft < 0 || apNode[iLeft] == 0 || (apNode[iLeft]->pOp == 0 && (apNode[iLeft]->xCode != PH7_CompileVariable &&
 													   apNode[iLeft]->xCode != PH7_CompileSimpleString && apNode[iLeft]->xCode != PH7_CompileString)) ||
 						(apNode[iLeft]->pOp && apNode[iLeft]->pOp->iPrec != 2 /* postfix */)) {
-					/* Syntax error */
-					PH7_GenCompileError(pGen, E_ERROR, pNode->pStart->nLine, "Invalid array name");
+					sxu32 nId = 0;
+					if(apNode[iLeft]->xCode == PH7_CompileLiteral && apNode[iLeft]->pStart->nType & PH7_TK_KEYWORD) {
+						nId = SX_PTR_TO_INT(apNode[iLeft]->pStart->pUserData);
+					}
+					if(!nId || (nId & PH7_KEYWORD_TYPEDEF) == 0) {
+						/* Syntax error */
+						PH7_GenCompileError(pGen, E_ERROR, pNode->pStart->nLine, "Invalid array name");
+					}
 				}
 				/* Collect index tokens */
 				while(iArrTok < nToken) {
@@ -852,6 +858,9 @@ static sxi32 ExprMakeTree(ph7_gen_state *pGen, ph7_expr_node **apNode, sxi32 nTo
 					++iArrTok;
 				}
 				if(iArrTok > iCur + 1) {
+					if(apNode[iLeft]->xCode == PH7_CompileLiteral) {
+						PH7_GenCompileError(pGen, E_ERROR, pNode->pStart->nLine, "Array index cannot be specified in a variable declaration");
+					}
 					/* Recurse and process this expression */
 					rc = ExprMakeTree(&(*pGen), &apNode[iCur + 1], iArrTok - iCur - 1);
 					if(rc != SXRET_OK) {
