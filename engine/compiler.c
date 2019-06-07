@@ -2461,7 +2461,7 @@ static sxi32 PH7_CompileVar(ph7_gen_state *pGen) {
 				/* Compile the expression */
 				rc = PH7_CompileExpr(&(*pGen), EXPR_FLAG_COMMA_STATEMENT, 0);
 				if(rc == SXERR_EMPTY) {
-					PH7_GenCompileError(&(*pGen), E_ERROR, pGen->pIn->nLine, "Static variable '%z' is missing default value", &pName);
+					PH7_GenCompileError(&(*pGen), E_ERROR, pGen->pIn->nLine, "Static variable '$%z' is missing default value", &pName);
 				}
 				/* Emit the done instruction */
 				PH7_VmEmitInstr(pGen->pVm, pGen->pIn->nLine, PH7_OP_DONE, (rc != SXERR_EMPTY ? 1 : 0), 1, 0, 0);
@@ -2489,7 +2489,7 @@ static sxi32 PH7_CompileVar(ph7_gen_state *pGen) {
 				if(rc == SXERR_ABORT) {
 					return SXERR_ABORT;
 				} else if(rc == SXERR_EMPTY) {
-					PH7_GenCompileError(&(*pGen), E_ERROR, pGen->pIn->nLine, "Variable '%z' is missing default value", &pName);
+					PH7_GenCompileError(&(*pGen), E_ERROR, pGen->pIn->nLine, "Variable '$%z' is missing default value", &pName);
 				} else {
 					PH7_VmEmitInstr(pGen->pVm, nLine, PH7_OP_POP, 1, 0, 0, 0);
 				}
