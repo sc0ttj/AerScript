@@ -2420,7 +2420,7 @@ static sxi32 PH7_CompileVar(ph7_gen_state *pGen) {
 		if(pGen->pIn >= pGen->pEnd || (pGen->pIn->nType & PH7_TK_DOLLAR/*'$'*/) == 0 || &pGen->pIn[1] >= pGen->pEnd ||
 				(pGen->pIn[1].nType & (PH7_TK_ID | PH7_TK_KEYWORD)) == 0) {
 			PH7_GenCompileError(&(*pGen), E_ERROR, pGen->pIn->nLine,
-								"Unexpected '%z', expecting variable",
+								"Unexpected '%z', expecting variable name",
 								&pGen->pIn->sData);
 		}
 		/* Extract variable name */
