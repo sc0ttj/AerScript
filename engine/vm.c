@@ -2351,21 +2351,39 @@ static sxi32 VmByteCodeExec(
 						goto Abort;
 					}
 #endif
-					if(pNos->nType & MEMOBJ_OBJ) {
-						ph7_class_instance *pThis = (ph7_class_instance *)pNos->x.pOther;
-						ph7_class *pClass = 0;
-						/* Extract the target class */
-						if(pTos->nType & MEMOBJ_OBJ) {
-							/* Instance already loaded */
-							pClass = ((ph7_class_instance *)pTos->x.pOther)->pClass;
-						} else if(pTos->nType & MEMOBJ_STRING && SyBlobLength(&pTos->sBlob) > 0) {
-							/* Perform the query */
-							pClass = PH7_VmExtractClass(&(*pVm), (const char *)SyBlobData(&pTos->sBlob),
-														SyBlobLength(&pTos->sBlob), FALSE);
+					VmInstr *bInstr = &aInstr[pc - 1];
+					if(pInstr->iP2) {
+						sxu32 nType = pNos->nType;
+						if(nType & MEMOBJ_MIXED) {
+							nType ^= MEMOBJ_MIXED;
 						}
-						if(pClass) {
-							/* Perform the query */
-							iRes = VmInstanceOf(pThis->pClass, pClass);
+						if(nType == pInstr->iP2) {
+							iRes = 1;
+						}
+					} else {
+						if(pNos->nType & MEMOBJ_OBJ) {
+							ph7_class_instance *pThis = (ph7_class_instance *)pNos->x.pOther;
+							ph7_class *pClass = 0;
+							/* Extract the target class */
+							if(pTos->nType & MEMOBJ_OBJ && pTos->x.pOther) {
+								/* Instance already loaded */
+								pClass = ((ph7_class_instance *)pTos->x.pOther)->pClass;
+							} else if(pTos->nType & MEMOBJ_STRING && SyBlobLength(&pTos->sBlob) > 0) {
+								/* Perform the query */
+								pClass = PH7_VmExtractClass(&(*pVm), (const char *)SyBlobData(&pTos->sBlob),
+															SyBlobLength(&pTos->sBlob), FALSE);
+							}
+							if(pClass == 0) {
+								PH7_VmThrowError(&(*pVm), PH7_CTX_ERR,
+												"The type or class name could not be found");
+							}
+							if(pThis) {
+								/* Perform the query */
+								iRes = VmInstanceOf(pThis->pClass, pClass);
+							}
+						} else {
+							rc = PH7_MemObjCmp(pNos, pTos, FALSE, 0);
+							iRes = rc == 0;
 						}
 					}
 					/* Push result */
