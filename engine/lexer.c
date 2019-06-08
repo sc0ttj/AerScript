@@ -542,6 +542,7 @@ static sxu32 KeywordCode(const char *z, int n) {
 		{"public", PH7_KEYWORD_PUBLIC},
 		{"static", PH7_KEYWORD_STATIC},
 		/* Data types */
+		{"auto", PH7_KEYWORD_AUTO},
 		{"bool", PH7_KEYWORD_BOOL},
 		{"callback", PH7_KEYWORD_CALLBACK},
 		{"char", PH7_KEYWORD_CHAR},
