@@ -2421,20 +2421,22 @@ static sxi32 VmByteCodeExec(
 							PH7_VmThrowError(&(*pVm), PH7_CTX_ERR,
 											"Redeclaration of ‘$%z’ variable", &sName);
 						}
-						if(pInstr->iP2 & MEMOBJ_MIXED && (pInstr->iP2 & MEMOBJ_HASHMAP) == 0) {
-							pObj->nType = MEMOBJ_MIXED | MEMOBJ_VOID;
-						} else {
-							if(pInstr->iP2 & MEMOBJ_HASHMAP) {
-								ph7_hashmap *pMap;
-								pMap = PH7_NewHashmap(&(*pVm), 0, 0);
-								if(pMap == 0) {
-									PH7_VmMemoryError(&(*pVm));
+						if(pInstr->iP2 != MEMOBJ_NULL) {
+							if(pInstr->iP2 & MEMOBJ_MIXED && (pInstr->iP2 & MEMOBJ_HASHMAP) == 0) {
+								pObj->nType = MEMOBJ_MIXED | MEMOBJ_VOID;
+							} else {
+								if(pInstr->iP2 & MEMOBJ_HASHMAP) {
+									ph7_hashmap *pMap;
+									pMap = PH7_NewHashmap(&(*pVm), 0, 0);
+									if(pMap == 0) {
+										PH7_VmMemoryError(&(*pVm));
+									}
+									pObj->x.pOther = pMap;
 								}
-								pObj->x.pOther = pMap;
+								MemObjSetType(pObj, pInstr->iP2);
 							}
-							MemObjSetType(pObj, pInstr->iP2);
+							pTos->nIdx = SXU32_HIGH; /* Mark as constant */
 						}
-						pTos->nIdx = SXU32_HIGH; /* Mark as constant */
 					}
 					break;
 				}

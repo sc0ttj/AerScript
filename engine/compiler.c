@@ -2466,6 +2466,8 @@ static sxi32 PH7_CompileVar(ph7_gen_state *pGen) {
 				PH7_VmEmitInstr(pGen->pVm, pGen->pIn->nLine, PH7_OP_DONE, (rc != SXERR_EMPTY ? 1 : 0), 1, 0, 0);
 				/* Restore default bytecode container */
 				PH7_VmSetByteCodeContainer(pGen->pVm, pInstrContainer);
+			} else if(nType == MEMOBJ_NULL) {
+				PH7_GenCompileError(&(*pGen), E_ERROR, pGen->pIn->nLine, "Implicitly-typed variable '$%z' must be initialized", pName);
 			}
 			/* Set static variable type */
 			sStatic.iFlags = nType;
@@ -2492,6 +2494,8 @@ static sxi32 PH7_CompileVar(ph7_gen_state *pGen) {
 				} else {
 					PH7_VmEmitInstr(pGen->pVm, nLine, PH7_OP_POP, 1, 0, 0, 0);
 				}
+			} else if(nType == MEMOBJ_NULL) {
+				PH7_GenCompileError(&(*pGen), E_ERROR, pGen->pIn->nLine, "Implicitly-typed variable '$%z' must be initialized", pName);
 			} else {
 				pGen->pIn += 2; /* Jump the dollar '$' sign and variable name */
 			}
@@ -4926,7 +4930,7 @@ static ProcLangConstruct PH7_GenStateGetStatementHandler(
 	SyToken *pLookahead  /* Look-ahead token */
 ) {
 	sxu32 n = 0;
-	if((nKeywordID & PH7_KEYWORD_TYPEDEF) != 0 || nKeywordID == PH7_KEYWORD_STATIC) {
+	if((nKeywordID & PH7_KEYWORD_AUTO) != 0 || (nKeywordID & PH7_KEYWORD_TYPEDEF) != 0 || nKeywordID == PH7_KEYWORD_STATIC) {
 		if(nKeywordID == PH7_KEYWORD_STATIC && pLookahead && (pLookahead->nType & PH7_TK_OP)) {
 			const ph7_expr_op *pOp = (const ph7_expr_op *)pLookahead->pUserData;
 			if(pOp && pOp->iOp == EXPR_OP_DC /*::*/) {
