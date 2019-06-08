@@ -803,7 +803,7 @@ PH7_PRIVATE sxi32 PH7_MemObjInitFromReal(ph7_vm *pVm, ph7_value *pObj, ph7_real 
 /*
  * Initialize a ph7_value to the void type.
  */
-PH7_PRIVATE sxi32 PH7_MemObjInitFromVoid(ph7_vm *pVm, ph7_value *pObj, ph7_real rVal) {
+PH7_PRIVATE sxi32 PH7_MemObjInitFromVoid(ph7_vm *pVm, ph7_value *pObj) {
 	/* Zero the structure */
 	SyZero(pObj, sizeof(ph7_value));
 	/* Initialize fields */
