@@ -1879,7 +1879,7 @@ static sxi32 PH7_CompileFor(ph7_gen_state *pGen) {
 	pTmp = pGen->pEnd;
 	pGen->pEnd = pEnd;
 	sxu32 nKey = (sxu32)(SX_PTR_TO_INT(pGen->pIn->pUserData));
-	if(nKey & PH7_KEYWORD_TYPEDEF) {
+	if(nKey & (PH7_KEYWORD_AUTO | PH7_KEYWORD_TYPEDEF)) {
 		PH7_CompileVar(&(*pGen));
 	}
 	/* Compile initialization expressions if available */
@@ -2062,7 +2062,7 @@ static sxi32 PH7_CompileForeach(ph7_gen_state *pGen) {
 		pTmp = pGen->pEnd;
 		pGen->pEnd = pCur;
 		nKey = (sxu32)(SX_PTR_TO_INT(pGen->pIn->pUserData));
-		if(nKey & PH7_KEYWORD_TYPEDEF) {
+		if(nKey & (PH7_KEYWORD_AUTO | PH7_KEYWORD_TYPEDEF)) {
 			/* Hack to compile variable */
 			pGen->pEnd->nType = PH7_TK_SEMI;
 			if(pGen->pIn[3].nType != PH7_TK_SEMI) {
@@ -2111,7 +2111,7 @@ static sxi32 PH7_CompileForeach(ph7_gen_state *pGen) {
 	pTmp = pGen->pEnd;
 	pGen->pEnd = pCur;
 	nKey = (sxu32)(SX_PTR_TO_INT(pGen->pIn->pUserData));
-	if(nKey & PH7_KEYWORD_TYPEDEF) {
+	if(nKey & (PH7_KEYWORD_AUTO | PH7_KEYWORD_TYPEDEF)) {
 		/* Hack to compile variable */
 		pGen->pEnd->nType = PH7_TK_SEMI;
 		if(pGen->pIn[3].nType != PH7_TK_SEMI) {
