@@ -2454,6 +2454,10 @@ static sxi32 PH7_CompileVar(ph7_gen_state *pGen) {
 			if(pGen->pIn < pGen->pEnd && (pGen->pIn->nType & PH7_TK_EQUAL)) {
 				SySet *pInstrContainer;
 				pGen->pIn++; /* Jump the equal '=' sign */
+				if(nType == MEMOBJ_NULL && pGen->pIn->nType & PH7_TK_OCB) {
+					PH7_GenCompileError(&(*pGen), E_ERROR, pGen->pIn->nLine,
+										"Cannot initialize an implicitly-typed variable '$%z' with an array initializer", pName);
+				}
 				/* Swap bytecode container */
 				pInstrContainer = PH7_VmGetByteCodeContainer(pGen->pVm);
 				PH7_VmSetByteCodeContainer(pGen->pVm, &sStatic.aByteCode);
@@ -2485,6 +2489,10 @@ static sxi32 PH7_CompileVar(ph7_gen_state *pGen) {
 			PH7_VmEmitInstr(pGen->pVm, nLine, PH7_OP_POP, 1, 0, 0, 0);
 			/* Check if we have an expression to compile */
 			if(pGen->pIn < pGen->pEnd && (pGen->pIn[2].nType & PH7_TK_EQUAL)) {
+				if(nType == MEMOBJ_NULL && pGen->pIn[3].nType & PH7_TK_OCB) {
+					PH7_GenCompileError(&(*pGen), E_ERROR, pGen->pIn->nLine,
+										"Cannot initialize an implicitly-typed variable '$%z' with an array initializer", pName);
+				}
 				/* Compile the expression */
 				rc = PH7_CompileExpr(&(*pGen), EXPR_FLAG_COMMA_STATEMENT, 0);
 				if(rc == SXERR_ABORT) {
