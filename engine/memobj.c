@@ -404,7 +404,11 @@ PH7_PRIVATE sxi32 PH7_MemObjSafeStore(ph7_value *pSrc, ph7_value *pDest) {
 	if(pDest->nType == 0 || pDest->nType == MEMOBJ_NULL || pDest->nType == pSrc->nType) {
 		PH7_MemObjStore(pSrc, pDest);
 		if(pDest->nType == 0 || pDest->nType == MEMOBJ_NULL) {
-			pDest->nType = pSrc->nType;
+			if(pSrc->nType == MEMOBJ_NULL) {
+				pDest->nType = MEMOBJ_VOID;
+			} else {
+				pDest->nType = pSrc->nType;
+			}
 		}
 	} else if(pDest->nType & MEMOBJ_MIXED) {
 		if(pDest->nType & MEMOBJ_HASHMAP) {
