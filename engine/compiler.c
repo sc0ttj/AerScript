@@ -2406,13 +2406,12 @@ static sxi32 PH7_CompileVar(ph7_gen_state *pGen) {
 	} else if(nKey & PH7_KEYWORD_VOID) {
 		nType = MEMOBJ_VOID;
 	} else {
-		PH7_GenCompileError(&(*pGen), E_ERROR, pGen->pIn->nLine,
-							"Unknown data type name '%z'",
-							&pGen->pIn->sData);
+		/* No data type at all */
+		nType = MEMOBJ_NULL;
 	}
 	/* Jump the data type keyword */
 	pGen->pIn++;
-	if((pGen->pIn->nType & PH7_TK_OSB) && &pGen->pIn[1] < pGen->pEnd && (pGen->pIn[1].nType & PH7_TK_CSB)) {
+	if(nType != MEMOBJ_NULL && (pGen->pIn->nType & PH7_TK_OSB) && &pGen->pIn[1] < pGen->pEnd && (pGen->pIn[1].nType & PH7_TK_CSB)) {
 		nType |= MEMOBJ_HASHMAP;
 		pGen->pIn += 2;
 	}
