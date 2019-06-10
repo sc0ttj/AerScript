@@ -2,7 +2,7 @@
 CFLAGS = -fPIC -Iinclude -I. -W -Wunused -Wall
 
 # Additional CFLAGS for debug build
-DCFLAGS = -O0 -g3
+DCFLAGS = -O0 -g3 -fsplit-stack
 
 # Addditional CFLAGS for release build
 RCFLAGS = -O3 -s
