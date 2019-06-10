@@ -959,12 +959,6 @@ PH7_PRIVATE sxi32 PH7_VmInit(
 	PH7_MemObjInit(&(*pVm), &pVm->aExceptionCB[0]);
 	PH7_MemObjInit(&(*pVm), &pVm->aExceptionCB[1]);
 	PH7_MemObjInit(&(*pVm), &pVm->sAssertCallback);
-	/* Set a default recursion limit */
-#if defined(__WINNT__) || defined(__UNIXES__)
-	pVm->nMaxDepth = 32;
-#else
-	pVm->nMaxDepth = 16;
-#endif
 	/* Default assertion flags */
 	pVm->iAssertFlags = PH7_ASSERT_WARNING; /* Issue a warning for each failed assertion */
 	/* JSON return status */
@@ -1541,14 +1535,6 @@ PH7_PRIVATE sxi32 PH7_VmConfigure(
 			/* Run-Time Error report */
 			pVm->bErrReport = 1;
 			break;
-		case PH7_VM_CONFIG_RECURSION_DEPTH: {
-				/* Recursion depth */
-				int nDepth = va_arg(ap, int);
-				if(nDepth > 2 && nDepth < 1024) {
-					pVm->nMaxDepth = nDepth;
-				}
-				break;
-			}
 		case PH7_VM_CONFIG_CREATE_SUPER:
 		case PH7_VM_CONFIG_CREATE_VAR: {
 				/* Create a new superglobal/global variable */
@@ -4687,19 +4673,6 @@ static sxi32 VmByteCodeExec(
 								}
 							}
 						}
-						/* Check The recursion limit */
-						if(pVm->nRecursionDepth > pVm->nMaxDepth) {
-							PH7_VmThrowError(&(*pVm), PH7_CTX_WARNING,
-										  "Recursion limit reached while invoking user function '%z', PH7 will set a NULL return value",
-										  &pVmFunc->sName);
-							/* Pop given arguments */
-							if(pInstr->iP1 > 0) {
-								VmPopOperand(&pTos, pInstr->iP1);
-							}
-							/* Assume a null return value so that the program continue it's execution normally */
-							PH7_MemObjRelease(pTos);
-							break;
-						}
 						/* Select an appropriate function to call, if not entry point */
 						if(pInstr->iP2 == 0) {
 							pVmFunc = VmOverload(&(*pVm), pVmFunc, pArg, (int)(pTos - pArg));
@@ -4957,12 +4930,8 @@ static sxi32 VmByteCodeExec(
 							/* Push class name */
 							SySetPut(&pVm->aSelf, (const void *)&pSelf);
 						}
-						/* Increment nesting level */
-						pVm->nRecursionDepth++;
 						/* Execute function body */
 						rc = VmByteCodeExec(&(*pVm), (VmInstr *)SySetBasePtr(&pVmFunc->aByteCode), pFrameStack, -1, pTos, &n, FALSE);
-						/* Decrement nesting level */
-						pVm->nRecursionDepth--;
 						if(pSelf) {
 							/* Pop class name */
 							(void)SySetPop(&pVm->aSelf);

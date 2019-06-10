@@ -349,20 +349,19 @@ typedef sxi64 ph7_int64;
 #define PH7_VM_CONFIG_OUTPUT           1  /* TWO ARGUMENTS: int (*xConsumer)(const void *pOut,unsigned int nLen,void *pUserData),void *pUserData */
 #define PH7_VM_CONFIG_IMPORT_PATH      3  /* ONE ARGUMENT: const char *zIncludePath */
 #define PH7_VM_CONFIG_ERR_REPORT       4  /* NO ARGUMENTS: Report all run-time errors in the VM output */
-#define PH7_VM_CONFIG_RECURSION_DEPTH  5  /* ONE ARGUMENT: int nMaxDepth */
-#define PH7_VM_CONFIG_CREATE_SUPER     6  /* TWO ARGUMENTS: const char *zName,ph7_value *pValue */
-#define PH7_VM_CONFIG_CREATE_VAR       7  /* TWO ARGUMENTS: const char *zName,ph7_value *pValue */
-#define PH7_VM_CONFIG_HTTP_REQUEST     8  /* TWO ARGUMENTS: const char *zRawRequest,int nRequestLength */
-#define PH7_VM_CONFIG_SERVER_ATTR      9  /* THREE ARGUMENTS: const char *zKey,const char *zValue,int nLen */
-#define PH7_VM_CONFIG_ENV_ATTR        10  /* THREE ARGUMENTS: const char *zKey,const char *zValue,int nLen */
-#define PH7_VM_CONFIG_SESSION_ATTR    11  /* THREE ARGUMENTS: const char *zKey,const char *zValue,int nLen */
-#define PH7_VM_CONFIG_POST_ATTR       12  /* THREE ARGUMENTS: const char *zKey,const char *zValue,int nLen */
-#define PH7_VM_CONFIG_GET_ATTR        13  /* THREE ARGUMENTS: const char *zKey,const char *zValue,int nLen */
-#define PH7_VM_CONFIG_COOKIE_ATTR     14  /* THREE ARGUMENTS: const char *zKey,const char *zValue,int nLen */
-#define PH7_VM_CONFIG_HEADER_ATTR     15  /* THREE ARGUMENTS: const char *zKey,const char *zValue,int nLen */
-#define PH7_VM_CONFIG_IO_STREAM       16  /* ONE ARGUMENT: const ph7_io_stream *pStream */
-#define PH7_VM_CONFIG_ARGV_ENTRY      17  /* ONE ARGUMENT: const char *zValue */
-#define PH7_VM_CONFIG_EXTRACT_OUTPUT  18  /* TWO ARGUMENTS: const void **ppOut,unsigned int *pOutputLen */
+#define PH7_VM_CONFIG_CREATE_SUPER     5  /* TWO ARGUMENTS: const char *zName,ph7_value *pValue */
+#define PH7_VM_CONFIG_CREATE_VAR       6  /* TWO ARGUMENTS: const char *zName,ph7_value *pValue */
+#define PH7_VM_CONFIG_HTTP_REQUEST     7  /* TWO ARGUMENTS: const char *zRawRequest,int nRequestLength */
+#define PH7_VM_CONFIG_SERVER_ATTR      8  /* THREE ARGUMENTS: const char *zKey,const char *zValue,int nLen */
+#define PH7_VM_CONFIG_ENV_ATTR         9  /* THREE ARGUMENTS: const char *zKey,const char *zValue,int nLen */
+#define PH7_VM_CONFIG_SESSION_ATTR    10  /* THREE ARGUMENTS: const char *zKey,const char *zValue,int nLen */
+#define PH7_VM_CONFIG_POST_ATTR       11  /* THREE ARGUMENTS: const char *zKey,const char *zValue,int nLen */
+#define PH7_VM_CONFIG_GET_ATTR        12  /* THREE ARGUMENTS: const char *zKey,const char *zValue,int nLen */
+#define PH7_VM_CONFIG_COOKIE_ATTR     13  /* THREE ARGUMENTS: const char *zKey,const char *zValue,int nLen */
+#define PH7_VM_CONFIG_HEADER_ATTR     14  /* THREE ARGUMENTS: const char *zKey,const char *zValue,int nLen */
+#define PH7_VM_CONFIG_IO_STREAM       15  /* ONE ARGUMENT: const ph7_io_stream *pStream */
+#define PH7_VM_CONFIG_ARGV_ENTRY      16  /* ONE ARGUMENT: const char *zValue */
+#define PH7_VM_CONFIG_EXTRACT_OUTPUT  17  /* TWO ARGUMENTS: const void **ppOut,unsigned int *pOutputLen */
 /*
  * Global Library Configuration Commands.
  *
