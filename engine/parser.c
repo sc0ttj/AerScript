@@ -87,21 +87,21 @@ static const ph7_expr_op aOpTable[] = {
 	/* Precedence 17,left-associative */
 	{ {"||", sizeof(char) * 2}, EXPR_OP_LOR, 17, EXPR_OP_ASSOC_LEFT, PH7_OP_LOR},
 	/* Ternary operator */
-	/* Precedence 18,left-associative */
-	{ {"?", sizeof(char)}, EXPR_OP_QUESTY, 18, EXPR_OP_ASSOC_LEFT, 0},
+	/* Precedence 19,left-associative */
+	{ {"?", sizeof(char)}, EXPR_OP_QUESTY, 19, EXPR_OP_ASSOC_LEFT, 0},
 	/* Combined binary operators */
-	/* Precedence 19,right-associative */
-	{ {"=", sizeof(char)},     EXPR_OP_ASSIGN,     19,  EXPR_OP_ASSOC_RIGHT, PH7_OP_STORE},
-	{ {"+=", sizeof(char) * 2},  EXPR_OP_ADD_ASSIGN, 19,  EXPR_OP_ASSOC_RIGHT, PH7_OP_ADD_STORE },
-	{ {"-=", sizeof(char) * 2},  EXPR_OP_SUB_ASSIGN, 19,  EXPR_OP_ASSOC_RIGHT, PH7_OP_SUB_STORE },
-	{ {"*=", sizeof(char) * 2},  EXPR_OP_MUL_ASSIGN, 19,  EXPR_OP_ASSOC_RIGHT, PH7_OP_MUL_STORE },
-	{ {"/=", sizeof(char) * 2},  EXPR_OP_DIV_ASSIGN, 19,  EXPR_OP_ASSOC_RIGHT, PH7_OP_DIV_STORE },
-	{ {"%=", sizeof(char) * 2},  EXPR_OP_MOD_ASSIGN, 19,  EXPR_OP_ASSOC_RIGHT, PH7_OP_MOD_STORE },
-	{ {"&=", sizeof(char) * 2},  EXPR_OP_AND_ASSIGN, 19,  EXPR_OP_ASSOC_RIGHT, PH7_OP_BAND_STORE },
-	{ {"|=", sizeof(char) * 2},  EXPR_OP_OR_ASSIGN,  19,  EXPR_OP_ASSOC_RIGHT, PH7_OP_BOR_STORE  },
-	{ {"^=", sizeof(char) * 2},  EXPR_OP_XOR_ASSIGN, 19,  EXPR_OP_ASSOC_RIGHT, PH7_OP_BXOR_STORE },
-	{ {"<<=", sizeof(char) * 3}, EXPR_OP_SHL_ASSIGN, 19,  EXPR_OP_ASSOC_RIGHT, PH7_OP_SHL_STORE },
-	{ {">>=", sizeof(char) * 3}, EXPR_OP_SHR_ASSIGN, 19,  EXPR_OP_ASSOC_RIGHT, PH7_OP_SHR_STORE },
+	/* Precedence 20,right-associative */
+	{ {"=", sizeof(char)},     EXPR_OP_ASSIGN,     20,  EXPR_OP_ASSOC_RIGHT, PH7_OP_STORE},
+	{ {"+=", sizeof(char) * 2},  EXPR_OP_ADD_ASSIGN, 20,  EXPR_OP_ASSOC_RIGHT, PH7_OP_ADD_STORE },
+	{ {"-=", sizeof(char) * 2},  EXPR_OP_SUB_ASSIGN, 20,  EXPR_OP_ASSOC_RIGHT, PH7_OP_SUB_STORE },
+	{ {"*=", sizeof(char) * 2},  EXPR_OP_MUL_ASSIGN, 20,  EXPR_OP_ASSOC_RIGHT, PH7_OP_MUL_STORE },
+	{ {"/=", sizeof(char) * 2},  EXPR_OP_DIV_ASSIGN, 20,  EXPR_OP_ASSOC_RIGHT, PH7_OP_DIV_STORE },
+	{ {"%=", sizeof(char) * 2},  EXPR_OP_MOD_ASSIGN, 20,  EXPR_OP_ASSOC_RIGHT, PH7_OP_MOD_STORE },
+	{ {"&=", sizeof(char) * 2},  EXPR_OP_AND_ASSIGN, 20,  EXPR_OP_ASSOC_RIGHT, PH7_OP_BAND_STORE },
+	{ {"|=", sizeof(char) * 2},  EXPR_OP_OR_ASSIGN,  20,  EXPR_OP_ASSOC_RIGHT, PH7_OP_BOR_STORE  },
+	{ {"^=", sizeof(char) * 2},  EXPR_OP_XOR_ASSIGN, 20,  EXPR_OP_ASSOC_RIGHT, PH7_OP_BXOR_STORE },
+	{ {"<<=", sizeof(char) * 3}, EXPR_OP_SHL_ASSIGN, 20,  EXPR_OP_ASSOC_RIGHT, PH7_OP_SHL_STORE },
+	{ {">>=", sizeof(char) * 3}, EXPR_OP_SHR_ASSIGN, 20,  EXPR_OP_ASSOC_RIGHT, PH7_OP_SHR_STORE },
 	/* Precedence 23,left-associative [Lowest operator] */
 	{ {",", sizeof(char)},        EXPR_OP_COMMA, 23, EXPR_OP_ASSOC_LEFT, 0},
 };
@@ -1148,7 +1148,7 @@ static sxi32 ExprMakeTree(ph7_gen_state *pGen, ph7_expr_node **apNode, sxi32 nTo
 			continue;
 		}
 		pNode = apNode[iCur];
-		if(pNode->pOp && pNode->pOp->iPrec == 19 && pNode->pLeft == 0) {
+		if(pNode->pOp && pNode->pOp->iPrec == 20 && pNode->pLeft == 0) {
 			/* Get the left node */
 			iLeft = iCur - 1;
 			while(iLeft >= 0 && apNode[iLeft] == 0) {
@@ -1173,7 +1173,7 @@ static sxi32 ExprMakeTree(ph7_gen_state *pGen, ph7_expr_node **apNode, sxi32 nTo
 		iRight = iCur;
 	}
 	/* Process left associative binary operators that have the lowest precedence [i.e: and,or,xor] */
-	for(i = 20 ; i < 24 ; i++) {
+	for(i = 21 ; i < 24 ; i++) {
 		iLeft = -1;
 		for(iCur = 0 ; iCur < nToken ; ++iCur) {
 			if(apNode[iCur] == 0) {
