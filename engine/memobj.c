@@ -686,6 +686,42 @@ PH7_PRIVATE ProcMemObjCast PH7_MemObjCastMethod(sxi32 nType) {
 	return PH7_MemObjRelease;
 }
 /*
+ *
+ */
+PH7_PRIVATE sxi32 PH7_MemObjIsNull(ph7_value *pObj) {
+	if(pObj->nType & MEMOBJ_HASHMAP) {
+		ph7_hashmap *pMap = (ph7_hashmap *)pObj->x.pOther;
+		return pMap->nEntry == 0 ? TRUE : FALSE;
+	} else if(pObj->nType & (MEMOBJ_NULL | MEMOBJ_VOID)) {
+		return TRUE;
+	} else if(pObj->nType & (MEMOBJ_CHAR | MEMOBJ_INT)) {
+		return pObj->x.iVal == 0 ? TRUE : FALSE;
+	} else if(pObj->nType & MEMOBJ_REAL) {
+		return pObj->x.rVal == (ph7_real) 0 ? TRUE : FALSE;
+	} else if(pObj->nType & MEMOBJ_BOOL) {
+		return !pObj->x.iVal;
+	} else if(pObj->nType & (MEMOBJ_OBJ | MEMOBJ_RES)) {
+		return pObj->x.pOther == 0 ? TRUE : FALSE;
+	} else if(pObj->nType & MEMOBJ_STRING) {
+		if(SyBlobLength(&pObj->sBlob) <= 0) {
+			return TRUE;
+		} else {
+			const char *zIn, *zEnd;
+			zIn = (const char *)SyBlobData(&pObj->sBlob);
+			zEnd = &zIn[SyBlobLength(&pObj->sBlob)];
+			while(zIn < zEnd) {
+				if(zIn[0] != '0') {
+					break;
+				}
+				zIn++;
+			}
+			return zIn >= zEnd ? TRUE : FALSE;
+		}
+	}
+	/* Assume empty by default */
+	return TRUE;
+}
+/*
  * Check whether the ph7_value is numeric [i.e: int/float/bool] or looks
  * like a numeric number [i.e: if the ph7_value is of type string.].
  * Return TRUE if numeric.FALSE otherwise.
