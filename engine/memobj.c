@@ -686,7 +686,10 @@ PH7_PRIVATE ProcMemObjCast PH7_MemObjCastMethod(sxi32 nType) {
 	return PH7_MemObjRelease;
 }
 /*
- *
+ * Check whether the ph7_value has a NULL-value. In AerScript,
+ * the NULL-value means the default initialization value (i.e.
+ * for INTEGER this should be 0). Exception is the variable of
+ * void type, that cannot store values other than NULL.
  */
 PH7_PRIVATE sxi32 PH7_MemObjIsNull(ph7_value *pObj) {
 	if(pObj->nType & MEMOBJ_HASHMAP) {
