@@ -7508,6 +7508,30 @@ PH7_PRIVATE sxi32 PH7_VmUnsetMemObj(ph7_vm *pVm, sxu32 nObjIdx, int bForce) {
 	return SXRET_OK;
 }
 /*
+ * Forcibly destroy a memory object [i.e: a ph7_value], remove it from
+ * the current frame, the reference table and discard it's contents.
+ * This function never fail and always return SXRET_OK.
+ */
+PH7_PRIVATE sxi32 PH7_VmDestroyMemObj(ph7_vm *pVm, ph7_value *pObj) {
+	VmRefObj *pRef;
+	if(pObj) {
+		/* Release the object */
+		PH7_MemObjRelease(pObj);
+		/* Remove old reference links if available */
+		pRef = VmRefObjExtract(&(*pVm), pObj->nIdx);
+		if(pRef) {
+			/* Unlink from the reference table */
+			VmRefObjUnlink(&(*pVm), pRef);
+		}
+		VmSlot sFree;
+		/* Restore to the free list */
+		sFree.nIdx = pObj->nIdx;
+		sFree.pUserData = 0;
+		SySetPut(&pVm->aFreeObj, (const void *)&sFree);
+	}
+	return SXRET_OK;
+}
+/*
  * void unset($var,...)
  *   Unset one or more given variable.
  * Parameters
