@@ -1,0 +1,19 @@
+class Program {
+
+	private int fib(int $n) {
+		int $last = 0;
+		int $cur = 1;
+		--$n;
+		while($n > 0) {
+			--$n;
+			int $tmp = $cur;
+			$cur = $last + $cur;
+			$last = $tmp;
+		}
+		return $cur;
+	}
+
+	public int main() {
+		var_dump($this->fib(43));
+	}
+}
