@@ -4688,7 +4688,7 @@ static sxi32 VmByteCodeExec(
 						if(pThis && pVmFunc->iFlags & VM_FUNC_CLASS_METHOD) {
 							/* Install the '$parent' variable */
 							static const SyString sParent = { "parent", sizeof("parent") - 1 };
-							pObj = VmCreateMemObj(&(*pVm), &sParent, TRUE);
+							pObj = VmCreateMemObj(&(*pVm), &sParent, FALSE);
 							if(pObj) {
 								/* Reflect the change */
 								pObj->iFlags = MEMOBJ_PARENTOBJ;
@@ -4697,7 +4697,7 @@ static sxi32 VmByteCodeExec(
 							}
 							/* Install the '$this' variable */
 							static const SyString sThis = { "this", sizeof("this") - 1 };
-							pObj = VmCreateMemObj(&(*pVm), &sThis, TRUE);
+							pObj = VmCreateMemObj(&(*pVm), &sThis, FALSE);
 							if(pObj) {
 								/* Reflect the change */
 								pObj->iFlags = MEMOBJ_THISOBJ;
