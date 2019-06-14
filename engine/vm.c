@@ -4787,7 +4787,7 @@ static sxi32 VmByteCodeExec(
 															"Argument %u of '%z()' does not match the data type", n + 1, &pVmFunc->sName);
 										}
 										pArg->nType = pTmp->nType;
-										PH7_MemObjRelease(pTmp);
+										PH7_VmDestroyMemObj(&(*pVm), pTmp);
 									}
 								}
 								if(aFormalArg[n].iFlags & VM_FUNC_ARG_BY_REF) {
@@ -4903,7 +4903,7 @@ static sxi32 VmByteCodeExec(
 															"Default value for argument %u of '%z()' does not match the data type", n + 1, &pVmFunc->sName);
 										}
 										pObj->nType = pTmp->nType;
-										PH7_MemObjRelease(pTmp);
+										PH7_VmDestroyMemObj(&(*pVm), pTmp);
 										/* Insert argument index */
 										sArg.nIdx = pObj->nIdx;
 										sArg.pUserData = 0;
