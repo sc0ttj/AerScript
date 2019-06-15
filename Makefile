@@ -2,7 +2,7 @@
 CFLAGS = -std=c99 -D_GNU_SOURCE -fPIC -Iinclude -I. -Wunused -Wall -Wextra -Wpedantic
 
 # Additional CFLAGS for debug build
-DCFLAGS = -O0 -g3
+DCFLAGS = -Og -g3
 
 # Addditional CFLAGS for release build
 RCFLAGS = -O3 -s
