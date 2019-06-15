@@ -126,7 +126,6 @@ static sxi32 InternFormat(ProcConsumer xConsumer, void *pUserData, const char *z
 	char prefix;             /* Prefix character."+" or "-" or " " or '\0'.*/
 	sxu8 errorflag = 0;      /* True if an error is encountered */
 	sxu8 xtype;              /* Conversion paradigm */
-	char *zExtra;
 	static char spaces[] = "                                                  ";
 #define etSPACESIZE ((int)sizeof(spaces)-1)
 #ifndef SX_OMIT_FLOATINGPOINT
@@ -250,7 +249,6 @@ static sxi32 InternFormat(ProcConsumer xConsumer, void *pUserData, const char *z
 				break;
 			}
 		}
-		zExtra = 0;
 		/*
 		** At this point, variables are initialized as follows:
 		**

@@ -265,6 +265,7 @@ static sxi32 HashmapInsertIntKey(ph7_hashmap *pMap, sxi64 iKey, ph7_value *pValu
 	sxu32 nHash;
 	sxi32 rc;
 	ph7_value *pObj;
+	SXUNUSED(nRefIdx);
 	/* Reserve a ph7_value for the value */
 	pObj = PH7_ReserveMemObj(pMap->pVm);
 	if(pObj == 0) {
@@ -305,6 +306,7 @@ static sxi32 HashmapInsertBlobKey(ph7_hashmap *pMap, const void *pKey, sxu32 nKe
 	sxu32 nIdx;
 	sxi32 rc;
 	ph7_value *pObj;
+	SXUNUSED(nRefIdx);
 	/* Reserve a ph7_value for the value */
 	pObj = PH7_ReserveMemObj(pMap->pVm);
 	if(pObj == 0) {
@@ -1252,7 +1254,6 @@ PH7_PRIVATE sxi32 PH7_HashmapRelease(ph7_hashmap *pMap, int FreeDS) {
  * are pointing to this hashmap,then release the whole instance.
  */
 PH7_PRIVATE void  PH7_HashmapUnref(ph7_hashmap *pMap) {
-	ph7_vm *pVm = pMap->pVm;
 	/* TICKET 1432-49: $GLOBALS is not subject to garbage collection */
 	pMap->iRef--;
 	if(pMap->iRef < 1) {

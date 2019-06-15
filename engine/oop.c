@@ -70,6 +70,7 @@ PH7_PRIVATE ph7_class *PH7_NewRawClass(ph7_vm *pVm, const SyString *pName) {
 PH7_PRIVATE ph7_class_attr *PH7_NewClassAttr(ph7_vm *pVm, ph7_class *pClass, const SyString *pName, sxu32 nLine, sxi32 iProtection, sxi32 iFlags, sxu32 nType) {
 	ph7_class_attr *pAttr;
 	char *zName;
+	SXUNUSED(pClass);
 	pAttr = (ph7_class_attr *)SyMemBackendPoolAlloc(&pVm->sAllocator, sizeof(ph7_class_attr));
 	if(pAttr == 0) {
 		return 0;

@@ -5652,54 +5652,6 @@ static int PH7_builtin_zip_entry_compressionmethod(ph7_context *pCtx, int nArg, 
 	}
 	return PH7_OK;
 }
-/* NULL VFS [i.e: a no-op VFS]*/
-static const ph7_vfs null_vfs = {
-	"NullVFS",
-	PH7_VFS_VERSION,
-	0, /* int (*xChdir)(const char *) */
-	0, /* int (*xChroot)(const char *); */
-	0, /* int (*xGetcwd)(ph7_context *) */
-	0, /* int (*xMkdir)(const char *,int,int) */
-	0, /* int (*xRmdir)(const char *) */
-	0, /* int (*xIsdir)(const char *) */
-	0, /* int (*xRename)(const char *,const char *) */
-	0, /*int (*xRealpath)(const char *,ph7_context *)*/
-	0, /* int (*xSleep)(unsigned int) */
-	0, /* int (*xUnlink)(const char *) */
-	0, /* int (*xFileExists)(const char *) */
-	0, /*int (*xChmod)(const char *,int)*/
-	0, /*int (*xChown)(const char *,const char *)*/
-	0, /*int (*xChgrp)(const char *,const char *)*/
-	0, /* ph7_int64 (*xFreeSpace)(const char *) */
-	0, /* ph7_int64 (*xTotalSpace)(const char *) */
-	0, /* ph7_int64 (*xFileSize)(const char *) */
-	0, /* ph7_int64 (*xFileAtime)(const char *) */
-	0, /* ph7_int64 (*xFileMtime)(const char *) */
-	0, /* ph7_int64 (*xFileCtime)(const char *) */
-	0, /* ph7_int64 (*xFileGroup)(const char *) */
-	0, /* ph7_int64 (*xFileInode)(const char *) */
-	0, /* ph7_int64 (*xFileOwner)(const char *) */
-	0, /* int (*xStat)(const char *,ph7_value *,ph7_value *) */
-	0, /* int (*xlStat)(const char *,ph7_value *,ph7_value *) */
-	0, /* int (*xIsFile)(const char *) */
-	0, /* int (*xIsLink)(const char *) */
-	0, /* int (*xReadable)(const char *) */
-	0, /* int (*xWritable)(const char *) */
-	0, /* int (*xExecutable)(const char *) */
-	0, /* int (*xFiletype)(const char *,ph7_context *) */
-	0, /* int (*xGetenv)(const char *,ph7_context *) */
-	0, /* int (*xSetenv)(const char *,const char *) */
-	0, /* int (*xTouch)(const char *,ph7_int64,ph7_int64) */
-	0, /* int (*xMmap)(const char *,void **,ph7_int64 *) */
-	0, /* void (*xUnmap)(void *,ph7_int64);  */
-	0, /* int (*xLink)(const char *,const char *,int) */
-	0, /* int (*xUmask)(int) */
-	0, /* void (*xTempDir)(ph7_context *) */
-	0, /* unsigned int (*xProcessId)(void) */
-	0, /* int (*xUid)(void) */
-	0, /* int (*xGid)(void) */
-	0 /* void (*xUsername)(ph7_context *) */
-};
 #ifndef PH7_DISABLE_DISK_IO
 #ifdef __WINNT__
 /*
@@ -6933,8 +6885,8 @@ static int UnixVfs_getcwd(ph7_context *pCtx) {
 /* int (*xMkdir)(const char *,int,int) */
 static int UnixVfs_mkdir(const char *zPath, int mode, int recursive) {
 	int rc;
+	SXUNUSED(recursive);
 	rc = mkdir(zPath, mode);
-	recursive = 0; /* cc warning */
 	return rc == 0 ? PH7_OK : -1;
 }
 /* int (*xRmdir)(const char *) */
@@ -7521,10 +7473,10 @@ static int UnixFile_Open(const char *zPath, int iOpenMode, ph7_value *pResource,
 /* int (*xOpenDir)(const char *,ph7_value *,void **) */
 static int UnixDir_Open(const char *zPath, ph7_value *pResource, void **ppHandle) {
 	DIR *pDir;
+	SXUNUSED(pResource);
 	/* Open the target directory */
 	pDir = opendir(zPath);
 	if(pDir == 0) {
-		pResource = 0; /* Compiler warning */
 		return -1;
 	}
 	/* Save our structure */

@@ -613,7 +613,6 @@ static sxi32 MemBackendRelease(SyMemBackend *pBackend) {
 	return SXRET_OK;
 }
 PH7_PRIVATE sxi32 SyMemBackendRelease(SyMemBackend *pBackend) {
-	sxi32 rc;
 #if defined(UNTRUST)
 	if(SXMEM_BACKEND_CORRUPT(pBackend)) {
 		return SXERR_INVALID;
@@ -622,7 +621,7 @@ PH7_PRIVATE sxi32 SyMemBackendRelease(SyMemBackend *pBackend) {
 	if(pBackend->pMutexMethods) {
 		SyMutexEnter(pBackend->pMutexMethods, pBackend->pMutex);
 	}
-	rc = MemBackendRelease(&(*pBackend));
+	MemBackendRelease(&(*pBackend));
 	if(pBackend->pMutexMethods) {
 		SyMutexLeave(pBackend->pMutexMethods, pBackend->pMutex);
 		SyMutexRelease(pBackend->pMutexMethods, pBackend->pMutex);

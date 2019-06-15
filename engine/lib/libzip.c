@@ -207,25 +207,24 @@ static sxi32 ArchiveHashInstallEntry(SyArchive *pArch, SyArchiveEntry *pEntry) {
  */
 static sxi32 ParseEndOfCentralDirectory(SyArchive *pArch, const unsigned char *zBuf) {
 	sxu32 nMagic = 0; /* cc -O6 warning */
-	sxi32 rc;
 	/* Sanity check */
-	rc = SyLittleEndianUnpack32(&nMagic, zBuf, sizeof(sxu32));
-	if(/* rc != SXRET_OK || */nMagic != SXZIP_END_CENTRAL_MAGIC) {
+	SyLittleEndianUnpack32(&nMagic, zBuf, sizeof(sxu32));
+	if(nMagic != SXZIP_END_CENTRAL_MAGIC) {
 		return SXERR_CORRUPT;
 	}
 	/* # of entries */
-	rc = SyLittleEndianUnpack16((sxu16 *)&pArch->nEntry, &zBuf[8], sizeof(sxu16));
-	if(/* rc != SXRET_OK || */ pArch->nEntry > SXI16_HIGH /* SXU16_HIGH */) {
+	SyLittleEndianUnpack16((sxu16 *)&pArch->nEntry, &zBuf[8], sizeof(sxu16));
+	if(pArch->nEntry > SXI16_HIGH /* SXU16_HIGH */) {
 		return SXERR_CORRUPT;
 	}
 	/* Size of central directory */
-	rc = SyLittleEndianUnpack32(&pArch->nCentralSize, &zBuf[12], sizeof(sxu32));
-	if(/*rc != SXRET_OK ||*/ pArch->nCentralSize > SXI32_HIGH) {
+	SyLittleEndianUnpack32(&pArch->nCentralSize, &zBuf[12], sizeof(sxu32));
+	if(pArch->nCentralSize > SXI32_HIGH) {
 		return SXERR_CORRUPT;
 	}
 	/* Starting offset of central directory */
-	rc = SyLittleEndianUnpack32(&pArch->nCentralOfft, &zBuf[16], sizeof(sxu32));
-	if(/*rc != SXRET_OK ||*/ pArch->nCentralSize > SXI32_HIGH) {
+	SyLittleEndianUnpack32(&pArch->nCentralOfft, &zBuf[16], sizeof(sxu32));
+	if(pArch->nCentralSize > SXI32_HIGH) {
 		return SXERR_CORRUPT;
 	}
 	return SXRET_OK;
@@ -241,6 +240,7 @@ static sxi32 GetCentralDirectoryEntry(SyArchive *pArch, SyArchiveEntry *pEntry, 
 	sxi32 rc;
 	nDosDate = nDosTime = 0; /* cc -O6 warning */
 	SXUNUSED(pArch);
+//	(void)pArch;
 	/* Sanity check */
 	rc = SyLittleEndianUnpack32(&nMagic, zCentral, sizeof(sxu32));
 	if(/* rc != SXRET_OK || */ nMagic != SXZIP_CENTRAL_MAGIC) {

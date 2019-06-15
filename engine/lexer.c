@@ -16,7 +16,6 @@ static sxu32 KeywordCode(const char *z, int n);
  */
 static sxi32 TokenizeAerScript(SyStream *pStream, SyToken *pToken, void *pUserData, void *pCtxData) {
 	SyString *pStr;
-	sxi32 rc;
 	/* Ignore leading white spaces */
 	while(pStream->zText < pStream->zEnd && pStream->zText[0] < 0xc0 && SyisSpace(pStream->zText[0])) {
 		/* Advance the stream cursor */

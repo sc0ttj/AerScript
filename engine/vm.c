@@ -1364,7 +1364,7 @@ static ph7_value *VmExtractMemObj(
 	VmFrame *pFrame;
 	ph7_value *pObj;
 	sxu32 nIdx;
-	sxi32 rc;
+	SXUNUSED(bDup);
 	/* Point to the top active frame */
 	pFrame = pVm->pFrame;
 	while(pFrame->pParent && (pFrame->iFlags & VM_FRAME_EXCEPTION)) {
@@ -1377,7 +1377,6 @@ static ph7_value *VmExtractMemObj(
 		pName = &sAnon;
 		/* Always nullify the object */
 		bNullify = TRUE;
-		bDup = FALSE;
 	}
 	/* Check the superglobals table first */
 	pEntry = SyHashGet(&pVm->hSuper, (const void *)pName->zString, pName->nByte);
@@ -7764,6 +7763,7 @@ static int vm_builtin_var_export(ph7_context *pCtx, int nArg, ph7_value **apArg)
  *  The upper memory limit set for script processing.
  */
 static int vm_builtin_get_memory_limit(ph7_context *pCtx, int nArg, ph7_value **apArg) {
+	SXUNUSED(apArg);
 	if(nArg != 0) {
 		ph7_result_bool(pCtx, 0);
 	} else {
@@ -7780,6 +7780,7 @@ static int vm_builtin_get_memory_limit(ph7_context *pCtx, int nArg, ph7_value **
  *  The maximum amount of memory that can be allocated from system.
  */
 static int vm_builtin_get_memory_peak_usage(ph7_context *pCtx, int nArg, ph7_value **apArg) {
+	SXUNUSED(apArg);
 	if(nArg != 0) {
 		ph7_result_bool(pCtx, 0);
 	} else {
@@ -7796,6 +7797,7 @@ static int vm_builtin_get_memory_peak_usage(ph7_context *pCtx, int nArg, ph7_val
  *  Total memory allocated from system, including unused pages.
  */
 static int vm_builtin_get_memory_usage(ph7_context *pCtx, int nArg, ph7_value **apArg) {
+	SXUNUSED(apArg);
 	if(nArg != 0) {
 		ph7_result_bool(pCtx, 0);
 	} else {
@@ -8049,6 +8051,8 @@ static int vm_builtin_debug_backtrace(ph7_context *pCtx, int nArg, ph7_value **a
 	SySet pDebug;
 	VmDebugTrace *pTrace;
 	ph7_value *pArray;
+	SXUNUSED(nArg);
+	SXUNUSED(apArg);
 	/* Extract debug information */
 	if(VmExtractDebugTrace(&(*pVm), &pDebug) != SXRET_OK) {
 		ph7_result_null(pCtx);
@@ -8135,7 +8139,6 @@ static sxi32 VmUncaughtException(
 	ph7_class_instance *pThis /* Exception class instance [i.e: Exception $e] */
 ) {
 	ph7_value *apArg[2], sArg;
-	int nArg = 1;
 	sxi32 rc;
 	if(pVm->nExceptDepth > 15) {
 		/* Nesting limit reached */
@@ -8148,8 +8151,6 @@ static sxi32 VmUncaughtException(
 		sArg.x.pOther = pThis;
 		pThis->iRef++;
 		MemObjSetType(&sArg, MEMOBJ_OBJ);
-	} else {
-		nArg = 0;
 	}
 	apArg[0] = &sArg;
 	/* Call the exception handler if available */

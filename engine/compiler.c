@@ -218,7 +218,7 @@ static sxu32 PH7_GenStateFixJumps(GenBlock *pBlock, sxi32 nJumpType, sxu32 nJump
 static sxi32 GenStateFixGoto(ph7_gen_state *pGen, sxu32 nOfft)
 {
 	JumpFixup *pJump,*aJumps;
-	Label *pLabel,*aLabel;
+	Label *pLabel;
 	VmInstr *pInstr;
 	sxi32 rc;
 	sxu32 n;
@@ -340,6 +340,7 @@ PH7_PRIVATE sxi32 PH7_CompileSimpleString(ph7_gen_state *pGen, sxi32 iCompileFla
 	/* Delimit the string */
 	zIn  = pStr->zString;
 	zEnd = &zIn[pStr->nByte];
+	SXUNUSED(iCompileFlag);
 	if(SXRET_OK == PH7_GenStateFindLiteral(&(*pGen), pStr, &nIdx)) {
 		/* Already processed,emit the load constant instruction
 		 * and return.
@@ -902,6 +903,7 @@ PH7_PRIVATE sxi32 PH7_CompileClosure(ph7_gen_state *pGen, sxi32 iCompileFlag) {
 	sxu32 nLen;
 	sxi32 rc;
 	sxu32 nType;
+	SXUNUSED(iCompileFlag);
 	sxu32 nKey = (sxu32)(SX_PTR_TO_INT(pGen->pIn->pUserData));
 	if(nKey & PH7_KEYWORD_BOOL) {
 		nType = MEMOBJ_BOOL;
@@ -984,6 +986,7 @@ PH7_PRIVATE sxi32 PH7_CompileDefine(ph7_gen_state *pGen, sxi32 iFlags) {
 	SySet *pConsCode, *pInstrContainer;
 	SyString *pName;
 	sxi32 rc;
+	SXUNUSED(iFlags);
 	/* Jump the 'define' keyword */
 	pGen->pIn++;
 	if(pGen->pIn >= pGen->pEnd || (pGen->pIn->nType & (PH7_TK_ID | PH7_TK_KEYWORD)) == 0) {
@@ -1048,7 +1051,7 @@ PH7_PRIVATE sxi32 PH7_CompileDefine(ph7_gen_state *pGen, sxi32 iFlags) {
 PH7_PRIVATE sxi32 PH7_CompileVariable(ph7_gen_state *pGen, sxi32 iCompileFlag) {
 	sxu32 nLine = pGen->pIn->nLine;
 	void *p3;
-	sxi32 rc;
+	SXUNUSED(iCompileFlag);
 	/* Jump the dollar sign */
 	pGen->pIn++;
 	if(pGen->pIn >= pGen->pEnd || (pGen->pIn->nType & (PH7_TK_ID | PH7_TK_KEYWORD)) == 0) {
@@ -1369,7 +1372,6 @@ static sxi32 PH7_CompileConstant(ph7_gen_state *pGen) {
 static sxi32 PH7_CompileContinue(ph7_gen_state *pGen) {
 	GenBlock *pLoop; /* Target loop */
 	sxu32 nLine;
-	sxi32 rc;
 	nLine = pGen->pIn->nLine;
 	/* Jump the 'continue' keyword */
 	pGen->pIn++;
@@ -1511,7 +1513,6 @@ static sxi32 PH7_CompileLabel(ph7_gen_state *pGen)
 static sxi32 PH7_CompileGoto(ph7_gen_state *pGen)
 {
 	JumpFixup sJump;
-	sxi32 rc;
 	pGen->pIn++; /* Jump the 'goto' keyword */
 	if(pGen->pIn >= pGen->pEnd) {
 		/* Missing label */
@@ -1718,7 +1719,6 @@ static sxi32 PH7_CompileWhile(ph7_gen_state *pGen) {
 	PH7_GenStateLeaveBlock(pGen, 0);
 	/* Statement successfully compiled */
 	return SXRET_OK;
-Synchronize:
 	/* Synchronize with the first semi-colon ';' so we can avoid
 	 * compiling this erroneous block.
 	 */
@@ -1826,7 +1826,6 @@ static sxi32 PH7_CompileDoWhile(ph7_gen_state *pGen) {
 	PH7_GenStateLeaveBlock(pGen, 0);
 	/* Statement successfully compiled */
 	return SXRET_OK;
-Synchronize:
 	/* Synchronize with the first semi-colon ';' so we can avoid
 	 * compiling this erroneous block.
 	 */
@@ -2301,7 +2300,6 @@ static sxi32 PH7_CompileIf(ph7_gen_state *pGen) {
 	PH7_GenStateLeaveBlock(pGen, 0);
 	/* Statement successfully compiled */
 	return SXRET_OK;
-Synchronize:
 	/* Synchronize with the first semi-colon ';' so we can avoid compiling this erroneous block.
 	 */
 	while(pGen->pIn < pGen->pEnd && (pGen->pIn->nType & (PH7_TK_SEMI | PH7_TK_OCB)) == 0) {
@@ -2608,7 +2606,6 @@ static sxi32 PH7_CompileNamespace(ph7_gen_state *pGen) {
  */
 static sxi32 PH7_CompileUsing(ph7_gen_state *pGen) {
 	sxu32 nLine = pGen->pIn->nLine;
-	sxi32 rc;
 	/* Jump the 'using' keyword */
 	pGen->pIn++;
 	if(pGen->pIn >= pGen->pEnd || (pGen->pIn->nType & (PH7_TK_NSSEP | PH7_TK_ID)) == 0) {
@@ -2751,12 +2748,11 @@ static sxi32 PH7_GenStateProcessArgValue(ph7_gen_state *pGen, ph7_vm_func_arg *p
  */
 static sxi32 PH7_GenStateCollectFuncArgs(ph7_vm_func *pFunc, ph7_gen_state *pGen, SyToken *pEnd) {
 	ph7_vm_func_arg sArg; /* Current processed argument */
-	SyToken *pCur, *pIn; /* Token stream */
+	SyToken *pIn; /* Token stream */
 	SyBlob sSig;         /* Function signature */
 	char *zDup;          /* Copy of argument name */
 	sxi32 rc;
 	pIn = pGen->pIn;
-	pCur = 0;
 	SyBlobInit(&sSig, &pGen->pVm->sAllocator);
 	/* Process arguments one after one */
 	for(;;) {
@@ -3248,7 +3244,6 @@ loop:
 		}
 	}
 	return SXRET_OK;
-Synchronize:
 	/* Synchronize with the first semi-colon */
 	while(pGen->pIn < pGen->pEnd && ((pGen->pIn->nType & PH7_TK_SEMI/*';'*/) == 0)) {
 		pGen->pIn++;
@@ -3341,7 +3336,6 @@ loop:
 		}
 	}
 	return SXRET_OK;
-Synchronize:
 	/* Synchronize with the first semi-colon */
 	while(pGen->pIn < pGen->pEnd && ((pGen->pIn->nType & PH7_TK_SEMI/*';'*/) == 0)) {
 		pGen->pIn++;
@@ -3459,7 +3453,6 @@ static sxi32 PH7_GenStateCompileClassMethod(
 		PH7_GenCompileError(pGen, E_ERROR, nLine, "Fatal, PH7 is running out-of-memory");
 	}
 	return SXRET_OK;
-Synchronize:
 	/* Synchronize with the first semi-colon */
 	while(pGen->pIn < pGen->pEnd && ((pGen->pIn->nType & PH7_TK_SEMI/*';'*/) == 0)) {
 		pGen->pIn++;
@@ -3477,7 +3470,7 @@ Synchronize:
  */
 static sxi32 PH7_CompileClassInterface(ph7_gen_state *pGen) {
 	sxu32 nLine = pGen->pIn->nLine;
-	ph7_class *pClass, *pBase;
+	ph7_class *pClass;
 	ph7_class_info *pClassInfo;
 	SyToken *pEnd, *pTmp;
 	SyString *pName;
@@ -3506,8 +3499,6 @@ static sxi32 PH7_CompileClassInterface(ph7_gen_state *pGen) {
 	}
 	/* Mark as an interface */
 	pClass->iFlags = PH7_CLASS_INTERFACE;
-	/* Assume no base class is given */
-	pBase = 0;
 	if(pGen->pIn < pGen->pEnd  && (pGen->pIn->nType & PH7_TK_KEYWORD)) {
 		SyString pBaseName;
 		nKwrd = SX_PTR_TO_INT(pGen->pIn->pUserData);
@@ -3682,7 +3673,7 @@ done:
  */
 static sxi32 PH7_GenStateCompileClass(ph7_gen_state *pGen, sxi32 iFlags) {
 	sxu32 nLine = pGen->pIn->nLine;
-	ph7_class *pClass, *pBase;
+	ph7_class *pClass;
 	ph7_class_info *pClassInfo;
 	SyToken *pEnd, *pTmp;
 	sxi32 iProtection;
@@ -3713,7 +3704,6 @@ static sxi32 PH7_GenStateCompileClass(ph7_gen_state *pGen, sxi32 iFlags) {
 		PH7_GenCompileError(pGen, E_ERROR, nLine, "PH7 is running out-of-memory");
 	}
 	/* Assume a standalone class */
-	pBase = 0;
 	if(pGen->pIn < pGen->pEnd  && (pGen->pIn->nType & PH7_TK_KEYWORD)) {
 		SyString pBaseName;
 		nKwrd = SX_PTR_TO_INT(pGen->pIn->pUserData);
@@ -4523,7 +4513,6 @@ static sxi32 PH7_CompileSwitch(ph7_gen_state *pGen) {
 	}
 	/* Statement successfully compiled */
 	return SXRET_OK;
-Synchronize:
 	/* Synchronize with the first semi-colon */
 	while(pGen->pIn < pGen->pEnd && (pGen->pIn->nType & PH7_TK_SEMI) == 0) {
 		pGen->pIn++;
@@ -5145,9 +5134,6 @@ PH7_PRIVATE sxi32 PH7_CompileAerScript(
 ) {
 	SySet aAerToken, aRawToken;
 	ph7_gen_state *pCodeGen;
-	ph7_value *pRawObj;
-	sxu32 nObjIdx;
-	sxi32 nRawObj;
 	sxi32 rc;
 	if(pScript->nByte < 1) {
 		/* Nothing to compile */
@@ -5171,7 +5157,6 @@ PH7_PRIVATE sxi32 PH7_CompileAerScript(
 		/* Compile the expression */
 		rc = PH7_CompileScript(pCodeGen, &aAerToken, iFlags);
 	} else {
-		nObjIdx = 0;
 		/* Start the compilation process */
 		for(;;) {
 			/* Compile Aer block of code */

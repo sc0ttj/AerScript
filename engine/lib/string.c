@@ -150,17 +150,17 @@ sxu32 Systrcpy(char *zDest, sxu32 nDestLen, const char *zSrc, sxu32 nLen) {
 PH7_PRIVATE char *SyStrtok(char *str, const char *sep) {
 	static int pos;
 	static char *s;	
-	int i = 0, j = 0;
+	int i = 0;
 	int start = pos;
 	/* Copy the string for further SyStrtok() calls */
 	if(str != NULL) {
 		s = str;
 	}
 	while(s[pos] != '\0') {
-		j = 0;
+		i = 0;
 		/* Compare of one of the delimiter matches the character in the string */
-		while(sep[j] != '\0') {
-			if(s[pos] == sep[j]) {
+		while(sep[i] != '\0') {
+			if(s[pos] == sep[i]) {
 				/* Replace the delimter by \0 to break the string */
 				s[pos] = '\0';
 				pos++;
@@ -173,7 +173,7 @@ PH7_PRIVATE char *SyStrtok(char *str, const char *sep) {
 					break;
 				}
 			}
-			j++;
+			i++;
 		}
 		pos++;
 	}

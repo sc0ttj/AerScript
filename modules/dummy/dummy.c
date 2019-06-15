@@ -14,6 +14,8 @@ static void AER_DUMMY_CONSTANT_Const(ph7_value *pVal, void *pUserData) {
 
 int aer_dummy_function(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	SyString dummy;
+	SXUNUSED(nArg);
+	SXUNUSED(apArg);
 	const char *text = "Hello world from dummy module!";
 	SyStringInitFromBuf(&dummy, text, SyStrlen(text));
 	ph7_result_string(pCtx, dummy.zString, dummy.nByte);
