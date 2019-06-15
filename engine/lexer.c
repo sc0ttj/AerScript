@@ -8,7 +8,7 @@
  */
 #include "ph7int.h"
 /* Forward declaration */
-static sxu32 KeywordCode(const char *z, int n);
+static sxu32 KeywordCode(const char *z, sxu32 n);
 /*
  * Tokenize a raw PHP input.
  * Get a single low-level token from the input file. Update the stream pointer so that
@@ -513,7 +513,7 @@ static sxi32 TokenizeAerScript(SyStream *pStream, SyToken *pToken, void *pUserDa
 	return SXRET_OK;
 }
 
-static sxu32 KeywordCode(const char *z, int n) {
+static sxu32 KeywordCode(const char *z, sxu32 n) {
 	typedef struct {
 		char *token;
 		int value;
