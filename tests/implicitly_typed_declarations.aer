@@ -1,0 +1,23 @@
+class Test {
+}
+
+class Program {
+
+	public void test() {
+		static auto $r = 3;
+		$r++;
+		var_dump($r);
+	}
+
+	public void main() {
+		auto $a = 'test string';
+		auto $b = new Test();
+		auto $c = 6.5;
+		auto $d = true;
+		auto $e = NULL;
+		for(auto $i = 0; $i < 3; $i++) {
+			$this->test();
+		}
+		var_dump($a, $b, $c, $d, $e);
+	}
+}

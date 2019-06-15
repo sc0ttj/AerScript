@@ -1,0 +1,9 @@
+int(4)
+int(5)
+int(6)
+string(11 'test string')
+object(Test) {
+ }
+float(6.5)
+bool(TRUE)
+void(NULL)
