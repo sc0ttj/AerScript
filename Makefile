@@ -1,5 +1,5 @@
 # Flags to pass to the compiler
-CFLAGS = -fPIC -Iinclude -I. -W -Wunused -Wall
+CFLAGS = -std=c99 -D_GNU_SOURCE -fPIC -Iinclude -I. -Wunused -Wall -Wextra -Wpedantic
 
 # Additional CFLAGS for debug build
 DCFLAGS = -O0 -g3
