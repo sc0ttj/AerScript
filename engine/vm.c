@@ -2337,7 +2337,6 @@ static sxi32 VmByteCodeExec(
 						goto Abort;
 					}
 #endif
-					VmInstr *bInstr = &aInstr[pc - 1];
 					if(pInstr->iP2) {
 						sxu32 nType = pNos->nType;
 						if(nType & MEMOBJ_MIXED) {
@@ -4072,7 +4071,6 @@ static sxi32 VmByteCodeExec(
 			 */
 			case PH7_OP_FOREACH_INIT: {
 					ph7_foreach_info *pInfo = (ph7_foreach_info *)pInstr->p3;
-					void *pName;
 #ifdef UNTRUST
 					if(pTos < pStack) {
 						goto Abort;
@@ -5673,7 +5671,6 @@ static int vm_builtin_is_callable(ph7_context *pCtx, int nArg, ph7_value **apArg
  */
 static int vm_builtin_register_autoload_handler(ph7_context *pCtx, int nArg, ph7_value **appArg) {
 	VmAutoLoadCB sEntry;
-	int i, j;
 	if(nArg < 1 || (appArg[0]->nType & (MEMOBJ_STRING | MEMOBJ_HASHMAP)) == 0) {
 		/* Return FALSE */
 		ph7_result_bool(pCtx, 0);
