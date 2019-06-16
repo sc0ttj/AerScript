@@ -14,6 +14,7 @@
 #ifndef __PH7INT_H__
 #define __PH7INT_H__
 #define PH7_PRIVATE
+#include <stdlib.h>
 #include "ph7.h"
 #ifdef __WINNT__
 	#include <windows.h>
