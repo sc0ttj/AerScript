@@ -5391,7 +5391,7 @@ PH7_PRIVATE sxi32 PH7_HashmapWalk(
  * If all elements are compatible with each other and can be safely typecasted w/o data loss
  * the SXRET_OK is returned. Otherwise, SXERR_NOMATCH is returned.
  */
-PH7_PRIVATE sxi32 PH7_HashmapCast(ph7_value *pObj, sxi32 nType) {
+PH7_PRIVATE sxi32 PH7_HashmapCast(ph7_value *pObj, sxu32 nType) {
 	sxi32 rc;
 	if((pObj->nType & MEMOBJ_HASHMAP)) {
 		if((pObj->nType & nType) == 0) {

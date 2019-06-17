@@ -2334,7 +2334,7 @@ static int PH7_builtin_ord(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 		return PH7_OK;
 	}
 	/* Extract the target string */
-	zString = ph7_value_to_string(apArg[0], &nLen);
+	zString = (const unsigned char *)ph7_value_to_string(apArg[0], &nLen);
 	if(nLen < 1) {
 		/* Empty string,return -1 */
 		ph7_result_int(pCtx, -1);
