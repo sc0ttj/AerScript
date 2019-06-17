@@ -626,7 +626,7 @@ struct ph7_value {
 		void *pOther;   /* Other values (Object, Array, Resource, Namespace, etc.) */
 	} x;
 	sxi32 iFlags;       /* Control flags (see below) */
-	sxi32 nType;        /* Variable data type */
+	sxu32 nType;        /* Variable data type */
 	ph7_vm *pVm;        /* Virtual machine that own this instance */
 	SyBlob sBlob;       /* String values */
 	sxu32 nIdx;         /* Index number of this entry in the global object allocator */
@@ -1648,6 +1648,8 @@ PH7_PRIVATE sxi32 PH7_MemObjToString(ph7_value *pObj);
 PH7_PRIVATE sxi32 PH7_MemObjToReal(ph7_value *pObj);
 PH7_PRIVATE sxi32 PH7_MemObjToInteger(ph7_value *pObj);
 PH7_PRIVATE sxi32 PH7_MemObjToBool(ph7_value *pObj);
+PH7_PRIVATE sxi32 PH7_MemObjToChar(ph7_value *pObj);
+PH7_PRIVATE sxi32 PH7_MemObjToVoid(ph7_value *pObj);
 PH7_PRIVATE sxi32 PH7_MemObjToCallback(ph7_value *pObj);
 PH7_PRIVATE sxi32 PH7_MemObjToResource(ph7_value *pObj);
 PH7_PRIVATE sxi32 PH7_CheckVarCompat(ph7_value *pObj, int nType);

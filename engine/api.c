@@ -42,7 +42,7 @@ static struct Global_Data {
 	ph7 *pEngines;                          /* List of active engine */
 	sxu32 nMagic;                           /* Sanity check against library misuse */
 } sMPGlobal = {
-	{0, 0, 0, 0, 0, 0, 0, 0, {0}},
+	{0, 0, 0, 0, 0, 0, 0, 0, 0, {0}},
 #if defined(PH7_ENABLE_THREADS)
 	0,
 	0,
@@ -1829,14 +1829,13 @@ int ph7_value_string(ph7_value *pVal, const char *zString, int nLen) {
  */
 int ph7_value_string_format(ph7_value *pVal, const char *zFormat, ...) {
 	va_list ap;
-	int rc;
 	if((pVal->nType & MEMOBJ_STRING) == 0) {
 		/* Invalidate any prior representation */
 		PH7_MemObjRelease(pVal);
 		MemObjSetType(pVal, MEMOBJ_STRING);
 	}
 	va_start(ap, zFormat);
-	rc = SyBlobFormatAp(&pVal->sBlob, zFormat, ap);
+	SyBlobFormatAp(&pVal->sBlob, zFormat, ap);
 	va_end(ap);
 	return PH7_OK;
 }

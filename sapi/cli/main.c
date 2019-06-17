@@ -110,7 +110,7 @@ int main(int argc, char **argv) {
 		} else if(c == 'r' || c == 'R') {
 			/* Report run-time errors */
 			err_report = 1;
-		} else if(c == 'm' || c == 'M' && SyStrlen(argv[n]) > 2) {
+		} else if((c == 'm' || c == 'M') && SyStrlen(argv[n]) > 2) {
 			sLimitArg = argv[n] + 2;
 		} else {
 			/* Display a help message and exit */

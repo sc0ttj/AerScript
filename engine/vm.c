@@ -2533,6 +2533,7 @@ static sxi32 VmByteCodeExec(
 					if(pMap == 0) {
 						PH7_VmMemoryError(&(*pVm));
 					}
+					nType = 0;
 					if(pInstr->iP1 > 0) {
 						ph7_value *pEntry = &pTos[-pInstr->iP1 + 1]; /* Point to the first entry */
 						nType = pEntry[1].nType; /* Save the type of value */
@@ -3302,6 +3303,7 @@ static sxi32 VmByteCodeExec(
 					/* Perform the requested operation */
 					a = pNos->x.iVal;
 					b = pTos->x.iVal;
+					r = 0;
 					if(b == 0) {
 						PH7_VmThrowError(&(*pVm), PH7_CTX_ERR, "Division by zero %qd%%0", a);
 					} else {
@@ -3341,6 +3343,7 @@ static sxi32 VmByteCodeExec(
 					/* Perform the requested operation */
 					a = pTos->x.iVal;
 					b = pNos->x.iVal;
+					r = 0;
 					if(b == 0) {
 						PH7_VmThrowError(&(*pVm), PH7_CTX_ERR, "Division by zero %qd%%0", a);
 					} else {
@@ -4633,7 +4636,6 @@ static sxi32 VmByteCodeExec(
 						pSelf = 0;
 						pClass = 0;
 						if(pVmFunc->iFlags & VM_FUNC_CLASS_METHOD) {
-							ph7_class_method *pMeth;
 							/* Class method call */
 							ph7_value *pTarget = &pTos[-1];
 							if(pTarget >= pStack && (pTarget->nType & (MEMOBJ_STRING | MEMOBJ_OBJ | MEMOBJ_NULL))) {
@@ -8084,7 +8086,7 @@ static int vm_builtin_debug_backtrace(ph7_context *pCtx, int nArg, ph7_value **a
 		ph7_value_reset_string_cursor(pValue);
 		/* Extract closure/method arguments */
 		aSlot = (VmSlot *)SySetBasePtr(pTrace->pArg);
-		for(int n = 0;  n < SySetUsed(pTrace->pArg) ; n++) {
+		for(sxu32 n = 0;  n < SySetUsed(pTrace->pArg) ; n++) {
 			ph7_value *pObj = (ph7_value *)SySetAt(&pCtx->pVm->aMemObj, aSlot[n].nIdx);
 			if(pObj) {
 				ph7_array_add_elem(pArg, 0, pObj);

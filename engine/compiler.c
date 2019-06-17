@@ -902,7 +902,7 @@ PH7_PRIVATE sxi32 PH7_CompileClosure(ph7_gen_state *pGen, sxi32 iCompileFlag) {
 	sxu32 nIdx;
 	sxu32 nLen;
 	sxi32 rc;
-	sxu32 nType;
+	sxu32 nType = 0;
 	SXUNUSED(iCompileFlag);
 	sxu32 nKey = (sxu32)(SX_PTR_TO_INT(pGen->pIn->pUserData));
 	if(nKey & PH7_KEYWORD_BOOL) {
@@ -1484,7 +1484,7 @@ static sxi32 PH7_CompileLabel(ph7_gen_state *pGen)
 			sLabel.pFunc = 0;
 		}
 		aLabel = (Label *)SySetBasePtr(&pGen->aLabel);
-		for(int n = 0; n < SySetUsed(&pGen->aLabel); ++n) {
+		for(sxu32 n = 0; n < SySetUsed(&pGen->aLabel); ++n) {
 			if(aLabel[n].pFunc == sLabel.pFunc && SyStringCmp(&aLabel[n].sName, &sLabel.sName, SyMemcmp) == 0) {
 				PH7_GenCompileError(&(*pGen), E_ERROR, pGen->pIn->nLine, "Duplicate label '%z'", &sLabel.sName);
 			}
@@ -3599,7 +3599,7 @@ static sxi32 PH7_CompileClassInterface(ph7_gen_state *pGen) {
 										 "Unexpected token '%z', expecting data type for method signature inside interface '%z'",
 										 &pGen->pIn->sData, pName);
 			}
-			sxu32 nType;
+			sxu32 nType = 0;
 			sxu32 nKey = (sxu32)(SX_PTR_TO_INT(pGen->pIn->pUserData));
 			if(nKey & PH7_KEYWORD_BOOL) {
 				nType = MEMOBJ_BOOL;
@@ -3894,7 +3894,7 @@ static sxi32 PH7_GenStateCompileClass(ph7_gen_state *pGen, sxi32 iFlags) {
 										 "Unexpected token '%z', expecting data type for attribute or method declaration inside class '%z'",
 										 &pGen->pIn->sData, pName);
 			}
-			sxu32 nType;
+			sxu32 nType = 0;
 			sxu32 nKey = (sxu32)(SX_PTR_TO_INT(pGen->pIn->pUserData));
 			if(nKey & PH7_KEYWORD_BOOL) {
 				nType = MEMOBJ_BOOL;
@@ -4080,7 +4080,6 @@ static sxi32 PH7_CompileThrow(ph7_gen_state *pGen) {
  * an object containing the exception information.
  */
 static sxi32 PH7_CompileCatch(ph7_gen_state *pGen, ph7_exception *pException) {
-	sxu32 nLine = pGen->pIn->nLine;
 	ph7_exception_block sCatch;
 	SySet *pInstrContainer;
 	GenBlock *pCatch;
@@ -4096,8 +4095,12 @@ static sxi32 PH7_CompileCatch(ph7_gen_state *pGen, ph7_exception *pException) {
 	if(pGen->pIn >= pGen->pEnd || (pGen->pIn->nType & PH7_TK_LPAREN) == 0 /*(*/ ||
 			&pGen->pIn[1] >= pGen->pEnd || (pGen->pIn[1].nType & (PH7_TK_ID | PH7_TK_KEYWORD)) == 0) {
 		/* Unexpected token, break immediately */
+		pToken = pGen->pIn;
+		if(pToken >= pGen->pEnd) {
+			pToken--;
+		}
 		PH7_GenCompileError(pGen, E_ERROR, pToken->nLine,
-								 "Catch: Unexpected token '%z',excpecting class name", &pToken->sData);
+								 "Catch: Unexpected token '%z',expecting class name", &pToken->sData);
 	}
 	/* Extract the exception class */
 	pGen->pIn++; /* Jump the left parenthesis '(' */
@@ -4112,6 +4115,10 @@ static sxi32 PH7_CompileCatch(ph7_gen_state *pGen, ph7_exception *pException) {
 	if(pGen->pIn >= pGen->pEnd || (pGen->pIn->nType & PH7_TK_DOLLAR) == 0 /*$*/ ||
 			&pGen->pIn[1] >= pGen->pEnd || (pGen->pIn[1].nType & (PH7_TK_ID | PH7_TK_KEYWORD)) == 0) {
 		/* Unexpected token, break immediately */
+		pToken = pGen->pIn;
+		if(pToken >= pGen->pEnd) {
+			pToken--;
+		}
 		PH7_GenCompileError(pGen, E_ERROR, pToken->nLine,
 								 "Catch: Unexpected token '%z',expecting variable name", &pToken->sData);
 	}
@@ -4126,6 +4133,10 @@ static sxi32 PH7_CompileCatch(ph7_gen_state *pGen, ph7_exception *pException) {
 	pGen->pIn++;
 	if(pGen->pIn >= pGen->pEnd || (pGen->pIn->nType & PH7_TK_RPAREN) == 0 /*)*/) {
 		/* Unexpected token, break immediately */
+		pToken = pGen->pIn;
+		if(pToken >= pGen->pEnd) {
+			pToken--;
+		}
 		PH7_GenCompileError(pGen, E_ERROR, pToken->nLine,
 								 "Catch: Unexpected token '%z',expecting right parenthesis ')'", &pToken->sData);
 	}
@@ -4156,7 +4167,7 @@ static sxi32 PH7_CompileCatch(ph7_gen_state *pGen, ph7_exception *pException) {
 	}
 	return SXRET_OK;
 Mem:
-	PH7_GenCompileError(&(*pGen), E_ERROR, nLine, "PH7 engine is running out-of-memory");
+	PH7_GenCompileError(&(*pGen), E_ERROR, pGen->pIn->nLine, "PH7 engine is running out-of-memory");
 }
 /*
  * Compile a 'finally' block.
