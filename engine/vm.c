@@ -4103,7 +4103,7 @@ static sxi32 VmByteCodeExec(
 			 */
 			case PH7_OP_FOREACH_STEP: {
 					ph7_foreach_info *pInfo = (ph7_foreach_info *)pInstr->p3;
-					ph7_value *pTmp, *pValue;
+					ph7_value pTmp, *pValue;
 					VmFrame *pFrame;
 					pFrame = pVm->pFrame;
 					while(pFrame->pParent && (pFrame->iFlags & VM_FRAME_EXCEPTION)) {
