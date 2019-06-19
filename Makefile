@@ -10,6 +10,9 @@ RCFLAGS = -O3 -s
 # Flags to pass to the linker
 LDFLAGS =
 
+# Flags to enable sanitize checker
+SFLAGS = -fsanitize=address -fsanitize=leak -fsanitize=undefined
+
 # Destination directory
 DESTDIR ?= $(realpath .)/binary
 
@@ -123,6 +126,9 @@ debug: export CFLAGS := $(CFLAGS) $(DCFLAGS)
 debug: engine sapi modules
 release: export CFLAGS := $(CFLAGS) $(RCFLAGS)
 release: engine sapi modules
+sanitize: export CFLAGS := $(CFLAGS) $(DCFLAGS) $(SFLAGS)
+sanitize: $(eval LDFLAGS := $(LDFLAGS) $(SFLAGS))
+sanitize: engine sapi modules
 
 engine: $(ENGINE_OBJS)
 	$(CC) -o $(BUILD_DIR)/lib$(BINARY)$(LIBSUFFIX) $(LDFLAGS) $(LIBS) -shared $(ENGINE_OBJS)
