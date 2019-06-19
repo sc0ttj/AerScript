@@ -11,7 +11,7 @@ RCFLAGS = -O3 -s
 LDFLAGS =
 
 # Flags to enable sanitize checker
-SFLAGS = -fsanitize=address -fsanitize=leak -fsanitize=undefined
+SFLAGS = -fsanitize=address -fsanitize=leak
 
 # Destination directory
 DESTDIR ?= $(realpath .)/binary
