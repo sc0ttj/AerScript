@@ -33,6 +33,7 @@
 #ifndef SMALLEST_INT64
 	#define SMALLEST_INT64 (((sxi64)-1) - LARGEST_INT64)
 #endif
+
 /* Forward declaration of private structures */
 typedef struct ph7_class_instance ph7_class_instance;
 typedef struct ph7_foreach_info   ph7_foreach_info;

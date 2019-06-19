@@ -126,12 +126,15 @@ static sxi32 EngineConfig(ph7 *pEngine, sxi32 nOp, va_list ap) {
 						case 'G':
 						case 'g':
 							nMemLimit *= 1024;
+							/* FALLTHRU */
 						case 'M':
 						case 'm':
 							nMemLimit *= 1024;
+							/* FALLTHRU */
 						case 'K':
 						case 'k':
 							nMemLimit *= 1024;
+							/* FALLTHRU */
 					}
 				}
 				if(nMemLimit >= 1048576) {
