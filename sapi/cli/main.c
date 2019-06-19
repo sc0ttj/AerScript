@@ -10,6 +10,7 @@
 #include <stdlib.h>
 /* Make sure this header file is available.*/
 #include "ph7.h"
+#include "ph7int.h"
 /*
  * Display an error message and exit.
  */

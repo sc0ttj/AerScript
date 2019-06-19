@@ -218,7 +218,7 @@ static sxu32 PH7_GenStateFixJumps(GenBlock *pBlock, sxi32 nJumpType, sxu32 nJump
 static sxi32 GenStateFixGoto(ph7_gen_state *pGen, sxu32 nOfft)
 {
 	JumpFixup *pJump,*aJumps;
-	Label *pLabel;
+	Label *pLabel = 0;
 	VmInstr *pInstr;
 	sxi32 rc;
 	sxu32 n;
@@ -892,7 +892,7 @@ PH7_PRIVATE sxi32 PH7_CompileArray(ph7_gen_state *pGen, sxi32 iCompileFlag) {
  * $greet('AerScript');
  */
 PH7_PRIVATE sxi32 PH7_CompileClosure(ph7_gen_state *pGen, sxi32 iCompileFlag) {
-	ph7_vm_func *pAnonFunc; /* Anonymous function body */
+	ph7_vm_func *pAnonFunc = 0; /* Anonymous function body */
 	char zName[512];         /* Unique closure name */
 	static int iCnt = 1;     /* There is no worry about thread-safety here,because only
 							  * one thread is allowed to compile the script.
@@ -4542,7 +4542,7 @@ static sxi32 PH7_GenStateEmitExprCode(
 	ph7_expr_node *pNode, /* Root of the expression tree */
 	sxi32 iFlags /* Control flags */
 ) {
-	VmInstr *pInstr;
+	VmInstr *pInstr = 0;
 	sxu32 nJmpIdx;
 	sxi32 iP1 = 0;
 	sxu32 iP2 = 0;

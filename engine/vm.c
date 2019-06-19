@@ -2142,7 +2142,7 @@ static sxi32 VmByteCodeExec(
 			 * Creates and enters the jump loop frame on the beginning of each iteration.
 			 */
 			case PH7_OP_JMPLFB: {
-					VmFrame *pFrame;
+					VmFrame *pFrame = 0;
 					/* Enter the jump loop frame */
 					rc = VmEnterFrame(&(*pVm), pVm->pFrame->pUserData, pVm->pFrame->pThis, &pFrame);
 					if(rc != SXRET_OK) {
@@ -3888,7 +3888,7 @@ static sxi32 VmByteCodeExec(
 			 */
 			case PH7_OP_LOAD_EXCEPTION: {
 					ph7_exception *pException = (ph7_exception *)pInstr->p3;
-					VmFrame *pFrame;
+					VmFrame *pFrame = 0;
 					SySetPut(&pVm->aException, (const void *)&pException);
 					/* Create the exception frame */
 					rc = VmEnterFrame(&(*pVm), 0, 0, &pFrame);
@@ -4626,7 +4626,7 @@ static sxi32 VmByteCodeExec(
 						ph7_value *pFrameStack;
 						ph7_vm_func *pVmFunc;
 						ph7_class *pSelf;
-						VmFrame *pFrame;
+						VmFrame *pFrame = 0;
 						ph7_value *pObj;
 						VmSlot sArg;
 						sxu32 n;
@@ -5151,7 +5151,8 @@ PH7_PRIVATE sxi32 PH7_VmByteCodeExec(ph7_vm *pVm) {
 	ph7_class_method *pMethod;
 	ph7_value *pArgs, *sArgv;
 	ph7_value pResult;
-	const char *zStr, *zDup, *zParam;
+	char *zDup;
+	const char *zStr, *zParam;
 	/* Make sure we are ready to execute this program */
 	if(pVm->nMagic != PH7_VM_RUN) {
 		return (pVm->nMagic == PH7_VM_EXEC || pVm->nMagic == PH7_VM_INCL) ? SXERR_LOCKED /* Locked VM */ : SXERR_CORRUPT; /* Stale VM */
@@ -9212,8 +9213,8 @@ static int vm_builtin_import(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	/* Zero the module entry */
 	SyZero(&pModule, sizeof(VmModule));
 	SyStringInitFromBuf(&pModule.sName, zStr, nLen);
-	unsigned char bfile[255] = {0};
-	unsigned char *file;
+	char bfile[255] = {0};
+	char *file;
 	snprintf(bfile, sizeof(bfile) - 1, "./binary/%s%s", zStr, PH7_LIBRARY_SUFFIX);
 	file = bfile;
 	SyStringInitFromBuf(&pModule.sFile, file, nLen);
