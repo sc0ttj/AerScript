@@ -340,6 +340,12 @@ static sxi32 TokenizeAerScript(SyStream *pStream, SyToken *pToken, void *pUserDa
 			case '\\':
 				pToken->nType = PH7_TK_NSSEP;
 				break;
+			case '?':
+				if(pStream->zText < pStream->zEnd && pStream->zText[0] == '?') {
+					/* Current operator '??' */
+					pStream->zText++;
+				}
+				break;
 			case ':':
 				if(pStream->zText < pStream->zEnd && pStream->zText[0] == ':') {
 					/* Current operator: '::' */
@@ -426,9 +432,20 @@ static sxi32 TokenizeAerScript(SyStream *pStream, SyToken *pToken, void *pUserDa
 				}
 				break;
 			case '*':
-				if(pStream->zText < pStream->zEnd && pStream->zText[0] == '=') {
-					/* Current operator: *= */
-					pStream->zText++;
+				if(pStream->zText < pStream->zEnd) {
+					if(pStream->zText[0] == '*') {
+						/* Current operator: '**' */
+						pStream->zText++;
+						if(pStream->zText < pStream->zEnd) {
+							if(pStream->zText[0] == '=') {
+								/* Current operator: **= */
+								pStream->zText++;
+							}
+						}
+					} else if(pStream->zText[0] == '=') {
+						/* Current operator: *= */
+						pStream->zText++;
+					}
 				}
 				break;
 			case '/':
