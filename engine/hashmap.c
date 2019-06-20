@@ -1004,6 +1004,12 @@ PH7_PRIVATE sxi32 PH7_HashmapDup(ph7_hashmap *pSrc, ph7_hashmap *pDest) {
 	ph7_value sKey, *pVal;
 	sxi32 rc;
 	sxu32 n;
+	if(pSrc == pDest) {
+		/* This should NOT really happen, but never try to duplicate
+		 * an array when source and the destination are the same arrays.
+		 */
+		return SXRET_OK;
+	}
 	/* Point to the first inserted entry in the source */
 	pEntry = pSrc->pFirst;
 	/* Perform the duplication */
