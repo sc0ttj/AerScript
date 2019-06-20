@@ -1433,6 +1433,7 @@ enum ph7_vm_op {
 	PH7_OP_LAND,         /* Logical and '&&' */
 	PH7_OP_LOR,          /* Logical or  '||' */
 	PH7_OP_LXOR,         /* Logical xor '^^' */
+	PH7_OP_NULLC,        /* NULL-coalescing '??' */
 	PH7_OP_STORE,        /* Store Object */
 	PH7_OP_STORE_IDX,    /* Store indexed object */
 	PH7_OP_STORE_IDX_REF,/* Store indexed object by reference */
@@ -1510,6 +1511,7 @@ enum ph7_expr_id {
 	EXPR_OP_LAND,      /* Logical and '&&' */
 	EXPR_OP_LOR,       /* Logical or  '||' */
 	EXPR_OP_LXOR,      /* Logical xor '^^' */
+	EXPR_OP_NULLC,     /* NULL-coalescing '??' */
 	EXPR_OP_QUESTY,    /* Ternary operator '?' */
 	EXPR_OP_ASSIGN,    /* Assignment '=' */
 	EXPR_OP_ADD_ASSIGN, /* Combined operator: += */

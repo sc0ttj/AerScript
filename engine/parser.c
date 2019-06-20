@@ -86,6 +86,8 @@ static const ph7_expr_op aOpTable[] = {
 	{ {"^^", sizeof(char) * 2}, EXPR_OP_LXOR, 16, EXPR_OP_ASSOC_LEFT, PH7_OP_LXOR},
 	/* Precedence 17,left-associative */
 	{ {"||", sizeof(char) * 2}, EXPR_OP_LOR, 17, EXPR_OP_ASSOC_LEFT, PH7_OP_LOR},
+	/* Precedence 18,right-associative */
+	{ {"??", sizeof(char) * 2}, EXPR_OP_NULLC, 18, EXPR_OP_ASSOC_RIGHT, PH7_OP_NULLC},
 	/* Ternary operator */
 	/* Precedence 19,left-associative */
 	{ {"?", sizeof(char)}, EXPR_OP_QUESTY, 19, EXPR_OP_ASSOC_LEFT, 0},
@@ -1074,6 +1076,30 @@ static sxi32 ExprMakeTree(ph7_gen_state *pGen, ph7_expr_node **apNode, sxi32 nTo
 			iLeft = iCur;
 		}
 	}
+	/* Process right-associative operators with precedence 18 */
+	iRight = -1;
+	for(iCur = nToken -  1 ; iCur >= 0 ; iCur--) {
+		if(apNode[iCur] == 0) {
+			continue;
+		}
+		pNode = apNode[iCur];
+		if(pNode->pOp && pNode->pOp->iPrec == 18 && pNode->pLeft == 0) {
+			/* Get the left node */
+			iLeft = iCur - 1;
+			while(iLeft >= 0 && apNode[iLeft] == 0) {
+				iLeft--;
+			}
+			if(iLeft < 0 || iRight < 0 || !NODE_ISTERM(iRight) || !NODE_ISTERM(iLeft)) {
+				/* Syntax error */
+				PH7_GenCompileError(pGen, E_ERROR, pNode->pStart->nLine, "'%z': Missing/Invalid operand", &pNode->pOp->sOp);
+			}
+			/* Link the node to the tree (Reverse) */
+			pNode->pLeft = apNode[iRight];
+			pNode->pRight = apNode[iLeft];
+			apNode[iLeft] = apNode[iRight] = 0;
+		}
+		iRight = iCur;
+	}
 	/* Handle the ternary operator. (expr1) ? (expr2) : (expr3)
 	 * Note that we do not need a precedence loop here since
 	 * we are dealing with a single operator.
@@ -1139,7 +1165,7 @@ static sxi32 ExprMakeTree(ph7_gen_state *pGen, ph7_expr_node **apNode, sxi32 nTo
 		iLeft = iCur;
 	}
 	/* Process right associative binary operators [i.e: '=','+=','/=']
-	 * Note: All right associative binary operators have precedence 18
+	 * Note: All right associative binary operators have precedence 20
 	 * so there is no need for a precedence loop here.
 	 */
 	iRight = -1;

@@ -3879,6 +3879,16 @@ static sxi32 VmByteCodeExec(
 					}
 					break;
 				}
+			case PH7_OP_NULLC: {
+					ph7_value *pNos = &pTos[-1];
+					int rc;
+					rc = PH7_MemObjIsNull(pTos);
+					if(!rc) {
+						PH7_MemObjStore(pTos, pNos);
+					}
+					VmPopOperand(&pTos, 1);
+					break;
+				}
 			/*
 			 * OP_LOAD_EXCEPTION * P2 P3
 			 * Push an exception in the corresponding container so that
@@ -5380,6 +5390,9 @@ static const char *VmInstrToString(sxi32 nOp) {
 			break;
 		case PH7_OP_NEQ:
 			zOp = "NEQ";
+			break;
+		case PH7_OP_NULLC:
+			zOp = "NULLC";
 			break;
 		case PH7_OP_BAND:
 			zOp = "BITAND";
