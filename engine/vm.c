@@ -296,8 +296,6 @@ PH7_PRIVATE sxi32 PH7_VmEmitInstr(
 	sInstr.iLine = 1;
 	if(nLine > 0) {
 		sInstr.iLine = nLine;
-	} else if(pVm->sCodeGen.pEnd && pVm->sCodeGen.pEnd->nLine > 0) {
-		sInstr.iLine = pVm->sCodeGen.pEnd->nLine;
 	}
 	if(pIndex) {
 		/* Instruction index in the bytecode array */
