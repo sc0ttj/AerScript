@@ -9214,7 +9214,7 @@ static int vm_builtin_import(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 		return PH7_OK;
 	}
 	while(SySetGetNextEntry(&pCtx->pVm->aModules, (void **)&pSearch) == SXRET_OK) {
-		if(SyStrncmp(pSearch->sName.zString, zStr, (sxu32)(SXMAX(pSearch->sName.zString, zStr))) == 0) {
+		if(SyStrncmp(pSearch->sName.zString, zStr, (sxu32)(SXMAX((int) pSearch->sName.nByte, nLen))) == 0) {
 			SySetResetCursor(&pCtx->pVm->aModules);
 			ph7_result_bool(pCtx, 1);
 			return PH7_OK;
