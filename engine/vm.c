@@ -9239,10 +9239,11 @@ static int vm_builtin_import(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
 	}
+	void (*init)(ph7_vm *, ph7_real *, SyString *);
 #ifdef __WINNT__
-	void (*init)(ph7_vm *, ph7_real *, SyString *) = GetProcAddress(pModule.pHandle, "initializeModule");
+	*(void**)(&init) = GetProcAddress(pModule.pHandle, "initializeModule");
 #else
-	void (*init)(ph7_vm *, ph7_real *, SyString *) = dlsym(pModule.pHandle, "initializeModule");
+	*(void**)(&init) = dlsym(pModule.pHandle, "initializeModule");
 #endif
 	if(!init) {
 		/* Could not find the module entry point */
