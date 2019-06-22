@@ -982,11 +982,10 @@ static sxi32 GenStateDefineNodeValidator(ph7_gen_state *pGen, ph7_expr_node *pRo
  * Compile a global 'define' construct.
  * A global constant, defined in global scope can be accessible from any place.
  */
-PH7_PRIVATE sxi32 PH7_CompileDefine(ph7_gen_state *pGen, sxi32 iFlags) {
+PH7_PRIVATE sxi32 PH7_CompileDefine(ph7_gen_state *pGen) {
 	SySet *pConsCode, *pInstrContainer;
 	SyString *pName;
 	sxi32 rc;
-	SXUNUSED(iFlags);
 	/* Jump the 'define' keyword */
 	pGen->pIn++;
 	if(pGen->pIn >= pGen->pEnd || (pGen->pIn->nType & (PH7_TK_ID | PH7_TK_KEYWORD)) == 0) {
@@ -3010,13 +3009,13 @@ static sxi32 PH7_GenStateCompileFunc(
 	/* Create the function state */
 	pFunc = (ph7_vm_func *)SyMemBackendPoolAlloc(&pGen->pVm->sAllocator, sizeof(ph7_vm_func));
 	if(pFunc == 0) {
-		goto OutOfMem;
+		PH7_GenCompileError(&(*pGen), E_ERROR, 1, "PH7 engine is running out-of-memory");
 	}
 	/* function ID */
 	zName = SyMemBackendStrDup(&pGen->pVm->sAllocator, pName->zString, pName->nByte);
 	if(zName == 0) {
 		/* Don't worry about freeing memory, everything will be released shortly */
-		goto OutOfMem;
+		PH7_GenCompileError(&(*pGen), E_ERROR, 1, "PH7 engine is running out-of-memory");
 	}
 	/* Initialize the function state */
 	PH7_VmInitFuncState(pGen->pVm, pFunc, zName, pName->nByte, iFlags, 0);
@@ -3119,15 +3118,7 @@ static sxi32 PH7_GenStateCompileFunc(
 		/* Finally register the function */
 		rc = PH7_VmInstallUserFunction(pGen->pVm, pFunc, 0);
 	}
-	if(rc == SXRET_OK) {
-		return SXRET_OK;
-	}
-	/* Fall through if something goes wrong */
-OutOfMem:
-	/* If the supplied memory subsystem is so sick that we are unable to allocate
-	 * a tiny chunk of memory, there is no much we can do here.
-	 */
-	PH7_GenCompileError(&(*pGen), E_ERROR, 1, "PH7 engine is running out-of-memory");
+	return rc;
 }
 /*
  * Extract the visibility level associated with a given keyword.
@@ -4106,7 +4097,7 @@ static sxi32 PH7_CompileCatch(ph7_gen_state *pGen, ph7_exception *pException) {
 	pName = &pGen->pIn->sData;
 	zDup = SyMemBackendStrDup(&pGen->pVm->sAllocator, pName->zString, pName->nByte);
 	if(zDup == 0) {
-		goto Mem;
+		PH7_GenCompileError(&(*pGen), E_ERROR, pGen->pIn->nLine, "PH7 engine is running out-of-memory");
 	}
 	SyStringInitFromBuf(&sCatch.sClass, zDup, pName->nByte);
 	pGen->pIn++;
@@ -4125,7 +4116,7 @@ static sxi32 PH7_CompileCatch(ph7_gen_state *pGen, ph7_exception *pException) {
 	pName = &pGen->pIn->sData;
 	zDup = SyMemBackendStrDup(&pGen->pVm->sAllocator, pName->zString, pName->nByte);
 	if(zDup == 0) {
-		goto Mem;
+		PH7_GenCompileError(&(*pGen), E_ERROR, pGen->pIn->nLine, "PH7 engine is running out-of-memory");
 	}
 	SyStringInitFromBuf(&sCatch.sThis, zDup, pName->nByte);
 	pGen->pIn++;
@@ -4161,11 +4152,9 @@ static sxi32 PH7_CompileCatch(ph7_gen_state *pGen, ph7_exception *pException) {
 	/* Install the catch block */
 	rc = SySetPut(&pException->sEntry, (const void *)&sCatch);
 	if(rc != SXRET_OK) {
-		goto Mem;
+		PH7_GenCompileError(&(*pGen), E_ERROR, pGen->pIn->nLine, "PH7 engine is running out-of-memory");
 	}
 	return SXRET_OK;
-Mem:
-	PH7_GenCompileError(&(*pGen), E_ERROR, pGen->pIn->nLine, "PH7 engine is running out-of-memory");
 }
 /*
  * Compile a 'finally' block.
