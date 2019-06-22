@@ -2912,7 +2912,7 @@ static ph7_int64 StreamReadLine(io_private *pDev, const char **pzData, ph7_int64
 	 * limit is reached.
 	 */
 	for(;;) {
-		n = pStream->xRead(pDev->pHandle, zBuf, (nMaxLen > 0 && nMaxLen < sizeof(zBuf)) ? nMaxLen : sizeof(zBuf));
+		n = pStream->xRead(pDev->pHandle, zBuf, (nMaxLen > 0 && nMaxLen < (ph7_int64) sizeof(zBuf)) ? nMaxLen : (ph7_int64) sizeof(zBuf));
 		if(n < 1) {
 			/* EOF or IO error */
 			break;
@@ -3767,7 +3767,7 @@ static int PH7_builtin_file_get_contents(ph7_context *pCtx, int nArg, ph7_value 
 	nRead = 0;
 	for(;;) {
 		n = pStream->xRead(pHandle, zBuf,
-						   (nMaxlen > 0 && (nMaxlen < sizeof(zBuf))) ? nMaxlen : sizeof(zBuf));
+						   (nMaxlen > 0 && (nMaxlen < (ph7_int64) sizeof(zBuf))) ? nMaxlen : (ph7_int64) sizeof(zBuf));
 		if(n < 1) {
 			/* EOF or IO error,break immediately */
 			break;
