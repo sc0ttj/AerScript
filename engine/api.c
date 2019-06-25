@@ -680,14 +680,14 @@ static sxi32 ProcessSourceFile(
 ) {
 	ph7_vm *pVm = *ppVm;
 	int iFileDir, rc;
-	char *pFileDir, *fFilePath[PATH_MAX + 1];
-	char *pFilePath[PATH_MAX + 1];
+	char *pFileDir, fFilePath[PATH_MAX + 1];
+	char pFilePath[PATH_MAX + 1];
 	/* Install local import path which is the current directory */
 	ph7_vm_config(pVm, PH7_VM_CONFIG_IMPORT_PATH, "./");
 	if(zFilePath && SyRealPath(zFilePath, fFilePath) == PH7_OK) {
 		snprintf(pFilePath, sizeof(pFilePath) - 1, "%s", fFilePath);
 		/* Extract directory name containing processed file */
-		pFileDir = PH7_ExtractDirName(fFilePath, SyStrlen(fFilePath), &iFileDir);
+		pFileDir = (char *) PH7_ExtractDirName(fFilePath, SyStrlen(fFilePath), &iFileDir);
 		pFileDir[iFileDir + 1] = '\0';
 		/* Install local import path which is directory containing entry script */
 		ph7_vm_config(pVm, PH7_VM_CONFIG_IMPORT_PATH, pFileDir);
