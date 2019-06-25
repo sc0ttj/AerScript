@@ -2971,7 +2971,7 @@ PH7_PRIVATE void *PH7_StreamOpenHandle(ph7_vm *pVm, const ph7_io_stream *pStream
 									   int iFlags, int use_include, ph7_value *pResource, int bPushInclude, int *pNew) {
 	void *pHandle = 0; /* cc warning */
 	SyString sFile;
-	char *sFilePath[PATH_MAX + 1];
+	char sFilePath[PATH_MAX + 1];
 	int rc;
 	if(pStream == 0) {
 		/* No such stream device */
