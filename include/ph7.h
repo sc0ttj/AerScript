@@ -98,24 +98,6 @@ typedef struct ph7 ph7;
  * Every effort has been made to ensure that the various combinations of compilation
  * options work harmoniously and produce a working library.
  *
- * PH7_ENABLE_THREADS
- *   This option controls whether or not code is included in PH7 to enable it to operate
- *   safely in a multithreaded environment. The default is not. That is,all mutexing code
- *   is omitted and it is unsafe to use PH7 in a multithreaded program. When compiled
- *   with the PH7_ENABLE_THREADS directive enabled, PH7 can be used in a multithreaded
- *   program and it's safe to share the same virtual machine and engine instance between
- *   two or more threads.
- *   The value of PH7_ENABLE_THREADS can be determined at run-time using the
- *   ph7_lib_is_threadsafe() interface.When PH7 has been compiled with PH7_ENABLE_THREAD
- *   then the threading mode can be altered at run-time using the ph7_lib_config()
- *   interface together with one of these verbs:
- *      PH7_LIB_CONFIG_THREAD_LEVEL_SINGLE
- *      PH7_LIB_CONFIG_THREAD_LEVEL_MULTI
- *   Also note,platforms others than Windows and UNIX systems must install their own
- *   mutex subsystem via  ph7_lib_config() with a configuration verb set to
- *   PH7_LIB_CONFIG_USER_MUTEX. Otherwise the library is not threadsafe.
- *   Note that you must link PH7 with the POSIX threads library under UNIX-like systems
- *   (i.e: -lpthread).Otherwise you will get a link time error.
  * Options To Omit/Enable Features:
  *   The following options can be used to reduce the size of the compiled library
  *   by omitting optional features. This is probably only useful in embedded systems

@@ -13,7 +13,6 @@
 	#include <stdlib.h>
 #endif
 
-#if defined(PH7_ENABLE_THREADS)
 #if defined(__WINNT__)
 struct SyMutex {
 	CRITICAL_SECTION sMutex;
@@ -221,4 +220,3 @@ PH7_PRIVATE const SyMutexMethods *SyMutexExportMethods(void) {
 	return &sDummyMutexMethods;
 }
 #endif /* __WINNT__ */
-#endif /* PH7_ENABLE_THREADS */

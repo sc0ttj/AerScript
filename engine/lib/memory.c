@@ -293,7 +293,6 @@ PH7_PRIVATE sxi32 SyMemBackendFree(SyMemBackend *pBackend, void *pChunk) {
 	}
 	return rc;
 }
-#if defined(PH7_ENABLE_THREADS)
 PH7_PRIVATE sxi32 SyMemBackendMakeThreadSafe(SyMemBackend *pBackend, const SyMutexMethods *pMethods) {
 	SyMutex *pMutex;
 #if defined(UNTRUST)
@@ -325,7 +324,6 @@ PH7_PRIVATE sxi32 SyMemBackendDisbaleMutexing(SyMemBackend *pBackend) {
 	pBackend->pMutex = 0;
 	return SXRET_OK;
 }
-#endif
 /*
  * Memory pool allocator
  */
