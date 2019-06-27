@@ -687,11 +687,9 @@ static sxi32 FormatMount(sxi32 nType, void *pConsumer, ProcConsumer xUserCons, v
 	}
 	switch(nType) {
 		case SXFMT_CONS_PROC:
-#if defined(UNTRUST)
 			if(xUserCons == 0) {
 				return SXERR_EMPTY;
 			}
-#endif
 			sCons.uConsumer.sFunc.xUserConsumer = xUserCons;
 			sCons.uConsumer.sFunc.pUserData	    = pUserData;
 			break;
@@ -710,11 +708,9 @@ static sxi32 FormatMount(sxi32 nType, void *pConsumer, ProcConsumer xUserCons, v
 PH7_PRIVATE sxi32 SyProcFormat(ProcConsumer xConsumer, void *pData, const char *zFormat, ...) {
 	va_list ap;
 	sxi32 rc;
-#if defined(UNTRUST)
 	if(SX_EMPTY_STR(zFormat)) {
 		return SXERR_EMPTY;
 	}
-#endif
 	va_start(ap, zFormat);
 	rc = FormatMount(SXFMT_CONS_PROC, 0, xConsumer, pData, 0, zFormat, ap);
 	va_end(ap);
@@ -723,11 +719,9 @@ PH7_PRIVATE sxi32 SyProcFormat(ProcConsumer xConsumer, void *pData, const char *
 PH7_PRIVATE sxu32 SyBlobFormat(SyBlob *pBlob, const char *zFormat, ...) {
 	va_list ap;
 	sxu32 n;
-#if defined(UNTRUST)
 	if(SX_EMPTY_STR(zFormat)) {
 		return 0;
 	}
-#endif
 	va_start(ap, zFormat);
 	FormatMount(SXFMT_CONS_BLOB, &(*pBlob), 0, 0, &n, zFormat, ap);
 	va_end(ap);
@@ -735,11 +729,9 @@ PH7_PRIVATE sxu32 SyBlobFormat(SyBlob *pBlob, const char *zFormat, ...) {
 }
 PH7_PRIVATE sxu32 SyBlobFormatAp(SyBlob *pBlob, const char *zFormat, va_list ap) {
 	sxu32 n = 0; /* cc warning */
-#if defined(UNTRUST)
 	if(SX_EMPTY_STR(zFormat)) {
 		return 0;
 	}
-#endif
 	FormatMount(SXFMT_CONS_BLOB, &(*pBlob), 0, 0, &n, zFormat, ap);
 	return n;
 }
@@ -747,11 +739,9 @@ PH7_PRIVATE sxu32 SyBufferFormat(char *zBuf, sxu32 nLen, const char *zFormat, ..
 	SyBlob sBlob;
 	va_list ap;
 	sxu32 n;
-#if defined(UNTRUST)
 	if(SX_EMPTY_STR(zFormat)) {
 		return 0;
 	}
-#endif
 	if(SXRET_OK != SyBlobInitFromBuf(&sBlob, zBuf, nLen - 1)) {
 		return 0;
 	}

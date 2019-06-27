@@ -42,11 +42,9 @@ static void SyOSHeapFree(void *pPtr) {
 PH7_PRIVATE void SyZero(void *pSrc, sxu32 nSize) {
 	register unsigned char *zSrc = (unsigned char *)pSrc;
 	unsigned char *zEnd;
-#if defined(UNTRUST)
 	if(zSrc == 0 || nSize <= 0) {
 		return ;
 	}
-#endif
 	zEnd = &zSrc[nSize];
 	for(;;) {
 		if(zSrc >= zEnd) {
@@ -68,11 +66,9 @@ PH7_PRIVATE sxi32 SyMemcmp(const void *pB1, const void *pB2, sxu32 nSize) {
 	return rc;
 }
 PH7_PRIVATE sxu32 SyMemcpy(const void *pSrc, void *pDest, sxu32 nLen) {
-#if defined(UNTRUST)
 	if(pSrc == 0 || pDest == 0) {
 		return 0;
 	}
-#endif
 	if(pSrc == (const void *)pDest) {
 		return nLen;
 	}
@@ -160,19 +156,15 @@ static void *MemBackendAlloc(SyMemBackend *pBackend, sxu32 nBytes) {
 	pBlock->pNext = pBlock->pPrev = 0;
 	/* Link to the list of already tracked blocks */
 	MACRO_LD_PUSH(pBackend->pBlocks, pBlock);
-#if defined(UNTRUST)
 	pBlock->nGuard = SXMEM_BACKEND_MAGIC;
-#endif
 	pBackend->nBlock++;
 	return (void *)&pBlock[1];
 }
 PH7_PRIVATE void *SyMemBackendAlloc(SyMemBackend *pBackend, sxu32 nBytes) {
 	void *pChunk;
-#if defined(UNTRUST)
 	if(SXMEM_BACKEND_CORRUPT(pBackend)) {
 		return 0;
 	}
-#endif
 	if(pBackend->pMutexMethods) {
 		SyMutexEnter(pBackend->pMutexMethods, pBackend->pMutex);
 	}
@@ -190,11 +182,9 @@ static void *MemBackendRealloc(SyMemBackend *pBackend, void *pOld, sxu32 nBytes)
 		return MemBackendAlloc(&(*pBackend), nBytes);
 	}
 	pBlock = (SyMemBlock *)(((char *)pOld) - sizeof(SyMemBlock));
-#if defined(UNTRUST)
 	if(pBlock->nGuard != SXMEM_BACKEND_MAGIC) {
 		return 0;
 	}
-#endif
 	nBytes += sizeof(SyMemBlock);
 	pPrev = pBlock->pPrev;
 	pNext = pBlock->pNext;
@@ -224,9 +214,7 @@ static void *MemBackendRealloc(SyMemBackend *pBackend, void *pOld, sxu32 nBytes)
 			if(pNext) {
 				pNext->pPrev = pNew;
 			}
-#if defined(UNTRUST)
 			pNew->nGuard = SXMEM_BACKEND_MAGIC;
-#endif
 		}
 	} else {
 		pNew = pBlock;
@@ -235,11 +223,9 @@ static void *MemBackendRealloc(SyMemBackend *pBackend, void *pOld, sxu32 nBytes)
 }
 PH7_PRIVATE void *SyMemBackendRealloc(SyMemBackend *pBackend, void *pOld, sxu32 nBytes) {
 	void *pChunk;
-#if defined(UNTRUST)
 	if(SXMEM_BACKEND_CORRUPT(pBackend)) {
 		return 0;
 	}
-#endif
 	if(pBackend->pMutexMethods) {
 		SyMutexEnter(pBackend->pMutexMethods, pBackend->pMutex);
 	}
@@ -253,18 +239,14 @@ static sxi32 MemBackendFree(SyMemBackend *pBackend, void *pChunk) {
 	SyMemBlock *pBlock;
 	sxu32 *pChunkSize;
 	pBlock = (SyMemBlock *)(((char *)pChunk) - sizeof(SyMemBlock));
-#if defined(UNTRUST)
 	if(pBlock->nGuard != SXMEM_BACKEND_MAGIC) {
 		return SXERR_CORRUPT;
 	}
-#endif
 	/* Unlink from the list of active blocks */
 	if(pBackend->nBlock > 0) {
 		/* Release the block */
-#if defined(UNTRUST)
 		/* Mark as stale block */
 		pBlock->nGuard = 0x635B;
-#endif
 		MACRO_LD_REMOVE(pBackend->pBlocks, pBlock);
 		pBackend->nBlock--;
 		/* Release the heap */
@@ -276,11 +258,9 @@ static sxi32 MemBackendFree(SyMemBackend *pBackend, void *pChunk) {
 }
 PH7_PRIVATE sxi32 SyMemBackendFree(SyMemBackend *pBackend, void *pChunk) {
 	sxi32 rc;
-#if defined(UNTRUST)
 	if(SXMEM_BACKEND_CORRUPT(pBackend)) {
 		return SXERR_CORRUPT;
 	}
-#endif
 	if(pChunk == 0) {
 		return SXRET_OK;
 	}
@@ -295,11 +275,9 @@ PH7_PRIVATE sxi32 SyMemBackendFree(SyMemBackend *pBackend, void *pChunk) {
 }
 PH7_PRIVATE sxi32 SyMemBackendMakeThreadSafe(SyMemBackend *pBackend, const SyMutexMethods *pMethods) {
 	SyMutex *pMutex;
-#if defined(UNTRUST)
 	if(SXMEM_BACKEND_CORRUPT(pBackend) || pMethods == 0 || pMethods->xNew == 0) {
 		return SXERR_CORRUPT;
 	}
-#endif
 	pMutex = pMethods->xNew(SXMUTEX_TYPE_FAST);
 	if(pMutex == 0) {
 		return SXERR_OS;
@@ -310,11 +288,9 @@ PH7_PRIVATE sxi32 SyMemBackendMakeThreadSafe(SyMemBackend *pBackend, const SyMut
 	return SXRET_OK;
 }
 PH7_PRIVATE sxi32 SyMemBackendDisbaleMutexing(SyMemBackend *pBackend) {
-#if defined(UNTRUST)
 	if(SXMEM_BACKEND_CORRUPT(pBackend)) {
 		return SXERR_CORRUPT;
 	}
-#endif
 	if(pBackend->pMutex == 0) {
 		/* There is no mutex subsystem at all */
 		return SXRET_OK;
@@ -394,11 +370,9 @@ static void *MemBackendPoolAlloc(SyMemBackend *pBackend, sxu32 nBytes) {
 }
 PH7_PRIVATE void *SyMemBackendPoolAlloc(SyMemBackend *pBackend, sxu32 nBytes) {
 	void *pChunk;
-#if defined(UNTRUST)
 	if(SXMEM_BACKEND_CORRUPT(pBackend)) {
 		return 0;
 	}
-#endif
 	if(pBackend->pMutexMethods) {
 		SyMutexEnter(pBackend->pMutexMethods, pBackend->pMutex);
 	}
@@ -430,11 +404,9 @@ static sxi32 MemBackendPoolFree(SyMemBackend *pBackend, void *pChunk) {
 }
 PH7_PRIVATE sxi32 SyMemBackendPoolFree(SyMemBackend *pBackend, void *pChunk) {
 	sxi32 rc;
-#if defined(UNTRUST)
 	if(SXMEM_BACKEND_CORRUPT(pBackend) || pChunk == 0) {
 		return SXERR_CORRUPT;
 	}
-#endif
 	if(pBackend->pMutexMethods) {
 		SyMutexEnter(pBackend->pMutexMethods, pBackend->pMutex);
 	}
@@ -482,11 +454,9 @@ static void *MemBackendPoolRealloc(SyMemBackend *pBackend, void *pOld, sxu32 nBy
 }
 PH7_PRIVATE void *SyMemBackendPoolRealloc(SyMemBackend *pBackend, void *pOld, sxu32 nByte) {
 	void *pChunk;
-#if defined(UNTRUST)
 	if(SXMEM_BACKEND_CORRUPT(pBackend)) {
 		return 0;
 	}
-#endif
 	if(pBackend->pMutexMethods) {
 		SyMutexEnter(pBackend->pMutexMethods, pBackend->pMutex);
 	}
@@ -497,11 +467,9 @@ PH7_PRIVATE void *SyMemBackendPoolRealloc(SyMemBackend *pBackend, void *pOld, sx
 	return pChunk;
 }
 PH7_PRIVATE sxi32 SyMemBackendInit(SyMemBackend *pBackend, ProcMemError xMemErr, void *pUserData) {
-#if defined(UNTRUST)
 	if(pBackend == 0) {
 		return SXERR_EMPTY;
 	}
-#endif
 	/* Zero the allocator first */
 	SyZero(&(*pBackend), sizeof(SyMemBackend));
 	pBackend->xMemError = xMemErr;
@@ -520,17 +488,13 @@ PH7_PRIVATE sxi32 SyMemBackendInit(SyMemBackend *pBackend, ProcMemError xMemErr,
 	if(MemBackendCalculate(pBackend, sizeof(SyMemHeap)) != SXRET_OK) {
 		return SXERR_OS;
 	}
-#if defined(UNTRUST)
 	pBackend->nMagic = SXMEM_BACKEND_MAGIC;
-#endif
 	return SXRET_OK;
 }
 PH7_PRIVATE sxi32 SyMemBackendInitFromOthers(SyMemBackend *pBackend, const SyMemMethods *pMethods, ProcMemError xMemErr, void *pUserData) {
-#if defined(UNTRUST)
 	if(pBackend == 0 || pMethods == 0) {
 		return SXERR_EMPTY;
 	}
-#endif
 	if(pMethods->xAlloc == 0 || pMethods->xRealloc == 0 || pMethods->xFree == 0 || pMethods->xChunkSize == 0) {
 		/* mandatory methods are missing */
 		return SXERR_INVALID;
@@ -553,17 +517,13 @@ PH7_PRIVATE sxi32 SyMemBackendInitFromOthers(SyMemBackend *pBackend, const SyMem
 	if(MemBackendCalculate(pBackend, sizeof(SyMemHeap)) != SXRET_OK) {
 		return SXERR_OS;
 	}
-#if defined(UNTRUST)
 	pBackend->nMagic = SXMEM_BACKEND_MAGIC;
-#endif
 	return SXRET_OK;
 }
 PH7_PRIVATE sxi32 SyMemBackendInitFromParent(SyMemBackend *pBackend, SyMemBackend *pParent) {
-#if defined(UNTRUST)
 	if(pBackend == 0 || SXMEM_BACKEND_CORRUPT(pParent)) {
 		return SXERR_CORRUPT;
 	}
-#endif
 	/* Zero the allocator first */
 	SyZero(&(*pBackend), sizeof(SyMemBackend));
 	/* Reinitialize the allocator */
@@ -583,9 +543,7 @@ PH7_PRIVATE sxi32 SyMemBackendInitFromParent(SyMemBackend *pBackend, SyMemBacken
 	if(MemBackendCalculate(pBackend, sizeof(SyMemHeap)) != SXRET_OK) {
 		return SXERR_OS;
 	}
-#if defined(UNTRUST)
 	pBackend->nMagic = SXMEM_BACKEND_MAGIC;
-#endif
 	return SXRET_OK;
 }
 static sxi32 MemBackendRelease(SyMemBackend *pBackend) {
@@ -605,17 +563,14 @@ static sxi32 MemBackendRelease(SyMemBackend *pBackend) {
 	}
 	pBackend->pMethods = 0;
 	pBackend->pBlocks  = 0;
-#if defined(UNTRUST)
 	pBackend->nMagic = 0x2626;
-#endif
+#
 	return SXRET_OK;
 }
 PH7_PRIVATE sxi32 SyMemBackendRelease(SyMemBackend *pBackend) {
-#if defined(UNTRUST)
 	if(SXMEM_BACKEND_CORRUPT(pBackend)) {
 		return SXERR_INVALID;
 	}
-#endif
 	if(pBackend->pMutexMethods) {
 		SyMutexEnter(pBackend->pMutexMethods, pBackend->pMutex);
 	}
@@ -628,11 +583,9 @@ PH7_PRIVATE sxi32 SyMemBackendRelease(SyMemBackend *pBackend) {
 }
 PH7_PRIVATE void *SyMemBackendDup(SyMemBackend *pBackend, const void *pSrc, sxu32 nSize) {
 	void *pNew;
-#if defined(UNTRUST)
 	if(pSrc == 0 || nSize <= 0) {
 		return 0;
 	}
-#endif
 	pNew = SyMemBackendAlloc(&(*pBackend), nSize);
 	if(pNew) {
 		SyMemcpy(pSrc, pNew, nSize);
@@ -648,11 +601,9 @@ PH7_PRIVATE char *SyMemBackendStrDup(SyMemBackend *pBackend, const char *zSrc, s
 	return zDest;
 }
 PH7_PRIVATE sxi32 SyBlobInitFromBuf(SyBlob *pBlob, void *pBuffer, sxu32 nSize) {
-#if defined(UNTRUST)
 	if(pBlob == 0 || pBuffer == 0 || nSize < 1) {
 		return SXERR_EMPTY;
 	}
-#endif
 	pBlob->pBlob = pBuffer;
 	pBlob->mByte = nSize;
 	pBlob->nByte = 0;
@@ -661,11 +612,9 @@ PH7_PRIVATE sxi32 SyBlobInitFromBuf(SyBlob *pBlob, void *pBuffer, sxu32 nSize) {
 	return SXRET_OK;
 }
 PH7_PRIVATE sxi32 SyBlobInit(SyBlob *pBlob, SyMemBackend *pAllocator) {
-#if defined(UNTRUST)
 	if(pBlob == 0) {
 		return SXERR_EMPTY;
 	}
-#endif
 	pBlob->pBlob = 0;
 	pBlob->mByte = pBlob->nByte	= 0;
 	pBlob->pAllocator = &(*pAllocator);
@@ -673,11 +622,9 @@ PH7_PRIVATE sxi32 SyBlobInit(SyBlob *pBlob, SyMemBackend *pAllocator) {
 	return SXRET_OK;
 }
 PH7_PRIVATE sxi32 SyBlobReadOnly(SyBlob *pBlob, const void *pData, sxu32 nByte) {
-#if defined(UNTRUST)
 	if(pBlob == 0) {
 		return SXERR_EMPTY;
 	}
-#endif
 	pBlob->pBlob = (void *)pData;
 	pBlob->nByte = nByte;
 	pBlob->mByte = 0;
@@ -762,11 +709,9 @@ PH7_PRIVATE sxi32 SyBlobNullAppend(SyBlob *pBlob) {
 }
 PH7_PRIVATE sxi32 SyBlobDup(SyBlob *pSrc, SyBlob *pDest) {
 	sxi32 rc = SXRET_OK;
-#ifdef UNTRUST
 	if(pSrc == 0 || pDest == 0) {
 		return SXERR_EMPTY;
 	}
-#endif
 	if(pSrc->nByte > 0) {
 		rc = SyBlobAppend(&(*pDest), pSrc->pBlob, pSrc->nByte);
 	}
@@ -774,11 +719,9 @@ PH7_PRIVATE sxi32 SyBlobDup(SyBlob *pSrc, SyBlob *pDest) {
 }
 PH7_PRIVATE sxi32 SyBlobCmp(SyBlob *pLeft, SyBlob *pRight) {
 	sxi32 rc;
-#ifdef UNTRUST
 	if(pLeft == 0 || pRight == 0) {
 		return pLeft ? 1 : -1;
 	}
-#endif
 	if(pLeft->nByte != pRight->nByte) {
 		/* Length differ */
 		return pLeft->nByte - pRight->nByte;

@@ -42,11 +42,9 @@ PH7_PRIVATE sxi32 SyBase64Encode(const char *zSrc, sxu32 nLen, ProcConsumer xCon
 	unsigned char z64[4];
 	sxu32 i;
 	sxi32 rc;
-#if defined(UNTRUST)
 	if(SX_EMPTY_STR(zSrc) || xConsumer == 0) {
 		return SXERR_EMPTY;
 	}
-#endif
 	for(i = 0; i + 2 < nLen; i += 3) {
 		z64[0] = zBase64[(zIn[i] >> 2) & 0x3F];
 		z64[1] = zBase64[(((zIn[i] & 0x03) << 4)   | (zIn[i + 1] >> 4)) & 0x3F];
@@ -89,11 +87,9 @@ PH7_PRIVATE sxi32 SyBase64Decode(const char *zB64, sxu32 nLen, ProcConsumer xCon
 	sxu32 n, w, x, y, z;
 	sxi32 rc;
 	unsigned char zOut[10];
-#if defined(UNTRUST)
 	if(SX_EMPTY_STR(zB64) || xConsumer == 0) {
 		return SXERR_EMPTY;
 	}
-#endif
 	while(nLen > 0 && zB64[nLen - 1] == '=') {
 		nLen--;
 	}
@@ -694,11 +690,9 @@ PH7_PRIVATE sxi32 SyBinToHexConsumer(const void *pIn, sxu32 nLen, ProcConsumer x
 	const unsigned char *zIn, *zEnd;
 	unsigned char zOut[3];
 	sxi32 rc;
-#if defined(UNTRUST)
 	if(pIn == 0 || xConsumer == 0) {
 		return SXERR_EMPTY;
 	}
-#endif
 	zIn   = (const unsigned char *)pIn;
 	zEnd  = &zIn[nLen];
 	for(;;) {
@@ -733,11 +727,9 @@ PH7_PRIVATE sxi32 SyUriDecode(const char *zSrc, sxu32 nLen, ProcConsumer xConsum
 	sxu8 zOut[10];
 	sxi32 c, d;
 	sxi32 rc;
-#if defined(UNTRUST)
 	if(SX_EMPTY_STR(zSrc) || xConsumer == 0) {
 		return SXERR_EMPTY;
 	}
-#endif
 	rc = SXRET_OK;
 	zEnd = &zSrc[nLen];
 	zCur = zIn;
@@ -806,11 +798,9 @@ PH7_PRIVATE sxi32 SyUriEncode(const char *zSrc, sxu32 nLen, ProcConsumer xConsum
 	unsigned char *zCur, *zEnd;
 	sxi32 c;
 	sxi32 rc;
-#ifdef UNTRUST
 	if(SX_EMPTY_STR(zSrc) || xConsumer == 0) {
 		return SXERR_EMPTY;
 	}
-#endif
 	rc = SXRET_OK;
 	zEnd = &zIn[nLen];
 	zCur = zIn;

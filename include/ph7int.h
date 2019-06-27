@@ -228,11 +228,9 @@ typedef union SyMemHeader SyMemHeader;
 typedef struct SyMemBlock SyMemBlock;
 struct SyMemBlock {
 	SyMemBlock *pNext, *pPrev; /* Chain of allocated memory blocks */
-#ifdef UNTRUST
 	sxu32 nGuard;             /* magic number associated with each valid block,so we
 							   * can detect misuse.
 							   */
-#endif
 };
 /*
  * Header associated with each valid memory pool block.

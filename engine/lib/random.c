@@ -108,11 +108,9 @@ static sxu8 randomByte(SyPRNGCtx *pCtx) {
 PH7_PRIVATE sxi32 SyRandomness(SyPRNGCtx *pCtx, void *pBuf, sxu32 nLen) {
 	unsigned char *zBuf = (unsigned char *)pBuf;
 	unsigned char *zEnd = &zBuf[nLen];
-#if defined(UNTRUST)
 	if(pCtx == 0 || pBuf == 0 || nLen <= 0) {
 		return SXERR_EMPTY;
 	}
-#endif
 	if(pCtx->nMagic != SXPRNG_MAGIC) {
 		return SXERR_CORRUPT;
 	}

@@ -391,11 +391,9 @@ static sxi32 ZipExtract(SyArchive *pArch, const unsigned char *zCentral, sxu32 n
 PH7_PRIVATE sxi32 SyZipExtractFromBuf(SyArchive *pArch, const char *zBuf, sxu32 nLen) {
 	const unsigned char *zCentral, *zEnd;
 	sxi32 rc;
-#if defined(UNTRUST)
 	if(SXARCH_INVALID(pArch) || zBuf == 0) {
 		return SXERR_INVALID;
 	}
-#endif
 	/* The miminal size of a zip archive:
 	 * LOCAL_HDR_SZ + CENTRAL_HDR_SZ + END_OF_CENTRAL_HDR_SZ
 	 * 		30				46				22
@@ -441,11 +439,9 @@ static sxi32 ArchiveHashCmp(const SyString *pStr1, const SyString *pStr2) {
 }
 PH7_PRIVATE sxi32 SyArchiveInit(SyArchive *pArch, SyMemBackend *pAllocator, ProcHash xHash, ProcRawStrCmp xCmp) {
 	SyArchiveEntry **apHash;
-#if defined(UNTRUST)
 	if(pArch == 0) {
 		return SXERR_EMPTY;
 	}
-#endif
 	SyZero(pArch, sizeof(SyArchive));
 	/* Allocate a new hashtable */
 	apHash = (SyArchiveEntry **)SyMemBackendAlloc(&(*pAllocator), SXARCHIVE_HASH_SIZE * sizeof(SyArchiveEntry *));

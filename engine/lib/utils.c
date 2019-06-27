@@ -10,11 +10,9 @@
 
 PH7_PRIVATE sxi32 SyStrIsNumeric(const char *zSrc, sxu32 nLen, sxu8 *pReal, const char  **pzTail) {
 	const char *zCur, *zEnd;
-#ifdef UNTRUST
 	if(SX_EMPTY_STR(zSrc)) {
 		return SXERR_EMPTY;
 	}
-#endif
 	zEnd = &zSrc[nLen];
 	/* Jump leading white spaces */
 	while(zSrc < zEnd && (unsigned char)zSrc[0] < 0xc0  && SyisSpace(zSrc[0])) {
@@ -84,14 +82,12 @@ PH7_PRIVATE sxi32 SyStrToInt32(const char *zSrc, sxu32 nLen, void *pOutVal, cons
 	const char *zEnd;
 	sxi32 nVal = 0;
 	sxi16 i;
-#if defined(UNTRUST)
 	if(SX_EMPTY_STR(zSrc)) {
 		if(pOutVal) {
 			*(sxi32 *)pOutVal = 0;
 		}
 		return SXERR_EMPTY;
 	}
-#endif
 	zEnd = &zSrc[nLen];
 	while(zSrc < zEnd && SyisSpace(zSrc[0])) {
 		zSrc++;
@@ -137,14 +133,12 @@ PH7_PRIVATE sxi32 SyStrToInt64(const char *zSrc, sxu32 nLen, void *pOutVal, cons
 	const char *zEnd;
 	sxi64 nVal;
 	sxi16 i;
-#if defined(UNTRUST)
 	if(SX_EMPTY_STR(zSrc)) {
 		if(pOutVal) {
 			*(sxi32 *)pOutVal = 0;
 		}
 		return SXERR_EMPTY;
 	}
-#endif
 	zEnd = &zSrc[nLen];
 	while(zSrc < zEnd && SyisSpace(zSrc[0])) {
 		zSrc++;
@@ -232,14 +226,12 @@ PH7_PRIVATE sxi32 SyHexStrToInt64(const char *zSrc, sxu32 nLen, void *pOutVal, c
 	const char *zIn, *zEnd;
 	int isNeg = FALSE;
 	sxi64 nVal = 0;
-#if defined(UNTRUST)
 	if(SX_EMPTY_STR(zSrc)) {
 		if(pOutVal) {
 			*(sxi32 *)pOutVal = 0;
 		}
 		return SXERR_EMPTY;
 	}
-#endif
 	zEnd = &zSrc[nLen];
 	while(zSrc < zEnd && SyisSpace(zSrc[0])) {
 		zSrc++;
@@ -298,14 +290,12 @@ PH7_PRIVATE sxi32 SyOctalStrToInt64(const char *zSrc, sxu32 nLen, void *pOutVal,
 	int isNeg = FALSE;
 	sxi64 nVal = 0;
 	int c;
-#if defined(UNTRUST)
 	if(SX_EMPTY_STR(zSrc)) {
 		if(pOutVal) {
 			*(sxi32 *)pOutVal = 0;
 		}
 		return SXERR_EMPTY;
 	}
-#endif
 	zEnd = &zSrc[nLen];
 	while(zSrc < zEnd && SyisSpace(zSrc[0])) {
 		zSrc++;
@@ -349,14 +339,12 @@ PH7_PRIVATE sxi32 SyBinaryStrToInt64(const char *zSrc, sxu32 nLen, void *pOutVal
 	int isNeg = FALSE;
 	sxi64 nVal = 0;
 	int c;
-#if defined(UNTRUST)
 	if(SX_EMPTY_STR(zSrc)) {
 		if(pOutVal) {
 			*(sxi32 *)pOutVal = 0;
 		}
 		return SXERR_EMPTY;
 	}
-#endif
 	zEnd = &zSrc[nLen];
 	while(zSrc < zEnd && SyisSpace(zSrc[0])) {
 		zSrc++;
@@ -417,14 +405,12 @@ PH7_PRIVATE sxi32 SyStrToReal(const char *zSrc, sxu32 nLen, void *pOutVal, const
 	const char *zEnd;
 	sxi32 Lim, exp;
 	sxreal *p = 0;
-#ifdef UNTRUST
 	if(SX_EMPTY_STR(zSrc)) {
 		if(pOutVal) {
 			*(sxreal *)pOutVal = 0.0;
 		}
 		return SXERR_EMPTY;
 	}
-#endif
 	zEnd = &zSrc[nLen];
 	while(zSrc < zEnd && SyisSpace(zSrc[0])) {
 		zSrc++;

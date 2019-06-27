@@ -12,11 +12,9 @@
 
 PH7_PRIVATE sxi32 SyLexInit(SyLex *pLex, SySet *pSet, ProcTokenizer xTokenizer, void *pUserData) {
 	SyStream *pStream;
-#if defined (UNTRUST)
 	if(pLex == 0 || xTokenizer == 0) {
 		return SXERR_CORRUPT;
 	}
-#endif
 	pLex->pTokenSet = 0;
 	/* Initialize lexer fields */
 	if(pSet) {
@@ -39,11 +37,9 @@ PH7_PRIVATE sxi32 SyLexTokenizeInput(SyLex *pLex, const char *zInput, sxu32 nLen
 	SyStream *pStream;
 	SyToken sToken;
 	sxi32 rc;
-#if defined (UNTRUST)
 	if(INVALID_LEXER(pLex) || zInput == 0) {
 		return SXERR_CORRUPT;
 	}
-#endif
 	pStream = &pLex->sStream;
 	/* Point to the head of the input */
 	pStream->zText = pStream->zInput = (const unsigned char *)zInput;
@@ -92,12 +88,8 @@ PH7_PRIVATE sxi32 SyLexTokenizeInput(SyLex *pLex, const char *zInput, sxu32 nLen
 }
 PH7_PRIVATE sxi32 SyLexRelease(SyLex *pLex) {
 	sxi32 rc = SXRET_OK;
-#if defined (UNTRUST)
 	if(INVALID_LEXER(pLex)) {
 		return SXERR_CORRUPT;
 	}
-#else
-	SXUNUSED(pLex); /* Prevent compiler warning */
-#endif
 	return rc;
 }

@@ -145,11 +145,9 @@ struct SyHashEntry_Pr {
 sxu32 SyBinHash(const void *pSrc, sxu32 nLen);
 PH7_PRIVATE sxi32 SyHashInit(SyHash *pHash, SyMemBackend *pAllocator, ProcHash xHash, ProcCmp xCmp) {
 	SyHashEntry_Pr **apNew;
-#if defined(UNTRUST)
 	if(pHash == 0) {
 		return SXERR_EMPTY;
 	}
-#endif
 	/* Allocate a new table */
 	apNew = (SyHashEntry_Pr **)SyMemBackendAlloc(&(*pAllocator), sizeof(SyHashEntry_Pr *) * SXHASH_BUCKET_SIZE);
 	if(apNew == 0) {
@@ -167,11 +165,9 @@ PH7_PRIVATE sxi32 SyHashInit(SyHash *pHash, SyMemBackend *pAllocator, ProcHash x
 }
 PH7_PRIVATE sxi32 SyHashRelease(SyHash *pHash) {
 	SyHashEntry_Pr *pEntry, *pNext;
-#if defined(UNTRUST)
 	if(INVALID_HASH(pHash)) {
 		return SXERR_EMPTY;
 	}
-#endif
 	pEntry = pHash->pList;
 	for(;;) {
 		if(pHash->nEntry == 0) {
@@ -210,11 +206,9 @@ static SyHashEntry_Pr *HashGetEntry(SyHash *pHash, const void *pKey, sxu32 nKeyL
 }
 PH7_PRIVATE SyHashEntry *SyHashGet(SyHash *pHash, const void *pKey, sxu32 nKeyLen) {
 	SyHashEntry_Pr *pEntry;
-#if defined(UNTRUST)
 	if(INVALID_HASH(pHash)) {
 		return 0;
 	}
-#endif
 	if(pHash->nEntry < 1 || nKeyLen < 1) {
 		/* Don't bother hashing,return immediately */
 		return 0;
@@ -248,11 +242,9 @@ static sxi32 HashDeleteEntry(SyHash *pHash, SyHashEntry_Pr *pEntry, void **ppUse
 PH7_PRIVATE sxi32 SyHashDeleteEntry(SyHash *pHash, const void *pKey, sxu32 nKeyLen, void **ppUserData) {
 	SyHashEntry_Pr *pEntry;
 	sxi32 rc;
-#if defined(UNTRUST)
 	if(INVALID_HASH(pHash)) {
 		return SXERR_CORRUPT;
 	}
-#endif
 	pEntry = HashGetEntry(&(*pHash), pKey, nKeyLen);
 	if(pEntry == 0) {
 		return SXERR_NOTFOUND;
@@ -263,30 +255,24 @@ PH7_PRIVATE sxi32 SyHashDeleteEntry(SyHash *pHash, const void *pKey, sxu32 nKeyL
 PH7_PRIVATE sxi32 SyHashDeleteEntry2(SyHashEntry *pEntry) {
 	SyHashEntry_Pr *pPtr = (SyHashEntry_Pr *)pEntry;
 	sxi32 rc;
-#if defined(UNTRUST)
 	if(pPtr == 0 || INVALID_HASH(pPtr->pHash)) {
 		return SXERR_CORRUPT;
 	}
-#endif
 	rc = HashDeleteEntry(pPtr->pHash, pPtr, 0);
 	return rc;
 }
 PH7_PRIVATE sxi32 SyHashResetLoopCursor(SyHash *pHash) {
-#if defined(UNTRUST)
 	if(INVALID_HASH(pHash)) {
 		return SXERR_CORRUPT;
 	}
-#endif
 	pHash->pCurrent = pHash->pList;
 	return SXRET_OK;
 }
 PH7_PRIVATE SyHashEntry *SyHashGetNextEntry(SyHash *pHash) {
 	SyHashEntry_Pr *pEntry;
-#if defined(UNTRUST)
 	if(INVALID_HASH(pHash)) {
 		return 0;
 	}
-#endif
 	if(pHash->pCurrent == 0 || pHash->nEntry <= 0) {
 		pHash->pCurrent = pHash->pList;
 		return 0;
@@ -301,11 +287,9 @@ PH7_PRIVATE sxi32 SyHashForEach(SyHash *pHash, sxi32(*xStep)(SyHashEntry *, void
 	SyHashEntry_Pr *pEntry;
 	sxi32 rc;
 	sxu32 n;
-#if defined(UNTRUST)
 	if(INVALID_HASH(pHash) || xStep == 0) {
 		return 0;
 	}
-#endif
 	pEntry = pHash->pList;
 	for(n = 0 ; n < pHash->nEntry ; n++) {
 		/* Invoke the callback */
@@ -369,11 +353,9 @@ static sxi32 HashInsert(SyHash *pHash, SyHashEntry_Pr *pEntry) {
 PH7_PRIVATE sxi32 SyHashInsert(SyHash *pHash, const void *pKey, sxu32 nKeyLen, void *pUserData) {
 	SyHashEntry_Pr *pEntry;
 	sxi32 rc;
-#if defined(UNTRUST)
 	if(INVALID_HASH(pHash) || pKey == 0) {
 		return SXERR_CORRUPT;
 	}
-#endif
 	if(pHash->nEntry >= pHash->nBucketSize * SXHASH_FILL_FACTOR) {
 		rc = HashGrowTable(&(*pHash));
 		if(rc != SXRET_OK) {
@@ -397,11 +379,9 @@ PH7_PRIVATE sxi32 SyHashInsert(SyHash *pHash, const void *pKey, sxu32 nKeyLen, v
 	return rc;
 }
 PH7_PRIVATE SyHashEntry *SyHashLastEntry(SyHash *pHash) {
-#if defined(UNTRUST)
 	if(INVALID_HASH(pHash)) {
 		return 0;
 	}
-#endif
 	/* Last inserted entry */
 	return (SyHashEntry *)pHash->pList;
 }

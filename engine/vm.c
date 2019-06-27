@@ -1492,12 +1492,10 @@ PH7_PRIVATE sxi32 PH7_VmConfigure(
 				ProcConsumer xConsumer = va_arg(ap, ProcConsumer);
 				void *pUserData = va_arg(ap, void *);
 				/* VM output consumer callback */
-#ifdef UNTRUST
 				if(xConsumer == 0) {
 					rc = SXERR_CORRUPT;
 					break;
 				}
-#endif
 				/* Install the output consumer */
 				pVm->sVmConsumer.xConsumer = xConsumer;
 				pVm->sVmConsumer.pUserData = pUserData;
@@ -1508,12 +1506,10 @@ PH7_PRIVATE sxi32 PH7_VmConfigure(
 				const char *zPath;
 				SyString sPath;
 				zPath = va_arg(ap, const char *);
-#if defined(UNTRUST)
 				if(zPath == 0) {
 					rc = SXERR_EMPTY;
 					break;
 				}
-#endif
 				SyStringInitFromBuf(&sPath, zPath, SyStrlen(zPath));
 				/* Remove trailing slashes and backslashes */
 #ifdef __WINNT__
@@ -1541,12 +1537,10 @@ PH7_PRIVATE sxi32 PH7_VmConfigure(
 				ph7_value *pObj;
 				sxu32 nByte;
 				sxu32 nIdx;
-#ifdef UNTRUST
 				if(SX_EMPTY_STR(zName) || pValue == 0) {
 					rc = SXERR_CORRUPT;
 					break;
 				}
-#endif
 				nByte = SyStrlen(zName);
 				if(nOp == PH7_VM_CONFIG_CREATE_SUPER) {
 					/* Check if the superglobal is already installed */
@@ -1676,12 +1670,10 @@ PH7_PRIVATE sxi32 PH7_VmConfigure(
 				/* Point to the VM internal output consumer buffer */
 				const void **ppOut = va_arg(ap, const void **);
 				unsigned int *pLen = va_arg(ap, unsigned int *);
-#ifdef UNTRUST
 				if(ppOut == 0 || pLen == 0) {
 					rc = SXERR_CORRUPT;
 					break;
 				}
-#endif
 				*ppOut = SyBlobData(&pVm->sConsumer);
 				*pLen  = SyBlobLength(&pVm->sConsumer);
 				break;
@@ -2005,11 +1997,9 @@ static sxi32 VmByteCodeExec(
 			 */
 			case PH7_OP_DONE:
 				if(pInstr->iP1) {
-#ifdef UNTRUST
 					if(pTos < pStack) {
 						goto Abort;
 					}
-#endif
 					if(pLastRef) {
 						*pLastRef = pTos->nIdx;
 					}
@@ -2052,11 +2042,9 @@ static sxi32 VmByteCodeExec(
 			 */
 			case PH7_OP_HALT:
 				if(pInstr->iP1) {
-#ifdef UNTRUST
 					if(pTos < pStack) {
 						goto Abort;
 					}
-#endif
 					if(pLastRef) {
 						*pLastRef = pTos->nIdx;
 					}
@@ -2093,11 +2081,9 @@ static sxi32 VmByteCodeExec(
 			 * entry in the stack if P1 is zero.
 			 */
 			case PH7_OP_JMPZ:
-#ifdef UNTRUST
 				if(pTos < pStack) {
 					goto Abort;
 				}
-#endif
 				/* Get a boolean value */
 				if((pTos->nType & MEMOBJ_BOOL) == 0) {
 					PH7_MemObjToBool(pTos);
@@ -2117,11 +2103,9 @@ static sxi32 VmByteCodeExec(
 			 * entry in the stack if P1 is zero.
 			 */
 			case PH7_OP_JMPNZ:
-#ifdef UNTRUST
 				if(pTos < pStack) {
 					goto Abort;
 				}
-#endif
 				/* Get a boolean value */
 				if((pTos->nType & MEMOBJ_BOOL) == 0) {
 					PH7_MemObjToBool(pTos);
@@ -2188,11 +2172,9 @@ static sxi32 VmByteCodeExec(
 			 * Force the top of the stack to be an integer.
 			 */
 			case PH7_OP_CVT_INT:
-#ifdef UNTRUST
 				if(pTos < pStack) {
 					goto Abort;
 				}
-#endif
 				if((pTos->nType & MEMOBJ_INT) == 0) {
 					PH7_MemObjToInteger(pTos);
 				}
@@ -2205,11 +2187,9 @@ static sxi32 VmByteCodeExec(
 			 * Force the top of the stack to be a real.
 			 */
 			case PH7_OP_CVT_REAL:
-#ifdef UNTRUST
 				if(pTos < pStack) {
 					goto Abort;
 				}
-#endif
 				if((pTos->nType & MEMOBJ_REAL) == 0) {
 					PH7_MemObjToReal(pTos);
 				}
@@ -2222,11 +2202,9 @@ static sxi32 VmByteCodeExec(
 			 * Force the top of the stack to be a string.
 			 */
 			case PH7_OP_CVT_STR:
-#ifdef UNTRUST
 				if(pTos < pStack) {
 					goto Abort;
 				}
-#endif
 				if((pTos->nType & MEMOBJ_STRING) == 0) {
 					PH7_MemObjToString(pTos);
 				}
@@ -2237,11 +2215,9 @@ static sxi32 VmByteCodeExec(
 			 * Force the top of the stack to be a boolean.
 			 */
 			case PH7_OP_CVT_BOOL:
-#ifdef UNTRUST
 				if(pTos < pStack) {
 					goto Abort;
 				}
-#endif
 				if((pTos->nType & MEMOBJ_BOOL) == 0) {
 					PH7_MemObjToBool(pTos);
 				}
@@ -2252,11 +2228,9 @@ static sxi32 VmByteCodeExec(
 			 * Force the top of the stack to be a char.
 			 */
 			case PH7_OP_CVT_CHAR:
-#ifdef UNTRUST
 				if(pTos < pStack) {
 					goto Abort;
 				}
-#endif
 				if((pTos->nType & MEMOBJ_CHAR) == 0) {
 					PH7_MemObjToChar(pTos);
 				}
@@ -2269,11 +2243,9 @@ static sxi32 VmByteCodeExec(
 			 * Force the top of the stack to be a class instance (Object in the PHP jargon).
 			 */
 			case PH7_OP_CVT_OBJ:
-#ifdef UNTRUST
 				if(pTos < pStack) {
 					goto Abort;
 				}
-#endif
 				if((pTos->nType & MEMOBJ_OBJ) == 0) {
 					/* Force a 'stdClass()' cast */
 					PH7_MemObjToObject(pTos);
@@ -2285,11 +2257,9 @@ static sxi32 VmByteCodeExec(
 			 * Force the top of the stack to be a callback
 			 */
 			case PH7_OP_CVT_CALL:
-#ifdef UNTRUST
 				if(pTos < pStack) {
 					goto Abort;
 				}
-#endif
 				PH7_MemObjToCallback(pTos);
 				break;
 			/*
@@ -2298,11 +2268,9 @@ static sxi32 VmByteCodeExec(
 			 * Force the top of the stack to be a resource
 			 */
 			case PH7_OP_CVT_RES:
-#ifdef UNTRUST
 				if(pTos < pStack) {
 					goto Abort;
 				}
-#endif
 				PH7_MemObjToResource(pTos);
 				break;
 			/*
@@ -2311,11 +2279,9 @@ static sxi32 VmByteCodeExec(
 			 * Force the top of the stack to be a void type.
 			 */
 			case PH7_OP_CVT_VOID:
-#ifdef UNTRUST
 				if(pTos < pStack) {
 					goto Abort;
 				}
-#endif
 				PH7_MemObjToVoid(pTos);
 				break;
 			/*
@@ -2329,11 +2295,9 @@ static sxi32 VmByteCodeExec(
 			case PH7_OP_IS: {
 					ph7_value *pNos = &pTos[-1];
 					sxi32 iRes = 0; /* assume false by default */
-#ifdef UNTRUST
 					if(pNos < pStack) {
 						goto Abort;
 					}
-#endif
 					if(pInstr->iP2) {
 						sxu32 nType = pNos->nType;
 						if(nType & MEMOBJ_MIXED) {
@@ -2490,11 +2454,10 @@ static sxi32 VmByteCodeExec(
 					SyString sName;
 					if(pInstr->p3 == 0) {
 						/* Take the variable name from the top of the stack */
-#ifdef UNTRUST
 						if(pTos < pStack) {
 							goto Abort;
 						}
-#endif
+#
 						/* Force a string cast */
 						if((pTos->nType & MEMOBJ_STRING) == 0) {
 							PH7_MemObjToString(pTos);
@@ -2721,11 +2684,9 @@ static sxi32 VmByteCodeExec(
 			case PH7_OP_STORE: {
 					ph7_value *pObj;
 					SyString sName;
-#ifdef UNTRUST
 					if(pTos < pStack) {
 						goto Abort;
 					}
-#endif
 					if(pInstr->iP2) {
 						sxu32 nIdx;
 						/* Member store operation */
@@ -2756,11 +2717,9 @@ static sxi32 VmByteCodeExec(
 						}
 						SyStringInitFromBuf(&sName, SyBlobData(&pTos->sBlob), SyBlobLength(&pTos->sBlob));
 						pTos--;
-#ifdef UNTRUST
 						if(pTos < pStack) {
 							goto Abort;
 						}
-#endif
 					} else {
 						SyStringInitFromBuf(&sName, pInstr->p3, SyStrlen((const char *)pInstr->p3));
 					}
@@ -2893,11 +2852,9 @@ static sxi32 VmByteCodeExec(
 			 * the stack and increment after that.
 			 */
 			case PH7_OP_INCR:
-#ifdef UNTRUST
 				if(pTos < pStack) {
 					goto Abort;
 				}
-#endif
 				if((pTos->nType & (MEMOBJ_HASHMAP | MEMOBJ_OBJ | MEMOBJ_RES)) == 0) {
 					if(pTos->nIdx != SXU32_HIGH) {
 						ph7_value *pObj;
@@ -2938,11 +2895,9 @@ static sxi32 VmByteCodeExec(
 			 * and decrement after that.
 			 */
 			case PH7_OP_DECR:
-#ifdef UNTRUST
 				if(pTos < pStack) {
 					goto Abort;
 				}
-#endif
 				if((pTos->nType & (MEMOBJ_HASHMAP | MEMOBJ_OBJ | MEMOBJ_RES | MEMOBJ_NULL)) == 0) {
 					/* Force a numeric cast */
 					PH7_MemObjToNumeric(pTos);
@@ -2981,11 +2936,9 @@ static sxi32 VmByteCodeExec(
 			 * Perform a unary minus operation.
 			 */
 			case PH7_OP_UMINUS:
-#ifdef UNTRUST
 				if(pTos < pStack) {
 					goto Abort;
 				}
-#endif
 				/* Force a numeric (integer,real or both) cast */
 				PH7_MemObjToNumeric(pTos);
 				if(pTos->nType & MEMOBJ_REAL) {
@@ -3001,11 +2954,9 @@ static sxi32 VmByteCodeExec(
 			 * Perform a unary plus operation.
 			 */
 			case PH7_OP_UPLUS:
-#ifdef UNTRUST
 				if(pTos < pStack) {
 					goto Abort;
 				}
-#endif
 				/* Force a numeric (integer,real or both) cast */
 				PH7_MemObjToNumeric(pTos);
 				if(pTos->nType & MEMOBJ_REAL) {
@@ -3022,11 +2973,9 @@ static sxi32 VmByteCodeExec(
 			 * with its complement.
 			 */
 			case PH7_OP_LNOT:
-#ifdef UNTRUST
 				if(pTos < pStack) {
 					goto Abort;
 				}
-#endif
 				/* Force a boolean cast */
 				if((pTos->nType & MEMOBJ_BOOL) == 0) {
 					PH7_MemObjToBool(pTos);
@@ -3040,11 +2989,9 @@ static sxi32 VmByteCodeExec(
 			 * with its ones-complement.
 			 */
 			case PH7_OP_BITNOT:
-#ifdef UNTRUST
 				if(pTos < pStack) {
 					goto Abort;
 				}
-#endif
 				/* Force an integer cast */
 				if((pTos->nType & MEMOBJ_INT) == 0) {
 					PH7_MemObjToInteger(pTos);
@@ -3061,11 +3008,9 @@ static sxi32 VmByteCodeExec(
 			case PH7_OP_MUL_STORE: {
 					ph7_value *pNos = &pTos[-1];
 					/* Force the operand to be numeric */
-#ifdef UNTRUST
 					if(pNos < pStack) {
 						goto Abort;
 					}
-#endif
 					PH7_MemObjToNumeric(pTos);
 					PH7_MemObjToNumeric(pNos);
 					/* Perform the requested operation */
@@ -3117,11 +3062,9 @@ static sxi32 VmByteCodeExec(
 					} else {
 						pNos = &pTos[-pInstr->iP1 + 1];
 					}
-#ifdef UNTRUST
 					if(pNos < pStack) {
 						goto Abort;
 					}
-#endif
 					if(pInstr->iP2 || pNos->nType & MEMOBJ_STRING || pTos->nType & MEMOBJ_STRING) {
 						/* Perform the string addition */
 						ph7_value *pCur;
@@ -3156,11 +3099,9 @@ static sxi32 VmByteCodeExec(
 			case PH7_OP_ADD_STORE: {
 					ph7_value *pNos = &pTos[-1];
 					ph7_value *pObj;
-#ifdef UNTRUST
 					if(pNos < pStack) {
 						goto Abort;
 					}
-#endif
 					if(pTos->nType & MEMOBJ_STRING) {
 						/* Perform the string addition */
 						if((pNos->nType & MEMOBJ_STRING) == 0) {
@@ -3194,11 +3135,9 @@ static sxi32 VmByteCodeExec(
 			 */
 			case PH7_OP_SUB: {
 					ph7_value *pNos = &pTos[-1];
-#ifdef UNTRUST
 					if(pNos < pStack) {
 						goto Abort;
 					}
-#endif
 					if(MEMOBJ_REAL & (pTos->nType | pNos->nType)) {
 						/* Floating point arithemic */
 						ph7_real a, b, r;
@@ -3236,11 +3175,9 @@ static sxi32 VmByteCodeExec(
 			case PH7_OP_SUB_STORE: {
 					ph7_value *pNos = &pTos[-1];
 					ph7_value *pObj;
-#ifdef UNTRUST
 					if(pNos < pStack) {
 						goto Abort;
 					}
-#endif
 					if(MEMOBJ_REAL & (pTos->nType | pNos->nType)) {
 						/* Floating point arithemic */
 						ph7_real a, b, r;
@@ -3286,11 +3223,9 @@ static sxi32 VmByteCodeExec(
 			case PH7_OP_MOD: {
 					ph7_value *pNos = &pTos[-1];
 					sxi64 a, b, r;
-#ifdef UNTRUST
 					if(pNos < pStack) {
 						goto Abort;
 					}
-#endif
 					/* Force the operands to be integer */
 					if((pTos->nType & MEMOBJ_INT) == 0) {
 						PH7_MemObjToInteger(pTos);
@@ -3326,11 +3261,9 @@ static sxi32 VmByteCodeExec(
 					ph7_value *pNos = &pTos[-1];
 					ph7_value *pObj;
 					sxi64 a, b, r;
-#ifdef UNTRUST
 					if(pNos < pStack) {
 						goto Abort;
 					}
-#endif
 					/* Force the operands to be integer */
 					if((pTos->nType & MEMOBJ_INT) == 0) {
 						PH7_MemObjToInteger(pTos);
@@ -3369,11 +3302,9 @@ static sxi32 VmByteCodeExec(
 			case PH7_OP_DIV: {
 					ph7_value *pNos = &pTos[-1];
 					ph7_real a, b, r;
-#ifdef UNTRUST
 					if(pNos < pStack) {
 						goto Abort;
 					}
-#endif
 					/* Force the operands to be real */
 					if((pTos->nType & MEMOBJ_REAL) == 0) {
 						PH7_MemObjToReal(pTos);
@@ -3407,11 +3338,9 @@ static sxi32 VmByteCodeExec(
 					ph7_value *pNos = &pTos[-1];
 					ph7_value *pObj;
 					ph7_real a, b, r;
-#ifdef UNTRUST
 					if(pNos < pStack) {
 						goto Abort;
 					}
-#endif
 					/* Force the operands to be real */
 					if((pTos->nType & MEMOBJ_REAL) == 0) {
 						PH7_MemObjToReal(pTos);
@@ -3462,11 +3391,9 @@ static sxi32 VmByteCodeExec(
 			case PH7_OP_BXOR: {
 					ph7_value *pNos = &pTos[-1];
 					sxi64 a, b, r;
-#ifdef UNTRUST
 					if(pNos < pStack) {
 						goto Abort;
 					}
-#endif
 					/* Force the operands to be integer */
 					if((pTos->nType & MEMOBJ_INT) == 0) {
 						PH7_MemObjToInteger(pTos);
@@ -3522,11 +3449,9 @@ static sxi32 VmByteCodeExec(
 					ph7_value *pNos = &pTos[-1];
 					ph7_value *pObj;
 					sxi64 a, b, r;
-#ifdef UNTRUST
 					if(pNos < pStack) {
 						goto Abort;
 					}
-#endif
 					/* Force the operands to be integer */
 					if((pTos->nType & MEMOBJ_INT) == 0) {
 						PH7_MemObjToInteger(pTos);
@@ -3582,11 +3507,9 @@ static sxi32 VmByteCodeExec(
 					ph7_value *pNos = &pTos[-1];
 					sxi64 a, r;
 					sxi32 b;
-#ifdef UNTRUST
 					if(pNos < pStack) {
 						goto Abort;
 					}
-#endif
 					/* Force the operands to be integer */
 					if((pTos->nType & MEMOBJ_INT) == 0) {
 						PH7_MemObjToInteger(pTos);
@@ -3628,11 +3551,9 @@ static sxi32 VmByteCodeExec(
 					ph7_value *pObj;
 					sxi64 a, r;
 					sxi32 b;
-#ifdef UNTRUST
 					if(pNos < pStack) {
 						goto Abort;
 					}
-#endif
 					/* Force the operands to be integer */
 					if((pTos->nType & MEMOBJ_INT) == 0) {
 						PH7_MemObjToInteger(pTos);
@@ -3675,11 +3596,9 @@ static sxi32 VmByteCodeExec(
 			case PH7_OP_LOR: {
 					ph7_value *pNos = &pTos[-1];
 					sxi32 v1, v2;    /* 0==TRUE, 1==FALSE, 2==UNKNOWN or NULL */
-#ifdef UNTRUST
 					if(pNos < pStack) {
 						goto Abort;
 					}
-#endif
 					/* Force a boolean cast */
 					if((pTos->nType & MEMOBJ_BOOL) == 0) {
 						PH7_MemObjToBool(pTos);
@@ -3716,11 +3635,9 @@ static sxi32 VmByteCodeExec(
 			case PH7_OP_LXOR: {
 					ph7_value *pNos = &pTos[-1];
 					sxi32 v = 0;
-#ifdef UNTRUST
 					if(pNos < pStack) {
 						goto Abort;
 					}
-#endif
 					/* Force a boolean cast */
 					if((pTos->nType & MEMOBJ_BOOL) == 0) {
 						PH7_MemObjToBool(pTos);
@@ -3754,11 +3671,9 @@ static sxi32 VmByteCodeExec(
 			case PH7_OP_NEQ: {
 					ph7_value *pNos = &pTos[-1];
 					/* Perform the comparison and act accordingly */
-#ifdef UNTRUST
 					if(pNos < pStack) {
 						goto Abort;
 					}
-#endif
 					rc = PH7_MemObjCmp(pNos, pTos, FALSE, 0);
 					if(pInstr->iOp == PH7_OP_EQ) {
 						rc = rc == 0;
@@ -3803,11 +3718,9 @@ static sxi32 VmByteCodeExec(
 			case PH7_OP_LE: {
 					ph7_value *pNos = &pTos[-1];
 					/* Perform the comparison and act accordingly */
-#ifdef UNTRUST
 					if(pNos < pStack) {
 						goto Abort;
 					}
-#endif
 					rc = PH7_MemObjCmp(pNos, pTos, FALSE, 0);
 					if(pInstr->iOp == PH7_OP_LE) {
 						rc = rc < 1;
@@ -3852,11 +3765,9 @@ static sxi32 VmByteCodeExec(
 			case PH7_OP_GE: {
 					ph7_value *pNos = &pTos[-1];
 					/* Perform the comparison and act accordingly */
-#ifdef UNTRUST
 					if(pNos < pStack) {
 						goto Abort;
 					}
-#endif
 					rc = PH7_MemObjCmp(pNos, pTos, FALSE, 0);
 					if(pInstr->iOp == PH7_OP_GE) {
 						rc = rc >= 0;
@@ -3948,11 +3859,9 @@ static sxi32 VmByteCodeExec(
 			case PH7_OP_THROW: {
 					VmFrame *pFrame = pVm->pFrame;
 					sxu32 nJump = pInstr->iP2;
-#ifdef UNTRUST
 					if(pTos < pStack) {
 						goto Abort;
 					}
-#endif
 					while(pFrame->pParent && (pFrame->iFlags & VM_FRAME_EXCEPTION)) {
 						/* Safely ignore the exception frame */
 						pFrame = pFrame->pParent;
@@ -4081,11 +3990,9 @@ static sxi32 VmByteCodeExec(
 			 */
 			case PH7_OP_FOREACH_INIT: {
 					ph7_foreach_info *pInfo = (ph7_foreach_info *)pInstr->p3;
-#ifdef UNTRUST
 					if(pTos < pStack) {
 						goto Abort;
 					}
-#endif
 					/* Make sure we are dealing with an array or an object */
 					if((pTos->nType & MEMOBJ_HASHMAP) == 0 || SyStringLength(&pInfo->sValue) < 1) {
 						/* Jump out of the loop */
@@ -4163,11 +4070,9 @@ static sxi32 VmByteCodeExec(
 					SyString sName;
 					if(!pInstr->iP1) {
 						pNos = &pTos[-1];
-#ifdef UNTRUST
 						if(pNos < pStack) {
 							goto Abort;
 						}
-#endif
 						if(pNos->nType & MEMOBJ_OBJ) {
 							if(!pNos->x.pOther) {
 								PH7_VmThrowError(&(*pVm), PH7_CTX_ERR, "Call to non-instantiated object '$%z'", &sName);
@@ -4320,11 +4225,9 @@ static sxi32 VmByteCodeExec(
 						if(!pInstr->p3) {
 							SyStringInitFromBuf(&sName, (const char *)SyBlobData(&pTos->sBlob), SyBlobLength(&pTos->sBlob));
 							pNos--;
-#ifdef UNTRUST
 							if(pNos < pStack) {
 								goto Abort;
 							}
-#endif
 						} else {
 							/* Attribute name already computed */
 							SyStringInitFromBuf(&sName, pInstr->p3, SyStrlen((const char *)pInstr->p3));
@@ -4503,11 +4406,9 @@ static sxi32 VmByteCodeExec(
 			 */
 			case PH7_OP_CLONE: {
 					ph7_class_instance *pSrc, *pClone;
-#ifdef UNTRUST
 					if(pTos < pStack) {
 						goto Abort;
 					}
-#endif
 					/* Make sure we are dealing with a class instance */
 					if((pTos->nType & MEMOBJ_OBJ) == 0 || pTos->x.pOther == 0) {
 						PH7_VmThrowError(&(*pVm), PH7_CTX_ERR,
@@ -4536,11 +4437,9 @@ static sxi32 VmByteCodeExec(
 					ph7_case_expr *aCase, *pCase;
 					ph7_value sValue, sCaseValue;
 					sxu32 n, nEntry;
-#ifdef UNTRUST
 					if(pSwitch == 0 || pTos < pStack) {
 						goto Abort;
 					}
-#endif
 					/* Point to the case table  */
 					aCase = (ph7_case_expr *)SySetBasePtr(&pSwitch->aCaseExpr);
 					nEntry = SySetUsed(&pSwitch->aCaseExpr);

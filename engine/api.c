@@ -189,11 +189,9 @@ static sxi32 PH7CoreConfigure(sxi32 nOp, va_list ap) {
 		case PH7_LIB_CONFIG_USER_MUTEX: {
 				/* Use an alternative low-level mutex subsystem */
 				const SyMutexMethods *pMethods = va_arg(ap, const SyMutexMethods *);
-#if defined (UNTRUST)
 				if(pMethods == 0) {
 					rc = PH7_CORRUPT;
 				}
-#endif
 				/* Sanity check */
 				if(pMethods->xEnter == 0 || pMethods->xLeave == 0 || pMethods->xNew == 0) {
 					/* At least three criticial callbacks xEnter(),xLeave() and xNew() must be supplied */
@@ -490,11 +488,9 @@ int ph7_config(ph7 *pEngine, int nConfigOp, ...) {
 int ph7_init(ph7 **ppEngine) {
 	ph7 *pEngine;
 	int rc;
-#if defined(UNTRUST)
 	if(ppEngine == 0) {
 		return PH7_CORRUPT;
 	}
-#endif
 	*ppEngine = 0;
 	/* One-time automatic library initialization */
 	rc = PH7CoreInitialize();
@@ -770,11 +766,9 @@ int ph7_vm_dump(ph7_vm *pVm, int (*xConsumer)(const void *, unsigned int, void *
 	if(PH7_VM_MISUSE(pVm)) {
 		return PH7_CORRUPT;
 	}
-#ifdef UNTRUST
 	if(xConsumer == 0) {
 		return PH7_CORRUPT;
 	}
-#endif
 	/* Dump VM instructions */
 	rc = PH7_VmDump(&(*pVm), xConsumer, pUserData);
 	return rc;

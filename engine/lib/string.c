@@ -10,11 +10,9 @@
 
 PH7_PRIVATE sxu32 SyStrlen(const char *zSrc) {
 	register const char *zIn = zSrc;
-#if defined(UNTRUST)
 	if(zIn == 0) {
 		return 0;
 	}
-#endif
 	for(;;) {
 		if(!zIn[0]) {
 			break;
@@ -126,11 +124,9 @@ sxu32 Systrcpy(char *zDest, sxu32 nDestLen, const char *zSrc, sxu32 nLen) {
 	unsigned char *zBuf = (unsigned char *)zDest;
 	unsigned char *zIn = (unsigned char *)zSrc;
 	unsigned char *zEnd;
-#if defined(UNTRUST)
 	if(zSrc == (const char *)zDest) {
 		return 0;
 	}
-#endif
 	if(nLen <= 0) {
 		nLen = SyStrlen(zSrc);
 	}
