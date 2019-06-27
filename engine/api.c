@@ -118,7 +118,7 @@ static sxi32 EngineConfig(ph7 *pEngine, sxi32 nOp, va_list ap) {
 				if(!sMemLimit) {
 					break;
 				}
-				char *sLimitRem;
+				const char *sLimitRem;
 				sxu64 nMemLimit;
 				SyStrToInt64(sMemLimit, SyStrlen(sMemLimit), (void *)&nMemLimit, &sLimitRem);
 				if(sLimitRem) {
