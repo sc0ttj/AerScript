@@ -6914,7 +6914,6 @@ static int UnixVfs_Rename(const char *zOld, const char *zNew) {
 }
 /* int (*xRealpath)(const char *,ph7_context *) */
 static int UnixVfs_Realpath(const char *zPath, ph7_context *pCtx) {
-#ifndef PH7_UNIX_OLD_LIBC
 	char *zReal;
 	zReal = realpath(zPath, 0);
 	if(zReal == 0) {
@@ -6924,11 +6923,6 @@ static int UnixVfs_Realpath(const char *zPath, ph7_context *pCtx) {
 	/* Release the allocated buffer */
 	free(zReal);
 	return PH7_OK;
-#else
-	zPath = 0; /* cc warning */
-	pCtx = 0;
-	return -1;
-#endif
 }
 /* int (*xSleep)(unsigned int) */
 static int UnixVfs_Sleep(unsigned int uSec) {
