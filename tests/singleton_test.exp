@@ -1,1 +1,3 @@
+Constructor called.
 int(5)
+Destructor called.
