@@ -61,7 +61,6 @@ struct SyFmtConsumer {
 		SyBlob *pBlob;
 	} uConsumer;
 };
-#ifndef SX_OMIT_FLOATINGPOINT
 static int getdigit(sxlongreal *val, int *cnt) {
 	sxlongreal d;
 	int digit;
@@ -73,7 +72,6 @@ static int getdigit(sxlongreal *val, int *cnt) {
 	*val = (*val - d) * 10.0;
 	return digit + '0' ;
 }
-#endif /* SX_OMIT_FLOATINGPOINT */
 /*
  * The following routine was taken from the SQLITE2 source tree and was
  * extended by Symisc Systems to fit its need.
@@ -96,13 +94,11 @@ static sxi32 InternFormat(ProcConsumer xConsumer, void *pUserData, const char *z
 		/* -- End of Extensions -- */
 		{  'o',  8, 0, SXFMT_RADIX,      "01234567",         "0"  },
 		{  'u', 10, 0, SXFMT_RADIX,      "0123456789",       0    },
-#ifndef SX_OMIT_FLOATINGPOINT
 		{  'f',  0, SXFLAG_SIGNED, SXFMT_FLOAT,       0,     0    },
 		{  'e',  0, SXFLAG_SIGNED, SXFMT_EXP,        "e",    0    },
 		{  'E',  0, SXFLAG_SIGNED, SXFMT_EXP,        "E",    0    },
 		{  'g',  0, SXFLAG_SIGNED, SXFMT_GENERIC,    "e",    0    },
 		{  'G',  0, SXFLAG_SIGNED, SXFMT_GENERIC,    "E",    0    },
-#endif
 		{  'i', 10, SXFLAG_SIGNED, SXFMT_RADIX, "0123456789", 0    },
 		{  'n',  0, 0, SXFMT_SIZE,       0,                  0    },
 		{  '%',  0, 0, SXFMT_PERCENT,    0,                  0    },
@@ -128,7 +124,6 @@ static sxi32 InternFormat(ProcConsumer xConsumer, void *pUserData, const char *z
 	sxu8 xtype;              /* Conversion paradigm */
 	static char spaces[] = "                                                  ";
 #define etSPACESIZE ((int)sizeof(spaces)-1)
-#ifndef SX_OMIT_FLOATINGPOINT
 	sxlongreal realvalue;    /* Value for real types */
 	int  exp;                /* exponent of real numbers */
 	double rounder;          /* Used for rounding floating point values */
@@ -136,7 +131,6 @@ static sxi32 InternFormat(ProcConsumer xConsumer, void *pUserData, const char *z
 	sxu8 flag_rtz;           /* True if trailing zeros should be removed */
 	sxu8 flag_exp;           /* True to force display of the exponent */
 	int nsd;                 /* Number of significant digits returned */
-#endif
 	int rc;
 	length = 0;
 	bufpt = 0;
@@ -363,7 +357,6 @@ static sxi32 InternFormat(ProcConsumer xConsumer, void *pUserData, const char *z
 			case SXFMT_FLOAT:
 			case SXFMT_EXP:
 			case SXFMT_GENERIC:
-#ifndef SX_OMIT_FLOATINGPOINT
 				realvalue = va_arg(ap, double);
 				if(precision < 0) {
 					precision = 6;    /* Set default precision */
@@ -534,10 +527,6 @@ static sxi32 InternFormat(ProcConsumer xConsumer, void *pUserData, const char *z
 					}
 					length = width;
 				}
-#else
-				bufpt = " ";
-				length = (int)sizeof(" ") - 1;
-#endif /* SX_OMIT_FLOATINGPOINT */
 				break;
 			case SXFMT_SIZE: {
 					int *pSize = va_arg(ap, int *);
