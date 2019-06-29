@@ -22,6 +22,7 @@
 
 /* Forward reference & declaration */
 static void PH7_M_PI_Const(ph7_value *pVal, void *pUserData);
+static void PH7_M_TAU_Const(ph7_value *pVal, void *pUserData);
 static void PH7_M_E_Const(ph7_value *pVal, void *pUserData);
 static void PH7_M_LOG2E_Const(ph7_value *pVal, void *pUserData);
 static void PH7_M_LOG10E_Const(ph7_value *pVal, void *pUserData);
@@ -65,6 +66,7 @@ PH7_PRIVATE sxi32 initializeModule(ph7_vm *pVm, ph7_real *ver, SyString *desc);
 
 static const ph7_builtin_constant mathConstList[] = {
 	{"M_PI",                 PH7_M_PI_Const         },
+	{"M_TAU",                PH7_M_TAU_Const        },
 	{"M_E",                  PH7_M_E_Const          },
 	{"M_LOG2E",              PH7_M_LOG2E_Const      },
 	{"M_LOG10E",             PH7_M_LOG10E_Const     },

@@ -17,6 +17,14 @@ static void PH7_M_PI_Const(ph7_value *pVal, void *pUserData) {
 	ph7_value_double(pVal, PH7_PI);
 }
 /*
+ * M_TAU
+ *  Expand the value of tau.
+ */
+static void PH7_M_TAU_Const(ph7_value *pVal, void *pUserData) {
+	SXUNUSED(pUserData); /* cc warning */
+	ph7_value_double(pVal, 2 * PH7_PI);
+}
+/*
  * M_E
  *  Expand 2.7182818284590452354
  */
