@@ -88,8 +88,6 @@ typedef struct ph7_vfs ph7_vfs;
 typedef struct ph7_vm ph7_vm;
 typedef struct ph7 ph7;
 /* Symisc public definitions */
-#if !defined(SYMISC_STANDARD_DEFS)
-#define SYMISC_STANDARD_DEFS
 #if defined (_WIN32) || defined (WIN32) || defined(__MINGW32__) || defined (_MSC_VER) || defined (_WIN32_WCE)
 	/* Windows Systems */
 	#if !defined(__WINNT__)
@@ -249,7 +247,6 @@ struct SyMutexMethods {
 #define SXERR_BIG      (-32) /* Too big for processing */
 #define SXERR_RETRY    (-33) /* Retry your call */
 #define SXERR_IGNORE   (-63) /* Ignore */
-#endif /* SYMISC_PUBLIC_DEFS */
 /* Standard PH7 return values */
 #define PH7_OK      SXRET_OK      /* Successful result */
 /* beginning-of-error-codes */

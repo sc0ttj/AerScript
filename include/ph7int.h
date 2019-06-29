@@ -103,9 +103,6 @@ typedef struct ph7_class          ph7_class;
 	#define SXMAX(a,b)  ((a < b) ? (b) : (a))
 #endif /* SYMISC_STD_TYPES */
 /* Symisc Run-time API private definitions */
-#if !defined(SYMISC_PRIVATE_DEFS)
-#define SYMISC_PRIVATE_DEFS
-
 typedef sxi32(*ProcRawStrCmp)(const SyString *, const SyString *);
 #define SyStringData(RAW)	((RAW)->zString)
 #define SyStringLength(RAW)	((RAW)->nByte)
@@ -339,11 +336,7 @@ struct SyMemBackend {
 #define SX_MSEC_PER_SEC	(1000)			/* Millisec per seconds */
 #define SX_USEC_PER_SEC	(1000000)		/* Microsec per seconds */
 #define SX_NSEC_PER_SEC	(1000000000)	/* Nanosec per seconds */
-#endif /* SYMISC_PRIVATE_DEFS */
 /* Symisc Run-time API auxiliary definitions */
-#if !defined(SYMISC_PRIVATE_AUX_DEFS)
-#define SYMISC_PRIVATE_AUX_DEFS
-
 typedef struct SyHashEntry_Pr SyHashEntry_Pr;
 typedef struct SyHashEntry SyHashEntry;
 typedef struct SyHash SyHash;
@@ -440,7 +433,6 @@ struct SyLex {
 #define SyLexTotalLines(LEX)    ((LEX)->sStream.nLine)
 #define SyLexTotalIgnored(LEX)  ((LEX)->sStream.nIgn)
 #define XLEX_IN_LEN(STREAM)     (sxu32)(STREAM->zEnd - STREAM->zText)
-#endif /* SYMISC_PRIVATE_AUX_DEFS */
 /*
 ** Notes on UTF-8 (According to SQLite3 authors):
 **
