@@ -7122,7 +7122,6 @@ static int UnixVfs_Chmod(const char *zPath, int mode) {
 }
 /* int (*xChown)(const char *,const char *) */
 static int UnixVfs_Chown(const char *zPath, const char *zUser) {
-#ifndef PH7_UNIX_STATIC_BUILD
 	struct passwd *pwd;
 	uid_t uid;
 	int rc;
@@ -7133,15 +7132,9 @@ static int UnixVfs_Chown(const char *zPath, const char *zUser) {
 	uid = pwd->pw_uid;
 	rc = chown(zPath, uid, -1);
 	return rc == 0 ? PH7_OK : -1;
-#else
-	SXUNUSED(zPath);
-	SXUNUSED(zUser);
-	return -1;
-#endif /* PH7_UNIX_STATIC_BUILD */
 }
 /* int (*xChgrp)(const char *,const char *) */
 static int UnixVfs_Chgrp(const char *zPath, const char *zGroup) {
-#ifndef PH7_UNIX_STATIC_BUILD
 	struct group *group;
 	gid_t gid;
 	int rc;
@@ -7152,11 +7145,6 @@ static int UnixVfs_Chgrp(const char *zPath, const char *zGroup) {
 	gid = group->gr_gid;
 	rc = chown(zPath, -1, gid);
 	return rc == 0 ? PH7_OK : -1;
-#else
-	SXUNUSED(zPath);
-	SXUNUSED(zGroup);
-	return -1;
-#endif /* PH7_UNIX_STATIC_BUILD */
 }
 /* int (*xIsFile)(const char *) */
 static int UnixVfs_isFile(const char *zPath) {
@@ -7327,7 +7315,6 @@ static int UnixVfs_Umask(int new_mask) {
 }
 /* void (*xUsername)(ph7_context *) */
 static void UnixVfs_Username(ph7_context *pCtx) {
-#ifndef PH7_UNIX_STATIC_BUILD
 	struct passwd *pwd;
 	uid_t uid;
 	uid = getuid();
@@ -7337,9 +7324,6 @@ static void UnixVfs_Username(ph7_context *pCtx) {
 	}
 	/* Return the username */
 	ph7_result_string(pCtx, pwd->pw_name, -1);
-#else
-	ph7_result_string(pCtx, "Unknown", -1);
-#endif /* PH7_UNIX_STATIC_BUILD */
 	return;
 }
 /* int (*xLink)(const char *,const char *,int) */
