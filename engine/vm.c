@@ -5056,7 +5056,7 @@ PH7_PRIVATE sxi32 PH7_VmByteCodeExec(ph7_vm *pVm) {
 	ph7_class *pClass;
 	ph7_class_instance *pInstance;
 	ph7_class_method *pMethod;
-	ph7_value *pArgs, *sArgv;
+	ph7_value *pArgs, *sArgv, *pObj;
 	ph7_value pResult;
 	char *zDup;
 	const char *zStr, *zParam;
@@ -5121,6 +5121,10 @@ PH7_PRIVATE sxi32 PH7_VmByteCodeExec(ph7_vm *pVm) {
 		} else {
 			pVm->iExitStatus = 0;
 		}
+	}
+	/* Garbage collector over all elements in object allocation table */
+	while(SySetGetNextEntry(&pVm->aMemObj, (void **)&pObj) == SXRET_OK) {
+		PH7_MemObjRelease(pObj);
 	}
 	/* Invoke any shutdown callbacks */
 	VmInvokeShutdownCallbacks(&(*pVm));
