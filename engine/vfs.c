@@ -5652,7 +5652,6 @@ static int PH7_builtin_zip_entry_compressionmethod(ph7_context *pCtx, int nArg, 
 	}
 	return PH7_OK;
 }
-#ifndef PH7_DISABLE_DISK_IO
 #ifdef __WINNT__
 /*
  * Windows VFS implementation for the PH7 engine.
@@ -7674,7 +7673,6 @@ static const ph7_io_stream sUnixFileStream = {
 	UnixFile_Stat   /* xStat */
 };
 #endif /* __WINNT__/__UNIXES__ */
-#endif /* PH7_DISABLE_DISK_IO */
 /*
  * Export the builtin vfs.
  * Return a pointer to the builtin vfs if available.
@@ -7683,9 +7681,6 @@ static const ph7_io_stream sUnixFileStream = {
  *  The built-in vfs is always available for Windows/UNIX systems.
  */
 PH7_PRIVATE const ph7_vfs *PH7_ExportBuiltinVfs(void) {
-#ifdef PH7_DISABLE_DISK_IO
-	return &null_vfs;
-#else
 #ifdef __WINNT__
 	return &sWinVfs;
 #elif defined(__UNIXES__)
@@ -7693,9 +7688,7 @@ PH7_PRIVATE const ph7_vfs *PH7_ExportBuiltinVfs(void) {
 #else
 	return &null_vfs;
 #endif /* __WINNT__/__UNIXES__ */
-#endif /* PH7_DISABLE_DISK_IO */
 }
-#ifndef PH7_DISABLE_DISK_IO
 /*
  * The following defines are mostly used by the UNIX built and have
  * no particular meaning on windows.
@@ -7940,18 +7933,12 @@ static const ph7_io_stream sPHP_Stream = {
 	0,  /* xSeek */
 	0   /* xStat */
 };
-#endif /* PH7_DISABLE_DISK_IO */
 /*
  * Return TRUE if we are dealing with the php:// stream.
  * FALSE otherwise.
  */
 static int is_php_stream(const ph7_io_stream *pStream) {
-#ifndef PH7_DISABLE_DISK_IO
 	return pStream == &sPHP_Stream;
-#else
-	SXUNUSED(pStream); /* cc warning */
-	return 0;
-#endif /* PH7_DISABLE_DISK_IO */
 }
 /*
  * Export the IO routines defined above and the built-in IO streams
@@ -8068,7 +8055,6 @@ PH7_PRIVATE sxi32 PH7_RegisterIORoutine(ph7_vm *pVm) {
 	for(n = 0 ; n < SX_ARRAYSIZE(aIOFunc) ; ++n) {
 		ph7_create_function(&(*pVm), aIOFunc[n].zName, aIOFunc[n].xFunc, pVm);
 	}
-#ifndef PH7_DISABLE_DISK_IO
 	/* Register the file stream if available */
 #ifdef __WINNT__
 	pFileStream = &sWinFileStream;
@@ -8077,7 +8063,6 @@ PH7_PRIVATE sxi32 PH7_RegisterIORoutine(ph7_vm *pVm) {
 #endif
 	/* Install the php:// stream */
 	ph7_vm_config(pVm, PH7_VM_CONFIG_IO_STREAM, &sPHP_Stream);
-#endif /* PH7_DISABLE_DISK_IO */
 	if(pFileStream) {
 		/* Install the file:// stream */
 		ph7_vm_config(pVm, PH7_VM_CONFIG_IO_STREAM, pFileStream);
@@ -8088,7 +8073,6 @@ PH7_PRIVATE sxi32 PH7_RegisterIORoutine(ph7_vm *pVm) {
  * Export the STDIN handle.
  */
 PH7_PRIVATE void *PH7_ExportStdin(ph7_vm *pVm) {
-#ifndef PH7_DISABLE_DISK_IO
 	if(pVm->pStdin == 0) {
 		io_private *pIn;
 		/* Allocate an IO private instance */
@@ -8106,15 +8090,11 @@ PH7_PRIVATE void *PH7_ExportStdin(ph7_vm *pVm) {
 		/* NULL or STDIN */
 		return pVm->pStdin;
 	}
-#else
-	return 0;
-#endif
 }
 /*
  * Export the STDOUT handle.
  */
 PH7_PRIVATE void *PH7_ExportStdout(ph7_vm *pVm) {
-#ifndef PH7_DISABLE_DISK_IO
 	if(pVm->pStdout == 0) {
 		io_private *pOut;
 		/* Allocate an IO private instance */
@@ -8132,15 +8112,11 @@ PH7_PRIVATE void *PH7_ExportStdout(ph7_vm *pVm) {
 		/* NULL or STDOUT */
 		return pVm->pStdout;
 	}
-#else
-	return 0;
-#endif
 }
 /*
  * Export the STDERR handle.
  */
 PH7_PRIVATE void *PH7_ExportStderr(ph7_vm *pVm) {
-#ifndef PH7_DISABLE_DISK_IO
 	if(pVm->pStderr == 0) {
 		io_private *pErr;
 		/* Allocate an IO private instance */
@@ -8158,8 +8134,4 @@ PH7_PRIVATE void *PH7_ExportStderr(ph7_vm *pVm) {
 		/* NULL or STDERR */
 		return pVm->pStderr;
 	}
-#else
-	return 0;
-#endif
-
 }

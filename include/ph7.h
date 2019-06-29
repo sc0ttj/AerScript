@@ -87,29 +87,6 @@ typedef struct ph7_value ph7_value;
 typedef struct ph7_vfs ph7_vfs;
 typedef struct ph7_vm ph7_vm;
 typedef struct ph7 ph7;
-/*
- * ------------------------------
- * Compile time directives
- * ------------------------------
- * For most purposes, PH7 can be built just fine using the default compilation options.
- * However, if required, the compile-time options documented below can be used to omit
- * PH7 features (resulting in a smaller compiled library size) or to change the default
- * values of some parameters.
- * Every effort has been made to ensure that the various combinations of compilation
- * options work harmoniously and produce a working library.
- *
- * Options To Omit/Enable Features:
- *   The following options can be used to reduce the size of the compiled library
- *   by omitting optional features. This is probably only useful in embedded systems
- *   where space is especially tight, as even with all features included the PH7 library
- *   is relatively small. Don't forget to tell your compiler to optimize for binary
- *   size! (the -Os option if using GCC).
- *   Telling your compiler to optimize for size usually has a much larger impact
- *   on library footprint than employing any of these compile-time options.
- *  PH7_DISABLE_DISK_IO
- *     If this directive is enabled, built-in Virtual File System functions such as
- *     chdir(), mkdir(), chroot(), unlink(), delete(), etc. are omitted from the build.
- */
 /* Symisc public definitions */
 #if !defined(SYMISC_STANDARD_DEFS)
 #define SYMISC_STANDARD_DEFS
