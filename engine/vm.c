@@ -52,6 +52,7 @@ struct SyhttpHeader {
  */
 #define HTTP_PROTO_10 1 /* HTTP/1.0 */
 #define HTTP_PROTO_11 2 /* HTTP/1.1 */
+#define HTTP_PROTO_20 3 /* HTTP/2.0 */
 /*
  * Register a constant and it's associated expansion callback so that
  * it can be expanded from the target PHP program.
@@ -10646,13 +10647,13 @@ static sxi32 VmHttpProcessFirstLine(
 	while(zIn < zEnd && !SyisSpace(zIn[0])) {
 		zIn++;
 	}
-	*pProto = HTTP_PROTO_11; /* HTTP/1.1 */
-	rc = 1;
+	*pProto = HTTP_PROTO_20; /* HTTP/2.0 */
 	if(zIn > zPtr) {
-		rc = SyStrnicmp(zPtr, "http/1.0", (sxu32)(zIn - zPtr));
-	}
-	if(!rc) {
-		*pProto = HTTP_PROTO_10; /* HTTP/1.0 */
+		if(SyStrnicmp(zPtr, "http/1.1", (sxu32)(zIn - zPtr)) == 0) {
+			*pProto = HTTP_PROTO_11; /* HTTP/1.1 */
+		} else if(SyStrnicmp(zPtr, "http/1.0", (sxu32)(zIn - zPtr)) == 0) {
+			*pProto = HTTP_PROTO_10; /* HTTP/1.0 */
+		}
 	}
 	return SXRET_OK;
 }
@@ -10859,8 +10860,8 @@ static sxi32 VmHttpProcessRequest(ph7_vm *pVm, const char *zRequest, int nByte) 
 	ph7_vm_config(pVm,
 				  PH7_VM_CONFIG_SERVER_ATTR,
 				  "SERVER_PROTOCOL",
-				  iVer == HTTP_PROTO_10 ? "HTTP/1.0" : "HTTP/1.1",
-				  sizeof("HTTP/1.1") - 1
+				  iVer == HTTP_PROTO_20 ? "HTTP/2.0" : (HTTP_PROTO_11 ? "HTTP/1.1" : "HTTP/1.0"),
+				  sizeof("HTTP/2.0") - 1
 				 );
 	/* 'REQUEST_METHOD':  Which request method was used to access the page */
 	ph7_vm_config(pVm,
