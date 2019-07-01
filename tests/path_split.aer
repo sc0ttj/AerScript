@@ -5,7 +5,8 @@ class Program {
 		$path = trim($path);
 		string $str, $temp;
 		char $char;
-		for(int $x = 0; $char = $path[$x]; $x++) {
+		for(int $x = 0; $x < strlen($path); $x++) {
+			$char = $path[$x];
 			if(!strstr('/', $char)) $temp += $char;
 			else if($temp) {
 				$str += $temp;
