@@ -22,7 +22,7 @@ class Brainfuck {
 	}
 
 	private void interpret(string $command) {
-		if(!$this->cells[$this->pointer]) {
+		if(!array_key_exists($this->pointer, $this->cells)) {
 			$this->cells[$this->pointer] = 0;
 		}
 		switch ($command) {

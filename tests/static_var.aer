@@ -2,7 +2,7 @@ class Program {
 
 	private string cycle(char $a, char $b, int $i = 0) {
 		static bool[] $switches;
-		if($switches[$i])
+		if(array_key_exists($i, $switches))
 			$switches[$i] = !$switches[$i];
 		else
 			!($switches[$i] = true);

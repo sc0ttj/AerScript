@@ -56,7 +56,7 @@ class Test {
 				goto cIterator;
 			}
 			cIteratorExit: {
-				if($headers[++$pos]) {
+				if(array_key_exists(++$pos, $headers)) {
 					goto hIterator;
 				}
 			}
