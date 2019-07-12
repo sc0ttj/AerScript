@@ -238,7 +238,7 @@ static sxi32 ExprVerifyNodes(ph7_gen_state *pGen, ph7_expr_node **apNode, sxi32 
 				apNode[i]->pStart->nType &= ~PH7_TK_OCB /*'{'*/;
 				apNode[i]->pStart->nType |= PH7_TK_OSB /*'['*/;
 				pOp = aOpTable;
-				pEnd = &pOp[sizeof(aOpTable)];
+				pEnd = &pOp[sizeof(aOpTable) / sizeof(ph7_expr_op)];
 				while(pOp < pEnd) {
 					if(pOp->iOp == EXPR_OP_SUBSCRIPT) {
 						break;
