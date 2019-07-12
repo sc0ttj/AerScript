@@ -42,10 +42,10 @@ class Base32 {
 		if(!$input) return '';
 		int $paddingCharCount = substr_count($input, Base32::$map[32]);
 		int[] $allowedValues = {6, 4, 3, 1, 0};
-		if(!in_array($paddingCharCount, $allowedValues)) return NULL;
+		if(!in_array($paddingCharCount, $allowedValues)) return '';
 		for(int $i = 0; $i < 4; $i++) {
 			if($paddingCharCount == $allowedValues[$i] && substr($input, -($allowedValues[$i])) != str_repeat(Base32::$map[32], $allowedValues[$i]))
-				return false;
+				return '';
 		}
 		$input = str_replace('=','', $input);
 		char[] $aInput = str_split($input);
@@ -53,7 +53,7 @@ class Base32 {
 		for($i = 0; $i < sizeof($aInput); $i = $i + 8) {
 			string $x = '';
 			if(!in_array($input[$i], Base32::$map))
-				return false;
+				return '';
 			for(int $j = 0; $j < 8; $j++) {
 				if(array_key_exists($input[$i + $j], Base32::$flippedMap)) {
 					$x += str_pad(base_convert(Base32::$flippedMap[$input[$i + $j]], 10, 2), 5, '0', STR_PAD_LEFT);
