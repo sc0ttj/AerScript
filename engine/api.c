@@ -634,7 +634,10 @@ static sxi32 ProcessSourceFile(
 	/* Install local import path which is the current directory */
 	ph7_vm_config(pVm, PH7_VM_CONFIG_IMPORT_PATH, "./");
 	if(zFilePath && SyRealPath(zFilePath, fFilePath) == PH7_OK) {
-		snprintf(pFilePath, sizeof(pFilePath) - 1, "%s", fFilePath);
+		rc = snprintf(pFilePath, sizeof(pFilePath) - 1, "%s", fFilePath);
+		if(rc < 0) {
+			goto Release;
+		}
 		/* Extract directory name containing processed file */
 		pFileDir = (char *) PH7_ExtractDirName(fFilePath, SyStrlen(fFilePath), &iFileDir);
 		pFileDir[iFileDir + 1] = '\0';
