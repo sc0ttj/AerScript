@@ -806,8 +806,10 @@ struct ph7 {
 	SyMemBackend sAllocator;     /* Low level memory allocation subsystem */
 	const ph7_vfs *pVfs;         /* Underlying Virtual File System */
 	ph7_conf xConf;              /* Configuration */
+#if defined(PH7_ENABLE_THREADS)
 	const SyMutexMethods *pMethods;  /* Mutex methods */
 	SyMutex *pMutex;                 /* Per-engine mutex */
+#endif
 	ph7_vm *pVms;      /* List of active VM */
 	sxi32 iVm;         /* Total number of active VM */
 	ph7 *pNext, *pPrev; /* List of active engines */
@@ -1183,7 +1185,9 @@ struct ph7_switch {
  */
 struct ph7_vm {
 	SyMemBackend sAllocator;	/* Memory backend */
-	SyMutex *pMutex;            /* Recursive mutex associated with VM */
+#if defined(PH7_ENABLE_THREADS)
+	SyMutex *pMutex;           /* Recursive mutex associated with VM. */
+#endif
 	ph7 *pEngine;               /* Interpreter that own this VM */
 	SySet aInstrSet;            /* Instructions debugging container */
 	SySet aByteCode;            /* Default bytecode container */
@@ -1871,8 +1875,10 @@ PH7_PRIVATE void *SyMemBackendPoolAlloc(SyMemBackend *pBackend, sxu32 nBytes);
 PH7_PRIVATE sxi32 SyMemBackendFree(SyMemBackend *pBackend, void *pChunk);
 PH7_PRIVATE void *SyMemBackendRealloc(SyMemBackend *pBackend, void *pOld, sxu32 nBytes);
 PH7_PRIVATE void *SyMemBackendAlloc(SyMemBackend *pBackend, sxu32 nBytes);
+#if defined(PH7_ENABLE_THREADS)
 	PH7_PRIVATE sxi32 SyMemBackendMakeThreadSafe(SyMemBackend *pBackend, const SyMutexMethods *pMethods);
 	PH7_PRIVATE sxi32 SyMemBackendDisbaleMutexing(SyMemBackend *pBackend);
+#endif
 PH7_PRIVATE sxu32 SyMemcpy(const void *pSrc, void *pDest, sxu32 nLen);
 PH7_PRIVATE sxi32 SyMemcmp(const void *pB1, const void *pB2, sxu32 nSize);
 PH7_PRIVATE void SyZero(void *pSrc, sxu32 nSize);
@@ -1886,7 +1892,9 @@ PH7_PRIVATE sxu32 SyStrlen(const char *zSrc);
 PH7_PRIVATE sxu32 Systrcpy(char *zDest, sxu32 nDestLen, const char *zSrc, sxu32 nLen);
 PH7_PRIVATE char *SyStrtok(char *str, const char *sep);
 PH7_PRIVATE sxi32 SyAsciiToHex(sxi32 c);
+#if defined(PH7_ENABLE_THREADS)
 	PH7_PRIVATE const SyMutexMethods *SyMutexExportMethods(void);
 	PH7_PRIVATE sxi32 SyMemBackendMakeThreadSafe(SyMemBackend *pBackend, const SyMutexMethods *pMethods);
 	PH7_PRIVATE sxi32 SyMemBackendDisbaleMutexing(SyMemBackend *pBackend);
+#endif
 #endif /* __PH7INT_H__ */
