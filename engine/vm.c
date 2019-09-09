@@ -2553,13 +2553,13 @@ static sxi32 VmByteCodeExec(
 						if(pIdx) {
 							sxu32 nOfft;
 							if((pIdx->nType & MEMOBJ_INT) == 0) {
-								/* Force an int cast */
-								PH7_MemObjToInteger(pIdx);
+								/* No available index */
+								PH7_VmThrowError(&(*pVm), PH7_CTX_ERR, "Index was outside the bounds of the array");
 							}
 							nOfft = (sxu32)pIdx->x.iVal;
 							if(nOfft >= SyBlobLength(&pTos->sBlob)) {
-								/* Invalid offset,load null */
-								PH7_MemObjRelease(pTos);
+								/* No available index */
+								PH7_VmThrowError(&(*pVm), PH7_CTX_ERR, "Index was outside the bounds of the array");
 							} else {
 								const char *zData = (const char *)SyBlobData(&pTos->sBlob);
 								int c = zData[nOfft];
@@ -2567,9 +2567,6 @@ static sxi32 VmByteCodeExec(
 								MemObjSetType(pTos, MEMOBJ_STRING);
 								SyBlobAppend(&pTos->sBlob, (const void *)&c, sizeof(char));
 							}
-						} else {
-							/* No available index,load NULL */
-							MemObjSetType(pTos, MEMOBJ_NULL);
 						}
 						break;
 					}
@@ -2599,8 +2596,8 @@ static sxi32 VmByteCodeExec(
 					if(rc == SXRET_OK) {
 						/* Load entry contents */
 						if(pMap->iRef < 2) {
-							/* TICKET 1433-42: Array will be deleted shortly,so we will make a copy
-							 * of the entry value,rather than pointing to it.
+							/* TICKET 1433-42: Array will be deleted shortly, so we will make a copy
+							 * of the entry value, rather than pointing to it.
 							 */
 							pTos->nIdx = SXU32_HIGH;
 							PH7_HashmapExtractNodeValue(pNode, pTos, TRUE);
@@ -2610,9 +2607,8 @@ static sxi32 VmByteCodeExec(
 							PH7_HashmapUnref(pMap);
 						}
 					} else {
-						/* No such entry, load NULL */
-						PH7_MemObjRelease(pTos);
-						pTos->nIdx = SXU32_HIGH;
+						/* No available index */
+						PH7_VmThrowError(&(*pVm), PH7_CTX_ERR, "Index was outside the bounds of the array");
 					}
 					break;
 				}
