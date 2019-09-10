@@ -725,6 +725,16 @@ PH7_PRIVATE sxi32 PH7_MemObjIsNull(ph7_value *pObj) {
 	return TRUE;
 }
 /*
+ * Check whether the ph7_value is an array (hashmap)
+ * Returns TRUE if hashmap, FALSE otherwise.
+ */
+PH7_PRIVATE sxi32 PH7_MemObjIsHashmap(ph7_value *pObj) {
+	if(pObj->nType & MEMOBJ_HASHMAP) {
+		return TRUE;
+	}
+	return FALSE;
+}
+/*
  * Check whether the ph7_value is numeric [i.e: int/float/bool] or looks
  * like a numeric number [i.e: if the ph7_value is of type string.].
  * Return TRUE if numeric.FALSE otherwise.
