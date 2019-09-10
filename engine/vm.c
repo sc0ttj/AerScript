@@ -2852,17 +2852,14 @@ static sxi32 VmByteCodeExec(
 				if(pTos < pStack) {
 					goto Abort;
 				}
-				if((pTos->nType & (MEMOBJ_HASHMAP | MEMOBJ_OBJ | MEMOBJ_RES)) == 0) {
+				if(pTos->nType & (MEMOBJ_INT | MEMOBJ_REAL) && (pTos->nType & MEMOBJ_HASHMAP) == 0) {
 					if(pTos->nIdx != SXU32_HIGH) {
 						ph7_value *pObj;
 						if((pObj = (ph7_value *)SySetAt(&pVm->aMemObj, pTos->nIdx)) != 0) {
-							/* Force a numeric cast */
-							PH7_MemObjToNumeric(pObj);
 							if(pObj->nType & MEMOBJ_REAL) {
 								pObj->x.rVal++;
 							} else {
 								pObj->x.iVal++;
-								MemObjSetType(pTos, MEMOBJ_INT);
 							}
 							if(pInstr->iP1) {
 								/* Pre-increment */
@@ -2871,8 +2868,6 @@ static sxi32 VmByteCodeExec(
 						}
 					} else {
 						if(pInstr->iP1) {
-							/* Force a numeric cast */
-							PH7_MemObjToNumeric(pTos);
 							/* Pre-increment */
 							if(pTos->nType & MEMOBJ_REAL) {
 								pTos->x.rVal++;
@@ -2882,6 +2877,9 @@ static sxi32 VmByteCodeExec(
 							}
 						}
 					}
+				} else {
+					PH7_VmThrowError(&(*pVm), PH7_CTX_ERR,
+									"Increment operator cannot be applied to a non-numeric operand");
 				}
 				break;
 			/*
@@ -2895,19 +2893,14 @@ static sxi32 VmByteCodeExec(
 				if(pTos < pStack) {
 					goto Abort;
 				}
-				if((pTos->nType & (MEMOBJ_HASHMAP | MEMOBJ_OBJ | MEMOBJ_RES | MEMOBJ_NULL)) == 0) {
-					/* Force a numeric cast */
-					PH7_MemObjToNumeric(pTos);
+				if(pTos->nType & (MEMOBJ_INT | MEMOBJ_REAL) && (pTos->nType & MEMOBJ_HASHMAP) == 0) {
 					if(pTos->nIdx != SXU32_HIGH) {
 						ph7_value *pObj;
 						if((pObj = (ph7_value *)SySetAt(&pVm->aMemObj, pTos->nIdx)) != 0) {
-							/* Force a numeric cast */
-							PH7_MemObjToNumeric(pObj);
 							if(pObj->nType & MEMOBJ_REAL) {
 								pObj->x.rVal--;
 							} else {
 								pObj->x.iVal--;
-								MemObjSetType(pTos, MEMOBJ_INT);
 							}
 							if(pInstr->iP1) {
 								/* Pre-decrement */
@@ -2925,6 +2918,9 @@ static sxi32 VmByteCodeExec(
 							}
 						}
 					}
+				} else {
+					PH7_VmThrowError(&(*pVm), PH7_CTX_ERR,
+									"Decrement operator cannot be applied to a non-numeric operand");
 				}
 				break;
 			/*
