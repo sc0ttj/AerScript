@@ -2852,7 +2852,7 @@ static sxi32 VmByteCodeExec(
 				if(pTos < pStack) {
 					goto Abort;
 				}
-				if(PH7_MemObjIsNumeric(pTos) && (pTos->nType & MEMOBJ_HASHMAP) == 0) {
+				if(PH7_MemObjIsNumeric(pTos) && !PH7_MemObjIsHashmap(pTos)) {
 					if(pTos->nIdx != SXU32_HIGH) {
 						ph7_value *pObj;
 						if((pObj = (ph7_value *)SySetAt(&pVm->aMemObj, pTos->nIdx)) != 0) {
@@ -2893,7 +2893,7 @@ static sxi32 VmByteCodeExec(
 				if(pTos < pStack) {
 					goto Abort;
 				}
-				if(PH7_MemObjIsNumeric(pTos) && (pTos->nType & MEMOBJ_HASHMAP) == 0) {
+				if(PH7_MemObjIsNumeric(pTos) & !PH7_MemObjIsHashmap(pTos)) {
 					if(pTos->nIdx != SXU32_HIGH) {
 						ph7_value *pObj;
 						if((pObj = (ph7_value *)SySetAt(&pVm->aMemObj, pTos->nIdx)) != 0) {
