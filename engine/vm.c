@@ -2120,11 +2120,11 @@ static sxi32 VmByteCodeExec(
 				}
 				break;
 			/*
-			 * JMPLFB: * * *
+			 * LF_START: * * *
 			 *
 			 * Creates and enters the jump loop frame on the beginning of each iteration.
 			 */
-			case PH7_OP_JMPLFB: {
+			case PH7_OP_LF_START: {
 					VmFrame *pFrame = 0;
 					/* Enter the jump loop frame */
 					rc = VmEnterFrame(&(*pVm), pVm->pFrame->pUserData, pVm->pFrame->pThis, &pFrame);
@@ -2135,10 +2135,12 @@ static sxi32 VmByteCodeExec(
 					break;
 				}
 			/*
+			 * LF_STOP: * * *
+			 *
 			 * Leaves and destroys the jump loop frame at the end of each iteration
 			 * as well as on 'break' and 'continue' instructions.
 			 */
-			case PH7_OP_JMPLFE: {
+			case PH7_OP_LF_STOP: {
 					/* Leave the jump loop frame */
 					if(pVm->pFrame->iFlags & VM_FRAME_LOOP) {
 						VmLeaveFrame(&(*pVm));
@@ -5215,11 +5217,11 @@ static const char *VmInstrToString(sxi32 nOp) {
 		case PH7_OP_JMPNZ:
 			zOp = "JMPNZ";
 			break;
-		case PH7_OP_JMPLFB:
-			zOp = "JMPLFB";
+		case PH7_OP_LF_START:
+			zOp = "LF_START";
 			break;
-		case PH7_OP_JMPLFE:
-			zOp = "JMPLFE";
+		case PH7_OP_LF_STOP:
+			zOp = "LF_STOP";
 			break;
 		case PH7_OP_POP:
 			zOp = "POP";

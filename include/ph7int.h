@@ -1393,8 +1393,8 @@ enum ph7_vm_op {
 	PH7_OP_JMP,          /* Unconditional jump */
 	PH7_OP_JMPZ,         /* Jump on zero (FALSE jump) */
 	PH7_OP_JMPNZ,        /* Jump on non-zero (TRUE jump) */
-	PH7_OP_JMPLFB,       /* Jump loop frame begin */
-	PH7_OP_JMPLFE,       /* Jump loop frame end */
+	PH7_OP_LF_START,     /* Loop frame start */
+	PH7_OP_LF_STOP,      /* Loop frame stop */
 	PH7_OP_POP,          /* Stack POP */
 	PH7_OP_CVT_INT,      /* Integer cast */
 	PH7_OP_CVT_STR,      /* String cast */
