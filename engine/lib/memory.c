@@ -273,33 +273,6 @@ PH7_PRIVATE sxi32 SyMemBackendFree(SyMemBackend *pBackend, void *pChunk) {
 	}
 	return rc;
 }
-PH7_PRIVATE sxi32 SyMemBackendMakeThreadSafe(SyMemBackend *pBackend, const SyMutexMethods *pMethods) {
-	SyMutex *pMutex;
-	if(SXMEM_BACKEND_CORRUPT(pBackend) || pMethods == 0 || pMethods->xNew == 0) {
-		return SXERR_CORRUPT;
-	}
-	pMutex = pMethods->xNew(SXMUTEX_TYPE_FAST);
-	if(pMutex == 0) {
-		return SXERR_OS;
-	}
-	/* Attach the mutex to the memory backend */
-	pBackend->pMutex = pMutex;
-	pBackend->pMutexMethods = pMethods;
-	return SXRET_OK;
-}
-PH7_PRIVATE sxi32 SyMemBackendDisbaleMutexing(SyMemBackend *pBackend) {
-	if(SXMEM_BACKEND_CORRUPT(pBackend)) {
-		return SXERR_CORRUPT;
-	}
-	if(pBackend->pMutex == 0) {
-		/* There is no mutex subsystem at all */
-		return SXRET_OK;
-	}
-	SyMutexRelease(pBackend->pMutexMethods, pBackend->pMutex);
-	pBackend->pMutexMethods = 0;
-	pBackend->pMutex = 0;
-	return SXRET_OK;
-}
 /*
  * Memory pool allocator
  */

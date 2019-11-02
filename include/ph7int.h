@@ -806,8 +806,6 @@ struct ph7 {
 	SyMemBackend sAllocator;     /* Low level memory allocation subsystem */
 	const ph7_vfs *pVfs;         /* Underlying Virtual File System */
 	ph7_conf xConf;              /* Configuration */
-	const SyMutexMethods *pMethods;  /* Mutex methods */
-	SyMutex *pMutex;                 /* Per-engine mutex */
 	ph7_vm *pVms;      /* List of active VM */
 	sxi32 iVm;         /* Total number of active VM */
 	ph7 *pNext, *pPrev; /* List of active engines */
@@ -1183,7 +1181,6 @@ struct ph7_switch {
  */
 struct ph7_vm {
 	SyMemBackend sAllocator;	/* Memory backend */
-	SyMutex *pMutex;            /* Recursive mutex associated with VM */
 	ph7 *pEngine;               /* Interpreter that own this VM */
 	SySet aInstrSet;            /* Instructions debugging container */
 	SySet aByteCode;            /* Default bytecode container */
@@ -1389,8 +1386,8 @@ enum ph7_vm_op {
 	PH7_OP_JMP,          /* Unconditional jump */
 	PH7_OP_JMPZ,         /* Jump on zero (FALSE jump) */
 	PH7_OP_JMPNZ,        /* Jump on non-zero (TRUE jump) */
-	PH7_OP_JMPLFB,       /* Jump loop frame begin */
-	PH7_OP_JMPLFE,       /* Jump loop frame end */
+	PH7_OP_LF_START,     /* Loop frame start */
+	PH7_OP_LF_STOP,      /* Loop frame stop */
 	PH7_OP_POP,          /* Stack POP */
 	PH7_OP_CVT_INT,      /* Integer cast */
 	PH7_OP_CVT_STR,      /* String cast */
@@ -1630,6 +1627,7 @@ PH7_PRIVATE sxi32 PH7_MemObjRelease(ph7_value *pObj);
 PH7_PRIVATE sxi32 PH7_MemObjToNumeric(ph7_value *pObj);
 PH7_PRIVATE ProcMemObjCast PH7_MemObjCastMethod(sxi32 iFlags);
 PH7_PRIVATE sxi32 PH7_MemObjIsNull(ph7_value *pObj);
+PH7_PRIVATE sxi32 PH7_MemObjIsHashmap(ph7_value *pObj);
 PH7_PRIVATE sxi32 PH7_MemObjIsNumeric(ph7_value *pObj);
 PH7_PRIVATE sxi32 PH7_MemObjIsEmpty(ph7_value *pObj);
 PH7_PRIVATE sxi32 PH7_MemObjToHashmap(ph7_value *pObj);
@@ -1871,8 +1869,6 @@ PH7_PRIVATE void *SyMemBackendPoolAlloc(SyMemBackend *pBackend, sxu32 nBytes);
 PH7_PRIVATE sxi32 SyMemBackendFree(SyMemBackend *pBackend, void *pChunk);
 PH7_PRIVATE void *SyMemBackendRealloc(SyMemBackend *pBackend, void *pOld, sxu32 nBytes);
 PH7_PRIVATE void *SyMemBackendAlloc(SyMemBackend *pBackend, sxu32 nBytes);
-	PH7_PRIVATE sxi32 SyMemBackendMakeThreadSafe(SyMemBackend *pBackend, const SyMutexMethods *pMethods);
-	PH7_PRIVATE sxi32 SyMemBackendDisbaleMutexing(SyMemBackend *pBackend);
 PH7_PRIVATE sxu32 SyMemcpy(const void *pSrc, void *pDest, sxu32 nLen);
 PH7_PRIVATE sxi32 SyMemcmp(const void *pB1, const void *pB2, sxu32 nSize);
 PH7_PRIVATE void SyZero(void *pSrc, sxu32 nSize);
@@ -1886,7 +1882,4 @@ PH7_PRIVATE sxu32 SyStrlen(const char *zSrc);
 PH7_PRIVATE sxu32 Systrcpy(char *zDest, sxu32 nDestLen, const char *zSrc, sxu32 nLen);
 PH7_PRIVATE char *SyStrtok(char *str, const char *sep);
 PH7_PRIVATE sxi32 SyAsciiToHex(sxi32 c);
-	PH7_PRIVATE const SyMutexMethods *SyMutexExportMethods(void);
-	PH7_PRIVATE sxi32 SyMemBackendMakeThreadSafe(SyMemBackend *pBackend, const SyMutexMethods *pMethods);
-	PH7_PRIVATE sxi32 SyMemBackendDisbaleMutexing(SyMemBackend *pBackend);
 #endif /* __PH7INT_H__ */

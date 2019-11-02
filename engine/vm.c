@@ -2120,11 +2120,11 @@ static sxi32 VmByteCodeExec(
 				}
 				break;
 			/*
-			 * JMPLFB: * * *
+			 * LF_START: * * *
 			 *
 			 * Creates and enters the jump loop frame on the beginning of each iteration.
 			 */
-			case PH7_OP_JMPLFB: {
+			case PH7_OP_LF_START: {
 					VmFrame *pFrame = 0;
 					/* Enter the jump loop frame */
 					rc = VmEnterFrame(&(*pVm), pVm->pFrame->pUserData, pVm->pFrame->pThis, &pFrame);
@@ -2135,10 +2135,12 @@ static sxi32 VmByteCodeExec(
 					break;
 				}
 			/*
+			 * LF_STOP: * * *
+			 *
 			 * Leaves and destroys the jump loop frame at the end of each iteration
 			 * as well as on 'break' and 'continue' instructions.
 			 */
-			case PH7_OP_JMPLFE: {
+			case PH7_OP_LF_STOP: {
 					/* Leave the jump loop frame */
 					if(pVm->pFrame->iFlags & VM_FRAME_LOOP) {
 						VmLeaveFrame(&(*pVm));
@@ -2553,13 +2555,13 @@ static sxi32 VmByteCodeExec(
 						if(pIdx) {
 							sxu32 nOfft;
 							if((pIdx->nType & MEMOBJ_INT) == 0) {
-								/* Force an int cast */
-								PH7_MemObjToInteger(pIdx);
+								/* No available index */
+								PH7_VmThrowError(&(*pVm), PH7_CTX_ERR, "Index was outside the bounds of the array");
 							}
 							nOfft = (sxu32)pIdx->x.iVal;
 							if(nOfft >= SyBlobLength(&pTos->sBlob)) {
-								/* Invalid offset,load null */
-								PH7_MemObjRelease(pTos);
+								/* No available index */
+								PH7_VmThrowError(&(*pVm), PH7_CTX_ERR, "Index was outside the bounds of the array");
 							} else {
 								const char *zData = (const char *)SyBlobData(&pTos->sBlob);
 								int c = zData[nOfft];
@@ -2567,9 +2569,6 @@ static sxi32 VmByteCodeExec(
 								MemObjSetType(pTos, MEMOBJ_STRING);
 								SyBlobAppend(&pTos->sBlob, (const void *)&c, sizeof(char));
 							}
-						} else {
-							/* No available index,load NULL */
-							MemObjSetType(pTos, MEMOBJ_NULL);
 						}
 						break;
 					}
@@ -2599,8 +2598,8 @@ static sxi32 VmByteCodeExec(
 					if(rc == SXRET_OK) {
 						/* Load entry contents */
 						if(pMap->iRef < 2) {
-							/* TICKET 1433-42: Array will be deleted shortly,so we will make a copy
-							 * of the entry value,rather than pointing to it.
+							/* TICKET 1433-42: Array will be deleted shortly, so we will make a copy
+							 * of the entry value, rather than pointing to it.
 							 */
 							pTos->nIdx = SXU32_HIGH;
 							PH7_HashmapExtractNodeValue(pNode, pTos, TRUE);
@@ -2610,9 +2609,8 @@ static sxi32 VmByteCodeExec(
 							PH7_HashmapUnref(pMap);
 						}
 					} else {
-						/* No such entry, load NULL */
-						PH7_MemObjRelease(pTos);
-						pTos->nIdx = SXU32_HIGH;
+						/* No available index */
+						PH7_VmThrowError(&(*pVm), PH7_CTX_ERR, "Index was outside the bounds of the array");
 					}
 					break;
 				}
@@ -2856,17 +2854,14 @@ static sxi32 VmByteCodeExec(
 				if(pTos < pStack) {
 					goto Abort;
 				}
-				if((pTos->nType & (MEMOBJ_HASHMAP | MEMOBJ_OBJ | MEMOBJ_RES)) == 0) {
+				if(PH7_MemObjIsNumeric(pTos) && !PH7_MemObjIsHashmap(pTos)) {
 					if(pTos->nIdx != SXU32_HIGH) {
 						ph7_value *pObj;
 						if((pObj = (ph7_value *)SySetAt(&pVm->aMemObj, pTos->nIdx)) != 0) {
-							/* Force a numeric cast */
-							PH7_MemObjToNumeric(pObj);
 							if(pObj->nType & MEMOBJ_REAL) {
 								pObj->x.rVal++;
 							} else {
 								pObj->x.iVal++;
-								MemObjSetType(pTos, MEMOBJ_INT);
 							}
 							if(pInstr->iP1) {
 								/* Pre-increment */
@@ -2875,8 +2870,6 @@ static sxi32 VmByteCodeExec(
 						}
 					} else {
 						if(pInstr->iP1) {
-							/* Force a numeric cast */
-							PH7_MemObjToNumeric(pTos);
 							/* Pre-increment */
 							if(pTos->nType & MEMOBJ_REAL) {
 								pTos->x.rVal++;
@@ -2886,6 +2879,9 @@ static sxi32 VmByteCodeExec(
 							}
 						}
 					}
+				} else {
+					PH7_VmThrowError(&(*pVm), PH7_CTX_ERR,
+									"Increment operator cannot be applied to a non-numeric operand");
 				}
 				break;
 			/*
@@ -2899,19 +2895,14 @@ static sxi32 VmByteCodeExec(
 				if(pTos < pStack) {
 					goto Abort;
 				}
-				if((pTos->nType & (MEMOBJ_HASHMAP | MEMOBJ_OBJ | MEMOBJ_RES | MEMOBJ_NULL)) == 0) {
-					/* Force a numeric cast */
-					PH7_MemObjToNumeric(pTos);
+				if(PH7_MemObjIsNumeric(pTos) & !PH7_MemObjIsHashmap(pTos)) {
 					if(pTos->nIdx != SXU32_HIGH) {
 						ph7_value *pObj;
 						if((pObj = (ph7_value *)SySetAt(&pVm->aMemObj, pTos->nIdx)) != 0) {
-							/* Force a numeric cast */
-							PH7_MemObjToNumeric(pObj);
 							if(pObj->nType & MEMOBJ_REAL) {
 								pObj->x.rVal--;
 							} else {
 								pObj->x.iVal--;
-								MemObjSetType(pTos, MEMOBJ_INT);
 							}
 							if(pInstr->iP1) {
 								/* Pre-decrement */
@@ -2929,6 +2920,9 @@ static sxi32 VmByteCodeExec(
 							}
 						}
 					}
+				} else {
+					PH7_VmThrowError(&(*pVm), PH7_CTX_ERR,
+									"Decrement operator cannot be applied to a non-numeric operand");
 				}
 				break;
 			/*
@@ -5223,11 +5217,11 @@ static const char *VmInstrToString(sxi32 nOp) {
 		case PH7_OP_JMPNZ:
 			zOp = "JMPNZ";
 			break;
-		case PH7_OP_JMPLFB:
-			zOp = "JMPLFB";
+		case PH7_OP_LF_START:
+			zOp = "LF_START";
 			break;
-		case PH7_OP_JMPLFE:
-			zOp = "JMPLFE";
+		case PH7_OP_LF_STOP:
+			zOp = "LF_STOP";
 			break;
 		case PH7_OP_POP:
 			zOp = "POP";
