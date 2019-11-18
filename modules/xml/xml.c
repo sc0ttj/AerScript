@@ -348,14 +348,14 @@ static int vm_builtin_xml_parser_create_ns(ph7_context *pCtx, int nArg, ph7_valu
 static int vm_builtin_xml_parser_free(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	ph7_xml_engine *pEngine;
 	if(nArg < 1 || !ph7_value_is_resource(apArg[0])) {
-		/* Missing/Ivalid argument,return FALSE */
+		/* Missing/Ivalid argument, return FALSE */
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
 	}
 	/* Point to the XML engine */
 	pEngine = (ph7_xml_engine *)ph7_value_to_resource(apArg[0]);
 	if(IS_INVALID_XML_ENGINE(pEngine)) {
-		/* Corrupt engine,return FALSE */
+		/* Corrupt engine, return FALSE */
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
 	}
@@ -403,14 +403,14 @@ static int vm_builtin_xml_parser_free(ph7_context *pCtx, int nArg, ph7_value **a
 static int vm_builtin_xml_set_element_handler(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	ph7_xml_engine *pEngine;
 	if(nArg < 1 || !ph7_value_is_resource(apArg[0])) {
-		/* Missing/Ivalid argument,return FALSE */
+		/* Missing/Ivalid argument, return FALSE */
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
 	}
 	/* Point to the XML engine */
 	pEngine = (ph7_xml_engine *)ph7_value_to_resource(apArg[0]);
 	if(IS_INVALID_XML_ENGINE(pEngine)) {
-		/* Corrupt engine,return FALSE */
+		/* Corrupt engine, return FALSE */
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
 	}
@@ -422,7 +422,7 @@ static int vm_builtin_xml_set_element_handler(ph7_context *pCtx, int nArg, ph7_v
 			PH7_MemObjStore(apArg[2]/* User callback*/, &pEngine->aCB[PH7_XML_END_TAG]);
 		}
 	}
-	/* All done,return TRUE */
+	/* All done, return TRUE */
 	ph7_result_bool(pCtx, 1);
 	return PH7_OK;
 }
@@ -451,14 +451,14 @@ static int vm_builtin_xml_set_element_handler(ph7_context *pCtx, int nArg, ph7_v
 static int vm_builtin_xml_set_character_data_handler(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	ph7_xml_engine *pEngine;
 	if(nArg < 1 || !ph7_value_is_resource(apArg[0])) {
-		/* Missing/Ivalid argument,return FALSE */
+		/* Missing/Ivalid argument, return FALSE */
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
 	}
 	/* Point to the XML engine */
 	pEngine = (ph7_xml_engine *)ph7_value_to_resource(apArg[0]);
 	if(IS_INVALID_XML_ENGINE(pEngine)) {
-		/* Corrupt engine,return FALSE */
+		/* Corrupt engine, return FALSE */
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
 	}
@@ -466,7 +466,7 @@ static int vm_builtin_xml_set_character_data_handler(ph7_context *pCtx, int nArg
 		/* Save the user callback for later invocation */
 		PH7_MemObjStore(apArg[1]/* User callback*/, &pEngine->aCB[PH7_XML_CDATA]);
 	}
-	/* All done,return TRUE */
+	/* All done, return TRUE */
 	ph7_result_bool(pCtx, 1);
 	return PH7_OK;
 }
@@ -493,14 +493,14 @@ static int vm_builtin_xml_set_character_data_handler(ph7_context *pCtx, int nArg
 static int vm_builtin_xml_set_default_handler(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	ph7_xml_engine *pEngine;
 	if(nArg < 1 || !ph7_value_is_resource(apArg[0])) {
-		/* Missing/Ivalid argument,return FALSE */
+		/* Missing/Ivalid argument, return FALSE */
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
 	}
 	/* Point to the XML engine */
 	pEngine = (ph7_xml_engine *)ph7_value_to_resource(apArg[0]);
 	if(IS_INVALID_XML_ENGINE(pEngine)) {
-		/* Corrupt engine,return FALSE */
+		/* Corrupt engine, return FALSE */
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
 	}
@@ -508,7 +508,7 @@ static int vm_builtin_xml_set_default_handler(ph7_context *pCtx, int nArg, ph7_v
 		/* Save the user callback for later invocation */
 		PH7_MemObjStore(apArg[1]/* User callback*/, &pEngine->aCB[PH7_XML_DEF]);
 	}
-	/* All done,return TRUE */
+	/* All done, return TRUE */
 	ph7_result_bool(pCtx, 1);
 	return PH7_OK;
 }
@@ -534,14 +534,14 @@ static int vm_builtin_xml_set_default_handler(ph7_context *pCtx, int nArg, ph7_v
 static int vm_builtin_xml_set_end_namespace_decl_handler(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	ph7_xml_engine *pEngine;
 	if(nArg < 1 || !ph7_value_is_resource(apArg[0])) {
-		/* Missing/Ivalid argument,return FALSE */
+		/* Missing/Ivalid argument, return FALSE */
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
 	}
 	/* Point to the XML engine */
 	pEngine = (ph7_xml_engine *)ph7_value_to_resource(apArg[0]);
 	if(IS_INVALID_XML_ENGINE(pEngine)) {
-		/* Corrupt engine,return FALSE */
+		/* Corrupt engine, return FALSE */
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
 	}
@@ -549,7 +549,7 @@ static int vm_builtin_xml_set_end_namespace_decl_handler(ph7_context *pCtx, int 
 		/* Save the user callback for later invocation */
 		PH7_MemObjStore(apArg[1]/* User callback*/, &pEngine->aCB[PH7_XML_NS_END]);
 	}
-	/* All done,return TRUE */
+	/* All done, return TRUE */
 	ph7_result_bool(pCtx, 1);
 	return PH7_OK;
 }
@@ -577,14 +577,14 @@ static int vm_builtin_xml_set_end_namespace_decl_handler(ph7_context *pCtx, int 
 static int vm_builtin_xml_set_start_namespace_decl_handler(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	ph7_xml_engine *pEngine;
 	if(nArg < 1 || !ph7_value_is_resource(apArg[0])) {
-		/* Missing/Ivalid argument,return FALSE */
+		/* Missing/Ivalid argument, return FALSE */
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
 	}
 	/* Point to the XML engine */
 	pEngine = (ph7_xml_engine *)ph7_value_to_resource(apArg[0]);
 	if(IS_INVALID_XML_ENGINE(pEngine)) {
-		/* Corrupt engine,return FALSE */
+		/* Corrupt engine, return FALSE */
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
 	}
@@ -592,7 +592,7 @@ static int vm_builtin_xml_set_start_namespace_decl_handler(ph7_context *pCtx, in
 		/* Save the user callback for later invocation */
 		PH7_MemObjStore(apArg[1]/* User callback*/, &pEngine->aCB[PH7_XML_NS_START]);
 	}
-	/* All done,return TRUE */
+	/* All done, return TRUE */
 	ph7_result_bool(pCtx, 1);
 	return PH7_OK;
 }
@@ -620,14 +620,14 @@ static int vm_builtin_xml_set_start_namespace_decl_handler(ph7_context *pCtx, in
 static int vm_builtin_xml_set_processing_instruction_handler(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	ph7_xml_engine *pEngine;
 	if(nArg < 1 || !ph7_value_is_resource(apArg[0])) {
-		/* Missing/Ivalid argument,return FALSE */
+		/* Missing/Ivalid argument, return FALSE */
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
 	}
 	/* Point to the XML engine */
 	pEngine = (ph7_xml_engine *)ph7_value_to_resource(apArg[0]);
 	if(IS_INVALID_XML_ENGINE(pEngine)) {
-		/* Corrupt engine,return FALSE */
+		/* Corrupt engine, return FALSE */
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
 	}
@@ -635,7 +635,7 @@ static int vm_builtin_xml_set_processing_instruction_handler(ph7_context *pCtx, 
 		/* Save the user callback for later invocation */
 		PH7_MemObjStore(apArg[1]/* User callback*/, &pEngine->aCB[PH7_XML_PI]);
 	}
-	/* All done,return TRUE */
+	/* All done, return TRUE */
 	ph7_result_bool(pCtx, 1);
 	return PH7_OK;
 }
@@ -670,14 +670,14 @@ static int vm_builtin_xml_set_processing_instruction_handler(ph7_context *pCtx, 
 static int vm_builtin_xml_set_unparsed_entity_decl_handler(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	ph7_xml_engine *pEngine;
 	if(nArg < 1 || !ph7_value_is_resource(apArg[0])) {
-		/* Missing/Ivalid argument,return FALSE */
+		/* Missing/Ivalid argument, return FALSE */
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
 	}
 	/* Point to the XML engine */
 	pEngine = (ph7_xml_engine *)ph7_value_to_resource(apArg[0]);
 	if(IS_INVALID_XML_ENGINE(pEngine)) {
-		/* Corrupt engine,return FALSE */
+		/* Corrupt engine, return FALSE */
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
 	}
@@ -685,7 +685,7 @@ static int vm_builtin_xml_set_unparsed_entity_decl_handler(ph7_context *pCtx, in
 		/* Save the user callback for later invocation */
 		PH7_MemObjStore(apArg[1]/* User callback*/, &pEngine->aCB[PH7_XML_UNPED]);
 	}
-	/* All done,return TRUE */
+	/* All done, return TRUE */
 	ph7_result_bool(pCtx, 1);
 	return PH7_OK;
 }
@@ -718,14 +718,14 @@ static int vm_builtin_xml_set_unparsed_entity_decl_handler(ph7_context *pCtx, in
 static int vm_builtin_xml_set_notation_decl_handler(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	ph7_xml_engine *pEngine;
 	if(nArg < 1 || !ph7_value_is_resource(apArg[0])) {
-		/* Missing/Ivalid argument,return FALSE */
+		/* Missing/Ivalid argument, return FALSE */
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
 	}
 	/* Point to the XML engine */
 	pEngine = (ph7_xml_engine *)ph7_value_to_resource(apArg[0]);
 	if(IS_INVALID_XML_ENGINE(pEngine)) {
-		/* Corrupt engine,return FALSE */
+		/* Corrupt engine, return FALSE */
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
 	}
@@ -733,7 +733,7 @@ static int vm_builtin_xml_set_notation_decl_handler(ph7_context *pCtx, int nArg,
 		/* Save the user callback for later invocation */
 		PH7_MemObjStore(apArg[1]/* User callback*/, &pEngine->aCB[PH7_XML_ND]);
 	}
-	/* All done,return TRUE */
+	/* All done, return TRUE */
 	ph7_result_bool(pCtx, 1);
 	return PH7_OK;
 }
@@ -769,14 +769,14 @@ static int vm_builtin_xml_set_notation_decl_handler(ph7_context *pCtx, int nArg,
 static int vm_builtin_xml_set_external_entity_ref_handler(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	ph7_xml_engine *pEngine;
 	if(nArg < 1 || !ph7_value_is_resource(apArg[0])) {
-		/* Missing/Ivalid argument,return FALSE */
+		/* Missing/Ivalid argument, return FALSE */
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
 	}
 	/* Point to the XML engine */
 	pEngine = (ph7_xml_engine *)ph7_value_to_resource(apArg[0]);
 	if(IS_INVALID_XML_ENGINE(pEngine)) {
-		/* Corrupt engine,return FALSE */
+		/* Corrupt engine, return FALSE */
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
 	}
@@ -784,7 +784,7 @@ static int vm_builtin_xml_set_external_entity_ref_handler(ph7_context *pCtx, int
 		/* Save the user callback for later invocation */
 		PH7_MemObjStore(apArg[1]/* User callback*/, &pEngine->aCB[PH7_XML_EER]);
 	}
-	/* All done,return TRUE */
+	/* All done, return TRUE */
 	ph7_result_bool(pCtx, 1);
 	return PH7_OK;
 }
@@ -802,14 +802,14 @@ static int vm_builtin_xml_set_external_entity_ref_handler(ph7_context *pCtx, int
 static int vm_builtin_xml_get_current_line_number(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	ph7_xml_engine *pEngine;
 	if(nArg < 1 || !ph7_value_is_resource(apArg[0])) {
-		/* Missing/Ivalid argument,return FALSE */
+		/* Missing/Ivalid argument, return FALSE */
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
 	}
 	/* Point to the XML engine */
 	pEngine = (ph7_xml_engine *)ph7_value_to_resource(apArg[0]);
 	if(IS_INVALID_XML_ENGINE(pEngine)) {
-		/* Corrupt engine,return FALSE */
+		/* Corrupt engine, return FALSE */
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
 	}
@@ -833,14 +833,14 @@ static int vm_builtin_xml_get_current_byte_index(ph7_context *pCtx, int nArg, ph
 	SyStream *pStream;
 	SyToken *pToken;
 	if(nArg < 1 || !ph7_value_is_resource(apArg[0])) {
-		/* Missing/Ivalid argument,return FALSE */
+		/* Missing/Ivalid argument, return FALSE */
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
 	}
 	/* Point to the XML engine */
 	pEngine = (ph7_xml_engine *)ph7_value_to_resource(apArg[0]);
 	if(IS_INVALID_XML_ENGINE(pEngine)) {
-		/* Corrupt engine,return FALSE */
+		/* Corrupt engine, return FALSE */
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
 	}
@@ -873,14 +873,14 @@ static int vm_builtin_xml_get_current_byte_index(ph7_context *pCtx, int nArg, ph
 static int vm_builtin_xml_set_object(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	ph7_xml_engine *pEngine;
 	if(nArg < 2 || !ph7_value_is_resource(apArg[0]) || !ph7_value_is_object(apArg[1])) {
-		/* Missing/Ivalid argument,return FALSE */
+		/* Missing/Ivalid argument, return FALSE */
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
 	}
 	/* Point to the XML engine */
 	pEngine = (ph7_xml_engine *)ph7_value_to_resource(apArg[0]);
 	if(IS_INVALID_XML_ENGINE(pEngine)) {
-		/* Corrupt engine,return FALSE */
+		/* Corrupt engine, return FALSE */
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
 	}
@@ -909,14 +909,14 @@ static int vm_builtin_xml_get_current_column_number(ph7_context *pCtx, int nArg,
 	SyStream *pStream;
 	SyToken *pToken;
 	if(nArg < 1 || !ph7_value_is_resource(apArg[0])) {
-		/* Missing/Ivalid argument,return FALSE */
+		/* Missing/Ivalid argument, return FALSE */
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
 	}
 	/* Point to the XML engine */
 	pEngine = (ph7_xml_engine *)ph7_value_to_resource(apArg[0]);
 	if(IS_INVALID_XML_ENGINE(pEngine)) {
-		/* Corrupt engine,return FALSE */
+		/* Corrupt engine, return FALSE */
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
 	}
@@ -947,14 +947,14 @@ static int vm_builtin_xml_get_current_column_number(ph7_context *pCtx, int nArg,
 static int vm_builtin_xml_get_error_code(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	ph7_xml_engine *pEngine;
 	if(nArg < 1 || !ph7_value_is_resource(apArg[0])) {
-		/* Missing/Ivalid argument,return FALSE */
+		/* Missing/Ivalid argument, return FALSE */
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
 	}
 	/* Point to the XML engine */
 	pEngine = (ph7_xml_engine *)ph7_value_to_resource(apArg[0]);
 	if(IS_INVALID_XML_ENGINE(pEngine)) {
-		/* Corrupt engine,return FALSE */
+		/* Corrupt engine, return FALSE */
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
 	}
@@ -1052,7 +1052,7 @@ static sxi32 VmXMLStartElementHandler(SyXMLRawStr *pStart, SyXMLRawStr *pNS, sxu
 	pCallback = &pEngine->aCB[PH7_XML_START_TAG];
 	/* Make sure the given callback is callable */
 	if(!PH7_VmIsCallable(pEngine->pVm, pCallback, 0)) {
-		/* Not callable,return immediately*/
+		/* Not callable, return immediately*/
 		return SXRET_OK;
 	}
 	/* Create a ph7_value holding the tag name */
@@ -1061,7 +1061,7 @@ static sxi32 VmXMLStartElementHandler(SyXMLRawStr *pStart, SyXMLRawStr *pNS, sxu
 	pAttr = VmXMLAttrValue(pEngine, aAttr, nAttr);
 	if(pTag == 0  || pAttr == 0) {
 		SXUNUSED(pNS); /* cc warning */
-		/* Out of mem,return immediately */
+		/* Out of mem, return immediately */
 		return SXRET_OK;
 	}
 	/* Invoke the user callback */
@@ -1090,14 +1090,14 @@ static sxi32 VmXMLEndElementHandler(SyXMLRawStr *pEnd, SyXMLRawStr *pNS, void *p
 	pCallback = &pEngine->aCB[PH7_XML_END_TAG];
 	/* Make sure the given callback is callable */
 	if(!PH7_VmIsCallable(pEngine->pVm, pCallback, 0)) {
-		/* Not callable,return immediately*/
+		/* Not callable, return immediately*/
 		return SXRET_OK;
 	}
 	/* Create a ph7_value holding the tag name */
 	pTag = VmXMLValue(pEngine, pEnd, pNS);
 	if(pTag == 0) {
 		SXUNUSED(pNS); /* cc warning */
-		/* Out of mem,return immediately */
+		/* Out of mem, return immediately */
 		return SXRET_OK;
 	}
 	/* Invoke the user callback */
@@ -1126,13 +1126,13 @@ static sxi32 VmXMLTextHandler(SyXMLRawStr *pText, void *pUserData) {
 	pCallback = &pEngine->aCB[PH7_XML_CDATA];
 	/* Make sure the given callback is callable */
 	if(!PH7_VmIsCallable(pEngine->pVm, pCallback, 0)) {
-		/* Not callable,return immediately*/
+		/* Not callable, return immediately*/
 		return SXRET_OK;
 	}
 	/* Create a ph7_value holding the data */
 	pData = VmXMLValue(pEngine, &(*pText), 0);
 	if(pData == 0) {
-		/* Out of mem,return immediately */
+		/* Out of mem, return immediately */
 		return SXRET_OK;
 	}
 	/* Invoke the user callback */
@@ -1161,14 +1161,14 @@ static sxi32 VmXMLPIHandler(SyXMLRawStr *pTargetStr, SyXMLRawStr *pDataStr, void
 	pCallback = &pEngine->aCB[PH7_XML_PI];
 	/* Make sure the given callback is callable */
 	if(!PH7_VmIsCallable(pEngine->pVm, pCallback, 0)) {
-		/* Not callable,return immediately*/
+		/* Not callable, return immediately*/
 		return SXRET_OK;
 	}
 	/* Get a ph7_value holding the data */
 	pTarget = VmXMLValue(pEngine, &(*pTargetStr), 0);
 	pData = VmXMLValue(pEngine, &(*pDataStr), 0);
 	if(pTarget == 0 || pData == 0) {
-		/* Out of mem,return immediately */
+		/* Out of mem, return immediately */
 		return SXRET_OK;
 	}
 	/* Invoke the user callback */
@@ -1198,14 +1198,14 @@ static sxi32 VmXMLNSStartHandler(SyXMLRawStr *pUriStr, SyXMLRawStr *pPrefixStr, 
 	pCallback = &pEngine->aCB[PH7_XML_NS_START];
 	/* Make sure the given callback is callable */
 	if(!PH7_VmIsCallable(pEngine->pVm, pCallback, 0)) {
-		/* Not callable,return immediately*/
+		/* Not callable, return immediately*/
 		return SXRET_OK;
 	}
 	/* Get a ph7_value holding the PREFIX/URI */
 	pUri = VmXMLValue(pEngine, pUriStr, 0);
 	pPrefix = VmXMLValue(pEngine, pPrefixStr, 0);
 	if(pUri == 0 || pPrefix == 0) {
-		/* Out of mem,return immediately */
+		/* Out of mem, return immediately */
 		return SXRET_OK;
 	}
 	/* Invoke the user callback */
@@ -1233,13 +1233,13 @@ static sxi32 VmXMLNSEndHandler(SyXMLRawStr *pPrefixStr, void *pUserData) {
 	pCallback = &pEngine->aCB[PH7_XML_NS_END];
 	/* Make sure the given callback is callable */
 	if(!PH7_VmIsCallable(pEngine->pVm, pCallback, 0)) {
-		/* Not callable,return immediately*/
+		/* Not callable, return immediately*/
 		return SXRET_OK;
 	}
 	/* Get a ph7_value holding the prefix */
 	pPrefix = VmXMLValue(pEngine, pPrefixStr, 0);
 	if(pPrefix == 0) {
-		/* Out of mem,return immediately */
+		/* Out of mem, return immediately */
 		return SXRET_OK;
 	}
 	/* Invoke the user callback */
@@ -1288,14 +1288,14 @@ static int vm_builtin_xml_parse(ph7_context *pCtx, int nArg, ph7_value **apArg) 
 	const char *zData;
 	int nByte;
 	if(nArg < 2 || !ph7_value_is_resource(apArg[0]) || !ph7_value_is_string(apArg[1])) {
-		/* Missing/Ivalid arguments,return FALSE */
+		/* Missing/Ivalid arguments, return FALSE */
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
 	}
 	/* Point to the XML engine */
 	pEngine = (ph7_xml_engine *)ph7_value_to_resource(apArg[0]);
 	if(IS_INVALID_XML_ENGINE(pEngine)) {
-		/* Corrupt engine,return FALSE */
+		/* Corrupt engine, return FALSE */
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
 	}
@@ -1362,14 +1362,14 @@ static int vm_builtin_xml_parse(ph7_context *pCtx, int nArg, ph7_value **apArg) 
 static int vm_builtin_xml_parser_set_option(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	ph7_xml_engine *pEngine;
 	if(nArg < 2 || !ph7_value_is_resource(apArg[0])) {
-		/* Missing/Ivalid argument,return FALSE */
+		/* Missing/Ivalid argument, return FALSE */
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
 	}
 	/* Point to the XML engine */
 	pEngine = (ph7_xml_engine *)ph7_value_to_resource(apArg[0]);
 	if(IS_INVALID_XML_ENGINE(pEngine)) {
-		/* Corrupt engine,return FALSE */
+		/* Corrupt engine, return FALSE */
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
 	}
@@ -1393,14 +1393,14 @@ static int vm_builtin_xml_parser_get_option(ph7_context *pCtx, int nArg, ph7_val
 	ph7_xml_engine *pEngine;
 	int nOp;
 	if(nArg < 2 || !ph7_value_is_resource(apArg[0])) {
-		/* Missing/Ivalid argument,return FALSE */
+		/* Missing/Ivalid argument, return FALSE */
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
 	}
 	/* Point to the XML engine */
 	pEngine = (ph7_xml_engine *)ph7_value_to_resource(apArg[0]);
 	if(IS_INVALID_XML_ENGINE(pEngine)) {
-		/* Corrupt engine,return FALSE */
+		/* Corrupt engine, return FALSE */
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
 	}
@@ -1416,7 +1416,7 @@ static int vm_builtin_xml_parser_get_option(ph7_context *pCtx, int nArg, ph7_val
 			ph7_result_string(pCtx, "UTF-8", (int)sizeof("UTF-8") - 1);
 			break;
 		default:
-			/* Unknown option,return FALSE*/
+			/* Unknown option, return FALSE*/
 			ph7_result_bool(pCtx, 0);
 			break;
 	}

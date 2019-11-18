@@ -163,7 +163,7 @@ static void PH7_M_EULER_Const(ph7_value *pVal, void *pUserData) {
 static int PH7_builtin_sqrt(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	double r, x;
 	if(nArg < 1) {
-		/* Missing argument,return 0 */
+		/* Missing argument, return 0 */
 		ph7_result_int(pCtx, 0);
 		return PH7_OK;
 	}
@@ -185,7 +185,7 @@ static int PH7_builtin_sqrt(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 static int PH7_builtin_exp(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	double r, x;
 	if(nArg < 1) {
-		/* Missing argument,return 0 */
+		/* Missing argument, return 0 */
 		ph7_result_int(pCtx, 0);
 		return PH7_OK;
 	}
@@ -207,7 +207,7 @@ static int PH7_builtin_exp(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 static int PH7_builtin_floor(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	double r, x;
 	if(nArg < 1) {
-		/* Missing argument,return 0 */
+		/* Missing argument, return 0 */
 		ph7_result_int(pCtx, 0);
 		return PH7_OK;
 	}
@@ -229,7 +229,7 @@ static int PH7_builtin_floor(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 static int PH7_builtin_cos(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	double r, x;
 	if(nArg < 1) {
-		/* Missing argument,return 0 */
+		/* Missing argument, return 0 */
 		ph7_result_int(pCtx, 0);
 		return PH7_OK;
 	}
@@ -251,7 +251,7 @@ static int PH7_builtin_cos(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 static int PH7_builtin_acos(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	double r, x;
 	if(nArg < 1) {
-		/* Missing argument,return 0 */
+		/* Missing argument, return 0 */
 		ph7_result_int(pCtx, 0);
 		return PH7_OK;
 	}
@@ -273,7 +273,7 @@ static int PH7_builtin_acos(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 static int PH7_builtin_cosh(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	double r, x;
 	if(nArg < 1) {
-		/* Missing argument,return 0 */
+		/* Missing argument, return 0 */
 		ph7_result_int(pCtx, 0);
 		return PH7_OK;
 	}
@@ -295,7 +295,7 @@ static int PH7_builtin_cosh(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 static int PH7_builtin_sin(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	double r, x;
 	if(nArg < 1) {
-		/* Missing argument,return 0 */
+		/* Missing argument, return 0 */
 		ph7_result_int(pCtx, 0);
 		return PH7_OK;
 	}
@@ -317,7 +317,7 @@ static int PH7_builtin_sin(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 static int PH7_builtin_asin(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	double r, x;
 	if(nArg < 1) {
-		/* Missing argument,return 0 */
+		/* Missing argument, return 0 */
 		ph7_result_int(pCtx, 0);
 		return PH7_OK;
 	}
@@ -339,7 +339,7 @@ static int PH7_builtin_asin(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 static int PH7_builtin_sinh(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	double r, x;
 	if(nArg < 1) {
-		/* Missing argument,return 0 */
+		/* Missing argument, return 0 */
 		ph7_result_int(pCtx, 0);
 		return PH7_OK;
 	}
@@ -361,7 +361,7 @@ static int PH7_builtin_sinh(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 static int PH7_builtin_ceil(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	double r, x;
 	if(nArg < 1) {
-		/* Missing argument,return 0 */
+		/* Missing argument, return 0 */
 		ph7_result_int(pCtx, 0);
 		return PH7_OK;
 	}
@@ -383,7 +383,7 @@ static int PH7_builtin_ceil(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 static int PH7_builtin_tan(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	double r, x;
 	if(nArg < 1) {
-		/* Missing argument,return 0 */
+		/* Missing argument, return 0 */
 		ph7_result_int(pCtx, 0);
 		return PH7_OK;
 	}
@@ -405,7 +405,7 @@ static int PH7_builtin_tan(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 static int PH7_builtin_atan(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	double r, x;
 	if(nArg < 1) {
-		/* Missing argument,return 0 */
+		/* Missing argument, return 0 */
 		ph7_result_int(pCtx, 0);
 		return PH7_OK;
 	}
@@ -427,7 +427,7 @@ static int PH7_builtin_atan(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 static int PH7_builtin_tanh(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	double r, x;
 	if(nArg < 1) {
-		/* Missing argument,return 0 */
+		/* Missing argument, return 0 */
 		ph7_result_int(pCtx, 0);
 		return PH7_OK;
 	}
@@ -450,7 +450,7 @@ static int PH7_builtin_tanh(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 static int PH7_builtin_atan2(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	double r, x, y;
 	if(nArg < 2) {
-		/* Missing arguments,return 0 */
+		/* Missing arguments, return 0 */
 		ph7_result_int(pCtx, 0);
 		return PH7_OK;
 	}
@@ -473,7 +473,7 @@ static int PH7_builtin_atan2(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 static int PH7_builtin_abs(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	int is_float;
 	if(nArg < 1) {
-		/* Missing argument,return 0 */
+		/* Missing argument, return 0 */
 		ph7_result_int(pCtx, 0);
 		return PH7_OK;
 	}
@@ -507,7 +507,7 @@ static int PH7_builtin_abs(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 static int PH7_builtin_log(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	double r, x;
 	if(nArg < 1) {
-		/* Missing argument,return 0 */
+		/* Missing argument, return 0 */
 		ph7_result_int(pCtx, 0);
 		return PH7_OK;
 	}
@@ -534,7 +534,7 @@ static int PH7_builtin_log(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 static int PH7_builtin_log10(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	double r, x;
 	if(nArg < 1) {
-		/* Missing argument,return 0 */
+		/* Missing argument, return 0 */
 		ph7_result_int(pCtx, 0);
 		return PH7_OK;
 	}
@@ -561,7 +561,7 @@ static int PH7_builtin_log10(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 static int PH7_builtin_pow(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	double r, x, y;
 	if(nArg < 1) {
-		/* Missing argument,return 0 */
+		/* Missing argument, return 0 */
 		ph7_result_int(pCtx, 0);
 		return PH7_OK;
 	}
@@ -650,7 +650,7 @@ static int PH7_builtin_hypot(ph7_context *pCtx, int nArg, ph7_value **apArg) {
  */
 static int PH7_builtin_max(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	if(nArg < 2) {
-		/* Missing argument,return 0 */
+		/* Missing argument, return 0 */
 		ph7_result_int(pCtx, 0);
 		return PH7_OK;
 	}
@@ -682,7 +682,7 @@ static int PH7_builtin_max(ph7_context *pCtx, int nArg, ph7_value **apArg) {
  */
 static int PH7_builtin_min(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	if(nArg < 2) {
-		/* Missing argument,return 0 */
+		/* Missing argument, return 0 */
 		ph7_result_int(pCtx, 0);
 		return PH7_OK;
 	}

@@ -210,7 +210,7 @@ PH7_PRIVATE SyHashEntry *SyHashGet(SyHash *pHash, const void *pKey, sxu32 nKeyLe
 		return 0;
 	}
 	if(pHash->nEntry < 1 || nKeyLen < 1) {
-		/* Don't bother hashing,return immediately */
+		/* Don't bother hashing, return immediately */
 		return 0;
 	}
 	pEntry = HashGetEntry(&(*pHash), pKey, nKeyLen);

@@ -673,7 +673,7 @@ static void PH7_ClassInstanceRelease(ph7_class_instance *pThis) {
 	ph7_vm *pVm;
 	if(pThis->iFlags & CLASS_INSTANCE_DESTROYED) {
 		/*
-		 * Already destroyed,return immediately.
+		 * Already destroyed, return immediately.
 		 * This could happend if someone perform unset($this) in the destructor body.
 		 */
 		return;
@@ -979,7 +979,7 @@ PH7_PRIVATE sxi32 PH7_ClassInstanceCallMagicMethod(
 	/* Make sure the magic method is available */
 	pMeth = PH7_ClassExtractMethod(&(*pClass), zMethod, nByte);
 	if(pMeth == 0) {
-		/* No such method,return immediately */
+		/* No such method, return immediately */
 		return SXERR_NOTFOUND;
 	}
 	nArg = 0;

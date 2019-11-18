@@ -879,7 +879,7 @@ const char *ph7_value_to_string(ph7_value *pValue, int *pLen) {
  */
 void *ph7_value_to_resource(ph7_value *pValue) {
 	if((pValue->nType & MEMOBJ_RES) == 0) {
-		/* Not a resource,return NULL */
+		/* Not a resource, return NULL */
 		return 0;
 	}
 	return pValue->x.pOther;

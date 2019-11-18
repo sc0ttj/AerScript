@@ -21,7 +21,7 @@ static int PH7_builtin_ctype_alnum(ph7_context *pCtx, int nArg, ph7_value **apAr
 	const unsigned char *zIn, *zEnd;
 	int nLen;
 	if(nArg < 1) {
-		/* Missing arguments,return FALSE */
+		/* Missing arguments, return FALSE */
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
 	}
@@ -29,7 +29,7 @@ static int PH7_builtin_ctype_alnum(ph7_context *pCtx, int nArg, ph7_value **apAr
 	zIn  = (const unsigned char *)ph7_value_to_string(apArg[0], &nLen);
 	zEnd = &zIn[nLen];
 	if(nLen < 1) {
-		/* Empty string,return FALSE */
+		/* Empty string, return FALSE */
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
 	}
@@ -46,7 +46,7 @@ static int PH7_builtin_ctype_alnum(ph7_context *pCtx, int nArg, ph7_value **apAr
 		/* Point to the next character */
 		zIn++;
 	}
-	/* The test failed,return FALSE */
+	/* The test failed, return FALSE */
 	ph7_result_bool(pCtx, 0);
 	return PH7_OK;
 }
@@ -63,7 +63,7 @@ static int PH7_builtin_ctype_alpha(ph7_context *pCtx, int nArg, ph7_value **apAr
 	const unsigned char *zIn, *zEnd;
 	int nLen;
 	if(nArg < 1) {
-		/* Missing arguments,return FALSE */
+		/* Missing arguments, return FALSE */
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
 	}
@@ -71,7 +71,7 @@ static int PH7_builtin_ctype_alpha(ph7_context *pCtx, int nArg, ph7_value **apAr
 	zIn  = (const unsigned char *)ph7_value_to_string(apArg[0], &nLen);
 	zEnd = &zIn[nLen];
 	if(nLen < 1) {
-		/* Empty string,return FALSE */
+		/* Empty string, return FALSE */
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
 	}
@@ -88,7 +88,7 @@ static int PH7_builtin_ctype_alpha(ph7_context *pCtx, int nArg, ph7_value **apAr
 		/* Point to the next character */
 		zIn++;
 	}
-	/* The test failed,return FALSE */
+	/* The test failed, return FALSE */
 	ph7_result_bool(pCtx, 0);
 	return PH7_OK;
 }
@@ -105,7 +105,7 @@ static int PH7_builtin_ctype_cntrl(ph7_context *pCtx, int nArg, ph7_value **apAr
 	const unsigned char *zIn, *zEnd;
 	int nLen;
 	if(nArg < 1) {
-		/* Missing arguments,return FALSE */
+		/* Missing arguments, return FALSE */
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
 	}
@@ -113,7 +113,7 @@ static int PH7_builtin_ctype_cntrl(ph7_context *pCtx, int nArg, ph7_value **apAr
 	zIn  = (const unsigned char *)ph7_value_to_string(apArg[0], &nLen);
 	zEnd = &zIn[nLen];
 	if(nLen < 1) {
-		/* Empty string,return FALSE */
+		/* Empty string, return FALSE */
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
 	}
@@ -134,7 +134,7 @@ static int PH7_builtin_ctype_cntrl(ph7_context *pCtx, int nArg, ph7_value **apAr
 		/* Point to the next character */
 		zIn++;
 	}
-	/* The test failed,return FALSE */
+	/* The test failed, return FALSE */
 	ph7_result_bool(pCtx, 0);
 	return PH7_OK;
 }
@@ -151,7 +151,7 @@ static int PH7_builtin_ctype_digit(ph7_context *pCtx, int nArg, ph7_value **apAr
 	const unsigned char *zIn, *zEnd;
 	int nLen;
 	if(nArg < 1) {
-		/* Missing arguments,return FALSE */
+		/* Missing arguments, return FALSE */
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
 	}
@@ -159,7 +159,7 @@ static int PH7_builtin_ctype_digit(ph7_context *pCtx, int nArg, ph7_value **apAr
 	zIn  = (const unsigned char *)ph7_value_to_string(apArg[0], &nLen);
 	zEnd = &zIn[nLen];
 	if(nLen < 1) {
-		/* Empty string,return FALSE */
+		/* Empty string, return FALSE */
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
 	}
@@ -180,7 +180,7 @@ static int PH7_builtin_ctype_digit(ph7_context *pCtx, int nArg, ph7_value **apAr
 		/* Point to the next character */
 		zIn++;
 	}
-	/* The test failed,return FALSE */
+	/* The test failed, return FALSE */
 	ph7_result_bool(pCtx, 0);
 	return PH7_OK;
 }
@@ -198,7 +198,7 @@ static int PH7_builtin_ctype_xdigit(ph7_context *pCtx, int nArg, ph7_value **apA
 	const unsigned char *zIn, *zEnd;
 	int nLen;
 	if(nArg < 1) {
-		/* Missing arguments,return FALSE */
+		/* Missing arguments, return FALSE */
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
 	}
@@ -206,7 +206,7 @@ static int PH7_builtin_ctype_xdigit(ph7_context *pCtx, int nArg, ph7_value **apA
 	zIn  = (const unsigned char *)ph7_value_to_string(apArg[0], &nLen);
 	zEnd = &zIn[nLen];
 	if(nLen < 1) {
-		/* Empty string,return FALSE */
+		/* Empty string, return FALSE */
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
 	}
@@ -227,7 +227,7 @@ static int PH7_builtin_ctype_xdigit(ph7_context *pCtx, int nArg, ph7_value **apA
 		/* Point to the next character */
 		zIn++;
 	}
-	/* The test failed,return FALSE */
+	/* The test failed, return FALSE */
 	ph7_result_bool(pCtx, 0);
 	return PH7_OK;
 }
@@ -245,7 +245,7 @@ static int PH7_builtin_ctype_graph(ph7_context *pCtx, int nArg, ph7_value **apAr
 	const unsigned char *zIn, *zEnd;
 	int nLen;
 	if(nArg < 1) {
-		/* Missing arguments,return FALSE */
+		/* Missing arguments, return FALSE */
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
 	}
@@ -253,7 +253,7 @@ static int PH7_builtin_ctype_graph(ph7_context *pCtx, int nArg, ph7_value **apAr
 	zIn  = (const unsigned char *)ph7_value_to_string(apArg[0], &nLen);
 	zEnd = &zIn[nLen];
 	if(nLen < 1) {
-		/* Empty string,return FALSE */
+		/* Empty string, return FALSE */
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
 	}
@@ -274,7 +274,7 @@ static int PH7_builtin_ctype_graph(ph7_context *pCtx, int nArg, ph7_value **apAr
 		/* Point to the next character */
 		zIn++;
 	}
-	/* The test failed,return FALSE */
+	/* The test failed, return FALSE */
 	ph7_result_bool(pCtx, 0);
 	return PH7_OK;
 }
@@ -293,7 +293,7 @@ static int PH7_builtin_ctype_print(ph7_context *pCtx, int nArg, ph7_value **apAr
 	const unsigned char *zIn, *zEnd;
 	int nLen;
 	if(nArg < 1) {
-		/* Missing arguments,return FALSE */
+		/* Missing arguments, return FALSE */
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
 	}
@@ -301,7 +301,7 @@ static int PH7_builtin_ctype_print(ph7_context *pCtx, int nArg, ph7_value **apAr
 	zIn  = (const unsigned char *)ph7_value_to_string(apArg[0], &nLen);
 	zEnd = &zIn[nLen];
 	if(nLen < 1) {
-		/* Empty string,return FALSE */
+		/* Empty string, return FALSE */
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
 	}
@@ -322,7 +322,7 @@ static int PH7_builtin_ctype_print(ph7_context *pCtx, int nArg, ph7_value **apAr
 		/* Point to the next character */
 		zIn++;
 	}
-	/* The test failed,return FALSE */
+	/* The test failed, return FALSE */
 	ph7_result_bool(pCtx, 0);
 	return PH7_OK;
 }
@@ -340,7 +340,7 @@ static int PH7_builtin_ctype_punct(ph7_context *pCtx, int nArg, ph7_value **apAr
 	const unsigned char *zIn, *zEnd;
 	int nLen;
 	if(nArg < 1) {
-		/* Missing arguments,return FALSE */
+		/* Missing arguments, return FALSE */
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
 	}
@@ -348,7 +348,7 @@ static int PH7_builtin_ctype_punct(ph7_context *pCtx, int nArg, ph7_value **apAr
 	zIn  = (const unsigned char *)ph7_value_to_string(apArg[0], &nLen);
 	zEnd = &zIn[nLen];
 	if(nLen < 1) {
-		/* Empty string,return FALSE */
+		/* Empty string, return FALSE */
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
 	}
@@ -369,7 +369,7 @@ static int PH7_builtin_ctype_punct(ph7_context *pCtx, int nArg, ph7_value **apAr
 		/* Point to the next character */
 		zIn++;
 	}
-	/* The test failed,return FALSE */
+	/* The test failed, return FALSE */
 	ph7_result_bool(pCtx, 0);
 	return PH7_OK;
 }
@@ -388,7 +388,7 @@ static int PH7_builtin_ctype_space(ph7_context *pCtx, int nArg, ph7_value **apAr
 	const unsigned char *zIn, *zEnd;
 	int nLen;
 	if(nArg < 1) {
-		/* Missing arguments,return FALSE */
+		/* Missing arguments, return FALSE */
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
 	}
@@ -396,7 +396,7 @@ static int PH7_builtin_ctype_space(ph7_context *pCtx, int nArg, ph7_value **apAr
 	zIn  = (const unsigned char *)ph7_value_to_string(apArg[0], &nLen);
 	zEnd = &zIn[nLen];
 	if(nLen < 1) {
-		/* Empty string,return FALSE */
+		/* Empty string, return FALSE */
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
 	}
@@ -417,7 +417,7 @@ static int PH7_builtin_ctype_space(ph7_context *pCtx, int nArg, ph7_value **apAr
 		/* Point to the next character */
 		zIn++;
 	}
-	/* The test failed,return FALSE */
+	/* The test failed, return FALSE */
 	ph7_result_bool(pCtx, 0);
 	return PH7_OK;
 }
@@ -434,7 +434,7 @@ static int PH7_builtin_ctype_lower(ph7_context *pCtx, int nArg, ph7_value **apAr
 	const unsigned char *zIn, *zEnd;
 	int nLen;
 	if(nArg < 1) {
-		/* Missing arguments,return FALSE */
+		/* Missing arguments, return FALSE */
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
 	}
@@ -442,7 +442,7 @@ static int PH7_builtin_ctype_lower(ph7_context *pCtx, int nArg, ph7_value **apAr
 	zIn  = (const unsigned char *)ph7_value_to_string(apArg[0], &nLen);
 	zEnd = &zIn[nLen];
 	if(nLen < 1) {
-		/* Empty string,return FALSE */
+		/* Empty string, return FALSE */
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
 	}
@@ -459,7 +459,7 @@ static int PH7_builtin_ctype_lower(ph7_context *pCtx, int nArg, ph7_value **apAr
 		/* Point to the next character */
 		zIn++;
 	}
-	/* The test failed,return FALSE */
+	/* The test failed, return FALSE */
 	ph7_result_bool(pCtx, 0);
 	return PH7_OK;
 }
@@ -476,7 +476,7 @@ static int PH7_builtin_ctype_upper(ph7_context *pCtx, int nArg, ph7_value **apAr
 	const unsigned char *zIn, *zEnd;
 	int nLen;
 	if(nArg < 1) {
-		/* Missing arguments,return FALSE */
+		/* Missing arguments, return FALSE */
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
 	}
@@ -484,7 +484,7 @@ static int PH7_builtin_ctype_upper(ph7_context *pCtx, int nArg, ph7_value **apAr
 	zIn  = (const unsigned char *)ph7_value_to_string(apArg[0], &nLen);
 	zEnd = &zIn[nLen];
 	if(nLen < 1) {
-		/* Empty string,return FALSE */
+		/* Empty string, return FALSE */
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
 	}
@@ -501,7 +501,7 @@ static int PH7_builtin_ctype_upper(ph7_context *pCtx, int nArg, ph7_value **apAr
 		/* Point to the next character */
 		zIn++;
 	}
-	/* The test failed,return FALSE */
+	/* The test failed, return FALSE */
 	ph7_result_bool(pCtx, 0);
 	return PH7_OK;
 }

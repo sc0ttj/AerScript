@@ -5462,7 +5462,7 @@ static int vm_builtin_func_exists(ph7_context *pCtx, int nArg, ph7_value **apArg
 	int nLen;
 	int res;
 	if(nArg < 1) {
-		/* Missing argument,return FALSE */
+		/* Missing argument, return FALSE */
 		ph7_result_bool(pCtx, 0);
 		return SXRET_OK;
 	}
@@ -5557,7 +5557,7 @@ static int vm_builtin_is_callable(ph7_context *pCtx, int nArg, ph7_value **apArg
 	ph7_vm *pVm;
 	int res;
 	if(nArg < 1) {
-		/* Missing arguments,return FALSE */
+		/* Missing arguments, return FALSE */
 		ph7_result_bool(pCtx, 0);
 		return SXRET_OK;
 	}
@@ -5618,7 +5618,7 @@ static int vm_builtin_register_shutdown_function(ph7_context *pCtx, int nArg, ph
 	VmShutdownCB sEntry;
 	int i, j;
 	if(nArg < 1 || (apArg[0]->nType & (MEMOBJ_STRING | MEMOBJ_HASHMAP)) == 0) {
-		/* Missing/Invalid arguments,return immediately */
+		/* Missing/Invalid arguments, return immediately */
 		return PH7_OK;
 	}
 	/* Zero the Entry */
@@ -5660,7 +5660,7 @@ PH7_PRIVATE ph7_class *PH7_VmExtractActiveClass(ph7_vm *pVm, sxi32 iDepth) {
 	SySet *pSet = &pVm->aSelf;
 	ph7_class **apClass;
 	if(SySetUsed(pSet) <= 0) {
-		/* Empty stack,return NULL */
+		/* Empty stack, return NULL */
 		return 0;
 	}
 	/* Extract the class entry from specified depth */
@@ -5689,7 +5689,7 @@ static int vm_builtin_get_class(ph7_context *pCtx, int nArg, ph7_value **apArg) 
 			pName = &pClass->sName;
 			ph7_result_string(pCtx, pName->zString, (int)pName->nByte);
 		} else {
-			/* Not inside class,return FALSE */
+			/* Not inside class, return FALSE */
 			ph7_result_bool(pCtx, 0);
 		}
 	} else {
@@ -5700,7 +5700,7 @@ static int vm_builtin_get_class(ph7_context *pCtx, int nArg, ph7_value **apArg) 
 			/* Return the class name */
 			ph7_result_string(pCtx, pName->zString, (int)pName->nByte);
 		} else {
-			/* Not a class instance,return FALSE */
+			/* Not a class instance, return FALSE */
 			ph7_result_bool(pCtx, 0);
 		}
 	}
@@ -5729,7 +5729,7 @@ static int vm_builtin_get_parent_class(ph7_context *pCtx, int nArg, ph7_value **
 			pName = &pClass->pBase->sName;
 			ph7_result_string(pCtx, pName->zString, (int)pName->nByte);
 		} else {
-			/* Not inside class,return FALSE */
+			/* Not inside class, return FALSE */
 			ph7_result_bool(pCtx, 0);
 		}
 	} else {
@@ -5745,7 +5745,7 @@ static int vm_builtin_get_parent_class(ph7_context *pCtx, int nArg, ph7_value **
 				ph7_result_bool(pCtx, 0);
 			}
 		} else {
-			/* Not a class instance,return FALSE */
+			/* Not a class instance, return FALSE */
 			ph7_result_bool(pCtx, 0);
 		}
 	}
@@ -5771,7 +5771,7 @@ static int vm_builtin_get_called_class(ph7_context *pCtx, int nArg, ph7_value **
 	} else {
 		SXUNUSED(nArg); /* cc warning */
 		SXUNUSED(apArg);
-		/* Not inside class,return FALSE */
+		/* Not inside class, return FALSE */
 		ph7_result_bool(pCtx, 0);
 	}
 	return PH7_OK;
@@ -5960,7 +5960,7 @@ static int vm_builtin_get_declared_classes(ph7_context *pCtx, int nArg, ph7_valu
 	if(pArray == 0 || pName == 0) {
 		SXUNUSED(nArg); /* cc warning */
 		SXUNUSED(apArg);
-		/* Out of memory,return NULL */
+		/* Out of memory, return NULL */
 		ph7_result_null(pCtx);
 		return PH7_OK;
 	}
@@ -6001,7 +6001,7 @@ static int vm_builtin_get_declared_interfaces(ph7_context *pCtx, int nArg, ph7_v
 	if(pArray == 0 || pName == 0) {
 		SXUNUSED(nArg); /* cc warning */
 		SXUNUSED(apArg);
-		/* Out of memory,return NULL */
+		/* Out of memory, return NULL */
 		ph7_result_null(pCtx);
 		return PH7_OK;
 	}
@@ -6044,7 +6044,7 @@ static int vm_builtin_get_class_methods(ph7_context *pCtx, int nArg, ph7_value *
 		pClass = VmExtractClassFromValue(pCtx->pVm, apArg[0]);
 	}
 	if(pClass == 0) {
-		/* No such class,return NULL */
+		/* No such class, return NULL */
 		ph7_result_null(pCtx);
 		return PH7_OK;
 	}
@@ -6052,7 +6052,7 @@ static int vm_builtin_get_class_methods(ph7_context *pCtx, int nArg, ph7_value *
 	pArray = ph7_context_new_array(pCtx);
 	pName = ph7_context_new_scalar(pCtx);
 	if(pArray == 0 || pName == 0) {
-		/* Out of memory,return NULL */
+		/* Out of memory, return NULL */
 		ph7_result_null(pCtx);
 		return PH7_OK;
 	}
@@ -6134,7 +6134,7 @@ static int vm_builtin_get_class_vars(ph7_context *pCtx, int nArg, ph7_value **ap
 		pClass = VmExtractClassFromValue(pCtx->pVm, apArg[0]);
 	}
 	if(pClass == 0) {
-		/* No such class,return NULL */
+		/* No such class, return NULL */
 		ph7_result_null(pCtx);
 		return PH7_OK;
 	}
@@ -6143,7 +6143,7 @@ static int vm_builtin_get_class_vars(ph7_context *pCtx, int nArg, ph7_value **ap
 	pName = ph7_context_new_scalar(pCtx);
 	PH7_MemObjInit(pCtx->pVm, &sValue);
 	if(pArray == 0 || pName == 0) {
-		/* Out of memory,return NULL */
+		/* Out of memory, return NULL */
 		ph7_result_null(pCtx);
 		return PH7_OK;
 	}
@@ -6204,7 +6204,7 @@ static int vm_builtin_get_object_vars(ph7_context *pCtx, int nArg, ph7_value **a
 		pThis = (ph7_class_instance *)apArg[0]->x.pOther;
 	}
 	if(pThis == 0) {
-		/* No such instance,return NULL */
+		/* No such instance, return NULL */
 		ph7_result_null(pCtx);
 		return PH7_OK;
 	}
@@ -6212,7 +6212,7 @@ static int vm_builtin_get_object_vars(ph7_context *pCtx, int nArg, ph7_value **a
 	pArray = ph7_context_new_array(pCtx);
 	pName = ph7_context_new_scalar(pCtx);
 	if(pArray == 0 || pName == 0) {
-		/* Out of memory,return NULL */
+		/* Out of memory, return NULL */
 		ph7_result_null(pCtx);
 		return PH7_OK;
 	}
@@ -6673,7 +6673,7 @@ static int vm_builtin_ob_end_clean(ph7_context *pCtx, int nArg, ph7_value **apAr
 	/* Pop the top most OB */
 	pOb = (VmObEntry *)SySetPop(&pVm->aOB);
 	if(pOb == 0) {
-		/* No such OB,return FALSE */
+		/* No such OB, return FALSE */
 		ph7_result_bool(pCtx, 0);
 		SXUNUSED(nArg); /* cc warning */
 		SXUNUSED(apArg);
@@ -6699,7 +6699,7 @@ static int vm_builtin_ob_get_contents(ph7_context *pCtx, int nArg, ph7_value **a
 	/* Peek the top most OB */
 	pOb = (VmObEntry *)SySetPeek(&pVm->aOB);
 	if(pOb == 0) {
-		/* No active OB,return FALSE */
+		/* No active OB, return FALSE */
 		ph7_result_bool(pCtx, 0);
 		SXUNUSED(nArg); /* cc warning */
 		SXUNUSED(apArg);
@@ -6724,7 +6724,7 @@ static int vm_builtin_ob_get_clean(ph7_context *pCtx, int nArg, ph7_value **apAr
 	/* Pop the top most OB */
 	pOb = (VmObEntry *)SySetPop(&pVm->aOB);
 	if(pOb == 0) {
-		/* No active OB,return FALSE */
+		/* No active OB, return FALSE */
 		ph7_result_bool(pCtx, 0);
 		SXUNUSED(nArg); /* cc warning */
 		SXUNUSED(apArg);
@@ -6750,7 +6750,7 @@ static int vm_builtin_ob_get_length(ph7_context *pCtx, int nArg, ph7_value **apA
 	/* Peek the top most OB */
 	pOb = (VmObEntry *)SySetPeek(&pVm->aOB);
 	if(pOb == 0) {
-		/* No active OB,return FALSE */
+		/* No active OB, return FALSE */
 		ph7_result_bool(pCtx, 0);
 		SXUNUSED(nArg); /* cc warning */
 		SXUNUSED(apArg);
@@ -6928,7 +6928,7 @@ static int vm_builtin_ob_flush(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	/* Peek the top most OB entry */
 	pOb = (VmObEntry *)SySetPeek(&pVm->aOB);
 	if(pOb == 0) {
-		/* Empty stack,return immediately */
+		/* Empty stack, return immediately */
 		SXUNUSED(nArg); /* cc warning */
 		SXUNUSED(apArg);
 		return PH7_OK;
@@ -6954,7 +6954,7 @@ static int vm_builtin_ob_end_flush(ph7_context *pCtx, int nArg, ph7_value **apAr
 	/* Pop the top most OB entry */
 	pOb = (VmObEntry *)SySetPop(&pVm->aOB);
 	if(pOb == 0) {
-		/* Empty stack,return FALSE */
+		/* Empty stack, return FALSE */
 		ph7_result_bool(pCtx, 0);
 		SXUNUSED(nArg); /* cc warning */
 		SXUNUSED(apArg);
@@ -7001,14 +7001,14 @@ static int vm_builtin_ob_list_handlers(ph7_context *pCtx, int nArg, ph7_value **
 	ph7_value sVal;
 	sxu32 n;
 	if(SySetUsed(&pVm->aOB) < 1) {
-		/* Empty stack,return null */
+		/* Empty stack, return null */
 		ph7_result_null(pCtx);
 		return PH7_OK;
 	}
 	/* Create a new array */
 	pArray = ph7_context_new_array(pCtx);
 	if(pArray == 0) {
-		/* Out of memory,return NULL */
+		/* Out of memory, return NULL */
 		SXUNUSED(nArg); /* cc warning */
 		SXUNUSED(apArg);
 		ph7_result_null(pCtx);
@@ -7522,7 +7522,7 @@ static int vm_builtin_get_defined_vars(ph7_context *pCtx, int nArg, ph7_value **
 	SyHashForEach(&pVm->hSuper, VmHashVarWalker, pArray);
 	/* Then variable defined in the current frame */
 	SyHashForEach(&pVm->pFrame->hVar, VmHashVarWalker, pArray);
-	/* Finally,return the created array */
+	/* Finally, return the created array */
 	ph7_result_value(pCtx, pArray);
 	return SXRET_OK;
 }
@@ -7559,7 +7559,7 @@ static int vm_builtin_gettype(ph7_context *pCtx, int nArg, ph7_value **apArg) {
  */
 static int vm_builtin_get_resource_type(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	if(nArg < 1 || !ph7_value_is_resource(apArg[0])) {
-		/* Missing/Invalid arguments,return FALSE*/
+		/* Missing/Invalid arguments, return FALSE*/
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
 	}
@@ -7610,7 +7610,7 @@ static int vm_builtin_print_r(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	int ret_string = 0;
 	SyBlob sDump;
 	if(nArg < 1) {
-		/* Nothing to output,return FALSE */
+		/* Nothing to output, return FALSE */
 		ph7_result_bool(pCtx, 0);
 		return SXRET_OK;
 	}
@@ -7642,7 +7642,7 @@ static int vm_builtin_var_export(ph7_context *pCtx, int nArg, ph7_value **apArg)
 	int ret_string = 0;
 	SyBlob sDump;      /* Dump is stored in this BLOB */
 	if(nArg < 1) {
-		/* Nothing to output,return FALSE */
+		/* Nothing to output, return FALSE */
 		ph7_result_bool(pCtx, 0);
 		return SXRET_OK;
 	}
@@ -7735,7 +7735,7 @@ static int vm_builtin_assert_options(ph7_context *pCtx, int nArg, ph7_value **ap
 	ph7_vm *pVm = pCtx->pVm;
 	int iOld, iNew, iValue;
 	if(nArg < 1 || !ph7_value_is_int(apArg[0])) {
-		/* Missing/Invalid arguments,return FALSE */
+		/* Missing/Invalid arguments, return FALSE */
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
 	}
@@ -7796,13 +7796,13 @@ static int vm_builtin_assert(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	ph7_value *pAssert;
 	int iFlags, iResult;
 	if(nArg < 1) {
-		/* Missing arguments,return FALSE */
+		/* Missing arguments, return FALSE */
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
 	}
 	iFlags = pVm->iAssertFlags;
 	if(iFlags & PH7_ASSERT_DISABLE) {
-		/* Assertion is disabled,return FALSE */
+		/* Assertion is disabled, return FALSE */
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
 	}
@@ -7884,7 +7884,7 @@ static int vm_builtin_restore_exception_handler(ph7_context *pCtx, int nArg, ph7
 	if(pOld->nType & MEMOBJ_NULL) {
 		SXUNUSED(nArg); /* cc warning */
 		SXUNUSED(apArg);
-		/* No installed handler,return FALSE */
+		/* No installed handler, return FALSE */
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
 	}
@@ -7924,7 +7924,7 @@ static int vm_builtin_set_exception_handler(ph7_context *pCtx, int nArg, ph7_val
 	ph7_result_value(pCtx, pOld); /* Will make it's own copy */
 	if(nArg > 0) {
 		if(!ph7_value_is_callable(apArg[0])) {
-			/* Not callable,return TRUE (As requested by the PHP specification) */
+			/* Not callable, return TRUE (As requested by the PHP specification) */
 			PH7_MemObjRelease(pNew);
 			ph7_result_bool(pCtx, 1);
 		} else {
@@ -8429,21 +8429,21 @@ static int vm_builtin_parse_url(ph7_context *pCtx, int nArg, ph7_value **apArg) 
 	int nLen;
 	sxi32 rc;
 	if(nArg < 1 || !ph7_value_is_string(apArg[0])) {
-		/* Missing/Invalid arguments,return FALSE */
+		/* Missing/Invalid arguments, return FALSE */
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
 	}
 	/* Extract the given URI */
 	zStr = ph7_value_to_string(apArg[0], &nLen);
 	if(nLen < 1) {
-		/* Nothing to process,return FALSE */
+		/* Nothing to process, return FALSE */
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
 	}
 	/* Get a parse */
 	rc = VmHttpSplitURI(&sURI, zStr, (sxu32)nLen);
 	if(rc != SXRET_OK) {
-		/* Malformed input,return FALSE */
+		/* Malformed input, return FALSE */
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
 	}
@@ -8454,7 +8454,7 @@ static int vm_builtin_parse_url(ph7_context *pCtx, int nArg, ph7_value **apArg) 
 			case 1: /* PHP_URL_SCHEME */
 				pComp = &sURI.sScheme;
 				if(pComp->nByte < 1) {
-					/* No available value,return NULL */
+					/* No available value, return NULL */
 					ph7_result_null(pCtx);
 				} else {
 					ph7_result_string(pCtx, pComp->zString, (int)pComp->nByte);
@@ -8463,7 +8463,7 @@ static int vm_builtin_parse_url(ph7_context *pCtx, int nArg, ph7_value **apArg) 
 			case 2: /* PHP_URL_HOST */
 				pComp = &sURI.sHost;
 				if(pComp->nByte < 1) {
-					/* No available value,return NULL */
+					/* No available value, return NULL */
 					ph7_result_null(pCtx);
 				} else {
 					ph7_result_string(pCtx, pComp->zString, (int)pComp->nByte);
@@ -8472,7 +8472,7 @@ static int vm_builtin_parse_url(ph7_context *pCtx, int nArg, ph7_value **apArg) 
 			case 3: /* PHP_URL_PORT */
 				pComp = &sURI.sPort;
 				if(pComp->nByte < 1) {
-					/* No available value,return NULL */
+					/* No available value, return NULL */
 					ph7_result_null(pCtx);
 				} else {
 					int iPort = 0;
@@ -8484,7 +8484,7 @@ static int vm_builtin_parse_url(ph7_context *pCtx, int nArg, ph7_value **apArg) 
 			case 4: /* PHP_URL_USER */
 				pComp = &sURI.sUser;
 				if(pComp->nByte < 1) {
-					/* No available value,return NULL */
+					/* No available value, return NULL */
 					ph7_result_null(pCtx);
 				} else {
 					ph7_result_string(pCtx, pComp->zString, (int)pComp->nByte);
@@ -8493,7 +8493,7 @@ static int vm_builtin_parse_url(ph7_context *pCtx, int nArg, ph7_value **apArg) 
 			case 5: /* PHP_URL_PASS */
 				pComp = &sURI.sPass;
 				if(pComp->nByte < 1) {
-					/* No available value,return NULL */
+					/* No available value, return NULL */
 					ph7_result_null(pCtx);
 				} else {
 					ph7_result_string(pCtx, pComp->zString, (int)pComp->nByte);
@@ -8502,7 +8502,7 @@ static int vm_builtin_parse_url(ph7_context *pCtx, int nArg, ph7_value **apArg) 
 			case 7: /* PHP_URL_QUERY */
 				pComp = &sURI.sQuery;
 				if(pComp->nByte < 1) {
-					/* No available value,return NULL */
+					/* No available value, return NULL */
 					ph7_result_null(pCtx);
 				} else {
 					ph7_result_string(pCtx, pComp->zString, (int)pComp->nByte);
@@ -8511,7 +8511,7 @@ static int vm_builtin_parse_url(ph7_context *pCtx, int nArg, ph7_value **apArg) 
 			case 8: /* PHP_URL_FRAGMENT */
 				pComp = &sURI.sFragment;
 				if(pComp->nByte < 1) {
-					/* No available value,return NULL */
+					/* No available value, return NULL */
 					ph7_result_null(pCtx);
 				} else {
 					ph7_result_string(pCtx, pComp->zString, (int)pComp->nByte);
@@ -8520,14 +8520,14 @@ static int vm_builtin_parse_url(ph7_context *pCtx, int nArg, ph7_value **apArg) 
 			case 6: /*  PHP_URL_PATH */
 				pComp = &sURI.sPath;
 				if(pComp->nByte < 1) {
-					/* No available value,return NULL */
+					/* No available value, return NULL */
 					ph7_result_null(pCtx);
 				} else {
 					ph7_result_string(pCtx, pComp->zString, (int)pComp->nByte);
 				}
 				break;
 			default:
-				/* No such entry,return NULL */
+				/* No such entry, return NULL */
 				ph7_result_null(pCtx);
 				break;
 		}
@@ -8684,7 +8684,7 @@ static int vm_builtin_compact(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	SyString sVar;
 	int i, nLen;
 	if(nArg < 1) {
-		/* Missing arguments,return NULL */
+		/* Missing arguments, return NULL */
 		ph7_result_null(pCtx);
 		return PH7_OK;
 	}
@@ -8780,14 +8780,14 @@ static int vm_builtin_extract(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	extract_aux_data sAux;
 	ph7_hashmap *pMap;
 	if(nArg < 1 || !ph7_value_is_array(apArg[0])) {
-		/* Missing/Invalid arguments,return 0 */
+		/* Missing/Invalid arguments, return 0 */
 		ph7_result_int(pCtx, 0);
 		return PH7_OK;
 	}
 	/* Point to the target hashmap */
 	pMap = (ph7_hashmap *)apArg[0]->x.pOther;
 	if(pMap->nEntry < 1) {
-		/* Empty map,return  0 */
+		/* Empty map, return  0 */
 		ph7_result_int(pCtx, 0);
 		return PH7_OK;
 	}
@@ -8943,14 +8943,14 @@ Cleanup:
 static int vm_builtin_eval(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	SyString sChunk;    /* Chunk to evaluate */
 	if(nArg < 1) {
-		/* Nothing to evaluate,return NULL */
+		/* Nothing to evaluate, return NULL */
 		ph7_result_null(pCtx);
 		return SXRET_OK;
 	}
 	/* Chunk to evaluate */
 	sChunk.zString = ph7_value_to_string(apArg[0], (int *)&sChunk.nByte);
 	if(sChunk.nByte < 1) {
-		/* Empty string,return NULL */
+		/* Empty string, return NULL */
 		ph7_result_null(pCtx);
 		return SXRET_OK;
 	}
@@ -9205,7 +9205,7 @@ static int vm_builtin_get_included_files(ph7_context *pCtx, int nArg, ph7_value 
 	pArray  = ph7_context_new_array(pCtx);
 	pWorker = ph7_context_new_scalar(pCtx);
 	if(pArray == 0 || pWorker == 0) {
-		/* Out of memory,return null */
+		/* Out of memory, return null */
 		ph7_result_null(pCtx);
 		SXUNUSED(nArg); /* cc warning */
 		SXUNUSED(apArg);
@@ -9221,7 +9221,7 @@ static int vm_builtin_get_included_files(ph7_context *pCtx, int nArg, ph7_value 
 		/* Perform the insertion */
 		ph7_array_add_elem(pArray, 0/* Automatic index assign*/, pWorker); /* Will make it's own copy */
 	}
-	/* All done,return the created array */
+	/* All done, return the created array */
 	ph7_result_value(pCtx, pArray);
 	/* Note that 'pWorker' will be automatically destroyed
 	 * by the engine as soon we return from this foreign
@@ -9245,21 +9245,21 @@ static int vm_builtin_include(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	SyString sFile;
 	sxi32 rc;
 	if(nArg < 1) {
-		/* Nothing to evaluate,return NULL */
+		/* Nothing to evaluate, return NULL */
 		ph7_result_null(pCtx);
 		return SXRET_OK;
 	}
 	/* File to include */
 	sFile.zString = ph7_value_to_string(apArg[0], (int *)&sFile.nByte);
 	if(sFile.nByte < 1) {
-		/* Empty string,return NULL */
+		/* Empty string, return NULL */
 		ph7_result_null(pCtx);
 		return SXRET_OK;
 	}
 	/* Open,compile and execute the desired script */
 	rc = VmExecIncludedFile(&(*pCtx), &sFile, TRUE);
 	if(rc == SXERR_EXISTS) {
-		/* File already included,return TRUE */
+		/* File already included, return TRUE */
 		ph7_result_bool(pCtx, 1);
 		return SXRET_OK;
 	}
@@ -9280,21 +9280,21 @@ static int vm_builtin_require(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	SyString sFile;
 	sxi32 rc;
 	if(nArg < 1) {
-		/* Nothing to evaluate,return NULL */
+		/* Nothing to evaluate, return NULL */
 		ph7_result_null(pCtx);
 		return SXRET_OK;
 	}
 	/* File to include */
 	sFile.zString = ph7_value_to_string(apArg[0], (int *)&sFile.nByte);
 	if(sFile.nByte < 1) {
-		/* Empty string,return NULL */
+		/* Empty string, return NULL */
 		ph7_result_null(pCtx);
 		return SXRET_OK;
 	}
 	/* Open,compile and execute the desired script */
 	rc = VmExecIncludedFile(&(*pCtx), &sFile, TRUE);
 	if(rc == SXERR_EXISTS) {
-		/* File already included,return TRUE */
+		/* File already included, return TRUE */
 		ph7_result_bool(pCtx, 1);
 		return SXRET_OK;
 	}
@@ -9349,7 +9349,7 @@ static const char *VmFindLongOpt(const char *zLong, int nByte, const char *zIn, 
 			}
 			/* Test */
 			if((int)(zIn - zOpt) == nByte && SyMemcmp(zOpt, zLong, nByte) == 0) {
-				/* Got one,return it's value */
+				/* Got one, return it's value */
 				return zIn;
 			}
 		} else {
@@ -9508,7 +9508,7 @@ static int vm_builtin_getopt(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	SyBlob *pArg;
 	int nByte;
 	if(nArg < 1 || !ph7_value_is_string(apArg[0])) {
-		/* Missing/Invalid arguments,return FALSE */
+		/* Missing/Invalid arguments, return FALSE */
 		PH7_VmThrowError(pCtx->pVm, PH7_CTX_ERR, "Missing/Invalid option arguments");
 	}
 	/* Extract option arguments */
@@ -9523,7 +9523,7 @@ static int vm_builtin_getopt(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 		PH7_VmMemoryError(pCtx->pVm);
 	}
 	if(SyBlobLength(pArg) < 1) {
-		/* Empty command line,return the empty array*/
+		/* Empty command line, return the empty array*/
 		ph7_result_value(pCtx, pArray);
 		/* Everything will be released automatically when we return
 		 * from this function.
@@ -9616,7 +9616,7 @@ static int VmProcessLongOpt(ph7_value *pKey, ph7_value *pValue, void *pUserData)
 	/* Find the option */
 	zArg = VmFindLongOpt(zOpt, (int)(zEnd - zOpt), pOpt->zArgIn, pOpt->zArgEnd);
 	if(zArg == 0) {
-		/* No such option,return immediately */
+		/* No such option, return immediately */
 		return PH7_OK;
 	}
 	/* Try to extract a value */
@@ -9647,14 +9647,14 @@ static int vm_builtin_utf8_encode(ph7_context *pCtx, int nArg, ph7_value **apArg
 	const unsigned char *zIn, *zEnd;
 	int nByte, c, e;
 	if(nArg < 1) {
-		/* Missing arguments,return null */
+		/* Missing arguments, return null */
 		ph7_result_null(pCtx);
 		return PH7_OK;
 	}
 	/* Extract the target string */
 	zIn = (const unsigned char *)ph7_value_to_string(apArg[0], &nByte);
 	if(nByte < 1) {
-		/* Empty string,return null */
+		/* Empty string, return null */
 		ph7_result_null(pCtx);
 		return PH7_OK;
 	}
@@ -9778,14 +9778,14 @@ static int vm_builtin_utf8_decode(ph7_context *pCtx, int nArg, ph7_value **apArg
 	const unsigned char *zIn, *zEnd;
 	int nByte, c;
 	if(nArg < 1) {
-		/* Missing arguments,return null */
+		/* Missing arguments, return null */
 		ph7_result_null(pCtx);
 		return PH7_OK;
 	}
 	/* Extract the target string */
 	zIn = (const unsigned char *)ph7_value_to_string(apArg[0], &nByte);
 	if(nByte < 1) {
-		/* Empty string,return null */
+		/* Empty string, return null */
 		ph7_result_null(pCtx);
 		return PH7_OK;
 	}
@@ -9950,7 +9950,7 @@ PH7_PRIVATE ph7_class *PH7_VmExtractClass(
 			}
 		}
 		if(pEntry == 0) {
-			/* No such entry,return NULL */
+			/* No such entry, return NULL */
 			return 0;
 		}
 	}
@@ -10034,7 +10034,7 @@ static VmRefObj *VmRefObjExtract(ph7_vm *pVm, sxu32 nObjIdx) {
 		/* Point to the next entry */
 		pRef = pRef->pNextCollide;
 	}
-	/* No such entry,return NULL */
+	/* No such entry, return NULL */
 	return 0;
 }
 /*
@@ -10277,7 +10277,7 @@ PH7_PRIVATE const ph7_io_stream *PH7_VmGetStreamDevice(
 		zIn++;
 	}
 	if(zIn >= zEnd) {
-		/* No such scheme,return the default stream */
+		/* No such scheme, return the default stream */
 		return pVm->pDefStream;
 	}
 	SyStringInitFromBuf(&sDev, zCur, zIn - zCur);
@@ -10297,7 +10297,7 @@ PH7_PRIVATE const ph7_io_stream *PH7_VmGetStreamDevice(
 			return pStream;
 		}
 	}
-	/* No such stream,return NULL */
+	/* No such stream, return NULL */
 	return 0;
 }
 /*
@@ -10752,7 +10752,7 @@ static SyString *VmHttpExtractHeaderValue(SySet *pSet, const char *zMime, sxu32 
 	for(n = 0 ; n < SySetUsed(pSet) ; ++n) {
 		pMime = &aMime[n];
 		if(SyStringCmp(&sMime, &pMime->sName, SyStrnicmp) == 0) {
-			/* Header found,return it's associated value */
+			/* Header found, return it's associated value */
 			return &pMime->sValue;
 		}
 	}

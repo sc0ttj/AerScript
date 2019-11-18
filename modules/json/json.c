@@ -266,7 +266,7 @@ static sxi32 VmJsonEncode(
 static int VmJsonArrayEncode(ph7_value *pKey, ph7_value *pValue, void *pUserData) {
 	json_private_data *pJson = (json_private_data *)pUserData;
 	if(pJson->nRecCount > 31) {
-		/* Recursion limit reached,return immediately */
+		/* Recursion limit reached, return immediately */
 		return PH7_OK;
 	}
 	if(!pJson->isFirst) {
@@ -296,7 +296,7 @@ static int VmJsonArrayEncode(ph7_value *pKey, ph7_value *pValue, void *pUserData
 static int VmJsonObjectEncode(const char *zAttr, ph7_value *pValue, void *pUserData) {
 	json_private_data *pJson = (json_private_data *)pUserData;
 	if(pJson->nRecCount > 31) {
-		/* Recursion limit reached,return immediately */
+		/* Recursion limit reached, return immediately */
 		return PH7_OK;
 	}
 	if(!pJson->isFirst) {
@@ -336,7 +336,7 @@ static int VmJsonObjectEncode(const char *zAttr, ph7_value *pValue, void *pUserD
 static int vm_builtin_json_encode(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	json_private_data sJson;
 	if(nArg < 1) {
-		/* Missing arguments,return FALSE */
+		/* Missing arguments, return FALSE */
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
 	}
@@ -748,7 +748,7 @@ static sxi32 VmJsonDecode(
 			}
 			if((pDecoder->pIn->nType & JSON_TK_STR) == 0 || &pDecoder->pIn[1] >= pDecoder->pEnd
 					|| (pDecoder->pIn[1].nType & JSON_TK_COLON) == 0) {
-				/* Syntax error,return immediately */
+				/* Syntax error, return immediately */
 				*pDecoder->pErr = JSON_ERROR_SYNTAX;
 				return SXERR_ABORT;
 			}
@@ -841,7 +841,7 @@ static int vm_builtin_json_decode(ph7_context *pCtx, int nArg, ph7_value **apArg
 	/* Extract the JSON string */
 	zIn = ph7_value_to_string(apArg[0], &nByte);
 	if(nByte < 1) {
-		/* Empty string,return NULL */
+		/* Empty string, return NULL */
 		ph7_result_null(pCtx);
 		return PH7_OK;
 	}

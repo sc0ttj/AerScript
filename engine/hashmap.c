@@ -227,7 +227,7 @@ static sxi32 HashmapGrowBucket(ph7_hashmap *pMap) {
 		pMap->apBucket = apNew;
 		pMap->nSize = nNew;
 		if(apOld == 0) {
-			/* First allocated table [i.e: no entry],return immediately */
+			/* First allocated table [i.e: no entry], return immediately */
 			return SXRET_OK;
 		}
 		/* Rehash old entries */
@@ -1315,7 +1315,7 @@ PH7_PRIVATE void PH7_HashmapResetLoopCursor(ph7_hashmap *pMap) {
 PH7_PRIVATE ph7_hashmap_node *PH7_HashmapGetNextEntry(ph7_hashmap *pMap) {
 	ph7_hashmap_node *pCur = pMap->pCur;
 	if(pCur == 0) {
-		/* End of the list,return null */
+		/* End of the list, return null */
 		return 0;
 	}
 	/* Advance the node cursor */
@@ -1782,7 +1782,7 @@ static int ph7_hashmap_sort(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	ph7_hashmap *pMap;
 	/* Make sure we are dealing with a valid hashmap */
 	if(nArg < 1 || !ph7_value_is_array(apArg[0])) {
-		/* Missing/Invalid arguments,return FALSE */
+		/* Missing/Invalid arguments, return FALSE */
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
 	}
@@ -1802,7 +1802,7 @@ static int ph7_hashmap_sort(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 		/* Rehash [Do not maintain index association as requested by the PHP specification] */
 		HashmapSortRehash(pMap);
 	}
-	/* All done,return TRUE */
+	/* All done, return TRUE */
 	ph7_result_bool(pCtx, 1);
 	return PH7_OK;
 }
@@ -1825,7 +1825,7 @@ static int ph7_hashmap_asort(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	ph7_hashmap *pMap;
 	/* Make sure we are dealing with a valid hashmap */
 	if(nArg < 1 || !ph7_value_is_array(apArg[0])) {
-		/* Missing/Invalid arguments,return FALSE */
+		/* Missing/Invalid arguments, return FALSE */
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
 	}
@@ -1847,7 +1847,7 @@ static int ph7_hashmap_asort(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 			pMap->pLast = pMap->pLast->pPrev;
 		}
 	}
-	/* All done,return TRUE */
+	/* All done, return TRUE */
 	ph7_result_bool(pCtx, 1);
 	return PH7_OK;
 }
@@ -1870,7 +1870,7 @@ static int ph7_hashmap_arsort(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	ph7_hashmap *pMap;
 	/* Make sure we are dealing with a valid hashmap */
 	if(nArg < 1 || !ph7_value_is_array(apArg[0])) {
-		/* Missing/Invalid arguments,return FALSE */
+		/* Missing/Invalid arguments, return FALSE */
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
 	}
@@ -1892,7 +1892,7 @@ static int ph7_hashmap_arsort(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 			pMap->pLast = pMap->pLast->pPrev;
 		}
 	}
-	/* All done,return TRUE */
+	/* All done, return TRUE */
 	ph7_result_bool(pCtx, 1);
 	return PH7_OK;
 }
@@ -1915,7 +1915,7 @@ static int ph7_hashmap_ksort(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	ph7_hashmap *pMap;
 	/* Make sure we are dealing with a valid hashmap */
 	if(nArg < 1 || !ph7_value_is_array(apArg[0])) {
-		/* Missing/Invalid arguments,return FALSE */
+		/* Missing/Invalid arguments, return FALSE */
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
 	}
@@ -1937,7 +1937,7 @@ static int ph7_hashmap_ksort(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 			pMap->pLast = pMap->pLast->pPrev;
 		}
 	}
-	/* All done,return TRUE */
+	/* All done, return TRUE */
 	ph7_result_bool(pCtx, 1);
 	return PH7_OK;
 }
@@ -1960,7 +1960,7 @@ static int ph7_hashmap_krsort(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	ph7_hashmap *pMap;
 	/* Make sure we are dealing with a valid hashmap */
 	if(nArg < 1 || !ph7_value_is_array(apArg[0])) {
-		/* Missing/Invalid arguments,return FALSE */
+		/* Missing/Invalid arguments, return FALSE */
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
 	}
@@ -1982,7 +1982,7 @@ static int ph7_hashmap_krsort(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 			pMap->pLast = pMap->pLast->pPrev;
 		}
 	}
-	/* All done,return TRUE */
+	/* All done, return TRUE */
 	ph7_result_bool(pCtx, 1);
 	return PH7_OK;
 }
@@ -2005,7 +2005,7 @@ static int ph7_hashmap_rsort(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	ph7_hashmap *pMap;
 	/* Make sure we are dealing with a valid hashmap */
 	if(nArg < 1 || !ph7_value_is_array(apArg[0])) {
-		/* Missing/Invalid arguments,return FALSE */
+		/* Missing/Invalid arguments, return FALSE */
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
 	}
@@ -2025,7 +2025,7 @@ static int ph7_hashmap_rsort(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 		/* Rehash [Do not maintain index association as requested by the PHP specification] */
 		HashmapSortRehash(pMap);
 	}
-	/* All done,return TRUE */
+	/* All done, return TRUE */
 	ph7_result_bool(pCtx, 1);
 	return PH7_OK;
 }
@@ -2047,7 +2047,7 @@ static int ph7_hashmap_usort(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	ph7_hashmap *pMap;
 	/* Make sure we are dealing with a valid hashmap */
 	if(nArg < 1 || !ph7_value_is_array(apArg[0])) {
-		/* Missing/Invalid arguments,return FALSE */
+		/* Missing/Invalid arguments, return FALSE */
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
 	}
@@ -2069,7 +2069,7 @@ static int ph7_hashmap_usort(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 		/* Rehash [Do not maintain index association as requested by the PHP specification] */
 		HashmapSortRehash(pMap);
 	}
-	/* All done,return TRUE */
+	/* All done, return TRUE */
 	ph7_result_bool(pCtx, 1);
 	return PH7_OK;
 }
@@ -2092,7 +2092,7 @@ static int ph7_hashmap_uasort(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	ph7_hashmap *pMap;
 	/* Make sure we are dealing with a valid hashmap */
 	if(nArg < 1 || !ph7_value_is_array(apArg[0])) {
-		/* Missing/Invalid arguments,return FALSE */
+		/* Missing/Invalid arguments, return FALSE */
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
 	}
@@ -2116,7 +2116,7 @@ static int ph7_hashmap_uasort(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 			pMap->pLast = pMap->pLast->pPrev;
 		}
 	}
-	/* All done,return TRUE */
+	/* All done, return TRUE */
 	ph7_result_bool(pCtx, 1);
 	return PH7_OK;
 }
@@ -2139,7 +2139,7 @@ static int ph7_hashmap_uksort(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	ph7_hashmap *pMap;
 	/* Make sure we are dealing with a valid hashmap */
 	if(nArg < 1 || !ph7_value_is_array(apArg[0])) {
-		/* Missing/Invalid arguments,return FALSE */
+		/* Missing/Invalid arguments, return FALSE */
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
 	}
@@ -2163,7 +2163,7 @@ static int ph7_hashmap_uksort(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 			pMap->pLast = pMap->pLast->pPrev;
 		}
 	}
-	/* All done,return TRUE */
+	/* All done, return TRUE */
 	ph7_result_bool(pCtx, 1);
 	return PH7_OK;
 }
@@ -2181,7 +2181,7 @@ static int ph7_hashmap_shuffle(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	ph7_hashmap *pMap;
 	/* Make sure we are dealing with a valid hashmap */
 	if(nArg < 1 || !ph7_value_is_array(apArg[0])) {
-		/* Missing/Invalid arguments,return FALSE */
+		/* Missing/Invalid arguments, return FALSE */
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
 	}
@@ -2195,7 +2195,7 @@ static int ph7_hashmap_shuffle(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 			pMap->pLast = pMap->pLast->pPrev;
 		}
 	}
-	/* All done,return TRUE */
+	/* All done, return TRUE */
 	ph7_result_bool(pCtx, 1);
 	return PH7_OK;
 }
@@ -2217,7 +2217,7 @@ static int ph7_hashmap_count(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	int bRecursive = FALSE;
 	sxi64 iCount;
 	if(nArg < 1) {
-		/* Missing arguments,return 0 */
+		/* Missing arguments, return 0 */
 		ph7_result_int(pCtx, 0);
 		return PH7_OK;
 	}
@@ -2248,13 +2248,13 @@ static int ph7_hashmap_count(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 static int ph7_hashmap_key_exists(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	sxi32 rc;
 	if(nArg < 2) {
-		/* Missing arguments,return FALSE */
+		/* Missing arguments, return FALSE */
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
 	}
 	/* Make sure we are dealing with a valid hashmap */
 	if(!ph7_value_is_array(apArg[1])) {
-		/* Invalid argument,return FALSE */
+		/* Invalid argument, return FALSE */
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
 	}
@@ -2275,19 +2275,19 @@ static int ph7_hashmap_key_exists(ph7_context *pCtx, int nArg, ph7_value **apArg
 static int ph7_hashmap_pop(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	ph7_hashmap *pMap;
 	if(nArg < 1) {
-		/* Missing arguments,return null */
+		/* Missing arguments, return null */
 		ph7_result_null(pCtx);
 		return PH7_OK;
 	}
 	/* Make sure we are dealing with a valid hashmap */
 	if(!ph7_value_is_array(apArg[0])) {
-		/* Invalid argument,return null */
+		/* Invalid argument, return null */
 		ph7_result_null(pCtx);
 		return PH7_OK;
 	}
 	pMap = (ph7_hashmap *)apArg[0]->x.pOther;
 	if(pMap->nEntry < 1) {
-		/* Noting to pop,return NULL */
+		/* Noting to pop, return NULL */
 		ph7_result_null(pCtx);
 	} else {
 		ph7_hashmap_node *pLast = pMap->pLast;
@@ -2322,13 +2322,13 @@ static int ph7_hashmap_push(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	sxi32 rc;
 	int i;
 	if(nArg < 1) {
-		/* Missing arguments,return 0 */
+		/* Missing arguments, return 0 */
 		ph7_result_int(pCtx, 0);
 		return PH7_OK;
 	}
 	/* Make sure we are dealing with a valid hashmap */
 	if(!ph7_value_is_array(apArg[0])) {
-		/* Invalid argument,return 0 */
+		/* Invalid argument, return 0 */
 		ph7_result_int(pCtx, 0);
 		return PH7_OK;
 	}
@@ -2356,20 +2356,20 @@ static int ph7_hashmap_push(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 static int ph7_hashmap_shift(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	ph7_hashmap *pMap;
 	if(nArg < 1) {
-		/* Missing arguments,return null */
+		/* Missing arguments, return null */
 		ph7_result_null(pCtx);
 		return PH7_OK;
 	}
 	/* Make sure we are dealing with a valid hashmap */
 	if(!ph7_value_is_array(apArg[0])) {
-		/* Invalid argument,return null */
+		/* Invalid argument, return null */
 		ph7_result_null(pCtx);
 		return PH7_OK;
 	}
 	/* Point to the internal representation of the hashmap */
 	pMap = (ph7_hashmap *)apArg[0]->x.pOther;
 	if(pMap->nEntry < 1) {
-		/* Empty hashmap,return NULL */
+		/* Empty hashmap, return NULL */
 		ph7_result_null(pCtx);
 	} else {
 		ph7_hashmap_node *pEntry = pMap->pFirst;
@@ -2411,7 +2411,7 @@ static sxi32 HashmapCurrentValue(ph7_context *pCtx, ph7_hashmap *pMap, int iDire
 	ph7_hashmap_node *pCur = pMap->pCur;
 	ph7_value *pVal;
 	if(pCur == 0) {
-		/* Cursor does not point to anything,return FALSE */
+		/* Cursor does not point to anything, return FALSE */
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
 	}
@@ -2426,7 +2426,7 @@ static sxi32 HashmapCurrentValue(ph7_context *pCtx, ph7_hashmap *pMap, int iDire
 			pCur = pMap->pCur;
 		}
 		if(pCur == 0) {
-			/* End of input reached,return FALSE */
+			/* End of input reached, return FALSE */
 			ph7_result_bool(pCtx, 0);
 			return PH7_OK;
 		}
@@ -2453,13 +2453,13 @@ static sxi32 HashmapCurrentValue(ph7_context *pCtx, ph7_hashmap *pMap, int iDire
  */
 static int ph7_hashmap_current(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	if(nArg < 1) {
-		/* Missing arguments,return FALSE */
+		/* Missing arguments, return FALSE */
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
 	}
 	/* Make sure we are dealing with a valid hashmap */
 	if(!ph7_value_is_array(apArg[0])) {
-		/* Invalid argument,return FALSE */
+		/* Invalid argument, return FALSE */
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
 	}
@@ -2478,13 +2478,13 @@ static int ph7_hashmap_current(ph7_context *pCtx, int nArg, ph7_value **apArg) {
  */
 static int ph7_hashmap_next(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	if(nArg < 1) {
-		/* Missing arguments,return FALSE */
+		/* Missing arguments, return FALSE */
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
 	}
 	/* Make sure we are dealing with a valid hashmap */
 	if(!ph7_value_is_array(apArg[0])) {
-		/* Invalid argument,return FALSE */
+		/* Invalid argument, return FALSE */
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
 	}
@@ -2503,13 +2503,13 @@ static int ph7_hashmap_next(ph7_context *pCtx, int nArg, ph7_value **apArg) {
  */
 static int ph7_hashmap_prev(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	if(nArg < 1) {
-		/* Missing arguments,return FALSE */
+		/* Missing arguments, return FALSE */
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
 	}
 	/* Make sure we are dealing with a valid hashmap */
 	if(!ph7_value_is_array(apArg[0])) {
-		/* Invalid argument,return FALSE */
+		/* Invalid argument, return FALSE */
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
 	}
@@ -2527,13 +2527,13 @@ static int ph7_hashmap_prev(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 static int ph7_hashmap_end(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	ph7_hashmap *pMap;
 	if(nArg < 1) {
-		/* Missing arguments,return FALSE */
+		/* Missing arguments, return FALSE */
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
 	}
 	/* Make sure we are dealing with a valid hashmap */
 	if(!ph7_value_is_array(apArg[0])) {
-		/* Invalid argument,return FALSE */
+		/* Invalid argument, return FALSE */
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
 	}
@@ -2556,13 +2556,13 @@ static int ph7_hashmap_end(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 static int ph7_hashmap_reset(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	ph7_hashmap *pMap;
 	if(nArg < 1) {
-		/* Missing arguments,return FALSE */
+		/* Missing arguments, return FALSE */
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
 	}
 	/* Make sure we are dealing with a valid hashmap */
 	if(!ph7_value_is_array(apArg[0])) {
-		/* Invalid argument,return FALSE */
+		/* Invalid argument, return FALSE */
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
 	}
@@ -2590,20 +2590,20 @@ static int ph7_hashmap_simple_key(ph7_context *pCtx, int nArg, ph7_value **apArg
 	ph7_hashmap_node *pCur;
 	ph7_hashmap *pMap;
 	if(nArg < 1) {
-		/* Missing arguments,return NULL */
+		/* Missing arguments, return NULL */
 		ph7_result_null(pCtx);
 		return PH7_OK;
 	}
 	/* Make sure we are dealing with a valid hashmap */
 	if(!ph7_value_is_array(apArg[0])) {
-		/* Invalid argument,return NULL */
+		/* Invalid argument, return NULL */
 		ph7_result_null(pCtx);
 		return PH7_OK;
 	}
 	pMap = (ph7_hashmap *)apArg[0]->x.pOther;
 	pCur = pMap->pCur;
 	if(pCur == 0) {
-		/* Cursor does not point to anything,return NULL */
+		/* Cursor does not point to anything, return NULL */
 		ph7_result_null(pCtx);
 		return PH7_OK;
 	}
@@ -2637,20 +2637,20 @@ static int ph7_hashmap_each(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	ph7_value *pVal;
 	ph7_value sKey;
 	if(nArg < 1) {
-		/* Missing arguments,return FALSE */
+		/* Missing arguments, return FALSE */
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
 	}
 	/* Make sure we are dealing with a valid hashmap */
 	if(!ph7_value_is_array(apArg[0])) {
-		/* Invalid argument,return FALSE */
+		/* Invalid argument, return FALSE */
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
 	}
 	/* Point to the internal representation that describe the input hashmap */
 	pMap = (ph7_hashmap *)apArg[0]->x.pOther;
 	if(pMap->pCur == 0) {
-		/* Cursor does not point to anything,return FALSE */
+		/* Cursor does not point to anything, return FALSE */
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
 	}
@@ -2757,13 +2757,13 @@ static int ph7_hashmap_values(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	ph7_value *pObj;
 	sxu32 n;
 	if(nArg < 1) {
-		/* Missing arguments,return NULL */
+		/* Missing arguments, return NULL */
 		ph7_result_null(pCtx);
 		return PH7_OK;
 	}
 	/* Make sure we are dealing with a valid hashmap */
 	if(!ph7_value_is_array(apArg[0])) {
-		/* Invalid argument,return NULL */
+		/* Invalid argument, return NULL */
 		ph7_result_null(pCtx);
 		return PH7_OK;
 	}
@@ -2814,13 +2814,13 @@ static int ph7_hashmap_keys(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	sxi32 rc;
 	sxu32 n;
 	if(nArg < 1) {
-		/* Missing arguments,return NULL */
+		/* Missing arguments, return NULL */
 		ph7_result_null(pCtx);
 		return PH7_OK;
 	}
 	/* Make sure we are dealing with a valid hashmap */
 	if(!ph7_value_is_array(apArg[0])) {
-		/* Invalid argument,return NULL */
+		/* Invalid argument, return NULL */
 		ph7_result_null(pCtx);
 		return PH7_OK;
 	}
@@ -2884,7 +2884,7 @@ static int ph7_hashmap_merge(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	ph7_value *pArray;
 	int i;
 	if(nArg < 1) {
-		/* Missing arguments,return NULL */
+		/* Missing arguments, return NULL */
 		ph7_result_null(pCtx);
 		return PH7_OK;
 	}
@@ -2964,7 +2964,7 @@ static int ph7_hashmap_slice(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	int bPreserve;
 	sxi32 rc;
 	if(nArg < 2 || !ph7_value_is_array(apArg[0])) {
-		/* Missing/Invalid arguments,return NULL */
+		/* Missing/Invalid arguments, return NULL */
 		ph7_result_null(pCtx);
 		return PH7_OK;
 	}
@@ -2977,7 +2977,7 @@ static int ph7_hashmap_slice(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 		iOfft = (int)pSrc->nEntry + iOfft;
 	}
 	if(iOfft < 0 || iOfft > (int)pSrc->nEntry) {
-		/* Invalid offset,return the last entry */
+		/* Invalid offset, return the last entry */
 		iOfft = (int)pSrc->nEntry - 1;
 	}
 	/* Get the length */
@@ -3001,7 +3001,7 @@ static int ph7_hashmap_slice(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 		return PH7_OK;
 	}
 	if(iLength < 1) {
-		/* Don't bother processing,return the empty array */
+		/* Don't bother processing, return the empty array */
 		ph7_result_value(pCtx, pArray);
 		return PH7_OK;
 	}
@@ -3066,7 +3066,7 @@ static int ph7_hashmap_splice(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	int iLength, iOfft;
 	sxi32 rc;
 	if(nArg < 2 || !ph7_value_is_array(apArg[0])) {
-		/* Missing/Invalid arguments,return NULL */
+		/* Missing/Invalid arguments, return NULL */
 		ph7_result_null(pCtx);
 		return PH7_OK;
 	}
@@ -3099,7 +3099,7 @@ static int ph7_hashmap_splice(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 		return PH7_OK;
 	}
 	if(iLength < 1) {
-		/* Don't bother processing,return the empty array */
+		/* Don't bother processing, return the empty array */
 		ph7_result_value(pCtx, pArray);
 		return PH7_OK;
 	}
@@ -3184,7 +3184,7 @@ static int ph7_hashmap_in_array(ph7_context *pCtx, int nArg, ph7_value **apArg) 
 	int bStrict;
 	int rc;
 	if(nArg < 2) {
-		/* Missing argument,return FALSE */
+		/* Missing argument, return FALSE */
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
 	}
@@ -3230,13 +3230,13 @@ static int ph7_hashmap_search(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	sxu32 n;
 	int rc;
 	if(nArg < 2) {
-		/* Missing argument,return FALSE*/
+		/* Missing argument, return FALSE*/
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
 	}
 	bStrict = FALSE;
 	if(!ph7_value_is_array(apArg[1])) {
-		/* hasystack must be an array,return FALSE */
+		/* hasystack must be an array, return FALSE */
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
 	}
@@ -3266,7 +3266,7 @@ static int ph7_hashmap_search(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 			PH7_MemObjRelease(&sVal);
 			PH7_MemObjRelease(&sNeedle);
 			if(rc == 0) {
-				/* Match found,return key */
+				/* Match found, return key */
 				if(pEntry->iType == HASHMAP_INT_NODE) {
 					/* INT key */
 					ph7_result_int64(pCtx, pEntry->xKey.iKey);
@@ -3282,7 +3282,7 @@ static int ph7_hashmap_search(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 		pEntry = pEntry->pPrev; /* Reverse link */
 		n--;
 	}
-	/* No such value,return FALSE */
+	/* No such value, return FALSE */
 	ph7_result_bool(pCtx, 0);
 	return PH7_OK;
 }
@@ -3309,7 +3309,7 @@ static int ph7_hashmap_diff(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	sxu32 n;
 	int i;
 	if(nArg < 1 || !ph7_value_is_array(apArg[0])) {
-		/* Missing arguments,return NULL */
+		/* Missing arguments, return NULL */
 		ph7_result_null(pCtx);
 		return PH7_OK;
 	}
@@ -3393,7 +3393,7 @@ static int ph7_hashmap_udiff(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	sxu32 n;
 	int i;
 	if(nArg < 2 || !ph7_value_is_array(apArg[0])) {
-		/* Missing/Invalid arguments,return NULL */
+		/* Missing/Invalid arguments, return NULL */
 		ph7_result_null(pCtx);
 		return PH7_OK;
 	}
@@ -3472,7 +3472,7 @@ static int ph7_hashmap_diff_assoc(ph7_context *pCtx, int nArg, ph7_value **apArg
 	sxu32 n;
 	int i;
 	if(nArg < 1 || !ph7_value_is_array(apArg[0])) {
-		/* Missing arguments,return NULL */
+		/* Missing arguments, return NULL */
 		ph7_result_null(pCtx);
 		return PH7_OK;
 	}
@@ -3566,7 +3566,7 @@ static int ph7_hashmap_diff_uassoc(ph7_context *pCtx, int nArg, ph7_value **apAr
 	sxu32 n;
 	int i;
 	if(nArg < 2 || !ph7_value_is_array(apArg[0])) {
-		/* Missing/Invalid arguments,return NULL */
+		/* Missing/Invalid arguments, return NULL */
 		ph7_result_null(pCtx);
 		return PH7_OK;
 	}
@@ -3656,7 +3656,7 @@ static int ph7_hashmap_diff_key(ph7_context *pCtx, int nArg, ph7_value **apArg) 
 	sxu32 n;
 	int i;
 	if(nArg < 1 || !ph7_value_is_array(apArg[0])) {
-		/* Missing arguments,return NULL */
+		/* Missing arguments, return NULL */
 		ph7_result_null(pCtx);
 		return PH7_OK;
 	}
@@ -3735,7 +3735,7 @@ static int ph7_hashmap_intersect(ph7_context *pCtx, int nArg, ph7_value **apArg)
 	sxu32 n;
 	int i;
 	if(nArg < 1 || !ph7_value_is_array(apArg[0])) {
-		/* Missing arguments,return NULL */
+		/* Missing arguments, return NULL */
 		ph7_result_null(pCtx);
 		return PH7_OK;
 	}
@@ -3813,7 +3813,7 @@ static int ph7_hashmap_intersect_assoc(ph7_context *pCtx, int nArg, ph7_value **
 	sxu32 n;
 	int i;
 	if(nArg < 1 || !ph7_value_is_array(apArg[0])) {
-		/* Missing arguments,return NULL */
+		/* Missing arguments, return NULL */
 		ph7_result_null(pCtx);
 		return PH7_OK;
 	}
@@ -3901,7 +3901,7 @@ static int ph7_hashmap_intersect_key(ph7_context *pCtx, int nArg, ph7_value **ap
 	sxu32 n;
 	int i;
 	if(nArg < 1 || !ph7_value_is_array(apArg[0])) {
-		/* Missing arguments,return NULL */
+		/* Missing arguments, return NULL */
 		ph7_result_null(pCtx);
 		return PH7_OK;
 	}
@@ -3987,7 +3987,7 @@ static int ph7_hashmap_uintersect(ph7_context *pCtx, int nArg, ph7_value **apArg
 	sxu32 n;
 	int i;
 	if(nArg < 2 || !ph7_value_is_array(apArg[0])) {
-		/* Missing/Invalid arguments,return NULL */
+		/* Missing/Invalid arguments, return NULL */
 		ph7_result_null(pCtx);
 		return PH7_OK;
 	}
@@ -4060,7 +4060,7 @@ static int ph7_hashmap_fill(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	ph7_value *pArray;
 	int i, nEntry;
 	if(nArg < 3) {
-		/* Missing arguments,return NULL */
+		/* Missing arguments, return NULL */
 		ph7_result_null(pCtx);
 		return PH7_OK;
 	}
@@ -4099,13 +4099,13 @@ static int ph7_hashmap_fill_keys(ph7_context *pCtx, int nArg, ph7_value **apArg)
 	ph7_value *pArray;
 	sxu32 n;
 	if(nArg < 2) {
-		/* Missing arguments,return NULL */
+		/* Missing arguments, return NULL */
 		ph7_result_null(pCtx);
 		return PH7_OK;
 	}
 	/* Make sure we are dealing with a valid hashmap */
 	if(!ph7_value_is_array(apArg[0])) {
-		/* Invalid argument,return NULL */
+		/* Invalid argument, return NULL */
 		ph7_result_null(pCtx);
 		return PH7_OK;
 	}
@@ -4147,13 +4147,13 @@ static int ph7_hashmap_combine(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	ph7_value *pArray;
 	sxu32 n;
 	if(nArg < 2) {
-		/* Missing arguments,return FALSE */
+		/* Missing arguments, return FALSE */
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
 	}
 	/* Make sure we are dealing with a valid hashmap */
 	if(!ph7_value_is_array(apArg[0]) || !ph7_value_is_array(apArg[1])) {
-		/* Invalid argument,return FALSE */
+		/* Invalid argument, return FALSE */
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
 	}
@@ -4161,7 +4161,7 @@ static int ph7_hashmap_combine(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	pKey   = (ph7_hashmap *)apArg[0]->x.pOther;
 	pValue = (ph7_hashmap *)apArg[1]->x.pOther;
 	if(pKey->nEntry != pValue->nEntry) {
-		/* Array length differs,return FALSE */
+		/* Array length differs, return FALSE */
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
 	}
@@ -4202,13 +4202,13 @@ static int ph7_hashmap_reverse(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	int bPreserve;
 	sxu32 n;
 	if(nArg < 1) {
-		/* Missing arguments,return NULL */
+		/* Missing arguments, return NULL */
 		ph7_result_null(pCtx);
 		return PH7_OK;
 	}
 	/* Make sure we are dealing with a valid hashmap */
 	if(!ph7_value_is_array(apArg[0])) {
-		/* Invalid argument,return NULL */
+		/* Invalid argument, return NULL */
 		ph7_result_null(pCtx);
 		return PH7_OK;
 	}
@@ -4259,13 +4259,13 @@ static int ph7_hashmap_unique(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	sxi32 rc;
 	sxu32 n;
 	if(nArg < 1) {
-		/* Missing arguments,return NULL */
+		/* Missing arguments, return NULL */
 		ph7_result_null(pCtx);
 		return PH7_OK;
 	}
 	/* Make sure we are dealing with a valid hashmap */
 	if(!ph7_value_is_array(apArg[0])) {
-		/* Invalid argument,return NULL */
+		/* Invalid argument, return NULL */
 		ph7_result_null(pCtx);
 		return PH7_OK;
 	}
@@ -4317,13 +4317,13 @@ static int ph7_hashmap_flip(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	ph7_value sVal;
 	sxu32 n;
 	if(nArg < 1) {
-		/* Missing arguments,return NULL */
+		/* Missing arguments, return NULL */
 		ph7_result_null(pCtx);
 		return PH7_OK;
 	}
 	/* Make sure we are dealing with a valid hashmap */
 	if(!ph7_value_is_array(apArg[0])) {
-		/* Invalid argument,return NULL */
+		/* Invalid argument, return NULL */
 		ph7_result_null(pCtx);
 		return PH7_OK;
 	}
@@ -4432,19 +4432,19 @@ static int ph7_hashmap_sum(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	ph7_hashmap *pMap;
 	ph7_value *pObj;
 	if(nArg < 1) {
-		/* Missing arguments,return 0 */
+		/* Missing arguments, return 0 */
 		ph7_result_int(pCtx, 0);
 		return PH7_OK;
 	}
 	/* Make sure we are dealing with a valid hashmap */
 	if(!ph7_value_is_array(apArg[0])) {
-		/* Invalid argument,return 0 */
+		/* Invalid argument, return 0 */
 		ph7_result_int(pCtx, 0);
 		return PH7_OK;
 	}
 	pMap = (ph7_hashmap *)apArg[0]->x.pOther;
 	if(pMap->nEntry < 1) {
-		/* Nothing to compute,return 0 */
+		/* Nothing to compute, return 0 */
 		ph7_result_int(pCtx, 0);
 		return PH7_OK;
 	}
@@ -4534,19 +4534,19 @@ static int ph7_hashmap_product(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	ph7_hashmap *pMap;
 	ph7_value *pObj;
 	if(nArg < 1) {
-		/* Missing arguments,return 0 */
+		/* Missing arguments, return 0 */
 		ph7_result_int(pCtx, 0);
 		return PH7_OK;
 	}
 	/* Make sure we are dealing with a valid hashmap */
 	if(!ph7_value_is_array(apArg[0])) {
-		/* Invalid argument,return 0 */
+		/* Invalid argument, return 0 */
 		ph7_result_int(pCtx, 0);
 		return PH7_OK;
 	}
 	pMap = (ph7_hashmap *)apArg[0]->x.pOther;
 	if(pMap->nEntry < 1) {
-		/* Nothing to compute,return 0 */
+		/* Nothing to compute, return 0 */
 		ph7_result_int(pCtx, 0);
 		return PH7_OK;
 	}
@@ -4583,7 +4583,7 @@ static int ph7_hashmap_rand(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	ph7_hashmap *pMap;
 	int nItem = 1;
 	if(nArg < 1) {
-		/* Missing argument,return NULL */
+		/* Missing argument, return NULL */
 		ph7_result_null(pCtx);
 		return PH7_OK;
 	}
@@ -4595,7 +4595,7 @@ static int ph7_hashmap_rand(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	/* Point to the internal representation of the input hashmap */
 	pMap = (ph7_hashmap *)apArg[0]->x.pOther;
 	if(pMap->nEntry < 1) {
-		/* Empty hashmap,return NULL */
+		/* Empty hashmap, return NULL */
 		ph7_result_null(pCtx);
 		return PH7_OK;
 	}
@@ -4698,7 +4698,7 @@ static int ph7_hashmap_chunk(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	sxu32 nSize;
 	sxu32 n;
 	if(nArg < 2 || !ph7_value_is_array(apArg[0])) {
-		/* Invalid arguments,return NULL */
+		/* Invalid arguments, return NULL */
 		ph7_result_null(pCtx);
 		return PH7_OK;
 	}
@@ -4779,7 +4779,7 @@ static int ph7_hashmap_pad(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	ph7_value *pArray;
 	int nEntry;
 	if(nArg < 3 || !ph7_value_is_array(apArg[0])) {
-		/* Invalid arguments,return NULL */
+		/* Invalid arguments, return NULL */
 		ph7_result_null(pCtx);
 		return PH7_OK;
 	}
@@ -4850,7 +4850,7 @@ static int ph7_hashmap_replace(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	ph7_value *pArray;
 	int i;
 	if(nArg < 1) {
-		/* Invalid arguments,return NULL */
+		/* Invalid arguments, return NULL */
 		ph7_result_null(pCtx);
 		return PH7_OK;
 	}
@@ -4896,7 +4896,7 @@ static int ph7_hashmap_filter(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	int keep;
 	sxu32 n;
 	if(nArg < 1 || !ph7_value_is_array(apArg[0])) {
-		/* Invalid arguments,return NULL */
+		/* Invalid arguments, return NULL */
 		ph7_result_null(pCtx);
 		return PH7_OK;
 	}
@@ -4958,7 +4958,7 @@ static int ph7_hashmap_map(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	ph7_hashmap *pMap;
 	sxu32 n;
 	if(nArg < 2 || !ph7_value_is_array(apArg[1])) {
-		/* Invalid arguments,return NULL */
+		/* Invalid arguments, return NULL */
 		ph7_result_null(pCtx);
 		return PH7_OK;
 	}
@@ -5023,7 +5023,7 @@ static int ph7_hashmap_reduce(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	ph7_value sResult;
 	sxu32 n;
 	if(nArg < 2 || !ph7_value_is_array(apArg[0])) {
-		/* Invalid/Missing arguments,return NULL */
+		/* Invalid/Missing arguments, return NULL */
 		ph7_result_null(pCtx);
 		return PH7_OK;
 	}
@@ -5076,7 +5076,7 @@ static int ph7_hashmap_walk(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	sxi32 rc;
 	sxu32 n;
 	if(nArg < 2 || !ph7_value_is_array(apArg[0])) {
-		/* Invalid/Missing arguments,return FALSE */
+		/* Invalid/Missing arguments, return FALSE */
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
 	}
@@ -5105,7 +5105,7 @@ static int ph7_hashmap_walk(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 		/* Point to the next entry */
 		pEntry = pEntry->pPrev; /* Reverse link */
 	}
-	/* All done,return TRUE */
+	/* All done, return TRUE */
 	ph7_result_bool(pCtx, 1);
 	return PH7_OK;
 }
@@ -5177,7 +5177,7 @@ static int ph7_hashmap_walk_recursive(ph7_context *pCtx, int nArg, ph7_value **a
 	ph7_hashmap *pMap;
 	sxi32 rc;
 	if(nArg < 2 || !ph7_value_is_array(apArg[0])) {
-		/* Invalid/Missing arguments,return FALSE */
+		/* Invalid/Missing arguments, return FALSE */
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
 	}

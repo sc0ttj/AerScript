@@ -4929,7 +4929,7 @@ static ProcLangConstruct PH7_GenStateGetStatementHandler(
 		if(nKeywordID == PH7_KEYWORD_STATIC && pLookahead && (pLookahead->nType & PH7_TK_OP)) {
 			const ph7_expr_op *pOp = (const ph7_expr_op *)pLookahead->pUserData;
 			if(pOp && pOp->iOp == EXPR_OP_DC /*::*/) {
-				/* 'static' (class context),return null */
+				/* 'static' (class context), return null */
 				return 0;
 			}
 		}
@@ -5247,7 +5247,7 @@ PH7_PRIVATE sxi32 PH7_GenCompileError(ph7_gen_state *pGen, sxi32 nErrType, sxu32
 	/* Peek the processed file path if available */
 	pFile = (SyString *)SySetPeek(&pGen->pVm->aFiles);
 	if(pGen->xErr == 0) {
-		/* No available error consumer,return immediately */
+		/* No available error consumer, return immediately */
 		return SXRET_OK;
 	}
 	switch(nErrType) {
