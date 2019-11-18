@@ -134,7 +134,7 @@ static int PH7_vfs_getcwd(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	if(pVfs == 0 || pVfs->xGetcwd == 0) {
 		SXUNUSED(nArg); /* cc warning */
 		SXUNUSED(apArg);
-		/* IO routine not implemented,return NULL */
+		/* IO routine not implemented, return NULL */
 		PH7_VmThrowError(pCtx->pVm, PH7_CTX_WARNING,
 									   "IO routine(%s) not implemented in the underlying VFS",
 									   ph7_function_name(pCtx)
@@ -172,7 +172,7 @@ static int PH7_vfs_rmdir(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	/* Point to the underlying vfs */
 	pVfs = (ph7_vfs *)ph7_context_user_data(pCtx);
 	if(pVfs == 0 || pVfs->xRmdir == 0) {
-		/* IO routine not implemented,return NULL */
+		/* IO routine not implemented, return NULL */
 		PH7_VmThrowError(pCtx->pVm, PH7_CTX_WARNING,
 									   "IO routine(%s) not implemented in the underlying VFS",
 									   ph7_function_name(pCtx)
@@ -209,7 +209,7 @@ static int PH7_vfs_is_dir(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	/* Point to the underlying vfs */
 	pVfs = (ph7_vfs *)ph7_context_user_data(pCtx);
 	if(pVfs == 0 || pVfs->xIsdir == 0) {
-		/* IO routine not implemented,return NULL */
+		/* IO routine not implemented, return NULL */
 		PH7_VmThrowError(pCtx->pVm, PH7_CTX_WARNING,
 									   "IO routine(%s) not implemented in the underlying VFS",
 									   ph7_function_name(pCtx)
@@ -422,13 +422,13 @@ static int PH7_vfs_usleep(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	ph7_vfs *pVfs;
 	int nSleep;
 	if(nArg < 1 || !ph7_value_is_int(apArg[0])) {
-		/* Missing/Invalid argument,return immediately */
+		/* Missing/Invalid argument, return immediately */
 		return PH7_OK;
 	}
 	/* Point to the underlying vfs */
 	pVfs = (ph7_vfs *)ph7_context_user_data(pCtx);
 	if(pVfs == 0 || pVfs->xSleep == 0) {
-		/* IO routine not implemented,return NULL */
+		/* IO routine not implemented, return NULL */
 		PH7_VmThrowError(pCtx->pVm, PH7_CTX_WARNING,
 									   "IO routine(%s) not implemented in the underlying VFS",
 									   ph7_function_name(pCtx)
@@ -438,7 +438,7 @@ static int PH7_vfs_usleep(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	/* Amount to sleep */
 	nSleep = ph7_value_to_int(apArg[0]);
 	if(nSleep < 0) {
-		/* Invalid value,return immediately */
+		/* Invalid value, return immediately */
 		return PH7_OK;
 	}
 	/* Perform the requested operation (Microseconds) */
@@ -1175,14 +1175,14 @@ static int PH7_vfs_filetype(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	const char *zPath;
 	ph7_vfs *pVfs;
 	if(nArg < 1 || !ph7_value_is_string(apArg[0])) {
-		/* Missing/Invalid argument,return 'unknown' */
+		/* Missing/Invalid argument, return 'unknown' */
 		ph7_result_string(pCtx, "unknown", sizeof("unknown") - 1);
 		return PH7_OK;
 	}
 	/* Point to the underlying vfs */
 	pVfs = (ph7_vfs *)ph7_context_user_data(pCtx);
 	if(pVfs == 0 || pVfs->xFiletype == 0) {
-		/* IO routine not implemented,return NULL */
+		/* IO routine not implemented, return NULL */
 		PH7_VmThrowError(pCtx->pVm, PH7_CTX_WARNING,
 									   "IO routine(%s) not implemented in the underlying VFS",
 									   ph7_function_name(pCtx)
@@ -1424,7 +1424,7 @@ static int PH7_vfs_putenv(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	/* Point to the underlying vfs */
 	pVfs = (ph7_vfs *)ph7_context_user_data(pCtx);
 	if(pVfs == 0 || pVfs->xSetenv == 0) {
-		/* IO routine not implemented,return NULL */
+		/* IO routine not implemented, return NULL */
 		PH7_VmThrowError(pCtx->pVm, PH7_CTX_WARNING,
 									   "IO routine(%s) not implemented in the underlying VFS",
 									   ph7_function_name(pCtx)
@@ -1551,7 +1551,7 @@ static int PH7_builtin_basename(ph7_context *pCtx, int nArg, ph7_value **apArg) 
 	const char *zPath, *zBase, *zEnd;
 	int c, d, iLen;
 	if(nArg < 1 || !ph7_value_is_string(apArg[0])) {
-		/* Missing/Invalid argument,return the empty string */
+		/* Missing/Invalid argument, return the empty string */
 		ph7_result_string(pCtx, "", 0);
 		return PH7_OK;
 	}
@@ -1691,7 +1691,7 @@ static int PH7_builtin_pathinfo(ph7_context *pCtx, int nArg, ph7_value **apArg) 
 	SyString *pComp;
 	int iLen;
 	if(nArg < 1 || !ph7_value_is_string(apArg[0])) {
-		/* Missing/Invalid argument,return the empty string */
+		/* Missing/Invalid argument, return the empty string */
 		ph7_result_string(pCtx, "", 0);
 		return PH7_OK;
 	}
@@ -1755,7 +1755,7 @@ static int PH7_builtin_pathinfo(ph7_context *pCtx, int nArg, ph7_value **apArg) 
 		pArray = ph7_context_new_array(pCtx);
 		pValue = ph7_context_new_scalar(pCtx);
 		if(pArray == 0 || pValue == 0) {
-			/* Out of mem,return NULL */
+			/* Out of mem, return NULL */
 			ph7_result_bool(pCtx, 0);
 			return PH7_OK;
 		}
@@ -2174,7 +2174,7 @@ static int PH7_vfs_umask(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	/* Point to the underlying vfs */
 	pVfs = (ph7_vfs *)ph7_context_user_data(pCtx);
 	if(pVfs == 0 || pVfs->xUmask == 0) {
-		/* IO routine not implemented,return -1 */
+		/* IO routine not implemented, return -1 */
 		PH7_VmThrowError(pCtx->pVm, PH7_CTX_WARNING,
 									   "IO routine(%s) not implemented in the underlying VFS",
 									   ph7_function_name(pCtx)
@@ -2209,7 +2209,7 @@ static int PH7_vfs_sys_get_temp_dir(ph7_context *pCtx, int nArg, ph7_value **apA
 	if(pVfs == 0 || pVfs->xTempDir == 0) {
 		SXUNUSED(nArg); /* cc warning */
 		SXUNUSED(apArg);
-		/* IO routine not implemented,return "" */
+		/* IO routine not implemented, return "" */
 		PH7_VmThrowError(pCtx->pVm, PH7_CTX_WARNING,
 									   "IO routine(%s) not implemented in the underlying VFS",
 									   ph7_function_name(pCtx)
@@ -2264,7 +2264,7 @@ static int PH7_vfs_getmypid(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	if(pVfs == 0 || pVfs->xProcessId == 0) {
 		SXUNUSED(nArg); /* cc warning */
 		SXUNUSED(apArg);
-		/* IO routine not implemented,return -1 */
+		/* IO routine not implemented, return -1 */
 		PH7_VmThrowError(pCtx->pVm, PH7_CTX_WARNING,
 									   "IO routine(%s) not implemented in the underlying VFS",
 									   ph7_function_name(pCtx)
@@ -2294,7 +2294,7 @@ static int PH7_vfs_getmyuid(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	if(pVfs == 0 || pVfs->xUid == 0) {
 		SXUNUSED(nArg); /* cc warning */
 		SXUNUSED(apArg);
-		/* IO routine not implemented,return -1 */
+		/* IO routine not implemented, return -1 */
 		PH7_VmThrowError(pCtx->pVm, PH7_CTX_WARNING,
 									   "IO routine(%s) not implemented in the underlying VFS",
 									   ph7_function_name(pCtx)
@@ -2324,7 +2324,7 @@ static int PH7_vfs_getmygid(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	if(pVfs == 0 || pVfs->xGid == 0) {
 		SXUNUSED(nArg); /* cc warning */
 		SXUNUSED(apArg);
-		/* IO routine not implemented,return -1 */
+		/* IO routine not implemented, return -1 */
 		PH7_VmThrowError(pCtx->pVm, PH7_CTX_WARNING,
 									   "IO routine(%s) not implemented in the underlying VFS",
 									   ph7_function_name(pCtx)
@@ -2922,12 +2922,12 @@ static ph7_int64 StreamReadLine(io_private *pDev, const char **pzData, ph7_int64
 		/* Try to extract a line */
 		rc = GetLine(pDev, &n, pzData);
 		if(rc == SXRET_OK) {
-			/* Got one,return immediately */
+			/* Got one, return immediately */
 			pDev->nOfft += (sxu32)n;
 			return n;
 		}
 		if(nMaxLen > 0 && (SyBlobLength(&pDev->sBuffer) - pDev->nOfft >= nMaxLen)) {
-			/* Read limit reached,return the available data */
+			/* Read limit reached, return the available data */
 			*pzData = (const char *)SyBlobDataAt(&pDev->sBuffer, pDev->nOfft);
 			n = SyBlobLength(&pDev->sBuffer) - pDev->nOfft;
 			/* Reset the working buffer */
@@ -2937,7 +2937,7 @@ static ph7_int64 StreamReadLine(io_private *pDev, const char **pzData, ph7_int64
 		}
 	}
 	if(SyBlobLength(&pDev->sBuffer) - pDev->nOfft > 0) {
-		/* Read limit reached,return the available data */
+		/* Read limit reached, return the available data */
 		*pzData = (const char *)SyBlobDataAt(&pDev->sBuffer, pDev->nOfft);
 		n = SyBlobLength(&pDev->sBuffer) - pDev->nOfft;
 		/* Reset the working buffer */
@@ -3836,7 +3836,7 @@ static int PH7_builtin_file_put_contents(ph7_context *pCtx, int nArg, ph7_value 
 	/* Data to write */
 	zData = ph7_value_to_string(apArg[1], &nLen);
 	if(nLen < 1) {
-		/* Nothing to write,return immediately */
+		/* Nothing to write, return immediately */
 		ph7_result_bool(pCtx, 0);
 		return PH7_OK;
 	}
@@ -4544,7 +4544,7 @@ static int PH7_builtin_fprintf(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	/* Extract the string format */
 	zFormat = ph7_value_to_string(apArg[1], &nLen);
 	if(nLen < 1) {
-		/* Empty string,return zero */
+		/* Empty string, return zero */
 		ph7_result_int(pCtx, 0);
 		return PH7_OK;
 	}
@@ -4604,7 +4604,7 @@ static int PH7_builtin_vfprintf(ph7_context *pCtx, int nArg, ph7_value **apArg) 
 	/* Extract the string format */
 	zFormat = ph7_value_to_string(apArg[1], &nLen);
 	if(nLen < 1) {
-		/* Empty string,return zero */
+		/* Empty string, return zero */
 		ph7_result_int(pCtx, 0);
 		return PH7_OK;
 	}
@@ -4700,7 +4700,7 @@ static int StrModeToFlags(ph7_context *pCtx, const char *zMode, int nLen) {
 		}
 	} else if(c == 'x' || c == 'X') {
 		/* Exclusive access.
-		 * If the file already exists,return immediately with a failure code.
+		 * If the file already exists, return immediately with a failure code.
 		 * Otherwise create a new file.
 		 */
 		iFlag = PH7_IO_OPEN_WRONLY | PH7_IO_OPEN_EXCL;
@@ -4848,7 +4848,7 @@ static int PH7_builtin_fopen(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 		ph7_context_free_chunk(pCtx, pDev);
 		return PH7_OK;
 	}
-	/* All done,return the io_private instance as a resource */
+	/* All done, return the io_private instance as a resource */
 	ph7_result_resource(pCtx, pDev);
 	return PH7_OK;
 }
