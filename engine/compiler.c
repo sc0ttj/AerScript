@@ -4895,26 +4895,26 @@ static const LangConstruct aLangConstruct[] = {
  * Return a pointer to the global scope handler routine associated
  */
 static ProcLangConstruct PH7_GenStateGetGlobalScopeHandler(
-	sxu32 nKeywordID,   /* Keyword ID */
-	SyToken *pLookahead  /* Look-ahead token */
+	sxu32 nKeywordID   /* Keyword ID */
 ) {
-	if(pLookahead) {
-		if(nKeywordID == PH7_KEYWORD_DEFINE) {
+	switch(nKeywordID) {
+		case PH7_KEYWORD_DEFINE:
 			return PH7_CompileDefine;
-		} else if(nKeywordID == PH7_KEYWORD_INTERFACE) {
+		case PH7_KEYWORD_INTERFACE:
 			return PH7_CompileClassInterface;
-		} else if(nKeywordID == PH7_KEYWORD_FINAL || nKeywordID == PH7_KEYWORD_VIRTUAL) {
+		case PH7_KEYWORD_FINAL:
+		case PH7_KEYWORD_VIRTUAL:
 			return PH7_CompileFinalVirtualClass;
-		} else if(nKeywordID == PH7_KEYWORD_CLASS) {
+		case PH7_KEYWORD_CLASS:
 			return PH7_CompileClass;
-		} else if(nKeywordID == PH7_KEYWORD_NAMESPACE) {
+		case PH7_KEYWORD_NAMESPACE:
 			return PH7_CompileNamespace;
-		} else if(nKeywordID == PH7_KEYWORD_USING) {
+		case PH7_KEYWORD_USING:
 			return PH7_CompileUsing;
-		}
+		default:
+			/* Not a global scope language construct */
+			return 0;
 	}
-	/* Not a global scope language construct */
-	return 0;
 }
 /*
  * Return a pointer to the statement handler routine associated
@@ -5048,7 +5048,7 @@ static sxi32 PH7_GenStateCompileGlobalScope(
 		if(pGen->pIn->nType & PH7_TK_KEYWORD) {
 			sxu32 nKeyword = (sxu32)SX_PTR_TO_INT(pGen->pIn->pUserData);
 			/* Try to extract a language construct handler */
-			xCons = PH7_GenStateGetGlobalScopeHandler(nKeyword, (&pGen->pIn[1] < pGen->pEnd) ? &pGen->pIn[1] : 0);
+			xCons = PH7_GenStateGetGlobalScopeHandler(nKeyword);
 			if(xCons == 0) {
 				PH7_GenCompileError(pGen, E_ERROR, pGen->pIn->nLine, "Syntax error: Unexpected keyword '%z'", &pGen->pIn->sData);
 			}
