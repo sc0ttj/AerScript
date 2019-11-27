@@ -9260,7 +9260,7 @@ static int vm_builtin_include(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	rc = VmExecIncludedFile(&(*pCtx), &sFile, PH7_AERSCRIPT_CHNK | PH7_AERSCRIPT_FILE);
 	if(rc != SXRET_OK) {
 		/* Emit a warning and return false */
-		PH7_VmThrowError(pCtx->pVm, PH7_CTX_WARNING, "IO error while including file: '%z'", &sFile);
+		PH7_VmThrowError(pCtx->pVm, PH7_CTX_ERR, "IO error while including file: '%z'", &sFile);
 		ph7_result_bool(pCtx, 0);
 	}
 	return SXRET_OK;
