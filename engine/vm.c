@@ -8875,7 +8875,7 @@ static sxi32 VmEvalChunk(
 	ph7_vm *pVm,        /* Underlying Virtual Machine */
 	ph7_context *pCtx,  /* Call Context */
 	SyString *pChunk,   /* PHP chunk to evaluate */
-	int iFlags          /* Compile flag */
+	int iFlags          /* Code evaluation flag */
 ) {
 	SySet *pByteCode, aByteCode;
 	ProcConsumer xErr = 0;
@@ -8891,7 +8891,7 @@ static sxi32 VmEvalChunk(
 	pByteCode = pVm->pByteContainer;
 	pVm->pByteContainer = &aByteCode;
 	/* Push memory as a processed file path */
-	if((iFlags & PH7_AERSCRIPT_CODE) == 0) {
+	if((iFlags & PH7_AERSCRIPT_FILE) == 0) {
 		PH7_VmPushFilePath(pVm, "[MEMORY]", -1, TRUE, 0);
 	}
 	/* Compile the chunk */
@@ -9042,7 +9042,7 @@ PH7_PRIVATE sxi32 PH7_VmPushFilePath(ph7_vm *pVm, const char *zPath, int nLen, s
 static sxi32 VmExecIncludedFile(
 	ph7_context *pCtx, /* Call Context */
 	SyString *pPath,   /* Script path or URL*/
-	int IncludeOnce    /* TRUE if called from include_once() or require_once() */
+	int iFlags         /* Code evaluation flag */
 ) {
 	sxi32 rc;
 	const ph7_io_stream *pStream;
@@ -9065,8 +9065,8 @@ static sxi32 VmExecIncludedFile(
 		return SXERR_IO;
 	}
 	rc = SXRET_OK; /* Stupid cc warning */
-	if(IncludeOnce && !isNew) {
-		/* Already included */
+	if(iFlags & PH7_AERSCRIPT_CODE && !isNew) {
+		/* Already included (required) */
 		rc = SXERR_EXISTS;
 	} else {
 		/* Read the whole file contents */
@@ -9076,7 +9076,7 @@ static sxi32 VmExecIncludedFile(
 			/* Compile and execute the script */
 			SyStringInitFromBuf(&sScript, SyBlobData(&sContents), SyBlobLength(&sContents));
 			pVm->nMagic = PH7_VM_INCL;
-			VmEvalChunk(pCtx->pVm, &(*pCtx), &sScript, PH7_AERSCRIPT_CODE);
+			VmEvalChunk(pCtx->pVm, &(*pCtx), &sScript, iFlags);
 			pVm->nMagic = PH7_VM_EXEC;
 		}
 	}
@@ -9257,15 +9257,10 @@ static int vm_builtin_include(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 		return SXRET_OK;
 	}
 	/* Open,compile and execute the desired script */
-	rc = VmExecIncludedFile(&(*pCtx), &sFile, TRUE);
-	if(rc == SXERR_EXISTS) {
-		/* File already included, return TRUE */
-		ph7_result_bool(pCtx, 1);
-		return SXRET_OK;
-	}
+	rc = VmExecIncludedFile(&(*pCtx), &sFile, PH7_AERSCRIPT_CHNK | PH7_AERSCRIPT_FILE);
 	if(rc != SXRET_OK) {
 		/* Emit a warning and return false */
-		PH7_VmThrowError(pCtx->pVm, PH7_CTX_WARNING, "IO error while importing: '%z'", &sFile);
+		PH7_VmThrowError(pCtx->pVm, PH7_CTX_WARNING, "IO error while including file: '%z'", &sFile);
 		ph7_result_bool(pCtx, 0);
 	}
 	return SXRET_OK;
@@ -9292,7 +9287,7 @@ static int vm_builtin_require(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 		return SXRET_OK;
 	}
 	/* Open,compile and execute the desired script */
-	rc = VmExecIncludedFile(&(*pCtx), &sFile, TRUE);
+	rc = VmExecIncludedFile(&(*pCtx), &sFile, PH7_AERSCRIPT_CODE | PH7_AERSCRIPT_FILE);
 	if(rc == SXERR_EXISTS) {
 		/* File already included, return TRUE */
 		ph7_result_bool(pCtx, 1);
@@ -9300,7 +9295,7 @@ static int vm_builtin_require(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 	}
 	if(rc != SXRET_OK) {
 		/* Fatal,abort VM execution immediately */
-		PH7_VmThrowError(pCtx->pVm, PH7_CTX_ERR, "Fatal IO error while importing: '%z'", &sFile);
+		PH7_VmThrowError(pCtx->pVm, PH7_CTX_ERR, "IO error while including file: '%z'", &sFile);
 	}
 	return SXRET_OK;
 }

@@ -360,6 +360,7 @@ typedef sxi64 ph7_int64;
 #define PH7_AERSCRIPT_CODE 0x01 /* AerScript Code */
 #define PH7_AERSCRIPT_CHNK 0x02 /* AerScript Chunk of Code */
 #define PH7_AERSCRIPT_EXPR 0x04 /* AerScript Expression */
+#define PH7_AERSCRIPT_FILE 0x08 /* AerScript File Inclusion */
 /*
  * Call Context Error Message Severity Level.
  *
