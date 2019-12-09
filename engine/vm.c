@@ -9040,7 +9040,7 @@ PH7_PRIVATE sxi32 PH7_VmPushFilePath(ph7_vm *pVm, const char *zPath, int nLen, s
  * constructs for more information.
  */
 static sxi32 VmExecIncludedFile(
-	ph7_context *pCtx, /* Call Context */
+	ph7_vm *pVm,       /* Underlying Virtual Machine */
 	SyString *pPath,   /* Script path or URL*/
 	int iFlags         /* Code evaluation flag */
 ) {
@@ -9048,10 +9048,8 @@ static sxi32 VmExecIncludedFile(
 	const ph7_io_stream *pStream;
 	SyBlob sContents;
 	void *pHandle;
-	ph7_vm *pVm;
 	int isNew;
 	/* Initialize fields */
-	pVm = pCtx->pVm;
 	SyBlobInit(&sContents, &pVm->sAllocator);
 	isNew = 0;
 	/* Extract the associated stream */
@@ -9076,7 +9074,7 @@ static sxi32 VmExecIncludedFile(
 			/* Compile and execute the script */
 			SyStringInitFromBuf(&sScript, SyBlobData(&sContents), SyBlobLength(&sContents));
 			pVm->nMagic = PH7_VM_INCL;
-			VmEvalChunk(pCtx->pVm, &(*pCtx), &sScript, iFlags);
+			VmEvalChunk(pVm, 0, &sScript, iFlags);
 			pVm->nMagic = PH7_VM_EXEC;
 		}
 	}
@@ -9256,12 +9254,11 @@ static int vm_builtin_include(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 		ph7_result_null(pCtx);
 		return SXRET_OK;
 	}
-	/* Open,compile and execute the desired script */
-	rc = VmExecIncludedFile(&(*pCtx), &sFile, PH7_AERSCRIPT_CHNK | PH7_AERSCRIPT_FILE);
+	/* Open, compile and execute the desired script */
+	rc = VmExecIncludedFile(&(*pCtx->pVm), &sFile, PH7_AERSCRIPT_CHNK | PH7_AERSCRIPT_FILE);
 	if(rc != SXRET_OK) {
-		/* Emit a warning and return false */
+		/* Fatal, abort VM execution immediately */
 		PH7_VmThrowError(pCtx->pVm, PH7_CTX_ERR, "IO error while including file: '%z'", &sFile);
-		ph7_result_bool(pCtx, 0);
 	}
 	return SXRET_OK;
 }
@@ -9287,14 +9284,14 @@ static int vm_builtin_require(ph7_context *pCtx, int nArg, ph7_value **apArg) {
 		return SXRET_OK;
 	}
 	/* Open,compile and execute the desired script */
-	rc = VmExecIncludedFile(&(*pCtx), &sFile, PH7_AERSCRIPT_CODE | PH7_AERSCRIPT_FILE);
+	rc = VmExecIncludedFile(&(*pCtx->pVm), &sFile, PH7_AERSCRIPT_CODE | PH7_AERSCRIPT_FILE);
 	if(rc == SXERR_EXISTS) {
 		/* File already included, return TRUE */
 		ph7_result_bool(pCtx, 1);
 		return SXRET_OK;
 	}
 	if(rc != SXRET_OK) {
-		/* Fatal,abort VM execution immediately */
+		/* Fatal, abort VM execution immediately */
 		PH7_VmThrowError(pCtx->pVm, PH7_CTX_ERR, "IO error while including file: '%z'", &sFile);
 	}
 	return SXRET_OK;
