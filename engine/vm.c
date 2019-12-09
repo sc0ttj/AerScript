@@ -472,6 +472,7 @@ static int VmOverloadCompare(SyString *pFirst, SyString *pSecond) {
 	return (int)(zFin - zPtr);
 }
 /* Forward declaration */
+static sxi32 VmExecIncludedFile(ph7_vm *pVm, SyString *pPath, int iFlags);
 static sxi32 VmLocalExec(ph7_vm *pVm, SySet *pByteCode, ph7_value *pResult);
 /*
  * Select the appropriate VM function for the current call context.
