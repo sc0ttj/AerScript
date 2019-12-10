@@ -1,0 +1,8 @@
+class BaseClass {
+
+	protected void run() {
+		printf('Test launched...');
+		include 'data/includes/include_test.aer';
+	}
+
+}

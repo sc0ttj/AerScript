@@ -1,0 +1,12 @@
+require 'data/includes/base_class.aer';
+
+class Program extends BaseClass {
+
+	void main() {
+		$this->run();
+		require 'data/includes/test_class.aer';
+		object $test = new Test();
+		var_dump($test);
+	}
+
+}
