@@ -2641,6 +2641,33 @@ static sxi32 PH7_CompileUsing(ph7_gen_state *pGen) {
 	return SXRET_OK;
 }
 /*
+ * Compile the 'include' and 'require' statements
+ */
+static sxi32 PH7_CompileInclude(ph7_gen_state *pGen) {
+	char *zFile;
+	sxu32 nKey = (sxu32)(SX_PTR_TO_INT(pGen->pIn->pUserData));
+	sxu32 nLine = pGen->pIn->nLine;
+	sxi32 iP1 = (nKey == PH7_KEYWORD_REQUIRE) ? 1 : 0;
+	/* Jump the 'require' keyword */
+	pGen->pIn++;
+	if(pGen->pIn >= pGen->pEnd || (pGen->pIn->nType & (PH7_TK_SSTR | PH7_TK_DSTR)) == 0) {
+		if(pGen->pIn >= pGen->pEnd) {
+			pGen->pIn--;
+		}
+		/* Unexpected token */
+		PH7_GenCompileError(&(*pGen), E_ERROR, nLine, "Include: Unexpected token '%z'", &pGen->pIn->sData);
+	}
+	zFile = SyMemBackendStrDup(&pGen->pVm->sAllocator, pGen->pIn->sData.zString, pGen->pIn->sData.nByte);
+	pGen->pIn++;
+	if(pGen->pIn < pGen->pEnd && (pGen->pIn->nType & PH7_TK_SEMI/*';'*/) == 0) {
+		/* Unexpected token */
+		PH7_GenCompileError(&(*pGen), E_ERROR, nLine, "Include: Unexpected token '%z', expecting ';'",
+								&pGen->pIn->sData);
+	}
+	PH7_VmEmitInstr(pGen->pVm, nLine, PH7_OP_INCLUDE, iP1, 0, zFile, 0);
+	return SXRET_OK;
+}
+/*
  * Process default argument values. That is,a function may define C++-style default value
  * as follows:
  * function makecoffee($type = "cappuccino")
@@ -4890,6 +4917,8 @@ static const LangConstruct aLangConstruct[] = {
 	{ PH7_KEYWORD_THROW,    PH7_CompileThrow    }, /* throw statement */
 	{ PH7_KEYWORD_GOTO,     PH7_CompileGoto     }, /* goto statement */
 	{ PH7_KEYWORD_CONST,    PH7_CompileConstant }, /* const statement */
+	{ PH7_KEYWORD_INCLUDE,  PH7_CompileInclude  }, /* include statement */
+	{ PH7_KEYWORD_REQUIRE,  PH7_CompileInclude  }, /* require statement */
 };
 /*
  * Return a pointer to the global scope handler routine associated
@@ -4911,6 +4940,8 @@ static ProcLangConstruct PH7_GenStateGetGlobalScopeHandler(
 			return PH7_CompileNamespace;
 		case PH7_KEYWORD_USING:
 			return PH7_CompileUsing;
+		case PH7_KEYWORD_REQUIRE:
+			return PH7_CompileInclude;
 		default:
 			/* Not a global scope language construct */
 			return 0;
@@ -4954,8 +4985,7 @@ static ProcLangConstruct PH7_GenStateGetStatementHandler(
  * Return TRUE if the given ID represent a language construct. FALSE otherwise.
  */
 static int PH7_IsLangConstruct(sxu32 nKeywordID) {
-	if(nKeywordID == PH7_KEYWORD_IMPORT || nKeywordID == PH7_KEYWORD_INCLUDE || nKeywordID == PH7_KEYWORD_REQUIRE
-				|| nKeywordID == PH7_KEYWORD_EVAL || nKeywordID == PH7_KEYWORD_STATIC
+	if(nKeywordID == PH7_KEYWORD_IMPORT || nKeywordID == PH7_KEYWORD_EVAL || nKeywordID == PH7_KEYWORD_STATIC
 				|| nKeywordID == PH7_KEYWORD_NEW || nKeywordID == PH7_KEYWORD_CLONE) {
 			return TRUE;
 	}

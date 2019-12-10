@@ -3900,6 +3900,26 @@ static sxi32 VmByteCodeExec(
 					break;
 				}
 			/*
+			 * OP_INCLUDE P1 * P3
+			 * Include another source file. If P1 is zero, 'include' statement was used, otherwise it was 'require'.
+			 * P3 contains a path to the source file.
+			 */
+			case PH7_OP_INCLUDE:
+				{
+					char *zFile = (char *) pInstr->p3;
+					int iFlags = pInstr->iP1 ? PH7_AERSCRIPT_CODE : PH7_AERSCRIPT_CHNK;
+					SyString sFile;
+					if(SyStrlen(zFile) < 1) {
+						break;
+					}
+					SyStringInitFromBuf(&sFile, zFile, SyStrlen(zFile));
+					rc = VmExecIncludedFile(&(*pVm), &sFile, iFlags | PH7_AERSCRIPT_FILE);
+					if(rc != SXRET_OK && rc != SXERR_EXISTS) {
+						PH7_VmThrowError(pVm, PH7_CTX_ERR, "IO error while including file: '%z'", &sFile);
+					}
+					break;
+				}
+			/*
 			 * OP_CLASS_INIT P1 P2 P3
 			 * Perform additional class initialization, by adding base classes
 			 * and interfaces to its definition.
@@ -5187,6 +5207,9 @@ static const char *VmInstrToString(sxi32 nOp) {
 			break;
 		case PH7_OP_HALT:
 			zOp = "HALT";
+			break;
+		case PH7_OP_INCLUDE:
+			zOp = "INCLUDE";
 			break;
 		case PH7_OP_DECLARE:
 			zOp = "DECLARE";
@@ -9229,75 +9252,6 @@ static int vm_builtin_get_included_files(ph7_context *pCtx, int nArg, ph7_value 
 	return PH7_OK;
 }
 /*
- * include:
- *  The include() function includes and evaluates the specified file during
- *  the execution of the script. Files are included based on the file path
- *  given or, if none is given the include_path specified. If the file isn't
- *  found in the include_path include() will finally check in the calling
- *  script's own directory and the current working directory before failing.
- *  The include() construct will emit a warning if it cannot find a file; this
- *  is different behavior from require(), which will emit a fatal error. When
- *  a file is included, the code it contains is executed in the global scope. If
- *  the code from a file has already been included, it will not be included again.
- */
-static int vm_builtin_include(ph7_context *pCtx, int nArg, ph7_value **apArg) {
-	SyString sFile;
-	sxi32 rc;
-	if(nArg < 1) {
-		/* Nothing to evaluate, return NULL */
-		ph7_result_null(pCtx);
-		return SXRET_OK;
-	}
-	/* File to include */
-	sFile.zString = ph7_value_to_string(apArg[0], (int *)&sFile.nByte);
-	if(sFile.nByte < 1) {
-		/* Empty string, return NULL */
-		ph7_result_null(pCtx);
-		return SXRET_OK;
-	}
-	/* Open, compile and execute the desired script */
-	rc = VmExecIncludedFile(&(*pCtx->pVm), &sFile, PH7_AERSCRIPT_CHNK | PH7_AERSCRIPT_FILE);
-	if(rc != SXRET_OK) {
-		/* Fatal, abort VM execution immediately */
-		PH7_VmThrowError(pCtx->pVm, PH7_CTX_ERR, "IO error while including file: '%z'", &sFile);
-	}
-	return SXRET_OK;
-}
-/*
- * require.
- *  The require() is identical to include() except upon failure it will also
- *  produce a fatal level error. In other words, it will halt the script
- *  whereas include() only emits a warning which allowsthe script to continue.
- */
-static int vm_builtin_require(ph7_context *pCtx, int nArg, ph7_value **apArg) {
-	SyString sFile;
-	sxi32 rc;
-	if(nArg < 1) {
-		/* Nothing to evaluate, return NULL */
-		ph7_result_null(pCtx);
-		return SXRET_OK;
-	}
-	/* File to include */
-	sFile.zString = ph7_value_to_string(apArg[0], (int *)&sFile.nByte);
-	if(sFile.nByte < 1) {
-		/* Empty string, return NULL */
-		ph7_result_null(pCtx);
-		return SXRET_OK;
-	}
-	/* Open,compile and execute the desired script */
-	rc = VmExecIncludedFile(&(*pCtx->pVm), &sFile, PH7_AERSCRIPT_CODE | PH7_AERSCRIPT_FILE);
-	if(rc == SXERR_EXISTS) {
-		/* File already included, return TRUE */
-		ph7_result_bool(pCtx, 1);
-		return SXRET_OK;
-	}
-	if(rc != SXRET_OK) {
-		/* Fatal, abort VM execution immediately */
-		PH7_VmThrowError(pCtx->pVm, PH7_CTX_ERR, "IO error while including file: '%z'", &sFile);
-	}
-	return SXRET_OK;
-}
-/*
  * Section:
  *  Command line arguments processing.
  * Authors:
@@ -9879,8 +9833,6 @@ static const ph7_builtin_func aVmFunc[] = {
 	/* Files/URI inclusion facility */
 	{ "get_include_path",  vm_builtin_get_include_path },
 	{ "get_included_files", vm_builtin_get_included_files},
-	{ "include",      vm_builtin_include          },
-	{ "require",      vm_builtin_require          },
 };
 /*
  * Register the built-in VM functions defined above.

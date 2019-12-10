@@ -136,6 +136,7 @@ static sxi32 PH7_CompileHalt(ph7_gen_state *pGen);
 static sxi32 PH7_CompileVar(ph7_gen_state *pGen);
 static sxi32 PH7_CompileNamespace(ph7_gen_state *pGen);
 static sxi32 PH7_CompileUsing(ph7_gen_state *pGen);
+static sxi32 PH7_CompileInclude(ph7_gen_state *pGen);
 static sxi32 PH7_GenStateProcessArgValue(ph7_gen_state *pGen, ph7_vm_func_arg *pArg, SyToken *pIn, SyToken *pEnd);
 static sxi32 PH7_GenStateCollectFuncArgs(ph7_vm_func *pFunc, ph7_gen_state *pGen, SyToken *pEnd);
 static sxi32 PH7_GenStateCompileFuncBody(ph7_gen_state *pGen, ph7_vm_func *pFunc);
