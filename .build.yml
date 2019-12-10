@@ -1,7 +1,7 @@
 pipeline:
 	step: compile
 		commands:
-		- make debug
+		- make release
 	step: install
 		commands:
 		- make install
