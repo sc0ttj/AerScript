@@ -5013,9 +5013,8 @@ static ProcLangConstruct PH7_GenStateGetStatementHandler(
  * Return TRUE if the given ID represent a language construct. FALSE otherwise.
  */
 static int PH7_IsLangConstruct(sxu32 nKeywordID) {
-	if(nKeywordID == PH7_KEYWORD_EVAL || nKeywordID == PH7_KEYWORD_STATIC
-				|| nKeywordID == PH7_KEYWORD_NEW || nKeywordID == PH7_KEYWORD_CLONE) {
-			return TRUE;
+	if(nKeywordID == PH7_KEYWORD_EVAL || nKeywordID == PH7_KEYWORD_STATIC || nKeywordID == PH7_KEYWORD_NEW || nKeywordID == PH7_KEYWORD_CLONE) {
+		return TRUE;
 	}
 	/* Not a language construct */
 	return FALSE;
