@@ -3899,6 +3899,55 @@ static sxi32 VmByteCodeExec(
 					pc = nJump - 1;
 					break;
 				}
+			case PH7_OP_IMPORT:
+				{
+					VmModule pModule, *pSearch;
+					char *zModule = (char *) pInstr->p3;
+					int nLen = SyStrlen(zModule);
+					if(nLen < 1) {
+						break;
+					}
+					while(SySetGetNextEntry(&pVm->aModules, (void **)&pSearch) == SXRET_OK) {
+						if(SyStrncmp(pSearch->sName.zString, zModule, (sxu32)(SXMAX((int) pSearch->sName.nByte, nLen))) == 0) {
+							SySetResetCursor(&pVm->aModules);
+							break;
+						}
+					}
+					SySetResetCursor(&pVm->aModules);
+
+					/* Zero the module entry */
+					SyZero(&pModule, sizeof(VmModule));
+					SyStringInitFromBuf(&pModule.sName, zModule, nLen);
+					char bfile[255] = {0};
+					char *file;
+					snprintf(bfile, sizeof(bfile) - 1, "./binary/%s%s", zModule, PH7_LIBRARY_SUFFIX);
+					file = bfile;
+					SyStringInitFromBuf(&pModule.sFile, file, nLen);
+#ifdef __WINNT__
+					pModule.pHandle = LoadLibrary(file);
+#else
+					pModule.pHandle = dlopen(pModule.sFile.zString, RTLD_LAZY);
+#endif
+					if(!pModule.pHandle) {
+						/* Could not load the module library file */
+						PH7_VmThrowError(pVm, PH7_CTX_ERR, "ImportError: No module named '%z' found", &pModule.sName);
+					}
+					void (*init)(ph7_vm *, ph7_real *, SyString *);
+#ifdef __WINNT__
+					*(void**)(&init) = GetProcAddress(pModule.pHandle, "initializeModule");
+#else
+					*(void**)(&init) = dlsym(pModule.pHandle, "initializeModule");
+#endif
+					if(!init) {
+						PH7_VmThrowError(pVm, PH7_CTX_ERR, "ImportError: Method '%z::initializeModule()' not found", &pModule.sName);
+						/* Could not find the module entry point */
+					}
+					/* Initialize the module */
+					init(pVm, &pModule.fVer, &pModule.sDesc);
+					/* Put information about module on top of the modules stack */
+					SySetPut(&pVm->aModules, (const void *)&pModule);
+					break;
+				}
 			/*
 			 * OP_INCLUDE P1 * P3
 			 * Include another source file. If P1 is zero, 'include' statement was used, otherwise it was 'require'.
@@ -5207,6 +5256,9 @@ static const char *VmInstrToString(sxi32 nOp) {
 			break;
 		case PH7_OP_HALT:
 			zOp = "HALT";
+			break;
+		case PH7_OP_IMPORT:
+			zOp = "IMPORT";
 			break;
 		case PH7_OP_INCLUDE:
 			zOp = "INCLUDE";
@@ -9109,75 +9161,6 @@ static sxi32 VmExecIncludedFile(
 	return rc;
 }
 /*
- * bool import(string $library)
- *  Loads an AerScript module library at runtime
- * Parameters
- *  $library
- *    This parameter is only the module library name that should be loaded.
- * Return
- *  Returns TRUE on success or FALSE on failure
- */
-static int vm_builtin_import(ph7_context *pCtx, int nArg, ph7_value **apArg) {
-	const char *zStr;
-	VmModule pModule, *pSearch;
-	int nLen;
-	if(nArg != 1 || !ph7_value_is_string(apArg[0])) {
-		/* Missing/Invalid arguments, return FALSE */
-		ph7_result_bool(pCtx, 0);
-		return PH7_OK;
-	}
-	/* Extract the given module name */
-	zStr = ph7_value_to_string(apArg[0], &nLen);
-	if(nLen < 1) {
-		/* Nothing to process, return FALSE */
-		ph7_result_bool(pCtx, 0);
-		return PH7_OK;
-	}
-	while(SySetGetNextEntry(&pCtx->pVm->aModules, (void **)&pSearch) == SXRET_OK) {
-		if(SyStrncmp(pSearch->sName.zString, zStr, (sxu32)(SXMAX((int) pSearch->sName.nByte, nLen))) == 0) {
-			SySetResetCursor(&pCtx->pVm->aModules);
-			ph7_result_bool(pCtx, 1);
-			return PH7_OK;
-		}
-	}
-	SySetResetCursor(&pCtx->pVm->aModules);
-	/* Zero the module entry */
-	SyZero(&pModule, sizeof(VmModule));
-	SyStringInitFromBuf(&pModule.sName, zStr, nLen);
-	char bfile[255] = {0};
-	char *file;
-	snprintf(bfile, sizeof(bfile) - 1, "./binary/%s%s", zStr, PH7_LIBRARY_SUFFIX);
-	file = bfile;
-	SyStringInitFromBuf(&pModule.sFile, file, nLen);
-#ifdef __WINNT__
-	pModule.pHandle = LoadLibrary(file);
-#else
-	pModule.pHandle = dlopen(pModule.sFile.zString, RTLD_LAZY);
-#endif
-	if(!pModule.pHandle) {
-		/* Could not load the module library file */
-		ph7_result_bool(pCtx, 0);
-		return PH7_OK;
-	}
-	void (*init)(ph7_vm *, ph7_real *, SyString *);
-#ifdef __WINNT__
-	*(void**)(&init) = GetProcAddress(pModule.pHandle, "initializeModule");
-#else
-	*(void**)(&init) = dlsym(pModule.pHandle, "initializeModule");
-#endif
-	if(!init) {
-		/* Could not find the module entry point */
-		ph7_result_bool(pCtx, 0);
-		return PH7_OK;
-	}
-	/* Initialize the module */
-	init(pCtx->pVm, &pModule.fVer, &pModule.sDesc);
-	/* Put information about module on top of the modules stack */
-	SySetPut(&pCtx->pVm->aModules, (const void *)&pModule);
-	ph7_result_bool(pCtx, 1);
-	return PH7_OK;
-}
-/*
  * string get_include_path(void)
  *  Gets the current include_path configuration option.
  * Parameter
@@ -9828,8 +9811,6 @@ static const ph7_builtin_func aVmFunc[] = {
 	{"utf8_decode",    vm_builtin_utf8_decode},
 	/* Command line processing */
 	{"getopt",         vm_builtin_getopt     },
-	/* Module loading facility */
-	{ "import", vm_builtin_import },
 	/* Files/URI inclusion facility */
 	{ "get_include_path",  vm_builtin_get_include_path },
 	{ "get_included_files", vm_builtin_get_included_files},

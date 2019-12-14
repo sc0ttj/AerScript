@@ -2641,6 +2641,32 @@ static sxi32 PH7_CompileUsing(ph7_gen_state *pGen) {
 	return SXRET_OK;
 }
 /*
+ * Compile the 'import' statement
+ */
+static sxi32 PH7_CompileImport(ph7_gen_state *pGen) {
+	char *zModule;
+	sxu32 nLine = pGen->pIn->nLine;
+	/* Jump the 'import' keyword */
+	pGen->pIn++;
+	if(pGen->pIn >= pGen->pEnd || (pGen->pIn->nType & (PH7_TK_SSTR | PH7_TK_DSTR)) == 0) {
+		if(pGen->pIn >= pGen->pEnd) {
+			pGen->pIn--;
+		}
+		/* Unexpected token */
+		PH7_GenCompileError(&(*pGen), E_ERROR, nLine, "Include: Unexpected token '%z'", &pGen->pIn->sData);
+	}
+	zModule = SyMemBackendStrDup(&pGen->pVm->sAllocator, pGen->pIn->sData.zString, pGen->pIn->sData.nByte);
+	pGen->pIn++;
+	if(pGen->pIn < pGen->pEnd && (pGen->pIn->nType & PH7_TK_SEMI/*';'*/) == 0) {
+		/* Unexpected token */
+		PH7_GenCompileError(&(*pGen), E_ERROR, nLine, "Include: Unexpected token '%z', expecting ';'",
+								&pGen->pIn->sData);
+	}
+	PH7_VmEmitInstr(pGen->pVm, nLine, PH7_OP_IMPORT, 0, 0, zModule, 0);
+	return SXRET_OK;
+}
+
+/*
  * Compile the 'include' and 'require' statements
  */
 static sxi32 PH7_CompileInclude(ph7_gen_state *pGen) {
@@ -2648,7 +2674,7 @@ static sxi32 PH7_CompileInclude(ph7_gen_state *pGen) {
 	sxu32 nKey = (sxu32)(SX_PTR_TO_INT(pGen->pIn->pUserData));
 	sxu32 nLine = pGen->pIn->nLine;
 	sxi32 iP1 = (nKey == PH7_KEYWORD_REQUIRE) ? 1 : 0;
-	/* Jump the 'require' keyword */
+	/* Jump the 'include' or 'require' keyword */
 	pGen->pIn++;
 	if(pGen->pIn >= pGen->pEnd || (pGen->pIn->nType & (PH7_TK_SSTR | PH7_TK_DSTR)) == 0) {
 		if(pGen->pIn >= pGen->pEnd) {
@@ -4940,6 +4966,8 @@ static ProcLangConstruct PH7_GenStateGetGlobalScopeHandler(
 			return PH7_CompileNamespace;
 		case PH7_KEYWORD_USING:
 			return PH7_CompileUsing;
+		case PH7_KEYWORD_IMPORT:
+			return PH7_CompileImport;
 		case PH7_KEYWORD_REQUIRE:
 			return PH7_CompileInclude;
 		default:
@@ -4985,7 +5013,7 @@ static ProcLangConstruct PH7_GenStateGetStatementHandler(
  * Return TRUE if the given ID represent a language construct. FALSE otherwise.
  */
 static int PH7_IsLangConstruct(sxu32 nKeywordID) {
-	if(nKeywordID == PH7_KEYWORD_IMPORT || nKeywordID == PH7_KEYWORD_EVAL || nKeywordID == PH7_KEYWORD_STATIC
+	if(nKeywordID == PH7_KEYWORD_EVAL || nKeywordID == PH7_KEYWORD_STATIC
 				|| nKeywordID == PH7_KEYWORD_NEW || nKeywordID == PH7_KEYWORD_CLONE) {
 			return TRUE;
 	}

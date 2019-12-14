@@ -1,3 +1,5 @@
+import 'math';
+
 class Program {
 
 	private string num2alpha(int $n) {
@@ -19,7 +21,6 @@ class Program {
 	}
 
 	public void main() {
-		import('math');
 		var_dump($this->alpha2num("Salut"), $this->num2alpha(1723), $this->num2alpha(9854), $this->alpha2num("Base64"));
 	}
 

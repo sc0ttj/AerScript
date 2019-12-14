@@ -1,7 +1,7 @@
+import 'dummy';
+
 final class Program {
 	public void main() {
-		var_dump(function_exists('dummy_function'));
-		var_dump(import('dummy'));
 		var_dump(function_exists('dummy_function'));
 	}
 }
