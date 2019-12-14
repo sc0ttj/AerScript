@@ -3939,8 +3939,8 @@ static sxi32 VmByteCodeExec(
 					*(void**)(&init) = dlsym(pModule.pHandle, "initializeModule");
 #endif
 					if(!init) {
-						PH7_VmThrowError(pVm, PH7_CTX_ERR, "ImportError: Method '%z::initializeModule()' not found", &pModule.sName);
 						/* Could not find the module entry point */
+						PH7_VmThrowError(pVm, PH7_CTX_ERR, "ImportError: Method '%z::initializeModule()' not found", &pModule.sName);
 					}
 					/* Initialize the module */
 					init(pVm, &pModule.fVer, &pModule.sDesc);
