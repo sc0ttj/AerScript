@@ -3899,6 +3899,10 @@ static sxi32 VmByteCodeExec(
 					pc = nJump - 1;
 					break;
 				}
+			/*
+			 * OP_IMPORT * * *
+			 * Import an AerScript module.
+			 */
 			case PH7_OP_IMPORT:
 				{
 					VmModule pModule, *pSearch;
