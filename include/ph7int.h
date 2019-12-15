@@ -1669,6 +1669,7 @@ PH7_PRIVATE sxi32 PH7_VmOutputConsumeAp(ph7_vm *pVm, const char *zFormat, va_lis
 PH7_PRIVATE sxi32 PH7_VmMemoryError(ph7_vm *pVm);
 PH7_PRIVATE sxi32 PH7_VmThrowError(ph7_vm *pVm, sxi32 iErr, const char *zMessage, ...);
 PH7_PRIVATE void  PH7_VmExpandConstantValue(ph7_value *pVal, void *pUserData);
+PH7_PRIVATE sxi32 VmExtractDebugTrace(ph7_vm *pVm, SySet *pDebugTrace);
 PH7_PRIVATE sxi32 PH7_VmDump(ph7_vm *pVm, ProcConsumer xConsumer, void *pUserData);
 PH7_PRIVATE sxi32 PH7_VmInit(ph7_vm *pVm, ph7 *pEngine, sxbool bDebug);
 PH7_PRIVATE sxi32 PH7_VmConfigure(ph7_vm *pVm, sxi32 nOp, va_list ap);
