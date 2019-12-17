@@ -1,0 +1,43 @@
+class Beaufort {
+	private string $cipher;
+
+	public string __construct(string $text, string $key) {
+		string $alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+		for(int $i = 0; $i < strlen($text); $i++) {
+			int $j;
+			char $c0 = $text[$i];
+			char $c1 = $key[$i % strlen($key)];
+			int $start = 0;
+			for($j = 0; $j < 26; $j++) {
+				if($alphabet[$j] == strtoupper($c0)) {
+					$start = $j;
+					break;
+				}
+			}
+			int $offset = 0;
+			for($j = $start; $j < $start + 26; $j++) {
+				int $letter = $j %26;
+				if($alphabet[$letter] == strtoupper($c1)) {
+					break;
+				}
+					$offset++;
+			}
+			$this->cipher += $alphabet[$offset];
+		}
+	}
+
+	public string getCipher() {
+		return $this->cipher;
+	}
+
+}
+
+class Program {
+
+	public void main() {
+		object $beaufort = new Beaufort('thisisasecretmessage', 'youwillneverguessit');
+		var_dump($beaufort->getCipher());
+	}
+
+}
+
