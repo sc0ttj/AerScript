@@ -1421,8 +1421,10 @@ static sxi32 PH7_CompileBreak(ph7_gen_state *pGen) {
 		PH7_GenCompileError(pGen, E_ERROR, pGen->pIn->nLine, "A 'break' statement may only be used within a loop or switch");
 	} else {
 		sxu32 nInstrIdx;
-		/* Emit the OP_LF_STOP instruction to leave the loop frame */
-		PH7_VmEmitInstr(pGen->pVm, nLine, PH7_OP_LF_STOP, 0, 0, 0, 0);
+		if((pLoop->iFlags & GEN_BLOCK_SWITCH) == 0) {
+			/* Emit the OP_LF_STOP instruction to leave the loop frame */
+			PH7_VmEmitInstr(pGen->pVm, nLine, PH7_OP_LF_STOP, 0, 0, 0, 0);
+		}
 		rc = PH7_VmEmitInstr(pGen->pVm, nLine, PH7_OP_JMP, 0, 0, 0, &nInstrIdx);
 		if(rc == SXRET_OK) {
 			/* Fix the jump later when the jump destination is resolved */
