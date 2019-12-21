@@ -5072,7 +5072,7 @@ PH7_PRIVATE sxi32 PH7_VmByteCodeExec(ph7_vm *pVm) {
 		PH7_VmThrowError(&(*pVm), PH7_CTX_ERR, "Cannot find a program entry point 'Program::main()'");
 	}
 	if(pMethod->sFunc.nType != MEMOBJ_INT && pMethod->sFunc.nType != MEMOBJ_VOID) {
-		PH7_VmThrowError(&(*pVm), PH7_CTX_ERR, "The 'Program::main()' can only return an Integer or Void value");
+		PH7_VmThrowError(&(*pVm), PH7_CTX_ERR, "The 'Program::main()' return value can be either Integer or Void");
 	}
 	/* A set of arguments is stored in array of strings */
 	pArgs->nType |= MEMOBJ_STRING;
