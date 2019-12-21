@@ -5023,8 +5023,8 @@ PH7_PRIVATE sxi32 PH7_VmByteCodeExec(ph7_vm *pVm) {
 	ph7_class_method *pMethod;
 	ph7_value *pArgs, *sArgv, *pObj;
 	ph7_value pResult;
-	char *zDup;
-	const char *zStr, *zParam;
+	char *zDup, *zParam;
+	sxu32 nByte;
 	/* Make sure we are ready to execute this program */
 	if(pVm->nMagic != PH7_VM_RUN) {
 		return (pVm->nMagic == PH7_VM_EXEC || pVm->nMagic == PH7_VM_INCL) ? SXERR_LOCKED /* Locked VM */ : SXERR_CORRUPT; /* Stale VM */
@@ -5055,9 +5055,9 @@ PH7_PRIVATE sxi32 PH7_VmByteCodeExec(ph7_vm *pVm) {
 	if(!pArgs || !sArgv) {
 		PH7_VmMemoryError(&(*pVm));
 	}
-	if(SyBlobLength(&pVm->sArgv) > 0) {
-		zStr = (const char *)SyBlobData(&pVm->sArgv);
-		zDup = SyMemBackendStrDup(&pVm->sAllocator, zStr, SyStrlen(zStr));
+	nByte = SyBlobLength(&pVm->sArgv);
+	if(nByte > 0) {
+		zDup = SyMemBackendStrDup(&pVm->sAllocator, SyBlobData(&pVm->sArgv), nByte);
 		zParam = SyStrtok(zDup, " ");
 		while(zParam != NULL) {
 			ph7_value_string(sArgv, zParam, SyStrlen(zParam));
