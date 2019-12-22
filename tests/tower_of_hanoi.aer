@@ -1,0 +1,22 @@
+class Hanoi {
+
+	public void towerOfHanoi(int $diskCount, int $fromPole, int $toPole, int $viaPole) {
+		if($diskCount == 1) {
+			printf('Move disk from pole ' + $fromPole + ' to pole ' + $toPole + "\n");
+		} else {
+			$this->towerOfHanoi($diskCount - 1, $fromPole, $viaPole, $toPole);
+			$this->towerOfHanoi(1, $fromPole, $toPole, $viaPole);
+			$this->towerOfHanoi($diskCount - 1, $viaPole, $toPole, $fromPole);
+		}
+	}
+
+}
+
+class Program {
+
+	public void main() {
+		object $hanoi = new Hanoi();
+		$hanoi->towerOfHanoi(4, 1, 2, 3);
+	}
+
+}
