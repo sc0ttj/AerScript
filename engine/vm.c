@@ -1901,6 +1901,12 @@ static sxi32 VmByteCodeExec(
 					if(pLastRef) {
 						*pLastRef = pTos->nIdx;
 					}
+					/* Ensure we are in active loop. Force abort all loops */
+					if(pVm->pFrame->iFlags & VM_FRAME_LOOP) {
+						while((pVm->pFrame->iFlags & VM_FRAME_ACTIVE) == 0) {
+							VmLeaveFrame(&(*pVm));
+						}
+					}
 					if(pResult) {
 						/* Execution result */
 						PH7_MemObjStore(pTos, pResult);
