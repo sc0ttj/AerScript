@@ -1,14 +1,14 @@
----
 kind: pipeline
 type: exec
+name: test
 
 steps:
 - name: Compile
   commands:
-  - make release
+    - make release
 - name: install
   commands:
-  - make install
+    - make install
 - name: test
   commands:
-  - make tests
+    - make tests
