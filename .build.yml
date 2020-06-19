@@ -1,10 +1,14 @@
-pipeline:
-	step: compile
-		commands:
-		- make release
-	step: install
-		commands:
-		- make install
-	step: test
-		commands:
-		- make tests
+kind: pipeline
+type: exec
+name: AerScript Build
+
+steps:
+- name: compile
+  commands:
+    - make release
+- name: install
+  commands:
+    - make install
+- name: test
+  commands:
+    - make tests
